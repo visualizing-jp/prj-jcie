@@ -39,19 +39,26 @@ article {
 　　テキストによるストーリー段落ごと
 */
 
+/* 対象外段落 */
 .step {
     margin: 0 auto 2rem auto;
-    background-color: #3b3b3b;
-    color: #fff;
+    /* background-color: #3b3b3b;
+    color: #fff; */
+    background-color: #DDD;
+    color: #999;
   }
   
+/* 対象内段落 */
+.step.is-active {
+    /* background-color: goldenrod;
+    color: #3b3b3b; */
+    background-color: #FFF;
+    color: #000000;
+}
+
+/* 最後の段落 */
 .step:last-child {
     margin-bottom: 0;
-}
-  
-.step.is-active {
-    background-color: goldenrod;
-    color: #3b3b3b;
 }
 
 
