@@ -43,6 +43,13 @@ function handleStepEnter(response) { // イベントハンドラ
     step.classed("is-active", function (d, i) {
       return i === response.index;
     });
+    // Tailwindクラスで状態変化を制御
+    step.classed("bg-white text-black shadow-lg", function (d, i) {
+      return i === response.index;
+    });
+    step.classed("bg-gray-200 text-gray-500 shadow-none", function (d, i) {
+      return i !== response.index;
+    });
 
     // update graphic based on step
     figure.select("p").text(response.index + 1);
