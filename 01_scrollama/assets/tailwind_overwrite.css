@@ -1,0 +1,20 @@
+@charset "UTF-8";
+
+p
+{
+    margin-bottom: 1rem !important;
+}
+
+h3
+{
+    font-size: 1.25rem !important; /* text-xl */
+    font-weight: 700; /* font-bold */
+    margin-bottom: 1rem; /* mb-4 */
+}
+  
+h4
+{
+    font-size: 1.125rem !important; /* text-lg */
+    font-weight: 600; /* font-semibold */
+    margin-bottom: 0.75rem; /* mb-3 */
+}
