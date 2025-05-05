@@ -16,8 +16,8 @@ nav {
     -ms-flex-pack: justify;
     justify-content: space-between;
     background: #f3f3f3;
-    padding: 1rem;
-    padding-right: 5rem;
+    padding: 2rem;
+    /* padding-right: 5rem; */
     -ms-flex-wrap: wrap;
     flex-wrap: wrap;
     width: 100%;
