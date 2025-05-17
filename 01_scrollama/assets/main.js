@@ -2,7 +2,6 @@
   initialize
 ------------------------------ */
 
-// using d3 for convenience
 var main = d3.select("main");	// コンテンツ全体
 var scrolly = main.select("#scrolly"); //スクロール対象全体
 var figure = scrolly.select("figure"); //スクロールで変換するコンテンツ
@@ -11,8 +10,6 @@ var step = article.selectAll(".step"); //テキストのブロック一つづつ
 
 // initialize the scrollama
 var scroller = scrollama();
-
-
 
 /* ------------------------------
   functions
@@ -33,23 +30,16 @@ function handleResize() { //ウィンドウサイズ変更
     scroller.resize();
 }
 
-
-
 function handleStepEnter(response) { // イベントハンドラ
     console.log("response", response);
     // response = { element, direction, index }
-
-
     
     // data-stepの値を取得
     var _dataStep = response.element.getAttribute('data-step');
     console.log('data-step:', _dataStep);
 
     // update graphic based on step
-    // figure.select("p").text(response.index + 1);
     figure.select("p").text(_dataStep);
-
-
 
     // add color to current step only
     step.classed("is-active", function (d, i) {
@@ -63,9 +53,6 @@ function handleStepEnter(response) { // イベントハンドラ
       return i !== response.index;
     });
   }
-
-
-
 function init() {
 
     handleResize();
