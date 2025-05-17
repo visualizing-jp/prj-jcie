@@ -15,7 +15,8 @@ var scroller = scrollama();
   functions
 ------------------------------ */
 
-function handleResize() { //ウィンドウサイズ変更
+var handleResize = function() {
+    console.log("handleResize");
 
     var stepH = Math.floor(window.innerHeight * 0.75);
     step.style("height", stepH + "px");
@@ -30,7 +31,7 @@ function handleResize() { //ウィンドウサイズ変更
     scroller.resize();
 }
 
-function handleStepEnter(response) { // イベントハンドラ
+var handleStepEnter = function(message, response) { // イベントハンドラ
     console.log("response", response);
     // response = { element, direction, index }
     
@@ -52,10 +53,10 @@ function handleStepEnter(response) { // イベントハンドラ
     step.classed("bg-gray-200 text-gray-500 shadow-none", function (d, i) {
       return i !== response.index;
     });
-  }
-function init() {
+}
 
-    handleResize();
+var initScroll = function() {
+    console.log("initScroll");
 
     const scroller = scrollama();
 
@@ -65,18 +66,18 @@ function init() {
         offset: 0.5,
         debug: false
       })
-      .onStepEnter(handleStepEnter);
-    /*
-    実行条件：
-        #scrolly article .step セレクタにマッチする要素（各ステップ）が
-        ビューポートの33%（offset: 0.33）の位置に入った時
+      .onStepEnter(function(response) {
+        console.log('Original response:', response);
+        PubSub.publishSync('handle:step-enter', response);
+      });
 
-    実行される処理：
-        現在のステップに is-active クラスを追加
-        図の内容を更新（ステップ番号を表示）
-    */
+    PubSub.publish('handle:resize');
 }
 
+// PubSubイベントの購読
+PubSub.subscribe('init:scroll', initScroll);
+PubSub.subscribe('handle:resize', handleResize);
+PubSub.subscribe('handle:step-enter', handleStepEnter);
 
-
-init();
+// 初期化
+PubSub.publish('init:scroll');
