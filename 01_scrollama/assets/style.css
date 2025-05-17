@@ -1,0 +1,59 @@
+@charset "UTF-8";
+
+/* 基本フォントの設定 */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap');
+
+/* 基本スタイル */
+:root {
+  --primary-color: #76507f;
+  --background-color: #f8f8f8;
+  --accent-color: #f2ecf4;
+  --text-color: #3d3b30;
+  --sub-text-color: #707070;
+  --sub-text-color-alt: #65645a;
+}
+
+/* リンクスタイル */
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: opacity 0.3s ease;
+}
+
+a:hover {
+  opacity: 0.7;
+}
+
+/* テキストカラーのユーティリティクラス */
+.text-primary {
+  color: var(--primary-color);
+}
+
+.text-sub {
+  color: var(--sub-text-color);
+}
+
+.text-sub-alt {
+  color: var(--sub-text-color-alt);
+}
+
+/* 背景色のユーティリティクラス */
+.bg-primary {
+  background-color: var(--primary-color);
+}
+
+.bg-accent {
+  background-color: var(--accent-color);
+}
+
+/* ボーダーカラーのユーティリティクラス */
+.border-primary {
+  border-color: var(--primary-color);
+}
+
+/* 見出しスタイル */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-color);
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
