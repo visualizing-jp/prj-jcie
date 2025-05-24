@@ -28,6 +28,11 @@ body {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
+.step[data-step="3"] {
+  background-color: transparent;
+  box-shadow: none;
+}
+
 /* ナビゲーションのスタイル */
 nav {
   background-color: white;
