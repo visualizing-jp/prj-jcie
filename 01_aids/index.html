@@ -3,19 +3,20 @@
 <head>
 	<meta charset="utf-8" />
 	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-	<title>Scrollama: Sticky Side Example</title>
-	<meta name="description" content="Scrollama: Sticky Side Example" />
+	<title>JCIEスペシャルコンテンツ</title>
+	<meta name="description" content="JCIEスペシャルコンテンツ" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<script src="https://cdn.tailwindcss.com"></script>
 	<script src="assets/js/tailwind.config.js"></script>
 	<script src="https://cdn.tailwindcss.com?plugins=typography"></script>
 	<link rel="stylesheet" href="assets/css/container.css">
 	<link rel="stylesheet" href="assets/css/style.css">
-
 </head>
 
 <body>
-	<main>
+    <!-- 地図をbody直下に描画するためのコンテナ -->
+    <div id="mapBgContainer" style="position:fixed; inset:0; z-index:0; width:100vw; height:100vh; pointer-events:none;"></div>
+	<main style="position:relative; z-index:1;">
 		<header>
 			<nav class="fixed top-0 left-0 w-full bg-white shadow-md z-50">
 				<div class="w-full px-4 py-4 flex flex-col md:flex-row items-start md:items-end justify-between gap-2 md:gap-0">
@@ -39,7 +40,7 @@
 &nbsp;<br />
 		</section>
 
-		<section id="scrolly" class="relative flex flex-col md:flex-row gap-4 md:gap-8 px-2 md:px-8 pt-0 pb-8 bg-gray-100 items-start">
+		<section id="scrolly" class="relative flex flex-col md:flex-row gap-4 md:gap-8 px-2 md:px-8 pt-0 pb-8 bg-gray-100 bg-opacity-60 items-start">
 			<article class="flex-1 max-w-2xl self-start space-y-8 mt-[64px] md:mt-[64px]">
 				<div class="step min-h-[150px] md:min-h-[200px] lg:min-h-[150px] bg-gray-200 text-gray-500 rounded-lg transition-all duration-300 shadow-none prose" data-step="1">
 					<h3 class="prose-h3">1.エイズの概要</h3>
@@ -61,7 +62,7 @@
 					<p>この間、HIV/エイズの母子間感染予防は目覚ましい成果が見られました。妊婦の早期検査と診断、抗HIV薬治療、選択的帝王切開の実施、授乳方法の選択といった対策を取ったことで、母子間感染は大きく減少しました。地域的にばらつきが見られるものの、最も感染率の高いサハラ以南アフリカ地域でも、1995年の35.2%から2023年には8.7%まで減少しました。</p>
 				</div>
 
-				<div class="step min-h-[150px] md:min-h-[200px] lg:min-h-[150px] bg-gray-200 text-gray-500 rounded-lg transition-all duration-300 shadow-none prose" data-step="3">
+				<div class="step min-h-[2400px] md:min-h-[2400px] lg:min-h-[2400px] bg-gray-200 text-gray-500 rounded-lg transition-all duration-300 shadow-none prose" data-step="3">
 					<h3 class="prose-h3">3.国ごとのエピソード</h3>
 					<p>感染症の現場で、ひとりひとりの『夢』が希望へとつながり、多くの命が救われてきた実話を紹介します。</p>
 				</div>
@@ -93,9 +94,7 @@
 				</div>
 
 			</article>
-
-			<figure class="md:sticky md:top-[64px] self-start h-48 md:h-[60vh] flex items-center justify-center bg-white rounded shadow w-full md:w-1/2">
-				<p class="text-6xl font-bold text-teal-700">0</p>
+			<figure id="mainFigure" class="md:sticky md:top-[64px] self-start h-48 md:h-[60vh] flex items-center justify-center bg-white rounded shadow w-full md:w-1/2">
 			</figure>
 		</section>
 
@@ -109,9 +108,25 @@
 	<!-- <div class='debug'></div> -->
 	<script src="assets/js/lib/pubsub.js"></script>
 	<script src="https://unpkg.com/d3@5.9.1/dist/d3.min.js"></script>
+	<script src="https://unpkg.com/topojson@3"></script>
 	<script src="assets/js/lib/scrollama.min.js"></script>
 	<script src="assets/js/step-functions.js"></script>
 	<script src="assets/js/main.js"></script>
+
+	<!-- モーダル -->
+	<div id="modalCountry" class="fixed inset-0 bg-black bg-transparent hidden transition-opacity duration-300 z-[1000]">
+		<div class="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 bg-white p-6 rounded-lg shadow-xl max-w-2xl w-full">
+			<button id="closeModal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
+				<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+				</svg>
+			</button>
+			<h2 id="modalTitle" class="text-2xl font-bold mb-4"></h2>
+			<img id="modalImage" class="w-full h-48 object-cover mb-4 rounded" src="" alt="">
+			<p id="modalDescription" class="text-gray-700 mb-4"></p>
+			<a id="modalUrl" href="#" target="_blank" class="text-teal-700 hover:text-teal-900">詳細を見る</a>
+		</div>
+	</div>
 
 </body>
 </html>
