@@ -26,6 +26,8 @@ class ChartManager {
 
     // 折れ線グラフの描画
     async drawLineChart(data, title) {
+        // 凡例を表示するか判定
+        const showLegend = title !== 'エイズ関連死亡者数の推移' && title !== '母子感染の推移';
         if (this.currentChart) {
             // 既存のチャートをフェードアウト
             this.svg.selectAll('*')
@@ -104,22 +106,24 @@ class ChartManager {
         });
 
         // 凡例の追加
-        const legend = this.svg.append('g')
-            .attr('transform', `translate(${this.width - 100}, 0)`);
+        if (showLegend) {
+            const legend = this.svg.append('g')
+                .attr('transform', `translate(${this.width - 100}, 0)`);
 
-        regions.forEach((region, i) => {
-            legend.append('g')
-                .attr('transform', `translate(0, ${i * 20})`)
-                .call(g => g.append('rect')
-                    .attr('width', 10)
-                    .attr('height', 10)
-                    .attr('fill', color(region)))
-                .call(g => g.append('text')
-                    .attr('x', 15)
-                    .attr('y', 10)
-                    .text(region)
-                    .style('font-size', '10px'));
-        });
+            regions.forEach((region, i) => {
+                legend.append('g')
+                    .attr('transform', `translate(0, ${i * 20})`)
+                    .call(g => g.append('rect')
+                        .attr('width', 10)
+                        .attr('height', 10)
+                        .attr('fill', color(region)))
+                    .call(g => g.append('text')
+                        .attr('x', 15)
+                        .attr('y', 10)
+                        .text(region)
+                        .style('font-size', '10px'));
+            });
+        }
 
         this.currentChart = 'line';
     }
