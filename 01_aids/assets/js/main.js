@@ -2,6 +2,14 @@
   initialize
 ------------------------------ */
 
+// グローバル変数
+let step3ScrollDirection = 'down';
+let isStep3Active = false;
+let totalEpisodes = 0;
+let currentEpisodeIndex = 0;
+let lastDirection = 'down';
+const chartManager = new ChartManager();
+
 var main = d3.select("main");	// コンテンツ全体
 var scrolly = main.select("#scrolly"); //スクロール対象全体
 var article = scrolly.select("article"); //テキストのブロック全体
@@ -19,19 +27,28 @@ var path = d3.geoPath().projection(wmProjection);
 // 地図のズーム機能の設定
 const zoom = d3.zoom()
     .scaleExtent([1, 8])
-    .on("zoom", () => {
+    .on("zoom", (event) => {
         d3.select("#mapBgContainer svg g")
-            .attr("transform", d3.event.transform);
+            .attr("transform", event.transform);
     });
 
 // initialize the scrollama
 var scroller = scrollama();
 
-// グローバル変数
-let step3ScrollDirection = 'down';
+// データの読み込み
+async function loadChartData() {
+    const newInfections = await d3.csv('data/trend_new_infections.csv');
+    const newDeaths = await d3.csv('data/trend_new_deaths.csv');
+    const hivPositive = await d3.csv('data/HIV陽性者の割合.csv');
+    const maternalFetal = await d3.csv('data/trend_maternal_fetal_infection.csv');
 
-
-
+    return {
+        newInfections,
+        newDeaths,
+        hivPositive,
+        maternalFetal
+    };
+}
 
 /* ------------------------------
   functions
@@ -105,6 +122,9 @@ var initMap = function() {
                     window.mapSvg = g;
                     window.mapGeoData = countries.features;
                     window.mapProjection = wmProjection;
+                    window.mapPath = path;
+                    window.mapZoom = zoom;
+                    window.mapSvgContainer = mapSvgContainer;
 
                     // エピソードデータの保存
                     window.mapEpisodeData = episodeData;
@@ -139,16 +159,29 @@ var initMap = function() {
     });
 }
 
+// 世界地図全体表示
+function showWorldMap() {
+    if (!window.mapSvgContainer) {
+        console.error('Map not initialized');
+        return;
+    }
 
+    const widthMap = window.innerWidth;
+    const heightMap = window.innerHeight;
+    
+    // 地図を表示状態に設定
+    window.mapSvgContainer
+        .style('opacity', '1')
+        .transition()
+        .duration(800)
+        .call(window.mapZoom.transform, d3.zoomIdentity
+            .translate(widthMap / 2, heightMap / 2)
+            .scale(widthMap / 2 / Math.PI));
+}
 
 // スクロールの初期化
 var initScroll = function() {
     console.log("initScroll");
-
-    let isStep3Active = false;
-    let totalEpisodes = 0;
-    let currentEpisodeIndex = 0;
-    let lastDirection = 'down';
 
     scroller
         .setup({
@@ -157,75 +190,10 @@ var initScroll = function() {
             debug: false,
             progress: true
         })
-        .onStepEnter(function(response) {
-            const stepId = response.element.getAttribute('data-step');
-            const figure = document.getElementById('mainFigure');
-            const modal = document.getElementById('modalCountry');
-            const mapBgContainer = document.getElementById('mapBgContainer');
-            const mapContainer = document.getElementById('mapContainer');
-            
-            totalEpisodes = window.mapEpisodeData.length;
-            lastDirection = response.direction;
-
-            if (stepId === "3") {
-                isStep3Active = true;
-                step3ScrollDirection = response.direction; // ここで記憶
-
-                // 地図の表示
-                if (mapBgContainer) {
-                    mapBgContainer.style.display = "block";
-                    showWorldMap();
-                }
-                if (mapContainer) {
-                    mapContainer.style.display = "block";
-                }
-
-                // エピソードの表示（スクロール方向に応じて）
-                if (response.direction === 'up') {
-                    currentEpisodeIndex = totalEpisodes - 1;
-                } else {
-                    currentEpisodeIndex = 0;
-                }
-                showEpisodeModal(currentEpisodeIndex);
-
-                // モーダルの表示
-                if (modal) {
-                    modal.classList.remove('hidden');
-                    modal.style.opacity = '1';
-                }
-
-                // メインフィギュアの非表示
-                if (figure) {
-                    figure.style.display = "none";
-                }
-            } else {
-                isStep3Active = false;
-
-                // 地図の非表示
-                if (mapBgContainer) {
-                    mapBgContainer.style.display = "none";
-                }
-                if (mapContainer) {
-                    mapContainer.style.display = "none";
-                }
-
-                // モーダルの非表示
-                if (modal) {
-                    modal.style.opacity = '0';
-                    modal.classList.add('hidden');
-                }
-
-                // メインフィギュアの表示
-                if (figure) {
-                    figure.style.display = "block";
-                }
-            }
-
-            PubSub.publishSync('handle:step-enter', response);
-        })
+        .onStepEnter(handleStepEnter)
         .onStepProgress(function(response) {
             if (!isStep3Active) return;
-            const modal = document.getElementById('modalCountry');
+            
             let progress = response.progress;
             const total = window.mapEpisodeData.length;
 
@@ -234,33 +202,48 @@ var initScroll = function() {
                 progress = 1 - progress;
             }
 
+            // 進行度に基づいてエピソードインデックスを計算
             let idx = Math.floor(progress * total);
             idx = Math.max(0, Math.min(idx, total - 1));
 
+            // 現在のエピソードインデックスと異なる場合のみ更新
             if (idx !== currentEpisodeIndex) {
                 currentEpisodeIndex = idx;
-                showEpisodeModal(currentEpisodeIndex);
-            }
-            if (modal && modal.classList.contains('hidden')) {
-                modal.classList.remove('hidden');
-                modal.style.opacity = '1';
+                
+                // エピソードデータの取得（スクロール方向に応じて）
+                let episodeData;
+                if (step3ScrollDirection === 'up') {
+                    // 下から上へのスクロール時は、後ろから順に表示
+                    episodeData = window.mapEpisodeData[total - 1 - idx];
+                } else {
+                    // 上から下へのスクロール時は、前から順に表示
+                    episodeData = window.mapEpisodeData[idx];
+                }
+
+                if (episodeData) {
+                    // 地図を該当する国にズーム
+                    centerCountryOnMap(episodeData.country);
+
+                    // モーダルの内容を更新
+                    const modalData = {
+                        title: `${episodeData.country}　${episodeData['タイトル']}`,
+                        description: episodeData['説明文'],
+                        imageUrl: `assets/thumb/${episodeData['サムネ画像']}`,
+                        url: episodeData['URL']
+                    };
+                    
+                    // モーダルを表示
+                    showModal(modalData);
+                }
             }
         });
 
     PubSub.publish('handle:resize');
 }
 
-
-
-
-
 // リサイズイベントのハンドラー
 var handleResize = function() {
     console.log("handleResize");
-
-    // ウィンドウの高さ（window.innerHeight）の75%をstep要素の高さとして設定
-    // var stepH = Math.floor(window.innerHeight * 1.0);
-    // step.style("height", stepH + "px");
 
     // ウィンドウの高さ（window.innerHeight）の半分をfigure要素の高さとして設定
     var figureHeight = window.innerHeight / 2;
@@ -272,35 +255,129 @@ var handleResize = function() {
     scroller.resize();
 }
 
-
-
 // ステップエンターイベントのハンドラー
-const handleStepEnter = (response) => {
-    const { element, direction } = response;
-    const stepId = element.getAttribute('data-step');
-    const isStep3 = stepId === "3";
+const handleStepEnter = async (response) => {
+    if (!response || !response.element) {
+        console.warn('handleStepEnter: responseまたはelementがundefinedです', response);
+        return;
+    }
 
-    // 地図の表示制御
-    if (isStep3) {
-        // 地図を表示
-        showWorldMap();
-        
+    const stepId = response.element.getAttribute('data-step');
+    const figure = document.getElementById('mainFigure');
+    const mapBgContainer = document.getElementById('mapBgContainer');
+    const mapContainer = document.getElementById('mapContainer');
+    
+    if (!window.mapEpisodeData) {
+        console.error('Episode data not loaded');
+        return;
+    }
+    
+    totalEpisodes = window.mapEpisodeData.length;
+    lastDirection = response.direction;
+
+    // チャートの表示処理
+    if (stepId.startsWith('2')) {
+        try {
+            const data = await loadChartData();
+            switch(stepId) {
+                case '2a':
+                    await chartManager.drawLineChart(data.newInfections, '新規HIV感染者数の推移');
+                    break;
+                case '2b':
+                    await chartManager.drawLineChart(data.newDeaths, 'エイズ関連死亡者数の推移');
+                    break;
+                case '2c':
+                    await chartManager.drawPieCharts(data.hivPositive);
+                    break;
+                case '2d':
+                    await chartManager.drawLineChart(data.maternalFetal, '母子感染の推移');
+                    break;
+            }
+        } catch (error) {
+            console.error('Error drawing chart:', error);
+        }
+    } else if (stepId === '1' || stepId === '3') {
+        // data-step=1または3の場合はチャートをクリア
+        if (chartManager.currentChart) {
+            chartManager.svg.selectAll('*')
+                .transition()
+                .duration(500)
+                .style('opacity', 0)
+                .remove();
+            chartManager.currentChart = null;
+        }
+    }
+
+    if (stepId === "3") {
+        isStep3Active = true;
+        step3ScrollDirection = response.direction;
+
+        // メインフィギュアの非表示
+        if (figure) {
+            figure.style.display = "none";
+        }
+
+        // 地図の表示
+        if (mapBgContainer) {
+            mapBgContainer.style.display = "block";
+            showWorldMap();
+        }
+        if (mapContainer) {
+            mapContainer.style.display = "block";
+        }
+
+        // エピソードの表示（スクロール方向に応じて）
+        if (response.direction === 'up') {
+            // 下から上へのスクロール時は、最後のエピソードから開始
+            currentEpisodeIndex = totalEpisodes - 1;
+        } else {
+            // 上から下へのスクロール時は、最初のエピソードから開始
+            currentEpisodeIndex = 0;
+        }
+
         // エピソードの表示
-        const totalEpisodes = window.mapEpisodeData.length;
-        if (totalEpisodes > 0) {
-            const episodeIndex = direction === 'down' ? 0 : totalEpisodes - 1;
-            showEpisodeModal(episodeIndex);
+        let episodeData;
+        if (response.direction === 'up') {
+            // 下から上へのスクロール時は、後ろから順に表示
+            episodeData = window.mapEpisodeData[totalEpisodes - 1 - currentEpisodeIndex];
+        } else {
+            // 上から下へのスクロール時は、前から順に表示
+            episodeData = window.mapEpisodeData[currentEpisodeIndex];
+        }
+
+        if (episodeData) {
+            // 地図を該当する国にズーム
+            centerCountryOnMap(episodeData.country);
+
+            // モーダルの内容を更新
+            const modalData = {
+                title: `${episodeData.country}　${episodeData['タイトル']}`,
+                description: episodeData['説明文'],
+                imageUrl: `assets/thumb/${episodeData['サムネ画像']}`,
+                url: episodeData['URL']
+            };
+            
+            // モーダルを表示
+            showModal(modalData);
         }
     } else {
-        // 地図を非表示
-        const mapSvgContainer = d3.select("#mapBgContainer svg");
-        if (!mapSvgContainer.empty()) {
-            mapSvgContainer.style("opacity", "0");
+        isStep3Active = false;
+
+        // モーダルの非表示
+        hideModal();
+
+        // 地図の非表示
+        hideWorldMap();
+        if (mapContainer) {
+            mapContainer.style.display = "none";
+        }
+
+        // メインフィギュアの表示
+        if (figure) {
+            figure.style.display = "block";
         }
     }
 }
-
-
 
 // PubSubイベントの購読
 PubSub.subscribe('init:event', initEventHandler);
@@ -308,7 +385,9 @@ PubSub.subscribe('init:chart', initChart);
 PubSub.subscribe('init:map', initMap);
 PubSub.subscribe('init:scroll', initScroll);
 PubSub.subscribe('handle:resize', handleResize);
-PubSub.subscribe('handle:step-enter', handleStepEnter);
 
 // 初期化
-PubSub.publish('init:event');
+document.addEventListener('DOMContentLoaded', async () => {
+    await chartManager.initializeCharts();
+    initEventHandler();
+});
