@@ -256,8 +256,8 @@ const handleStepEnter = async (response) => {
         } catch (error) {
             console.error('Error drawing chart:', error);
         }
-    } else if (stepId === '1' || stepId === '3') {
-        // data-step=1または3の場合はチャートをクリア
+    } else {
+        // data-step=2以外の場合はチャートをクリア
         if (chartManager.currentChart) {
             chartManager.svg.selectAll('*')
                 .transition()
@@ -265,6 +265,13 @@ const handleStepEnter = async (response) => {
                 .style('opacity', 0)
                 .remove();
             chartManager.currentChart = null;
+        }
+        
+        // data-step=1の場合はチャートコンテナを非表示に
+        if (stepId.startsWith('1') && figure) {
+            figure.style.display = "none";
+        } else if (!stepId.startsWith('2') && !stepId.startsWith('3') && figure) {
+            figure.style.display = "none";
         }
     }
 
