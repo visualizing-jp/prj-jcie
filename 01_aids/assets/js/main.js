@@ -259,8 +259,8 @@ var handleResize = function() {
     console.log("handleResize");
 
     // ウィンドウの高さ（window.innerHeight）の75%をstep要素の高さとして設定
-    var stepH = Math.floor(window.innerHeight * 1.0);
-    step.style("height", stepH + "px");
+    // var stepH = Math.floor(window.innerHeight * 1.0);
+    // step.style("height", stepH + "px");
 
     // ウィンドウの高さ（window.innerHeight）の半分をfigure要素の高さとして設定
     var figureHeight = window.innerHeight / 2;
