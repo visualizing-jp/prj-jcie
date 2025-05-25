@@ -27,6 +27,9 @@ const zoom = d3.zoom()
 // initialize the scrollama
 var scroller = scrollama();
 
+// グローバル変数
+let step3ScrollDirection = 'down';
+
 
 
 
@@ -162,10 +165,11 @@ var initScroll = function() {
             const mapContainer = document.getElementById('mapContainer');
             
             totalEpisodes = window.mapEpisodeData.length;
+            lastDirection = response.direction;
 
             if (stepId === "3") {
                 isStep3Active = true;
-                lastDirection = response.direction;
+                step3ScrollDirection = response.direction; // ここで記憶
 
                 // 地図の表示
                 if (mapBgContainer) {
@@ -176,7 +180,7 @@ var initScroll = function() {
                     mapContainer.style.display = "block";
                 }
 
-                // エピソードの表示
+                // エピソードの表示（スクロール方向に応じて）
                 if (response.direction === 'up') {
                     currentEpisodeIndex = totalEpisodes - 1;
                 } else {
@@ -222,32 +226,21 @@ var initScroll = function() {
         .onStepProgress(function(response) {
             if (!isStep3Active) return;
             const modal = document.getElementById('modalCountry');
-            const progress = response.progress;
-            const direction = response.direction;
+            let progress = response.progress;
             const total = window.mapEpisodeData.length;
 
-            // directionがundefinedになる場合があるので、lastDirectionを利用
-            let dir = direction || lastDirection;
-
-            // indexを計算
-            let idx = Math.floor(progress * total);
-            if (idx >= total) idx = total - 1;
-            if (idx < 0) idx = 0;
-
-            // スクロール方向で順序を切り替え
-            if (dir === 'up') {
-                idx = total - 1 - idx;
+            // 下から上の場合はprogressを反転
+            if (step3ScrollDirection === 'up') {
+                progress = 1 - progress;
             }
 
-            // step3に入った直後(progress=0)は、onStepEnterで強制的にindexをセットしているので、ここでのshowEpisodeModalは不要
-            if (progress === 0 && ((dir === 'down' && currentEpisodeIndex === 0) || (dir === 'up' && currentEpisodeIndex === total - 1))) {
-                // 何もしない
-            } else if (idx !== currentEpisodeIndex) {
+            let idx = Math.floor(progress * total);
+            idx = Math.max(0, Math.min(idx, total - 1));
+
+            if (idx !== currentEpisodeIndex) {
                 currentEpisodeIndex = idx;
                 showEpisodeModal(currentEpisodeIndex);
             }
-
-            // step3内で常にモーダルを表示
             if (modal && modal.classList.contains('hidden')) {
                 modal.classList.remove('hidden');
                 modal.style.opacity = '1';
@@ -293,15 +286,10 @@ const handleStepEnter = (response) => {
         showWorldMap();
         
         // エピソードの表示
-        const episodes = window.mapEpisodeOrder;
-        if (episodes && episodes.length > 0) {
-            const episodeIndex = direction === 'down' ? 0 : episodes.length - 1;
-            const episode = episodes[episodeIndex];
-            const episodeData = window.mapEpisodeData[episodeIndex];
-            
-            if (episode && episodeData) {
-                showEpisodeModal(episode, episodeData);
-            }
+        const totalEpisodes = window.mapEpisodeData.length;
+        if (totalEpisodes > 0) {
+            const episodeIndex = direction === 'down' ? 0 : totalEpisodes - 1;
+            showEpisodeModal(episodeIndex);
         }
     } else {
         // 地図を非表示
