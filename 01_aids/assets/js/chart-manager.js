@@ -121,7 +121,7 @@ class ChartManager {
             .domain(years)
             .range([0, this.width]);
 
-        // 最大値の計算（NaNを除外）
+        // 最大値の計算
         const maxValue = d3.max(data, d => 
             d3.max(years, year => {
                 const value = +d[year];
@@ -161,6 +161,17 @@ class ChartManager {
         // Y軸の描画
         const yAxis = chartGroup.append('g')
             .call(d3.axisLeft(y));
+
+        // Y軸のラベルを追加（資金不足データの場合）
+        if (title === 'エイズ対策の資金不足の推移') {
+            chartGroup.append('text')
+                .attr('transform', 'rotate(-90)')
+                .attr('y', -this.margins.left + 20)
+                .attr('x', -(this.height / 2))
+                .attr('text-anchor', 'middle')
+                .style('font-size', '12px')
+                .text('金額（10億ドル）');
+        }
 
         // タイトルの追加
         this.svg.append('text')
