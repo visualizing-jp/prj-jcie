@@ -91,18 +91,18 @@ var initMap = function() {
             .style("cursor", "move")
             .style("opacity", "0"); // 初期状態で非表示
 
-        // 地図の描画
-        const g = mapSvgContainer.append("g");
-        g.selectAll("path")
-            .data(countries.features)
-            .enter()
-            .append("path")
-            .attr("d", path)
-            .attr("class", "country")
-            .attr("data-country", d => d.properties.name)
-            .style("fill", "#ccc")
-            .style("stroke", "#fff")
-            .style("stroke-width", 0.5);
+            // 地図の描画
+            const g = mapSvgContainer.append("g");
+            g.selectAll("path")
+                .data(countries.features)
+                .enter()
+                .append("path")
+                .attr("d", path)
+                .attr("class", "country")
+                .attr("data-country", d => d.properties.name)
+                .style("fill", "#ccc")
+                .style("stroke", "#fff")
+                .style("stroke-width", 0.5);
 
         // グローバル変数として保存
         window.mapSvg = g;
