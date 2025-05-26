@@ -12,7 +12,6 @@ let zoom = d3.zoom()
             .attr("transform", event.transform);
     });
 
-// 世界地図全体表示
 function showWorldMap() {
     if (!window.mapSvgContainer) {
         console.error('Map not initialized');

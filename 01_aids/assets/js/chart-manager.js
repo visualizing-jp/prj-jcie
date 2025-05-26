@@ -1,27 +1,102 @@
 class ChartManager {
     constructor() {
-        this.margins = { top: 40, right: 60, bottom: 60, left: 60 };
-        this.width = 800 - this.margins.left - this.margins.right;
-        this.height = 500 - this.margins.top - this.margins.bottom;
+        // 固定の内部座標系
+        this.viewBox = {
+            width: 960,
+            height: 400
+        };
+        
+        // アスペクト比
+        this.aspectRatio = 16/9;
+        
+        // マージン（内部座標系に対する相対値）
+        this.margins = {
+            top: 40,
+            right: 100,
+            bottom: 80,
+            left: 80
+        };
+
+        // 内部座標系での実際の描画領域
+        this.width = this.viewBox.width - this.margins.left - this.margins.right;
+        this.height = this.viewBox.height - this.margins.top - this.margins.bottom;
+        
         this.svg = null;
         this.currentChart = null;
+        this.resizeObserver = null;
     }
 
     // チャートの初期化
     initializeCharts() {
-        // SVGの作成
+        // SVGの作成と基本設定
         this.svg = d3.select('#mainFigure')
             .append('svg')
-            .attr('width', this.width + this.margins.left + this.margins.right)
-            .attr('height', this.height + this.margins.top + this.margins.bottom)
-            .append('g')
-            .attr('transform', `translate(${this.margins.left},${this.margins.top})`);
+            .attr('viewBox', `0 0 ${this.viewBox.width} ${this.viewBox.height}`)
+            .attr('preserveAspectRatio', 'xMidYMid');
 
         // 背景の追加
         this.svg.append('rect')
-            .attr('width', this.width)
-            .attr('height', this.height)
+            .attr('width', this.viewBox.width)
+            .attr('height', this.viewBox.height)
             .attr('fill', '#f8f9fa');
+
+        // ResizeObserverの設定
+        this.setupResizeObserver();
+    }
+
+    // ResizeObserverの設定
+    setupResizeObserver() {
+        const container = document.getElementById('mainFigure');
+        if (!container) return;
+
+        this.resizeObserver = new ResizeObserver(this.debounce(() => {
+            this.handleResize();
+        }, 250));
+
+        this.resizeObserver.observe(container);
+    }
+
+    // デバウンス関数
+    debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    // リサイズ処理
+    handleResize() {
+        if (!this.svg) return;
+
+        const container = d3.select('#mainFigure');
+        const containerWidth = container.node().getBoundingClientRect().width;
+        const containerHeight = containerWidth / this.aspectRatio;
+
+        // SVGのサイズをコンテナに合わせて更新
+        this.svg
+            .attr('width', containerWidth)
+            .attr('height', containerHeight);
+
+        // 現在のチャートを再描画
+        if (this.currentChart) {
+            this.redrawCurrentChart();
+        }
+    }
+
+    // 現在のチャートを再描画
+    redrawCurrentChart() {
+        if (this.currentChart === 'line') {
+            // 折れ線グラフの再描画
+            this.redrawLineChart();
+        } else if (this.currentChart === 'pie') {
+            // 円グラフの再描画
+            this.redrawPieChart();
+        }
     }
 
     // 折れ線グラフの描画
@@ -65,23 +140,32 @@ class ChartManager {
         const line = d3.line()
             .x(d => x(d.year))
             .y(d => y(d.value))
-            .defined(d => !isNaN(d.value)); // NaNの値を除外
+            .defined(d => !isNaN(d.value));
 
-        // 軸の描画
-        this.svg.append('g')
+        // グラフの描画グループを作成
+        const chartGroup = this.svg.append('g')
+            .attr('transform', `translate(${this.margins.left},${this.margins.top})`);
+
+        // X軸の描画
+        const xAxis = chartGroup.append('g')
             .attr('transform', `translate(0,${this.height})`)
-            .call(d3.axisBottom(x))
-            .selectAll('text')
-            .attr('transform', 'rotate(-45)')
-            .style('text-anchor', 'end');
+            .call(d3.axisBottom(x));
 
-        this.svg.append('g')
+        // X軸のラベルを回転
+        xAxis.selectAll('text')
+            .attr('transform', 'rotate(-45)')
+            .style('text-anchor', 'end')
+            .attr('dx', '-.8em')
+            .attr('dy', '.15em');
+
+        // Y軸の描画
+        const yAxis = chartGroup.append('g')
             .call(d3.axisLeft(y));
 
         // タイトルの追加
         this.svg.append('text')
-            .attr('x', this.width / 2)
-            .attr('y', -10)
+            .attr('x', this.viewBox.width / 2)
+            .attr('y', this.margins.top / 2)
             .attr('text-anchor', 'middle')
             .style('font-size', '16px')
             .text(title);
@@ -93,7 +177,7 @@ class ChartManager {
                 value: +data.find(d => d['地域名'] === region)[year] || 0
             }));
 
-            this.svg.append('path')
+            chartGroup.append('path')
                 .datum(regionData)
                 .attr('fill', 'none')
                 .attr('stroke', color(region))
@@ -108,7 +192,7 @@ class ChartManager {
         // 凡例の追加
         if (showLegend) {
             const legend = this.svg.append('g')
-                .attr('transform', `translate(${this.width - 100}, 0)`);
+                .attr('transform', `translate(${this.viewBox.width - this.margins.right - 100},${this.margins.top})`);
 
             regions.forEach((region, i) => {
                 legend.append('g')
@@ -153,7 +237,7 @@ class ChartManager {
 
         // 円グラフの描画
         const pieGroup = this.svg.append('g')
-            .attr('transform', `translate(${this.width / 2},${this.height / 2})`);
+            .attr('transform', `translate(${this.viewBox.width / 2},${this.viewBox.height / 2})`);
 
         const paths = pieGroup.selectAll('path')
             .data(pie(chartData))
@@ -183,7 +267,7 @@ class ChartManager {
             
         // 円グラフの凡例
         const legendPie = this.svg.append('g')
-            .attr('transform', `translate(${this.width - 100}, 0)`);
+            .attr('transform', `translate(${this.viewBox.width - this.margins.right - 100},${this.margins.top})`);
         
         chartData.forEach((d, i) => {
             legendPie.append('g')
@@ -200,5 +284,31 @@ class ChartManager {
         });
 
         this.currentChart = 'pie';
+    }
+
+    // 折れ線グラフの再描画
+    redrawLineChart() {
+        // 現在のデータを保持
+        const currentData = this.currentData;
+        const currentTitle = this.currentTitle;
+        if (currentData && currentTitle) {
+            this.drawLineChart(currentData, currentTitle);
+        }
+    }
+
+    // 円グラフの再描画
+    redrawPieChart() {
+        // 現在のデータを保持
+        const currentData = this.currentData;
+        if (currentData) {
+            this.drawPieCharts(currentData);
+        }
+    }
+
+    // クリーンアップ
+    cleanup() {
+        if (this.resizeObserver) {
+            this.resizeObserver.disconnect();
+        }
     }
 } 
