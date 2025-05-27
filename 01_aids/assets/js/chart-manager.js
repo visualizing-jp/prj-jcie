@@ -272,15 +272,32 @@ class ChartManager {
         const yAxis = chartGroup.append('g')
             .call(d3.axisLeft(y));
 
-        // Y軸のラベルを追加（資金不足データの場合）
+        // Y軸のラベルを追加（チャートに応じて適切なラベルを設定）
+        let yAxisLabel = '';
+        
         if (title === 'エイズ対策の資金不足の推移') {
+            yAxisLabel = '金額（ドル）';
+        } else if (title === '新規感染者数の推移') {
+            yAxisLabel = '感染者数（人）';
+        } else if (title === 'エイズ関連死亡者数の推移') {
+            yAxisLabel = '死亡者数（人）';
+        } else if (title === '母子感染の推移') {
+            yAxisLabel = '母子感染率（％）';
+        } else if (title === '抗レトロウイルス療法を受けている感染者の割合' || title === '抗レトロウイルス療法を受けている感染者の割合の推移') {
+            yAxisLabel = '割合（％）';
+        } else if (title === 'PrEPを受けている人の数の推移') {
+            yAxisLabel = '人数（人）';
+        }
+        
+        // ラベルが定義されていれば表示
+        if (yAxisLabel) {
             chartGroup.append('text')
                 .attr('transform', 'rotate(-90)')
                 .attr('y', -this.margins.left + 20)
                 .attr('x', -(this.height / 2))
                 .attr('text-anchor', 'middle')
                 .style('font-size', '12px')
-                .text('金額（10億ドル）');
+                .text(yAxisLabel);
         }
 
         // タイトルの追加
@@ -432,6 +449,15 @@ class ChartManager {
         group.append('g')
             .call(d3.axisLeft(y).ticks(5))
             .style('font-size', '10px');
+            
+        // Y軸のラベルを追加
+        group.append('text')
+            .attr('transform', 'rotate(-90)')
+            .attr('y', -40) // 左余白を考慮した位置
+            .attr('x', -graphHeight / 2)
+            .attr('text-anchor', 'middle')
+            .style('font-size', '10px')
+            .text('新規感染者数（人）');
 
         // タイトルの追加
         group.append('text')

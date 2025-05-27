@@ -297,9 +297,9 @@ const handleStepEnter = async (response) => {
                     // 2つの折れ線グラフを横並びに表示
                     await chartManager.drawDualLineCharts(
                         data.africaYoungMan, 
-                        'アフリカの若い男性のHIV感染率', 
+                        'アフリカの若い男性の新規HIV感染者数', 
                         data.africaYoungWoman, 
-                        'アフリカの若い女性のHIV感染率'
+                        'アフリカの若い女性の新規HIV感染者数'
                     );
                     break;
                 case '5a':
