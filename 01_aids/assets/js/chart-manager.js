@@ -24,9 +24,57 @@ class ChartManager {
         // 複数のSVGコンテナを管理
         this.svgContainers = new Map();
         this.resizeObservers = new Map();
-        this.currentChart = null;
-        this.currentContainerId = null;
         this.defaultContainerId = 'mainFigure';
+    }
+
+    // 統一された凡例を描画するメソッド
+    drawLegend(container, items, colorScale, options = {}) {
+        // 項目が1つ以下の場合は凡例を描画しない
+        if (!items || items.length <= 1) {
+            return null;
+        }
+
+        const {
+            x = 10,
+            y = 10,
+            itemHeight = 20,
+            rectSize = 12,
+            spacing = 5,
+            fontSize = '11px',
+            orientation = 'vertical' // 'vertical' or 'horizontal'
+        } = options;
+
+        const legendGroup = container.append('g')
+            .attr('class', 'legend')
+            .attr('transform', `translate(${x}, ${y})`);
+
+        items.forEach((item, i) => {
+            const legendItem = legendGroup.append('g')
+                .attr('class', 'legend-item')
+                .attr('transform', orientation === 'vertical' 
+                    ? `translate(0, ${i * itemHeight})`
+                    : `translate(${i * 150}, 0)`);
+
+            // 色付きの正方形
+            legendItem.append('rect')
+                .attr('x', 0)
+                .attr('y', -rectSize/2)
+                .attr('width', rectSize)
+                .attr('height', rectSize)
+                .attr('fill', colorScale(item))
+                .attr('stroke', 'none');
+
+            // テキストラベル
+            legendItem.append('text')
+                .attr('x', rectSize + spacing)
+                .attr('y', 0)
+                .attr('dy', '0.32em')
+                .style('font-size', fontSize)
+                .style('font-family', 'sans-serif')
+                .text(item);
+        });
+
+        return legendGroup;
     }
 
     // チャートの初期化（デフォルトコンテナ用）
@@ -256,30 +304,11 @@ class ChartManager {
                 .style('opacity', 1);
         });
 
-        // 凡例の追加
-        const legend = svg.append('g')
-            .attr('transform', `translate(${this.viewBox.width - this.margins.right - 150},${this.margins.top})`);
-
-        regions.forEach((region, i) => {
-            const legendItem = legend.append('g')
-                .attr('transform', `translate(0, ${i * 20})`);
-            
-            // 凡例の線
-            legendItem.append('line')
-                .attr('x1', 0)
-                .attr('x2', 20)
-                .attr('y1', 5)
-                .attr('y2', 5)
-                .attr('stroke', color(region))
-                .attr('stroke-width', 2);
-            
-            // 凡例のテキスト
-            legendItem.append('text')
-                .attr('x', 25)
-                .attr('y', 5)
-                .attr('dy', '0.32em')
-                .text(region)
-                .style('font-size', '11px');
+        // 凡例の追加（統一されたメソッドを使用）
+        this.drawLegend(svg, regions, color, {
+            x: this.viewBox.width - this.margins.right - 150,
+            y: this.margins.top,
+            orientation: 'vertical'
         });
 
         this.currentChart = 'line';
@@ -324,6 +353,29 @@ class ChartManager {
 
         // 右側のグラフを描画
         this.drawLineChartInGroup(data2, title2, rightGroup, chartWidth, chartHeight, color);
+
+        // 共通の凡例を下部に配置（2行に分けて表示）
+        const regions = data1.map(d => d['地域名']);
+        
+        // 各行の項目数を調整
+        // 長いラベルがあるため、1行目には少なめに配置
+        const firstRowCount = 4; // 1行目の項目数
+        
+        // 1行目の凡例
+        this.drawLegend(svg, regions.slice(0, firstRowCount), color, {
+            x: this.margins.left + 20, // 左寄せ
+            y: this.viewBox.height - this.margins.bottom + 10, // 下部に配置
+            orientation: 'horizontal',
+            fontSize: '11px'
+        });
+        
+        // 2行目の凡例
+        this.drawLegend(svg, regions.slice(firstRowCount), color, {
+            x: this.margins.left + 20, // 左寄せ
+            y: this.viewBox.height - this.margins.bottom + 50, // 1行目の下に配置（間隔を広げる）
+            orientation: 'horizontal',
+            fontSize: '11px'
+        });
 
         this.currentChart = 'dual-line';
         // 再描画用にデータを保存
@@ -402,33 +454,7 @@ class ChartManager {
                 .style('opacity', 1);
         });
 
-        // 凡例を各グラフの下部に追加
-        const legendGroup = group.append('g')
-            .attr('transform', `translate(10,${graphHeight + 50})`); // 左寄せに変更
-
-        const legendItemWidth = Math.min(100, width / regions.length); // 動的な幅計算
-
-        regions.forEach((region, i) => {
-            const legendItem = legendGroup.append('g')
-                .attr('transform', `translate(${i * legendItemWidth}, 0)`);
-
-            // 凡例の線
-            legendItem.append('line')
-                .attr('x1', 0)
-                .attr('x2', 15)
-                .attr('y1', 5)
-                .attr('y2', 5)
-                .attr('stroke', color(i))
-                .attr('stroke-width', 2);
-
-            // 凡例のテキスト
-            legendItem.append('text')
-                .attr('x', 18)
-                .attr('y', 5)
-                .attr('dy', '0.32em')
-                .style('font-size', '10px')
-                .text(region);
-        });
+        // 注：個別の凡例は削除し、共通凡例をdrawDualLineChartsで描画
     }
 
     // 円グラフの描画
@@ -491,21 +517,10 @@ class ChartManager {
             .style('opacity', 1);
             
         // 円グラフの凡例
-        const legendPie = svg.append('g')
-            .attr('transform', `translate(${this.viewBox.width - this.margins.right - 100},${this.margins.top})`);
-        
-        chartData.forEach((d, i) => {
-            legendPie.append('g')
-                .attr('transform', `translate(0, ${i * 20})`)
-                .call(g => g.append('circle')
-                    .attr('r', 5)
-                    .attr('cy', 5)
-                    .attr('fill', color(i)))
-                .call(g => g.append('text')
-                    .attr('x', 15)
-                    .attr('y', 10)
-                    .text(d[''])
-                    .style('font-size', '10px'));
+        this.drawLegend(svg, chartData.map(d => d['']), color, {
+            x: this.viewBox.width - this.margins.right - 150,
+            y: this.margins.top,
+            orientation: 'vertical'
         });
 
         this.currentChart = 'pie';
