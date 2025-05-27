@@ -232,8 +232,15 @@ class ChartManager {
             })
         );
 
+        // タイトルに基づいてY軸の範囲を設定
+        let yDomain = [0, maxValue];
+        if (title === '母子感染の推移') {
+            // 母子感染の推移の場合は0-22の範囲に設定
+            yDomain = [0, 22];
+        }
+
         const y = d3.scaleLinear()
-            .domain([0, maxValue])
+            .domain(yDomain)
             .range([this.height, 0]);
 
         // カラースケール
@@ -305,11 +312,11 @@ class ChartManager {
         });
 
         // 凡例の追加（統一されたメソッドを使用）
-        this.drawLegend(svg, regions, color, {
-            x: this.viewBox.width - this.margins.right - 150,
-            y: this.margins.top,
-            orientation: 'vertical'
-        });
+            this.drawLegend(svg, regions, color, {
+                x: this.viewBox.width - this.margins.right - 150,
+                y: this.margins.top,
+                orientation: 'vertical'
+            });
 
         this.currentChart = 'line';
         // 再描画用にデータを保存
@@ -458,7 +465,7 @@ class ChartManager {
     }
 
     // 円グラフの描画
-    async drawPieCharts(data, containerId = this.defaultContainerId) {
+    async drawPieCharts(data, title = '', containerId = this.defaultContainerId) {
         // SVGコンテナを取得または作成
         const svg = this.getSvgContainer(containerId);
         if (!svg) return;
@@ -485,6 +492,17 @@ class ChartManager {
 
         // データの整形
         const chartData = data.filter(d => d[''] !== '全世界');
+
+        // タイトルの追加
+        if (title) {
+            svg.append('text')
+                .attr('x', this.viewBox.width / 2)
+                .attr('y', this.margins.top / 2)
+                .attr('text-anchor', 'middle')
+                .style('font-size', '16px')
+                .style('font-weight', 'bold')
+                .text(title);
+        }
 
         // 円グラフの描画
         const pieGroup = svg.append('g')

@@ -250,8 +250,9 @@ const handleStepEnter = async (response) => {
     // secondaryFigureの表示制御
     const secondaryFigureContainer = document.getElementById('secondaryFigureContainer');
     
-    // すべてのステップでまず非表示にする
+    // 各ステップに応じてsecondaryFigureContainerの表示を制御
     if (secondaryFigureContainer) {
+        // デフォルトで非表示
         secondaryFigureContainer.style.display = "none";
     }
     
@@ -271,7 +272,10 @@ const handleStepEnter = async (response) => {
         return; // 2aの場合はここで処理終了
     }
     
-    // data-step=2(で2a以外),4,5の場合はチャートを表示
+    // スクロール方向を記録
+    const scrollDirection = response.direction;
+    
+    // data-step=2(でば2a以外),4,5の場合はチャートを表示
     if ((stepId.startsWith('2') && stepId !== '2a') || stepId.startsWith('4') || stepId.startsWith('5')) {
         try {
             const data = await loadChartData();
@@ -283,7 +287,7 @@ const handleStepEnter = async (response) => {
                     break;
                 case '2c':
                     // デフォルトのmainFigureに描画
-                    await chartManager.drawPieCharts(data.hivPositive);
+                    await chartManager.drawPieCharts(data.hivPositive, '抗HIV薬の治療を受けている感染者の割合');
                     break;
                 case '2d':
                     // デフォルトのmainFigureに描画
@@ -317,7 +321,21 @@ const handleStepEnter = async (response) => {
     } else {
         // data-step=2,4,5以外の場合はチャートをクリア
         if (chartManager.currentChart) {
-            chartManager.clearChart();
+            // 確実にクリアするために、強制的にすべてのコンテナをクリア
+            chartManager.clearAllCharts();
+        }
+        
+        // 下から上へスクロールした場合は、特に入念にクリアする
+        if (scrollDirection === 'up') {
+            // 強制的にすべてのコンテナを非表示にする
+            if (figure) figure.style.display = "none";
+            if (secondaryFigureContainer) secondaryFigureContainer.style.display = "none";
+            
+            // チャートマネージャーの状態をリセット
+            chartManager.currentChart = null;
+            chartManager.currentContainerId = null;
+            chartManager.currentData = null;
+            chartManager.currentTitle = null;
         }
         
         // data-step=1の場合はチャートコンテナを非表示に
