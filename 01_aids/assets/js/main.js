@@ -247,15 +247,36 @@ const handleStepEnter = async (response) => {
     totalEpisodes = window.mapEpisodeData.length;
     lastDirection = response.direction;
 
-    // data-step=2,4,5の場合はチャートを表示
-    if (stepId.startsWith('2') || stepId.startsWith('4') || stepId.startsWith('5')) {
+    // secondaryFigureの表示制御
+    const secondaryFigureContainer = document.getElementById('secondaryFigureContainer');
+    
+    // すべてのステップでまず非表示にする
+    if (secondaryFigureContainer) {
+        secondaryFigureContainer.style.display = "none";
+    }
+    
+    // data-step=2aの場合のみ特別処理
+    if (stepId === '2a') {
+        // 2aの場合はメインフィギュアを非表示、secondaryFigureを表示
+        if (figure) figure.style.display = "none";
+        if (secondaryFigureContainer) {
+            secondaryFigureContainer.style.display = "block";
+            // データ読み込みと描画をここで行う
+            loadChartData().then(data => {
+                chartManager.drawLineChart(data.newInfections, '新規HIV感染者数の推移', 'secondaryFigure');
+            }).catch(error => {
+                console.error('Error drawing chart on secondaryFigure:', error);
+            });
+        }
+        return; // 2aの場合はここで処理終了
+    }
+    
+    // data-step=2(で2a以外),4,5の場合はチャートを表示
+    if ((stepId.startsWith('2') && stepId !== '2a') || stepId.startsWith('4') || stepId.startsWith('5')) {
         try {
             const data = await loadChartData();
             switch(stepId) {
-                case '2a':
-                    // デフォルトのmainFigureに描画
-                    await chartManager.drawLineChart(data.newInfections, '新規HIV感染者数の推移');
-                    break;
+                // 2aの場合は上で処理済みなのでここには来ない
                 case '2b':
                     // デフォルトのmainFigureに描画
                     await chartManager.drawLineChart(data.newDeaths, 'エイズ関連死亡者数の推移');
