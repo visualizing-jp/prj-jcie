@@ -66,7 +66,8 @@ class ImageManager {
             width = 'auto',
             height = 'auto',
             position = 'center',
-            opacity = 1
+            opacity = 1,
+            objectFit = 'contain'
         } = config;
 
         // 画像の設定
@@ -76,7 +77,7 @@ class ImageManager {
             .style('opacity', 0)
             .style('width', width)
             .style('height', height)
-            .style('object-fit', 'contain');
+            .style('object-fit', objectFit);
 
         // ポジション設定
         this.setImagePosition(position);
