@@ -52,6 +52,14 @@ class ScrollytellingApp {
                 if (step.chart?.dataFile) {
                     dataFiles.add(step.chart.dataFile);
                 }
+                // Dual chart の場合
+                if (step.chart?.charts) {
+                    step.chart.charts.forEach(chartConfig => {
+                        if (chartConfig.dataFile) {
+                            dataFiles.add(chartConfig.dataFile);
+                        }
+                    });
+                }
             });
             
             console.log('Data files to load:', Array.from(dataFiles));
@@ -148,11 +156,24 @@ class ScrollytellingApp {
 
         // チャート更新
         if (stepConfig.chart) {
-            const chartData = {
-                ...stepConfig.chart,
-                data: this.getChartData(stepConfig.chart.type, stepConfig.chart.dataFile)
-            };
-            pubsub.publish(EVENTS.CHART_UPDATE, chartData);
+            if (stepConfig.chart.layout === 'dual' && stepConfig.chart.charts) {
+                // Dual chart の場合
+                const dualChartData = {
+                    ...stepConfig.chart,
+                    charts: stepConfig.chart.charts.map(chartConfig => ({
+                        ...chartConfig,
+                        data: this.getChartData('line', chartConfig.dataFile)
+                    }))
+                };
+                pubsub.publish(EVENTS.CHART_UPDATE, dualChartData);
+            } else {
+                // 従来の単一チャート
+                const chartData = {
+                    ...stepConfig.chart,
+                    data: this.getChartData(stepConfig.chart.type, stepConfig.chart.dataFile)
+                };
+                pubsub.publish(EVENTS.CHART_UPDATE, chartData);
+            }
         }
 
         // 地図更新
