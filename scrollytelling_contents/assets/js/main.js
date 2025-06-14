@@ -171,13 +171,14 @@ class ScrollytellingApp {
                 let updateMode = stepConfig.chart.updateMode || 'replace';
                 
                 // 逆方向スクロールでトランジション対応を判定
-                if (direction === 'up' && index > 0) {
-                    const prevStepConfig = this.config?.steps?.[index - 1];
-                    // 前のstepと同じデータファイル、かつ前のstepがtransitionモードの場合
-                    if (prevStepConfig?.chart?.dataFile === stepConfig.chart.dataFile &&
-                        prevStepConfig?.chart?.updateMode === 'transition') {
+                if (direction === 'up') {
+                    // 現在のstepから、次のstep（より大きいindex）を探す
+                    const nextStepConfig = this.config?.steps?.[index + 1];
+                    // 次のstepと同じデータファイル、かつ次のstepがtransitionモードの場合
+                    if (nextStepConfig?.chart?.dataFile === stepConfig.chart.dataFile &&
+                        nextStepConfig?.chart?.updateMode === 'transition') {
                         updateMode = 'transition';
-                        console.log(`Using transition mode for reverse scroll from step ${index - 1} to ${index}`);
+                        console.log(`Using transition mode for reverse scroll from step ${index + 1} to ${index}`);
                     }
                 }
                 
