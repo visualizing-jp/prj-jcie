@@ -168,7 +168,7 @@
         "center": [0, 0],
         "zoom": 1,
         "visible": true,
-        "highlightCountries": ["Nigeria", "Malawi", "Kenya", "Belize", "United States", "Philippines"],
+        "highlightCountries": ["Nigeria", "Malawi", "Kenya", "Belize", "United States of America", "Philippines"],
         "cities": []
       },
       "image": {
@@ -289,45 +289,7 @@
     },
     {
       "id": "step14",
-      "text": "取り組みの成果",
-      "chart": {
-        "visible": false
-      },
-      "map": {
-        "visible": false
-      },
-      "image": {
-        "visible": false
-      }
-    },
-    {
-      "id": "step15",
-      "text": "アフリカ地域での成果",
-      "chart": {
-        "type": "line",
-        "dataFile": "data/trend_母子感染の推移.csv",
-        "visible": true,
-        "config": {
-          "width": 1000,
-          "height": 400,
-          "xField": "year",
-          "yField": "value",
-          "seriesField": "series",
-          "multiSeries": false,
-          "seriesName": "感染率の変化",
-          "colors": ["#10b981"]
-        }
-      },
-      "map": {
-        "visible": false
-      },
-      "image": {
-        "visible": false
-      }
-    },
-    {
-      "id": "step16",
-      "text": "アフリカの若者のHIV感染者数比較（男女別）",
+      "text": "それでもなお存在する課題",
       "chart": {
         "layout": "dual",
         "visible": true,
@@ -372,7 +334,79 @@
       }
     },
     {
+      "id": "step15",
+      "text": "解決に向けて",
+      "chart": {
+        "type": "line",
+        "dataFile": "data/trend_PrEP_normalized.csv",
+        "visible": true,
+        "config": {
+          "width": 1000,
+          "height": 400,
+          "xField": "year",
+          "yField": "value",
+          "multiSeries": false,
+          "seriesName": "PrEP利用者数",
+          "colors": ["#3b82f6"]
+        }
+      },
+      "map": {
+        "visible": false
+      },
+      "image": {
+        "visible": false
+      }
+    },
+    {
+      "id": "step16",
+      "text": "継続的な支援の重要性",
+      "chart": {
+        "type": "line",
+        "dataFile": "data/trend_母子感染の推移.csv",
+        "visible": true,
+        "config": {
+          "width": 1000,
+          "height": 400,
+          "xField": "year",
+          "yField": "value",
+          "seriesField": "series",
+          "multiSeries": false,
+          "seriesName": "支援の成果",
+          "colors": ["#f59e0b"]
+        }
+      },
+      "map": {
+        "visible": false
+      },
+      "image": {
+        "visible": false
+      }
+    },
+    {
       "id": "step17",
+      "text": "連帯の力",
+      "chart": {
+        "type": "line",
+        "dataFile": "data/dummy_single_line.csv",
+        "visible": true,
+        "config": {
+          "width": 1000,
+          "height": 400,
+          "xField": "year",
+          "yField": "value",
+          "multiSeries": false,
+          "colors": ["#10b981"]
+        }
+      },
+      "map": {
+        "visible": false
+      },
+      "image": {
+        "visible": false
+      }
+    },
+    {
+      "id": "step18",
       "text": "今後の展望",
       "chart": {
         "type": "line",
@@ -393,6 +427,28 @@
       },
       "image": {
         "visible": false
+      }
+    },
+    {
+      "id": "step19",
+      "text": "終わりに",
+      "chart": {
+        "visible": false
+      },
+      "map": {
+        "visible": false
+      },
+      "image": {
+        "src": "https://placehold.co/800x600/059669/ffffff?text=Together+We+Can+End+AIDS",
+        "alt": "エイズ終息に向けた希望の画像",
+        "visible": true,
+        "config": {
+          "width": "100%",
+          "height": "100%",
+          "position": "center",
+          "opacity": 0.9,
+          "objectFit": "cover"
+        }
       }
     }
   ],
