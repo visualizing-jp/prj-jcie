@@ -127,6 +127,13 @@ class ScrollytellingApp {
             stepDiv.innerHTML = `
                 <div class="w-full min-h-screen flex items-center">
                     <div class="max-w-lg mx-auto p-8 bg-white bg-opacity-90 rounded-lg shadow-lg">
+                        ${city.data.thumbnail ? `
+                        <div class="mb-6">
+                            <img src="data/thumb/${city.data.thumbnail}" 
+                                 alt="${city.data.title}" 
+                                 class="w-full h-48 object-cover rounded-lg shadow-md">
+                        </div>
+                        ` : ''}
                         <h2 class="text-2xl font-bold mb-4">${city.data.title}</h2>
                         <p class="text-gray-700 leading-relaxed">
                             ${city.data.description}
