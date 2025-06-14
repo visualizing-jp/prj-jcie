@@ -24,7 +24,7 @@
     },
     {
       "id": "step1",
-      "text": "母子感染の推移（単一系列）",
+      "text": "母子感染の推移（2010-2015年）",
       "chart": {
         "type": "line",
         "dataFile": "data/trend_母子感染の推移.csv",
@@ -37,7 +37,39 @@
           "seriesField": "series",
           "multiSeries": false,
           "seriesName": "母子感染率",
-          "colors": ["#3b82f6"]
+          "colors": ["#3b82f6"],
+          "filter": {
+            "type": "range",
+            "field": "year",
+            "range": [2010, 2015]
+          }
+        }
+      },
+      "map": {
+        "visible": false
+      },
+      "image": {
+        "visible": false
+      }
+    },
+    {
+      "id": "step1a",
+      "text": "母子感染の推移（全期間データ）",
+      "chart": {
+        "type": "line",
+        "dataFile": "data/trend_母子感染の推移.csv",
+        "visible": true,
+        "updateMode": "transition",
+        "config": {
+          "width": 1000,
+          "height": 400,
+          "xField": "year",
+          "yField": "value",
+          "seriesField": "series",
+          "multiSeries": false,
+          "seriesName": "母子感染率",
+          "colors": ["#3b82f6"],
+          "transitionDuration": 1000
         }
       },
       "map": {
@@ -66,14 +98,14 @@
     },
     {
       "id": "step3",
-      "text": "東京",
+      "text": "ムリカットの物語",
       "chart": {
         "visible": false
       },
       "map": {
         "visible": true,
         "mode": "single-city",
-        "cityId": "tokyo",
+        "cityId": "lagos",
         "citiesFile": "data/cities-timeline.json"
       },
       "image": {
@@ -82,14 +114,14 @@
     },
     {
       "id": "step4",
-      "text": "ロンドン",
+      "text": "闘うマラウイの女性達",
       "chart": {
         "visible": false
       },
       "map": {
         "visible": true,
         "mode": "single-city",
-        "cityId": "london",
+        "cityId": "lilongwe",
         "citiesFile": "data/cities-timeline.json"
       },
       "image": {
@@ -98,14 +130,14 @@
     },
     {
       "id": "step5",
-      "text": "ニューヨーク",
+      "text": "ローズマリーの物語",
       "chart": {
         "visible": false
       },
       "map": {
         "visible": true,
         "mode": "single-city",
-        "cityId": "newyork",
+        "cityId": "nairobi",
         "citiesFile": "data/cities-timeline.json"
       },
       "image": {
@@ -114,14 +146,14 @@
     },
     {
       "id": "step6",
-      "text": "パリ",
+      "text": "エリカ・カステヤノスの物語",
       "chart": {
         "visible": false
       },
       "map": {
         "visible": true,
         "mode": "single-city",
-        "cityId": "paris",
+        "cityId": "belmopan",
         "citiesFile": "data/cities-timeline.json"
       },
       "image": {
@@ -130,14 +162,14 @@
     },
     {
       "id": "step7",
-      "text": "シンガポール",
+      "text": "マーク・ダイブル（支援者）の物語",
       "chart": {
         "visible": false
       },
       "map": {
         "visible": true,
         "mode": "single-city",
-        "cityId": "singapore",
+        "cityId": "washington",
         "citiesFile": "data/cities-timeline.json"
       },
       "image": {
@@ -146,14 +178,14 @@
     },
     {
       "id": "step8",
-      "text": "シドニー",
+      "text": "モーリーン・ムレンガの物語",
       "chart": {
         "visible": false
       },
       "map": {
         "visible": true,
         "mode": "single-city",
-        "cityId": "sydney",
+        "cityId": "nairobi2",
         "citiesFile": "data/cities-timeline.json"
       },
       "image": {
@@ -162,14 +194,14 @@
     },
     {
       "id": "step9",
-      "text": "上海",
+      "text": "ジェフリー・アカバの物語",
       "chart": {
         "visible": false
       },
       "map": {
         "visible": true,
         "mode": "single-city",
-        "cityId": "shanghai",
+        "cityId": "manila",
         "citiesFile": "data/cities-timeline.json"
       },
       "image": {
@@ -178,59 +210,12 @@
     },
     {
       "id": "step10",
-      "text": "ムンバイ",
-      "chart": {
-        "visible": false
-      },
-      "map": {
-        "visible": true,
-        "mode": "single-city",
-        "cityId": "mumbai",
-        "citiesFile": "data/cities-timeline.json"
-      },
-      "image": {
-        "visible": false
-      }
-    },
-    {
-      "id": "step11",
-      "text": "サンパウロ",
-      "chart": {
-        "visible": false
-      },
-      "map": {
-        "visible": true,
-        "mode": "single-city",
-        "cityId": "saopaulo",
-        "citiesFile": "data/cities-timeline.json"
-      },
-      "image": {
-        "visible": false
-      }
-    },
-    {
-      "id": "step12",
-      "text": "カイロ",
-      "chart": {
-        "visible": false
-      },
-      "map": {
-        "visible": true,
-        "mode": "single-city",
-        "cityId": "cairo",
-        "citiesFile": "data/cities-timeline.json"
-      },
-      "image": {
-        "visible": false
-      }
-    },
-    {
-      "id": "step13",
-      "text": "エイズ対策の資金推移（複数系列）",
+      "text": "エイズ対策の資金推移（2000-2010年）",
       "chart": {
         "type": "line",
         "dataFile": "data/trend_エイズ対策の資金不足.csv",
         "visible": true,
+        "updateMode": "transition",
         "config": {
           "width": 1000,
           "height": 500,
@@ -238,7 +223,13 @@
           "yField": "value",
           "seriesField": "series",
           "multiSeries": true,
-          "colors": ["#3b82f6", "#10b981", "#f59e0b", "#ef4444"]
+          "colors": ["#3b82f6", "#10b981", "#f59e0b", "#ef4444"],
+          "transitionDuration": 1200,
+          "filter": {
+            "type": "range",
+            "field": "year",
+            "range": [2000, 2010]
+          }
         }
       },
       "map": {
@@ -249,7 +240,33 @@
       }
     },
     {
-      "id": "step14",
+      "id": "step10a",
+      "text": "エイズ対策の資金推移（全期間）",
+      "chart": {
+        "type": "line",
+        "dataFile": "data/trend_エイズ対策の資金不足.csv",
+        "visible": true,
+        "updateMode": "transition",
+        "config": {
+          "width": 1000,
+          "height": 500,
+          "xField": "year",
+          "yField": "value",
+          "seriesField": "series",
+          "multiSeries": true,
+          "colors": ["#3b82f6", "#10b981", "#f59e0b", "#ef4444"],
+          "transitionDuration": 1500
+        }
+      },
+      "map": {
+        "visible": false
+      },
+      "image": {
+        "visible": false
+      }
+    },
+    {
+      "id": "step11",
       "text": "まとめ",
       "chart": {
         "type": "pie",
@@ -271,7 +288,7 @@
       }
     },
     {
-      "id": "step15",
+      "id": "step12",
       "text": "アフリカの若者のHIV感染者数比較（男女別）",
       "chart": {
         "layout": "dual",
@@ -317,7 +334,7 @@
       }
     },
     {
-      "id": "step16",
+      "id": "step13",
       "text": "画像表示",
       "chart": {
         "visible": false

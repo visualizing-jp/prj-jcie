@@ -36,8 +36,21 @@ class ChartManager {
         }
         
         // 従来の単一チャート
-        const { type, data, config, visible } = chartData;
+        const { type, data, config, visible, updateMode, direction } = chartData;
         
+        // updateModeが'transition'で既存チャートと同じタイプ、同じデータファイルの場合
+        if (updateMode === 'transition' && 
+            this.currentChart === type && 
+            this.data && 
+            this.svg &&
+            config.dataFile === this.config?.dataFile) {
+            
+            console.log(`Updating chart with transition mode (direction: ${direction || 'unknown'})`);
+            this.updateChartWithTransition(data, config, direction);
+            return;
+        }
+        
+        // 通常の更新（再描画）
         this.data = data;
         this.config = config;
         this.currentChart = type;
@@ -48,6 +61,288 @@ class ChartManager {
         } else {
             this.hide();
         }
+    }
+
+    /**
+     * チャートをトランジションで更新する（再描画しない）
+     * @param {Array} data - 新しいデータ
+     * @param {Object} config - 新しい設定
+     * @param {string} direction - スクロール方向 ('up' | 'down')
+     */
+    updateChartWithTransition(data, config, direction = 'down') {
+        if (!this.svg || this.currentChart !== 'line') {
+            console.warn('Cannot update chart with transition: no existing line chart');
+            return;
+        }
+
+        this.data = data;
+        this.config = config;
+
+        // 新しいデータを系列別に変換
+        const newSeries = this.transformToSeries(data, config);
+        const allNewValues = newSeries.flatMap(s => s.values);
+        
+        const { width, height } = this.getResponsiveSize(config);
+        const margin = config.margin || { top: 20, right: 20, bottom: 40, left: 40 };
+        const innerWidth = width - margin.left - margin.right;
+        const innerHeight = height - margin.top - margin.bottom;
+        
+        const { xField = 'year', yField = 'value' } = config;
+        const isYearData = allNewValues.every(d => !isNaN(d[xField]) && d[xField] > 1900 && d[xField] < 2100);
+        
+        // 新しいスケールを計算
+        const newXScale = isYearData 
+            ? d3.scaleLinear()
+                .domain(d3.extent(allNewValues, d => +d[xField]))
+                .range([0, innerWidth])
+            : d3.scaleTime()
+                .domain(d3.extent(allNewValues, d => new Date(d[xField])))
+                .range([0, innerWidth]);
+
+        const newYScale = d3.scaleLinear()
+            .domain(d3.extent(allNewValues, d => +d[yField]))
+            .nice()
+            .range([innerHeight, 0]);
+
+        const g = this.svg.select('g');
+        const transitionDuration = config.transitionDuration || 1000;
+
+        // 軸をトランジションで更新（より自然なイージング）
+        const newXAxis = isYearData 
+            ? d3.axisBottom(newXScale).tickFormat(d3.format("d"))
+            : d3.axisBottom(newXScale);
+        const newYAxis = d3.axisLeft(newYScale);
+
+        const axisTransition = d3.transition()
+            .duration(transitionDuration)
+            .ease(d3.easeQuadInOut); // より自然なイージング
+
+        g.select('.x-axis')
+            .transition(axisTransition)
+            .call(newXAxis);
+
+        g.select('.y-axis')
+            .transition(axisTransition)
+            .call(newYAxis);
+
+        // 新しいライン生成器
+        const newLine = d3.line()
+            .x(d => isYearData ? newXScale(+d[xField]) : newXScale(new Date(d[xField])))
+            .y(d => newYScale(+d[yField]))
+            .curve(d3.curveMonotoneX);
+
+        // 色スケール
+        const colorScale = d3.scaleOrdinal(config.colors || d3.schemeCategory10)
+            .domain(newSeries.map(d => d.name));
+
+        // Object Constancy: 系列グループをデータバインディング
+        const seriesGroups = g.selectAll('.series-group')
+            .data(newSeries, d => d.name); // 系列名で一意性を保つ
+
+        // ENTER: 新しい系列を追加
+        const enterSeriesGroups = seriesGroups.enter()
+            .append('g')
+            .attr('class', 'series-group');
+
+        // 新しい系列にラインを追加（非表示状態で開始）
+        enterSeriesGroups.append('path')
+            .attr('class', 'chart-line')
+            .attr('stroke', d => colorScale(d.name))
+            .attr('stroke-width', 2)
+            .attr('fill', 'none')
+            .attr('d', d => newLine(d.values))
+            .style('opacity', 0);
+
+        // UPDATE: 既存系列の更新
+        const updateSeriesGroups = seriesGroups;
+
+        // ENTER + UPDATE: 共通処理
+        const allSeriesGroups = enterSeriesGroups.merge(updateSeriesGroups);
+
+        // EXIT: 不要な系列を削除（先に処理）
+        seriesGroups.exit()
+            .transition()
+            .duration(transitionDuration / 2)
+            .ease(d3.easeBackIn)
+            .style('opacity', 0)
+            .remove();
+
+        // 統一されたトランジションを作成
+        const mainTransition = d3.transition()
+            .duration(transitionDuration)
+            .ease(d3.easeQuadInOut); // 軸と同じ自然なイージング
+
+        const fastTransition = d3.transition()
+            .duration(transitionDuration * 0.4)
+            .ease(d3.easeQuadIn); // 削除用の高速トランジション
+
+        // 線と点を完全に同期するため、newSeriesから正確なデータを取得
+        const self = this; // thisのコンテキストを保存
+        allSeriesGroups.each(function(seriesData, seriesIndex) {
+            const group = d3.select(this);
+            
+            // ⚠️ 重要: newSeriesから対応する系列データを取得（確実にフィルタリング済み）
+            const currentSeriesData = newSeries.find(s => s.name === seriesData.name) || seriesData;
+            const currentValues = currentSeriesData.values;
+            
+            console.log(`Series ${seriesData.name}: Using ${currentValues.length} data points for both line and circles`);
+            
+            // Object Constancy: 一意キーで各データポイントを追跡
+            const dataWithKeys = currentValues.map(v => ({
+                ...v,
+                seriesName: currentSeriesData.name,
+                uniqueKey: `${currentSeriesData.name}-${v[xField]}` // 系列名と年度で一意キー生成
+            }));
+            
+            // シンプルな差分ベース更新を開始
+            self.updateSeriesWithDiff(group, currentSeriesData, newXScale, newYScale, newLine, colorScale, transitionDuration);
+        });
+
+        console.log(`Chart updated with transition: ${data.length} records displayed`);
+    }
+
+    /**
+     * 差分ベースでシリーズを段階的に更新（シンプル実装）
+     */
+    updateSeriesWithDiff(group, newSeriesData, newXScale, newYScale, newLine, colorScale, transitionDuration) {
+        const lineElement = group.selectAll('.chart-line');
+        const currentLineData = lineElement.datum();
+        const oldValues = currentLineData ? currentLineData.values : [];
+        const newValues = newSeriesData.values;
+        
+        // 差分を計算
+        const oldKeys = new Set(oldValues.map(d => d[this.config?.xField || 'year']));
+        const newKeys = new Set(newValues.map(d => d[this.config?.xField || 'year']));
+        
+        const toAdd = newValues.filter(d => !oldKeys.has(d[this.config?.xField || 'year']));
+        const toRemove = oldValues.filter(d => !newKeys.has(d[this.config?.xField || 'year']));
+        
+        console.log(`Series ${newSeriesData.name}: +${toAdd.length} -${toRemove.length}`);
+        
+        // 現在表示中のデータ
+        let currentDisplayData = [...oldValues];
+        
+        // 段階的更新の間隔
+        const totalChanges = toAdd.length + toRemove.length;
+        const intervalTime = totalChanges > 0 ? transitionDuration / totalChanges : 0;
+        
+        let updateIndex = 0;
+        const self = this; // thisコンテキストを保存
+        
+        // 削除処理（右端から）
+        toRemove.reverse().forEach((dataPoint) => {
+            setTimeout(() => {
+                currentDisplayData = currentDisplayData.filter(d => 
+                    d[self.config?.xField || 'year'] !== dataPoint[self.config?.xField || 'year']
+                );
+                // 線のデータを即座に更新
+                lineElement.datum({ ...newSeriesData, values: currentDisplayData });
+                self.updateLineAndAxes(group, currentDisplayData, newXScale, newYScale, newLine, colorScale);
+            }, updateIndex * intervalTime);
+            updateIndex++;
+        });
+        
+        // 追加処理（左端から右端へ）
+        toAdd.forEach((dataPoint) => {
+            setTimeout(() => {
+                currentDisplayData.push(dataPoint);
+                currentDisplayData.sort((a, b) => a[self.config?.xField || 'year'] - b[self.config?.xField || 'year']);
+                // 線のデータを即座に更新
+                lineElement.datum({ ...newSeriesData, values: currentDisplayData });
+                self.updateLineAndAxes(group, currentDisplayData, newXScale, newYScale, newLine, colorScale);
+            }, updateIndex * intervalTime);
+            updateIndex++;
+        });
+        
+        // 最終的にデータを確実に設定
+        setTimeout(() => {
+            lineElement.datum({ ...newSeriesData, values: newValues });
+        }, transitionDuration);
+    }
+    
+    /**
+     * 線と軸を同期更新
+     */
+    updateLineAndAxes(group, currentData, newXScale, newYScale, newLine, colorScale) {
+        const seriesData = group.datum();
+        
+        // 軸はすべての系列の現在データに基づいて更新
+        const xField = this.config?.xField || 'year';
+        const yField = this.config?.yField || 'value';
+        
+        if (currentData.length > 0) {
+            // 全系列の現在データを収集
+            const g = this.svg.select('g');
+            const allCurrentData = [];
+            
+            g.selectAll('.series-group').each(function() {
+                const seriesGroup = d3.select(this);
+                const lineData = seriesGroup.select('.chart-line').datum();
+                if (lineData && lineData.values) {
+                    allCurrentData.push(...lineData.values);
+                }
+            });
+            
+            // データが存在する場合のみ軸を更新
+            if (allCurrentData.length > 0) {
+                const xExtent = d3.extent(allCurrentData, d => +d[xField]);
+                const yExtent = d3.extent(allCurrentData, d => +d[yField]);
+                
+                newXScale.domain(xExtent);
+                newYScale.domain(yExtent).nice();
+                
+                // 軸を更新
+                const isYearData = allCurrentData.every(d => !isNaN(d[xField]) && d[xField] > 1900 && d[xField] < 2100);
+                const xAxis = isYearData ? d3.axisBottom(newXScale).tickFormat(d3.format("d")) : d3.axisBottom(newXScale);
+                const yAxis = d3.axisLeft(newYScale);
+                
+                g.select('.x-axis').transition().duration(200).call(xAxis);
+                g.select('.y-axis').transition().duration(200).call(yAxis);
+            }
+        }
+        
+        // 線を更新
+        group.selectAll('.chart-line')
+            .transition()
+            .duration(200)
+            .ease(d3.easeQuadInOut)
+            .attr('d', newLine(currentData))
+            .attr('stroke', colorScale(seriesData.name));
+        
+        // 点を更新
+        const dataWithKeys = currentData.map(v => ({
+            ...v,
+            seriesName: seriesData.name,
+            uniqueKey: `${seriesData.name}-${v[xField]}`
+        }));
+        
+        const circles = group.selectAll('.chart-circle')
+            .data(dataWithKeys, d => d.uniqueKey);
+        
+        // 新しい点を追加
+        circles.enter()
+            .append('circle')
+            .attr('class', 'chart-circle')
+            .attr('r', 0)
+            .attr('fill', colorScale(seriesData.name))
+            .attr('cx', d => newXScale(+d[xField]))
+            .attr('cy', d => newYScale(+d[yField]))
+            .transition()
+            .duration(200)
+            .attr('r', 3);
+        
+        // 既存の点を更新
+        circles.transition()
+            .duration(200)
+            .attr('cx', d => newXScale(+d[xField]))
+            .attr('cy', d => newYScale(+d[yField]));
+        
+        // 不要な点を削除
+        circles.exit()
+            .transition()
+            .duration(200)
+            .attr('r', 0)
+            .remove();
     }
 
     /**
@@ -344,6 +639,57 @@ class ChartManager {
     }
 
     /**
+     * データにフィルタを適用
+     * @param {Array} data - 生データ
+     * @param {Object} filterConfig - フィルタ設定
+     * @returns {Array} フィルタ済みデータ
+     */
+    applyFilter(data, filterConfig) {
+        if (!filterConfig || !data || data.length === 0) {
+            return data;
+        }
+
+        const { type, field, range, values, exclude } = filterConfig;
+
+        switch (type) {
+            case 'range':
+                if (range && range.length === 2 && field) {
+                    const [min, max] = range;
+                    return data.filter(d => {
+                        const value = +d[field];
+                        return value >= min && value <= max;
+                    });
+                }
+                break;
+
+            case 'values':
+                if (values && values.length > 0 && field) {
+                    return data.filter(d => values.includes(d[field]));
+                }
+                break;
+
+            case 'exclude':
+                if (exclude && exclude.length > 0 && field) {
+                    return data.filter(d => !exclude.includes(d[field]));
+                }
+                break;
+
+            case 'series':
+                if (values && values.length > 0) {
+                    const seriesField = filterConfig.seriesField || 'series';
+                    return data.filter(d => values.includes(d[seriesField]));
+                }
+                break;
+
+            default:
+                console.warn(`Unknown filter type: ${type}`);
+                return data;
+        }
+
+        return data;
+    }
+
+    /**
      * データを系列別に変換
      * @param {Array} data - 生データ
      * @param {Object} config - 設定
@@ -352,11 +698,18 @@ class ChartManager {
     transformToSeries(data, config) {
         const { xField = 'year', yField = 'value', seriesField = 'series' } = config;
         
+        // フィルタが設定されている場合は適用
+        let filteredData = data;
+        if (config.filter) {
+            filteredData = this.applyFilter(data, config.filter);
+            console.log(`Filter applied: ${data.length} -> ${filteredData.length} records`);
+        }
+        
         if (config.multiSeries === false) {
             // 単一系列として強制的に扱う
             return [{
                 name: config.seriesName || 'Data',
-                values: data.map(d => ({
+                values: filteredData.map(d => ({
                     [xField]: d[xField],
                     [yField]: d[yField]
                 }))
@@ -364,10 +717,10 @@ class ChartManager {
         }
         
         // 複数系列の場合
-        const seriesNames = [...new Set(data.map(d => d[seriesField]))];
+        const seriesNames = [...new Set(filteredData.map(d => d[seriesField]))];
         return seriesNames.map(name => ({
             name,
-            values: data
+            values: filteredData
                 .filter(d => d[seriesField] === name)
                 .map(d => ({
                     [xField]: d[xField],
@@ -448,31 +801,52 @@ class ChartManager {
             .append('g')
             .attr('class', 'series-group');
 
-        // ラインを描画
+        // 統一されたトランジションを作成（初期描画用）
+        const initialTransition = d3.transition()
+            .duration(600)
+            .ease(d3.easeQuadOut); // 自然な立ち上がり
+
+        // ラインを描画（統一トランジション + データ設定）
         seriesGroups.append('path')
             .attr('class', 'chart-line')
+            .datum(d => d) // 系列データを設定
             .attr('d', d => line(d.values))
             .attr('stroke', d => colorScale(d.name))
             .attr('stroke-width', 0)
             .attr('fill', 'none')
-            .transition()
-            .duration(500)
-            .attr('stroke-width', 2);
+            .style('opacity', 0)
+            .transition(initialTransition)
+            .attr('stroke-width', 2)
+            .style('opacity', 1);
 
-        // ポイントを描画
-        seriesGroups.selectAll('.chart-circle')
-            .data(d => d.values.map(v => ({ ...v, seriesName: d.name })))
-            .enter()
-            .append('circle')
-            .attr('class', 'chart-circle')
-            .attr('cx', d => isYearData ? xScale(+d[xField]) : xScale(new Date(d[xField])))
-            .attr('cy', d => yScale(+d[yField]))
-            .attr('r', 0)
-            .attr('fill', d => colorScale(d.seriesName))
-            .transition()
-            .duration(500)
-            .delay((d, i) => i * 30)
-            .attr('r', 3);
+        // Object Constancyを使ったポイント描画（線と同期）
+        seriesGroups.each(function(seriesData) {
+            const group = d3.select(this);
+            
+            // 一意キーでデータポイントを追跡
+            const dataWithKeys = seriesData.values.map(v => ({
+                ...v,
+                seriesName: seriesData.name,
+                uniqueKey: `${seriesData.name}-${v[xField]}`
+            }));
+            
+            const circles = group.selectAll('.chart-circle')
+                .data(dataWithKeys, d => d.uniqueKey);
+
+            // 新しいポイントの追加（線と同じイージング、わずかな遅延）
+            circles.enter()
+                .append('circle')
+                .attr('class', 'chart-circle')
+                .attr('cx', d => isYearData ? xScale(+d[xField]) : xScale(new Date(d[xField])))
+                .attr('cy', d => yScale(+d[yField]))
+                .attr('r', 0)
+                .attr('fill', d => colorScale(d.seriesName))
+                .style('opacity', 0)
+                .transition(initialTransition)
+                .delay((d, i) => i * 15) // 自然な順次表示
+                .attr('r', 3)
+                .style('opacity', 1);
+        });
 
         // レジェンドを追加（複数系列の場合のみ）
         if (series.length > 1) {
