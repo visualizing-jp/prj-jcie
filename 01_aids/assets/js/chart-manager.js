@@ -621,7 +621,7 @@ class ChartManager {
      */
     renderChart(type, data, config) {
         const { width, height } = this.getResponsiveSize(config);
-        const margin = config.margin || { top: 20, right: 20, bottom: 40, left: 40 };
+        const margin = config.margin || { top: 40, right: 20, bottom: 40, left: 50 };
         
         switch (type) {
             case 'line':
@@ -737,7 +737,7 @@ class ChartManager {
             width, height, margin, 
             xField = 'year', yField = 'value', 
             colors = d3.schemeCategory10,
-            multiSeries = true
+            multiSeries = true,
             title = ''
         } = config;
         
@@ -954,13 +954,26 @@ class ChartManager {
      * 円グラフを描画
      */
     renderPieChart(data, config) {
-        const { width, height, labelField = 'label', valueField = 'value', colors = d3.schemeCategory10 } = config;
+        const { width, height, labelField = 'label', valueField = 'value', colors = d3.schemeCategory10, title = '' } = config;
         
         const svg = this.initSVG(width, height);
         const radius = Math.min(width, height) / 2 - 40;
         
         const g = svg.append('g')
             .attr('transform', `translate(${width/2},${height/2})`);
+        
+        // タイトルを追加
+        if (title) {
+            svg.append('text')
+                .attr('class', 'chart-title')
+                .attr('x', 20)
+                .attr('y', 30)
+                .attr('text-anchor', 'start')
+                .attr('font-size', '16px')
+                .attr('font-weight', 'bold')
+                .attr('fill', '#333')
+                .text(title);
+        }
 
         const pie = d3.pie()
             .value(d => +d[valueField])

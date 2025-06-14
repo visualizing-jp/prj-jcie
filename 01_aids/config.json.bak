@@ -183,7 +183,7 @@
       }
     },
     {
-      "id": "step7",
+      "id": "step5",
       "text": "母子感染防止の成果",
       "chart": {
         "type": "line",
@@ -209,7 +209,7 @@
       }
     },
     {
-      "id": "step8",
+      "id": "step6",
       "text": "世界全体での取り組み",
       "chart": {
         "visible": false
@@ -226,7 +226,7 @@
       }
     },
     {
-      "id": "step9",
+      "id": "step7",
       "text": "ムリカットの物語",
       "chart": {
         "visible": false
@@ -242,7 +242,7 @@
       }
     },
     {
-      "id": "step10",
+      "id": "step8",
       "text": "闘うマラウイの女性達",
       "chart": {
         "visible": false
@@ -258,7 +258,7 @@
       }
     },
     {
-      "id": "step11",
+      "id": "step9",
       "text": "ローズマリーの物語",
       "chart": {
         "visible": false
@@ -274,7 +274,7 @@
       }
     },
     {
-      "id": "step12",
+      "id": "step10",
       "text": "エリカ・カステヤノスの物語",
       "chart": {
         "visible": false
@@ -290,7 +290,7 @@
       }
     },
     {
-      "id": "step13",
+      "id": "step11",
       "text": "マーク・ダイブル（支援者）の物語",
       "chart": {
         "visible": false
@@ -306,7 +306,7 @@
       }
     },
     {
-      "id": "step14",
+      "id": "step12",
       "text": "モーリーン・ムレンガの物語",
       "chart": {
         "visible": false
@@ -322,7 +322,7 @@
       }
     },
     {
-      "id": "step15",
+      "id": "step13",
       "text": "ジェフリー・アカバの物語",
       "chart": {
         "visible": false
@@ -338,7 +338,7 @@
       }
     },
     {
-      "id": "step16",
+      "id": "step14",
       "text": "それでもなお存在する課題",
       "chart": {
         "layout": "dual",
@@ -384,7 +384,7 @@
       }
     },
     {
-      "id": "step17",
+      "id": "step15",
       "text": "解決に向けて",
       "chart": {
         "type": "line",
@@ -409,11 +409,11 @@
       }
     },
     {
-      "id": "step18",
+      "id": "step16",
       "text": "継続的な支援の重要性",
       "chart": {
         "type": "line",
-        "dataFile": "data/trend_エイズ対策の資金不足.csv",
+        "dataFile": "data/trend_母子感染の推移.csv",
         "visible": true,
         "config": {
           "width": 1000,
@@ -421,9 +421,10 @@
           "xField": "year",
           "yField": "value",
           "seriesField": "series",
-          "multiSeries": true,
-          "colors": ["#3b82f6", "#10b981", "#f59e0b", "#ef4444"],
-          "title": "エイズ対策資金の推移（資金源別）"
+          "multiSeries": false,
+          "seriesName": "支援の成果",
+          "colors": ["#f59e0b"],
+          "title": "HIV母子感染率の推移"
         }
       },
       "map": {
@@ -434,29 +435,31 @@
       }
     },
     {
-      "id": "step19",
+      "id": "step17",
       "text": "連帯の力",
       "chart": {
-        "visible": false
+        "type": "line",
+        "dataFile": "data/dummy_single_line.csv",
+        "visible": true,
+        "config": {
+          "width": 1000,
+          "height": 400,
+          "xField": "year",
+          "yField": "value",
+          "multiSeries": false,
+          "colors": ["#10b981"],
+          "title": "連帯の力が生む成果"
+        }
       },
       "map": {
         "visible": false
       },
       "image": {
-        "src": "https://placehold.co/800x600/3b82f6/ffffff?text=Unity+and+Solidarity",
-        "alt": "連帯の力を示す画像",
-        "visible": true,
-        "config": {
-          "width": "100%",
-          "height": "100%",
-          "position": "center",
-          "opacity": 0.9,
-          "objectFit": "cover"
-        }
+        "visible": false
       }
     },
     {
-      "id": "step20",
+      "id": "step18",
       "text": "今後の展望",
       "chart": {
         "type": "line",
@@ -481,7 +484,7 @@
       }
     },
     {
-      "id": "step21",
+      "id": "step19",
       "text": "終わりに",
       "chart": {
         "visible": false
