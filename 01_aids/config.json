@@ -50,6 +50,7 @@
           "seriesField": "series",
           "multiSeries": true,
           "colors": ["#3b82f6", "#e74c3c", "#f39c12", "#2ecc71", "#9b59b6", "#1abc9c", "#e67e22", "#34495e", "#95a5a6"],
+          "title": "新規HIV感染者数の推移（1990-1998年）",
           "filter": {
             "type": "range",
             "field": "year",
@@ -78,7 +79,8 @@
           "yField": "value",
           "seriesField": "series",
           "multiSeries": true,
-          "colors": ["#3b82f6", "#e74c3c", "#f39c12", "#2ecc71", "#9b59b6", "#1abc9c", "#e67e22", "#34495e", "#95a5a6"]
+          "colors": ["#3b82f6", "#e74c3c", "#f39c12", "#2ecc71", "#9b59b6", "#1abc9c", "#e67e22", "#34495e", "#95a5a6"],
+          "title": "新規HIV感染者数の推移（全期間）"
         }
       },
       "map": {
@@ -102,7 +104,8 @@
           "yField": "value",
           "seriesField": "series",
           "multiSeries": true,
-          "colors": ["#e74c3c", "#3b82f6", "#f39c12", "#2ecc71", "#9b59b6", "#1abc9c", "#e67e22", "#34495e", "#95a5a6"]
+          "colors": ["#e74c3c", "#3b82f6", "#f39c12", "#2ecc71", "#9b59b6", "#1abc9c", "#e67e22", "#34495e", "#95a5a6"],
+          "title": "エイズ関連死亡者数の推移（2010-2022年）"
         }
       },
       "map": {
@@ -136,10 +139,10 @@
     },
     {
       "id": "step5",
-      "text": "エイズ対策の資金推移（全期間）",
+      "text": "母子感染防止の成果",
       "chart": {
         "type": "line",
-        "dataFile": "data/trend_エイズ対策の資金不足.csv",
+        "dataFile": "data/trend_母子感染の推移.csv",
         "visible": true,
         "config": {
           "width": 1000,
@@ -147,8 +150,10 @@
           "xField": "year",
           "yField": "value",
           "seriesField": "series",
-          "multiSeries": true,
-          "colors": ["#3b82f6", "#10b981", "#f59e0b", "#ef4444"]
+          "multiSeries": false,
+          "seriesName": "母子感染率",
+          "colors": ["#10b981"],
+          "title": "HIV母子感染率の推移（％）"
         }
       },
       "map": {
@@ -296,7 +301,7 @@
         "charts": [
           {
             "id": "women",
-            "title": "Young Women (15-24)",
+            "title": "若年女性（15-24歳）",
             "dataFile": "data/trend_africa_young_woman_normalized.csv",
             "position": "left",
             "config": {
@@ -311,7 +316,7 @@
           },
           {
             "id": "men",
-            "title": "Young Men (15-24)",
+            "title": "若年男性（15-24歳）",
             "dataFile": "data/trend_africa_young_man_normalized.csv",
             "position": "right",
             "config": {
@@ -347,7 +352,8 @@
           "yField": "value",
           "multiSeries": false,
           "seriesName": "PrEP利用者数",
-          "colors": ["#3b82f6"]
+          "colors": ["#3b82f6"],
+          "title": "PrEP（曝露前予防投与）利用者数の推移"
         }
       },
       "map": {
@@ -372,7 +378,8 @@
           "seriesField": "series",
           "multiSeries": false,
           "seriesName": "支援の成果",
-          "colors": ["#f59e0b"]
+          "colors": ["#f59e0b"],
+          "title": "HIV母子感染率の推移"
         }
       },
       "map": {
@@ -395,7 +402,8 @@
           "xField": "year",
           "yField": "value",
           "multiSeries": false,
-          "colors": ["#10b981"]
+          "colors": ["#10b981"],
+          "title": "連帯の力が生む成果"
         }
       },
       "map": {
@@ -419,7 +427,8 @@
           "yField": "value",
           "seriesField": "series",
           "multiSeries": true,
-          "colors": ["#3b82f6", "#10b981", "#f59e0b", "#ef4444"]
+          "colors": ["#3b82f6", "#10b981", "#f59e0b", "#ef4444"],
+          "title": "エイズ対策資金の必要額と実績の推移"
         }
       },
       "map": {

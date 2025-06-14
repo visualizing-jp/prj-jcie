@@ -738,6 +738,7 @@ class ChartManager {
             xField = 'year', yField = 'value', 
             colors = d3.schemeCategory10,
             multiSeries = true
+            title = ''
         } = config;
         
         const svg = this.initSVG(width, height);
@@ -746,6 +747,19 @@ class ChartManager {
         
         const g = svg.append('g')
             .attr('transform', `translate(${margin.left},${margin.top})`);
+
+        // タイトルを追加
+        if (title) {
+            g.append('text')
+                .attr('class', 'chart-title')
+                .attr('x', 0)
+                .attr('y', -10)
+                .attr('text-anchor', 'start')
+                .attr('font-size', '16px')
+                .attr('font-weight', 'bold')
+                .attr('fill', '#333')
+                .text(title);
+        }
 
         // データを系列別に変換
         const series = this.transformToSeries(data, config);
