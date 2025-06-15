@@ -44,6 +44,13 @@ class ChartManager {
         // 従来の単一チャート
         const { type, data, config, visible, updateMode, direction } = chartData;
         
+        console.log('ChartManager.updateChart received:');
+        console.log('- type:', type);
+        console.log('- visible:', visible);
+        console.log('- config:', config);
+        console.log('- config.widthPercent:', config?.widthPercent);
+        console.log('- updateMode:', updateMode);
+        
         // updateModeが'transition'で既存チャートと同じタイプ、同じデータファイルの場合
         if (updateMode === 'transition' && 
             this.currentChart === type && 
@@ -63,6 +70,7 @@ class ChartManager {
 
         if (visible) {
             this.show();
+            console.log('Calling renderChart with config:', config);
             this.renderChart(type, data, config);
         } else {
             this.hide();
@@ -474,7 +482,7 @@ class ChartManager {
         const totalWidth = Math.min(containerWidth * 0.9, 1000);
         const totalHeight = Math.min(containerHeight * 0.8, 500);
         
-        const svg = this.initSVG(totalWidth, totalHeight);
+        const svg = this.svg;
         
         // 各チャートの幅を計算（間隔を含む）
         const chartSpacing = 40;
@@ -659,22 +667,46 @@ class ChartManager {
      * @param {Object} config - 設定
      */
     renderChart(type, data, config) {
+        console.log('renderChart called with:');
+        console.log('- config.widthPercent:', config.widthPercent);
+        console.log('- window.innerWidth:', window.innerWidth);
+        
         const { width, height } = this.getResponsiveSize(config);
+        console.log('getResponsiveSize returned:', { width, height });
+        
         const margin = config.margin || { top: 40, right: 20, bottom: 40, left: 50 };
         
         // SVGHelperを使用してレスポンシブSVGを作成
         if (window.SVGHelper) {
+            console.log('Using SVGHelper');
+            // パーセンテージ指定の場合は実際のピクセルサイズを計算
+            let actualWidth = null;
+            let actualHeight = null;
+            
+            if (config.widthPercent) {
+                actualWidth = window.innerWidth * (config.widthPercent / 100);
+                console.log('Calculated actualWidth:', actualWidth);
+            }
+            if (config.heightPercent) {
+                actualHeight = window.innerHeight * (config.heightPercent / 100);
+                console.log('Calculated actualHeight:', actualHeight);
+            }
+            
+            console.log('Creating SVG with actualWidth:', actualWidth, 'actualHeight:', actualHeight);
             this.svg = SVGHelper.initSVG(this.container, width, height, {
                 className: 'chart-svg',
                 responsive: true,
-                preserveAspectRatio: 'xMidYMid meet'
+                preserveAspectRatio: 'xMidYMid meet',
+                actualWidth: actualWidth,
+                actualHeight: actualHeight
             });
         } else {
+            console.log('Using fallback SVG creation');
             // フォールバック
             this.container.selectAll('*').remove();
             this.svg = this.container.append('svg')
                 .attr('viewBox', `0 0 ${width} ${height}`)
-                .style('width', '100%')
+                .style('width', config.widthPercent ? `${config.widthPercent}%` : '100%')
                 .style('height', 'auto');
         }
         
@@ -796,7 +828,7 @@ class ChartManager {
             title = ''
         } = config;
         
-        const svg = this.initSVG(width, height);
+        const svg = this.svg;
         const innerWidth = width - margin.left - margin.right;
         const innerHeight = height - margin.top - margin.bottom;
         
@@ -1084,7 +1116,7 @@ class ChartManager {
         const totalWidth = Math.min(containerWidth * 0.95, 1200);
         const totalHeight = Math.min(containerHeight * 0.8, 500);
         
-        const svg = this.initSVG(totalWidth, totalHeight);
+        const svg = this.svg;
         
         // 各チャートの幅を計算（間隔を含む）
         const chartSpacing = 30;

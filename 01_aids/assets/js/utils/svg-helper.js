@@ -16,7 +16,9 @@ class SVGHelper {
             preserveAspectRatio = 'xMidYMid meet',
             className = '',
             clearContainer = true,
-            responsive = true  // レスポンシブモードのフラグ
+            responsive = true,  // レスポンシブモードのフラグ
+            actualWidth = null, // 実際の表示幅（パーセンテージ計算後）
+            actualHeight = null // 実際の表示高さ（パーセンテージ計算後）
         } = options;
 
         // コンテナをクリア
@@ -30,12 +32,32 @@ class SVGHelper {
             .attr('preserveAspectRatio', preserveAspectRatio);
 
         if (responsive) {
-            // レスポンシブ設定：コンテナのサイズに合わせる
-            svg
-                .style('width', '100%')
-                .style('height', 'auto')
-                .style('max-width', '100%')
-                .style('display', 'block');
+            if (actualWidth || actualHeight) {
+                // 具体的なサイズが指定されている場合（パーセンテージ等）
+                const widthStyle = actualWidth ? `${actualWidth}px` : '100%';
+                const heightStyle = actualHeight ? `${actualHeight}px` : 'auto';
+                
+                console.log(`SVGHelper: Setting specific size - width: ${widthStyle}, height: ${heightStyle}`);
+                svg
+                    .style('width', widthStyle)
+                    .style('height', heightStyle)
+                    .style('max-width', '100%')
+                    .style('display', 'block');
+                console.log('SVG styles applied:', {
+                    width: svg.style('width'),
+                    height: svg.style('height'),
+                    maxWidth: svg.style('max-width'),
+                    display: svg.style('display')
+                });
+            } else {
+                // レスポンシブ設定：コンテナのサイズに合わせる
+                console.log('SVGHelper: Using 100% width responsive mode');
+                svg
+                    .style('width', '100%')
+                    .style('height', 'auto')
+                    .style('max-width', '100%')
+                    .style('display', 'block');
+            }
         } else {
             // 固定サイズ設定（従来モード）
             svg

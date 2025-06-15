@@ -222,8 +222,8 @@
         "dataFile": "data/trend_母子感染の推移.csv",
         "visible": true,
         "config": {
-          "width": 1000,
-          "height": 400,
+          "widthPercent": 50,
+          "height": 900,
           "xField": "year",
           "yField": "value",
           "seriesField": "series",
