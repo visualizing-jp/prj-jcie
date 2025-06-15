@@ -443,7 +443,8 @@ class PositionManager {
             width = 'auto',
             maxWidth = '500px',
             padding = '2rem',
-            margin = null
+            margin = null,
+            textAlign = 'left'  // 矩形内のテキスト揃え（矩形位置とは独立）
         } = positionConfig;
 
         const {
@@ -459,16 +460,49 @@ class PositionManager {
         this.resetTextClasses(stepElement);
 
         // テキストポジション用のクラスを追加
-        const horizontalClass = this.getTextHorizontalClass(horizontal);
+        const textAlignClass = this.getTextHorizontalClass(textAlign);
         const verticalClass = this.getTextVerticalClass(vertical);
         
         stepElement.classList.add('positioned-text');
-        stepElement.classList.add(horizontalClass);
+        stepElement.classList.add(textAlignClass);
         stepElement.classList.add(verticalClass);
 
-        // テキストコンテナ（白背景の部分）を取得
+        // テキストコンテナ（白背景の部分）とその親要素を取得
         const textContainer = stepElement.querySelector('.max-w-lg, .text-content, div[class*="bg-white"]');
-        if (textContainer) {
+        const parentContainer = stepElement.querySelector('.w-full.min-h-screen.flex.items-center');
+        
+        if (debugMode) {
+            console.log('PositionManager: stepElement found:', stepElement);
+            console.log('PositionManager: textContainer found:', textContainer);
+            console.log('PositionManager: parentContainer found:', parentContainer);
+            console.log('PositionManager: textContainer classes before:', textContainer ? Array.from(textContainer.classList) : 'not found');
+        }
+        
+        if (textContainer && parentContainer) {
+            // 親要素のFlexboxで白い矩形の位置を制御
+            parentContainer.classList.remove('justify-center', 'justify-start', 'justify-end');
+            textContainer.classList.remove('mx-auto', 'ml-auto', 'mr-auto');
+            
+            switch (horizontal.toLowerCase()) {
+                case 'right':
+                    parentContainer.classList.add('justify-end');
+                    textContainer.classList.remove('mx-auto');
+                    textContainer.classList.add('mr-0', 'ml-auto');
+                    if (debugMode) console.log('Applied RIGHT positioning to white container');
+                    break;
+                case 'left':
+                    parentContainer.classList.add('justify-start');
+                    textContainer.classList.remove('mx-auto');
+                    textContainer.classList.add('ml-0', 'mr-auto');
+                    if (debugMode) console.log('Applied LEFT positioning to white container');
+                    break;
+                default:
+                    parentContainer.classList.add('justify-center');
+                    textContainer.classList.add('mx-auto');
+                    if (debugMode) console.log('Applied CENTER positioning to white container');
+                    break;
+            }
+            
             // テキストコンテナのスタイルを適用
             this.applyTextContainerStyles(textContainer, {
                 width,

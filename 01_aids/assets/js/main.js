@@ -661,9 +661,12 @@ class ScrollytellingApp {
         }
 
         // 現在のステップ要素を取得
-        const stepElement = document.querySelector(`[data-step="${stepIndex}"]`);
+        let stepElement = document.querySelector(`[data-step="${stepConfig.id}"]`) ||
+                         document.querySelector(`[data-step="${stepConfig.id.replace(/^step/, '')}"]`) ||
+                         document.querySelector(`[data-step="${stepIndex}"]`);
+        
         if (!stepElement) {
-            console.warn(`Step element not found for index ${stepIndex}`);
+            console.warn(`Step element not found for step ${stepConfig.id} (index ${stepIndex})`);
             return;
         }
 
@@ -694,7 +697,7 @@ class ScrollytellingApp {
             // テキストポジション適用
             PositionManager.applyTextPosition(stepElement, positionConfig, {
                 responsive: true,
-                debugMode: false // デバッグモードをオフに
+                debugMode: true // デバッグモードを有効に
             });
 
             console.log(`Applied text positioning for step ${stepIndex}:`, positionConfig);

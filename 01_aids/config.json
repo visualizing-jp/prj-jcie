@@ -2,7 +2,13 @@
   "steps": [
     {
       "id": "step0",
-      "text": "エイズ対策の物語",
+      "text": {
+        "content": "エイズ対策の物語",
+        "position": {
+          "horizontal": "right",
+          "vertical": "center"
+        }
+      },
       "chart": {
         "visible": false
       },
@@ -27,7 +33,13 @@
     },
     {
       "id": "step1",
-      "text": "はじめに",
+      "text": {
+        "content": "はじめに",
+        "position": {
+          "horizontal": "right",
+          "vertical": "center"
+        }
+      },
       "chart": {
         "visible": false
       },
@@ -40,7 +52,13 @@
     },
     {
       "id": "step2",
-      "text": "新規感染者数の推移（1990-1998年）",
+      "text": {
+        "content": "新規感染者数の推移（1990-1998年）",
+        "position": {
+          "horizontal": "right",
+          "vertical": "center"
+        }
+      },
       "chart": {
         "type": "line",
         "dataFile": "data/trend_new_infections_normalized.csv",
@@ -77,13 +95,19 @@
     },
     {
       "id": "step2a",
-      "text": "新規感染者数の推移（全期間データ）",
+      "text": {
+        "content": "新規感染者数の推移（全期間データ）",
+        "position": {
+          "horizontal": "right",
+          "vertical": "center"
+        }
+      },
       "chart": {
         "type": "line",
         "dataFile": "data/trend_new_infections_normalized.csv",
         "visible": true,
         "position": {
-          "horizontal": "left",
+          "horizontal": "right",
           "vertical": "center",
           "width": "60%",
           "height": "70%",
@@ -109,7 +133,13 @@
     },
     {
       "id": "step3",
-      "text": "エイズの死者数",
+      "text": {
+        "content": "エイズの死者数",
+        "position": {
+          "horizontal": "right",
+          "vertical": "center"
+        }
+      },
       "chart": {
         "type": "line",
         "dataFile": "data/trend_new_deaths_normalized.csv",
@@ -134,7 +164,13 @@
     },
     {
       "id": "step4",
-      "text": "地域別のHIV治療カバレッジ",
+      "text": {
+        "content": "地域別のHIV治療カバレッジ",
+        "position": {
+          "horizontal": "right",
+          "vertical": "center"
+        }
+      },
       "chart": {
         "layout": "triple",
         "visible": true,
