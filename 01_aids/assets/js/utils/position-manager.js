@@ -78,18 +78,50 @@ class PositionManager {
             animationDuration
         });
 
+        // 明示的なサイズが指定されたabsolute要素の垂直位置調整
+        if (container.style.height && (container.style.position === 'absolute' || container.classList.contains('absolute'))) {
+            if (vertical === 'center' || vertical === 'middle') {
+                container.style.top = '50%';
+                container.style.transform = 'translateY(-50%)';
+            } else if (vertical === 'top') {
+                container.style.top = '2rem';
+                container.style.transform = 'none';
+            } else if (vertical === 'bottom') {
+                container.style.top = 'auto';
+                container.style.bottom = '2rem';
+                container.style.transform = 'none';
+            }
+        }
+
         // レスポンシブ調整
         if (responsive) {
             this.applyResponsiveAdjustments(container, positionConfig);
         }
 
         if (debugMode) {
+            const computedStyle = window.getComputedStyle(container);
             console.log('PositionManager: Container after:', {
                 id: container.id,
                 classes: Array.from(container.classList),
-                justifyContent: window.getComputedStyle(container).justifyContent,
-                alignItems: window.getComputedStyle(container).alignItems
+                display: computedStyle.display,
+                justifyContent: computedStyle.justifyContent,
+                alignItems: computedStyle.alignItems,
+                position: computedStyle.position,
+                width: computedStyle.width,
+                height: computedStyle.height
             });
+            
+            // 子要素（SVG）の情報も出力
+            const svg = container.querySelector('svg');
+            if (svg) {
+                const svgStyle = window.getComputedStyle(svg);
+                console.log('PositionManager: SVG element:', {
+                    width: svg.getAttribute('width') || svgStyle.width,
+                    height: svg.getAttribute('height') || svgStyle.height,
+                    viewBox: svg.getAttribute('viewBox'),
+                    display: svgStyle.display
+                });
+            }
         }
     }
 
@@ -105,10 +137,25 @@ class PositionManager {
             'content-small-screen',
             // Tailwindクラスも削除
             'justify-start', 'justify-center', 'justify-end',
-            'items-start', 'items-center', 'items-end'
+            'items-start', 'items-center', 'items-end',
+            'inset-0'
         ];
         
+        // 重要：visibleクラスなど、位置制御以外のクラスは保持する
+        // 保持すべきTailwindクラスとその他の重要なクラス
+        const importantClasses = ['absolute', 'flex', 'visible'];
+        const preserveClasses = Array.from(container.classList).filter(
+            cls => !positionClasses.includes(cls) || importantClasses.includes(cls)
+        );
+        
         container.classList.remove(...positionClasses);
+        
+        // 保持すべきクラスが削除されていた場合は復元
+        preserveClasses.forEach(cls => {
+            if (!container.classList.contains(cls)) {
+                container.classList.add(cls);
+            }
+        });
     }
 
     /**
@@ -386,8 +433,8 @@ class PositionManager {
             chart: {
                 horizontal: 'center',
                 vertical: 'center',
-                width: '100%',
-                height: '100%',
+                width: 'auto',
+                height: 'auto',
                 padding: '2rem'
             },
             map: {

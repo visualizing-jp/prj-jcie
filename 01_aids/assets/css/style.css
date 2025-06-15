@@ -28,16 +28,49 @@
 
 /* チャートコンテナのスタイル */
 #chart-container {
-    opacity: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 1;
     transition: opacity 0.5s ease-in-out;
+    background-color: rgba(255, 0, 0, 0.1); /* デバッグ用：赤い半透明背景 */
 }
 
 #chart-container.visible {
     opacity: 1;
 }
 
+/* チャート内のSVG要素のスタイル */
+#chart-container svg {
+    flex-shrink: 0; /* SVGが縮小されないように */
+    margin: auto; /* SVG要素自体も中央配置 */
+}
+
+/* D3チャートコンテナ */
+#chart {
+    /* SVGのサイズに応じてコンテナサイズが決まる */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: visible; /* はみ出したSVGを表示 */
+}
+
 /* 地図コンテナのスタイル */
 #map-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     opacity: 0;
     transition: opacity 0.5s ease-in-out;
 }
@@ -48,6 +81,14 @@
 
 /* 画像コンテナのスタイル */
 #image-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     opacity: 0;
     transition: opacity 0.5s ease-in-out;
 }
@@ -64,6 +105,8 @@
 .positioned-content {
     position: absolute;
     display: flex;
+    justify-content: center; /* デフォルト：水平中央 */
+    align-items: center;     /* デフォルト：垂直中央 */
     top: 0;
     left: 0;
     right: 0;
@@ -87,6 +130,25 @@
     padding-right: 2rem;
 }
 
+/* 垂直位置との組み合わせを明示的に定義 */
+.positioned-content.content-left.content-middle,
+.positioned-content.content-center.content-middle,
+.positioned-content.content-right.content-middle {
+    align-items: center !important;
+}
+
+.positioned-content.content-left.content-top,
+.positioned-content.content-center.content-top,
+.positioned-content.content-right.content-top {
+    align-items: flex-start !important;
+}
+
+.positioned-content.content-left.content-bottom,
+.positioned-content.content-center.content-bottom,
+.positioned-content.content-right.content-bottom {
+    align-items: flex-end !important;
+}
+
 /* 垂直位置制御 */
 .positioned-content.content-top {
     align-items: flex-start !important;
@@ -100,6 +162,25 @@
 .positioned-content.content-bottom {
     align-items: flex-end !important;
     padding-bottom: 2rem;
+}
+
+/* 明示的なheightが指定された場合の垂直センタリング */
+.positioned-content.content-middle[style*="height"] {
+    top: 50% !important;
+    bottom: auto !important;
+    transform: translateY(-50%);
+}
+
+.positioned-content.content-top[style*="height"] {
+    top: 2rem !important;
+    bottom: auto !important;
+    transform: none;
+}
+
+.positioned-content.content-bottom[style*="height"] {
+    top: auto !important;
+    bottom: 2rem !important;
+    transform: none;
 }
 
 /* グリッドベースレイアウト */

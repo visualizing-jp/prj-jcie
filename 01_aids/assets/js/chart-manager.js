@@ -4,12 +4,15 @@
  */
 class ChartManager {
     constructor(containerId) {
-        this.container = d3.select(containerId);
+        // コンテナIDが#chart-containerの場合、#chartを使用
+        const actualContainerId = containerId === '#chart-container' ? '#chart' : containerId;
+        this.container = d3.select(actualContainerId);
         this.svg = null;
         this.currentChart = null;
         this.data = null;
         this.config = null;
         
+        console.log('ChartManager initialized with container:', actualContainerId);
         this.init();
     }
 
@@ -843,10 +846,15 @@ class ChartManager {
             
             if (config.widthPercent) {
                 actualWidth = window.innerWidth * (config.widthPercent / 100);
+                console.log(`ChartManager: widthPercent=${config.widthPercent}%, actualWidth=${actualWidth}px (window.innerWidth=${window.innerWidth}px)`);
             }
             if (config.heightPercent) {
                 actualHeight = window.innerHeight * (config.heightPercent / 100);
             }
+            
+            // コンテナの実際のサイズを確認
+            const containerRect = this.container.node().getBoundingClientRect();
+            console.log(`ChartManager: Container size: ${containerRect.width}x${containerRect.height}px`);
             
             this.svg = SVGHelper.initSVG(this.container, width, height, {
                 className: 'chart-svg',
@@ -855,6 +863,13 @@ class ChartManager {
                 actualWidth: actualWidth,
                 actualHeight: actualHeight
             });
+            
+            // デバッグ用：チャート背景を緑色に
+            this.svg.append('rect')
+                .attr('width', width)
+                .attr('height', height)
+                .attr('fill', 'lightgreen')
+                .attr('opacity', 0.3);
         } else {
             // フォールバック
             this.container.selectAll('*').remove();
@@ -862,6 +877,13 @@ class ChartManager {
                 .attr('viewBox', `0 0 ${width} ${height}`)
                 .style('width', config.widthPercent ? `${config.widthPercent}%` : '100%')
                 .style('height', 'auto');
+                
+            // デバッグ用：チャート背景を緑色に
+            this.svg.append('rect')
+                .attr('width', width)
+                .attr('height', height)
+                .attr('fill', 'lightgreen')
+                .attr('opacity', 0.3);
         }
         
         switch (type) {

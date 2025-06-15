@@ -171,7 +171,7 @@ class ScrollytellingApp {
      */
     initManagers() {
         console.log('Initializing managers...');
-        this.chartManager = new ChartManager('#chart-container');
+        this.chartManager = new ChartManager('#chart');
         this.mapManager = new MapManager('#map-container');
         this.imageManager = new ImageManager('#image-container');
         
@@ -293,6 +293,9 @@ class ScrollytellingApp {
             pubsub.publish(EVENTS.IMAGE_UPDATE, stepConfig.image);
         }
 
+        // 全コンテンツコンテナの表示状態をリセット
+        this.resetContentVisibility();
+        
         // コンテンツポジション設定を適用
         this.applyStepPositioning(stepConfig, index);
         
@@ -454,6 +457,13 @@ class ScrollytellingApp {
             return;
         }
 
+        // チャートが表示される場合、chart-containerにvisibleクラスを追加
+        if (chartConfig.visible !== false) {
+            container.classList.add('visible');
+        } else {
+            container.classList.remove('visible');
+        }
+
         // ポジション設定を取得
         const positionConfig = PositionManager.mergePositionConfig(
             chartConfig.position || {},
@@ -480,13 +490,17 @@ class ScrollytellingApp {
         console.log(`Applied chart positioning for step ${stepIndex}:`, positionConfig);
         
         // デバッグ用：実際のコンテナクラスとスタイルを確認
-        console.log(`Chart container classes:`, Array.from(container.classList));
-        console.log(`Chart container styles:`, {
+        const computedStyle = window.getComputedStyle(container);
+        console.log(`Chart-container classes:`, Array.from(container.classList));
+        console.log(`Chart-container styles:`, {
             position: container.style.position,
-            justifyContent: window.getComputedStyle(container).justifyContent,
-            alignItems: window.getComputedStyle(container).alignItems,
+            display: computedStyle.display,
+            justifyContent: computedStyle.justifyContent,
+            alignItems: computedStyle.alignItems,
             width: container.style.width,
-            height: container.style.height
+            height: container.style.height,
+            top: computedStyle.top,
+            left: computedStyle.left
         });
     }
 
@@ -813,6 +827,23 @@ class ScrollytellingApp {
                     // フルのテキストポジションを適用（白い矩形の位置制御も含む）
                     this.applyTextPositioning(stepConfig, stepIndex);
                 }
+            }
+        });
+    }
+
+    /**
+     * 全コンテンツコンテナの表示状態をリセット
+     */
+    resetContentVisibility() {
+        const containers = [
+            document.getElementById('chart-container'),
+            document.getElementById('map-container'),
+            document.getElementById('image-container')
+        ];
+
+        containers.forEach(container => {
+            if (container) {
+                container.classList.remove('visible');
             }
         });
     }
