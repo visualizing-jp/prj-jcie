@@ -90,7 +90,20 @@ class ChartManager {
         const allNewValues = newSeries.flatMap(s => s.values);
         
         const { width, height } = this.getResponsiveSize(config);
-        const margin = config.margin || { top: 20, right: 20, bottom: 40, left: 40 };
+        
+        // ChartLayoutHelperを使用して動的マージンを計算
+        let margin;
+        if (window.ChartLayoutHelper) {
+            margin = ChartLayoutHelper.calculateDynamicMargins(data, config, {
+                chartType: 'line',
+                hasLegend: config.showLegend !== false && config.multiSeries,
+                screenWidth: window.innerWidth,
+                screenHeight: window.innerHeight
+            });
+        } else {
+            // フォールバック：従来の固定マージン
+            margin = config.margin || { top: 20, right: 20, bottom: 40, left: 40 };
+        }
         const innerWidth = width - margin.left - margin.right;
         const innerHeight = height - margin.top - margin.bottom;
         
@@ -298,10 +311,18 @@ class ChartManager {
                 newXScale.domain(xExtent);
                 newYScale.domain(yExtent).nice();
                 
-                // 軸を更新
+                // 軸を更新（ChartLayoutHelperのフォーマッターを使用）
                 const isYearData = allCurrentData.every(d => !isNaN(d[xField]) && d[xField] > 1900 && d[xField] < 2100);
-                const xAxis = isYearData ? d3.axisBottom(newXScale).tickFormat(d3.format("d")) : d3.axisBottom(newXScale);
-                const yAxis = d3.axisLeft(newYScale);
+                let xAxis, yAxis;
+                
+                if (window.ChartLayoutHelper) {
+                    const yFormatter = (value) => ChartLayoutHelper.formatAxisNumber(value, { useShortFormat: true });
+                    xAxis = isYearData ? d3.axisBottom(newXScale).tickFormat(d3.format("d")) : d3.axisBottom(newXScale);
+                    yAxis = d3.axisLeft(newYScale).tickFormat(yFormatter);
+                } else {
+                    xAxis = isYearData ? d3.axisBottom(newXScale).tickFormat(d3.format("d")) : d3.axisBottom(newXScale);
+                    yAxis = d3.axisLeft(newYScale);
+                }
                 
                 g.select('.x-axis').transition().duration(200).call(xAxis);
                 g.select('.y-axis').transition().duration(200).call(yAxis);
@@ -549,7 +570,19 @@ class ChartManager {
         const { data, config, title } = chartConfig;
         const { x, y, width, height } = layout;
         
-        const margin = config.margin || { top: 20, right: 20, bottom: 40, left: 50 };
+        // ChartLayoutHelperを使用して動的マージンを計算
+        let margin;
+        if (window.ChartLayoutHelper) {
+            margin = ChartLayoutHelper.calculateDynamicMargins(data, config, {
+                chartType: 'line',
+                hasLegend: config.showLegend !== false && config.multiSeries,
+                screenWidth: width,  // 個別チャートの幅を使用
+                screenHeight: height // 個別チャートの高さを使用
+            });
+        } else {
+            // フォールバック：従来の固定マージン
+            margin = config.margin || { top: 20, right: 20, bottom: 40, left: 50 };
+        }
         const innerWidth = width - margin.left - margin.right;
         const innerHeight = height - margin.top - margin.bottom;
         
@@ -612,11 +645,22 @@ class ChartManager {
         const colorScale = d3.scaleOrdinal(colors)
             .domain(series.map(d => d.name));
 
-        // 軸を描画
-        const xAxis = isYearData 
-            ? d3.axisBottom(xScale).tickFormat(d3.format("d")).ticks(6)
-            : d3.axisBottom(xScale).ticks(6);
-        const yAxis = d3.axisLeft(yScale).ticks(5);
+        // 軸を描画（ChartLayoutHelperのフォーマッターを使用）
+        let xAxis, yAxis;
+        if (window.ChartLayoutHelper) {
+            const xFormatter = ChartLayoutHelper.formatAxisNumber;
+            const yFormatter = (value) => ChartLayoutHelper.formatAxisNumber(value, { useShortFormat: true });
+            
+            xAxis = isYearData 
+                ? d3.axisBottom(xScale).tickFormat(d3.format("d")).ticks(6)
+                : d3.axisBottom(xScale).ticks(6);
+            yAxis = d3.axisLeft(yScale).tickFormat(yFormatter).ticks(5);
+        } else {
+            xAxis = isYearData 
+                ? d3.axisBottom(xScale).tickFormat(d3.format("d")).ticks(6)
+                : d3.axisBottom(xScale).ticks(6);
+            yAxis = d3.axisLeft(yScale).ticks(5);
+        }
 
         g.append('g')
             .attr('class', 'chart-axis x-axis')
@@ -711,7 +755,19 @@ class ChartManager {
     renderChart(type, data, config) {
         const { width, height } = this.getResponsiveSize(config);
         
-        const margin = config.margin || { top: 40, right: 20, bottom: 40, left: 50 };
+        // ChartLayoutHelperを使用して動的マージンを計算
+        let margin;
+        if (window.ChartLayoutHelper) {
+            margin = ChartLayoutHelper.calculateDynamicMargins(data, config, {
+                chartType: type,
+                hasLegend: config.showLegend !== false && config.multiSeries,
+                screenWidth: window.innerWidth,
+                screenHeight: window.innerHeight
+            });
+        } else {
+            // フォールバック：従来の固定マージン
+            margin = config.margin || { top: 40, right: 20, bottom: 40, left: 50 };
+        }
         
         // SVGHelperを使用してレスポンシブSVGを作成
         if (window.SVGHelper) {
@@ -906,11 +962,21 @@ class ChartManager {
         const colorScale = d3.scaleOrdinal(colors)
             .domain(series.map(d => d.name));
 
-        // 軸を描画
-        const xAxis = isYearData 
-            ? d3.axisBottom(xScale).tickFormat(d3.format("d"))  // 年データは整数表示
-            : d3.axisBottom(xScale);
-        const yAxis = d3.axisLeft(yScale);
+        // 軸を描画（ChartLayoutHelperのフォーマッターを使用）
+        let xAxis, yAxis;
+        if (window.ChartLayoutHelper) {
+            const yFormatter = (value) => ChartLayoutHelper.formatAxisNumber(value, { useShortFormat: true });
+            
+            xAxis = isYearData 
+                ? d3.axisBottom(xScale).tickFormat(d3.format("d"))  // 年データは整数表示
+                : d3.axisBottom(xScale);
+            yAxis = d3.axisLeft(yScale).tickFormat(yFormatter);
+        } else {
+            xAxis = isYearData 
+                ? d3.axisBottom(xScale).tickFormat(d3.format("d"))  // 年データは整数表示
+                : d3.axisBottom(xScale);
+            yAxis = d3.axisLeft(yScale);
+        }
 
         g.append('g')
             .attr('class', 'chart-axis x-axis')
@@ -1049,7 +1115,7 @@ class ChartManager {
 
         g.append('g')
             .attr('class', 'chart-axis y-axis')
-            .call(d3.axisLeft(yScale));
+            .call(yAxis);
 
         // 棒を描画
         g.selectAll('.bar')
