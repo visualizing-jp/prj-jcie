@@ -1339,6 +1339,9 @@ class ChartManager {
     renderPieChartInGroup(g, data, config) {
         const { radius, labelField = 'label', valueField = 'value', colors = d3.schemeCategory10 } = config;
         
+        // データの合計を計算
+        const total = data.reduce((sum, d) => sum + (+d[valueField]), 0);
+        
         // パイ生成器
         const pie = d3.pie()
             .value(d => +d[valueField])
@@ -1380,15 +1383,37 @@ class ChartManager {
             .innerRadius(radius * 0.7)
             .outerRadius(radius * 0.7);
         
-        slices.append('text')
-            .attr('class', 'pie-label')
+        // ラベルグループを作成
+        const labelGroups = slices.append('g')
+            .attr('class', 'pie-label-group')
             .attr('transform', d => `translate(${labelArc.centroid(d)})`)
+            .style('opacity', 0);
+        
+        // ラベル名を追加
+        labelGroups.append('text')
+            .attr('class', 'pie-label-name')
             .attr('text-anchor', 'middle')
-            .attr('font-size', '12px')
+            .attr('y', '-0.3em')
+            .attr('font-size', '11px')
+            .attr('font-weight', 'bold')
             .attr('fill', '#333')
-            .style('opacity', 0)
-            .text(d => `${d.data[valueField]}%`)
-            .transition()
+            .text(d => d.data[labelField]);
+        
+        // パーセンテージを追加
+        labelGroups.append('text')
+            .attr('class', 'pie-label-value')
+            .attr('text-anchor', 'middle')
+            .attr('y', '0.8em')
+            .attr('font-size', '11px')
+            .attr('fill', '#666')
+            .text(d => {
+                // 実際のパーセンテージを計算
+                const percentage = (d.data[valueField] / total * 100).toFixed(1);
+                return `${percentage}%`;
+            });
+        
+        // ラベルグループをフェードイン
+        labelGroups.transition()
             .duration(500)
             .delay((d, i) => i * 100 + 200)
             .style('opacity', 1);
