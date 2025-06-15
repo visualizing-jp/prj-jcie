@@ -316,7 +316,9 @@ class ChartManager {
                 let xAxis, yAxis;
                 
                 if (window.ChartLayoutHelper) {
-                    const yFormatter = (value) => ChartLayoutHelper.formatAxisNumber(value, { useShortFormat: true });
+                    // 単位情報を分析（現在表示中のデータから）
+                    const unitInfo = ChartLayoutHelper.analyzeUnits(allCurrentData, this.config || {});
+                    const yFormatter = (value) => ChartLayoutHelper.formatAxisWithUnits(value, unitInfo.yAxis);
                     xAxis = isYearData ? d3.axisBottom(newXScale).tickFormat(d3.format("d")) : d3.axisBottom(newXScale);
                     yAxis = d3.axisLeft(newYScale).tickFormat(yFormatter);
                 } else {
@@ -645,11 +647,17 @@ class ChartManager {
         const colorScale = d3.scaleOrdinal(colors)
             .domain(series.map(d => d.name));
 
-        // 軸を描画（ChartLayoutHelperのフォーマッターを使用）
+        // 単位情報を分析
+        let unitInfo = { xAxis: {}, yAxis: {} };
+        if (window.ChartLayoutHelper) {
+            unitInfo = ChartLayoutHelper.analyzeUnits(data, config);
+        }
+
+        // 軸を描画（単位情報を使ったフォーマッターを使用）
         let xAxis, yAxis;
         if (window.ChartLayoutHelper) {
-            const xFormatter = ChartLayoutHelper.formatAxisNumber;
-            const yFormatter = (value) => ChartLayoutHelper.formatAxisNumber(value, { useShortFormat: true });
+            const xFormatter = (value) => ChartLayoutHelper.formatAxisWithUnits(value, unitInfo.xAxis);
+            const yFormatter = (value) => ChartLayoutHelper.formatAxisWithUnits(value, unitInfo.yAxis);
             
             xAxis = isYearData 
                 ? d3.axisBottom(xScale).tickFormat(d3.format("d")).ticks(6)
@@ -670,6 +678,11 @@ class ChartManager {
         g.append('g')
             .attr('class', 'chart-axis y-axis')
             .call(yAxis);
+
+        // 軸ラベル（単位表示）を追加
+        if (window.ChartLayoutHelper && unitInfo) {
+            ChartLayoutHelper.addAxisLabels(g, unitInfo, width, height);
+        }
 
         // ライン生成器
         const line = d3.line()
@@ -962,10 +975,17 @@ class ChartManager {
         const colorScale = d3.scaleOrdinal(colors)
             .domain(series.map(d => d.name));
 
-        // 軸を描画（ChartLayoutHelperのフォーマッターを使用）
+        // 単位情報を分析
+        let unitInfo = { xAxis: {}, yAxis: {} };
+        if (window.ChartLayoutHelper) {
+            unitInfo = ChartLayoutHelper.analyzeUnits(data, config);
+        }
+
+        // 軸を描画（単位情報を使ったフォーマッターを使用）
         let xAxis, yAxis;
         if (window.ChartLayoutHelper) {
-            const yFormatter = (value) => ChartLayoutHelper.formatAxisNumber(value, { useShortFormat: true });
+            const xFormatter = (value) => ChartLayoutHelper.formatAxisWithUnits(value, unitInfo.xAxis);
+            const yFormatter = (value) => ChartLayoutHelper.formatAxisWithUnits(value, unitInfo.yAxis);
             
             xAxis = isYearData 
                 ? d3.axisBottom(xScale).tickFormat(d3.format("d"))  // 年データは整数表示
@@ -986,6 +1006,11 @@ class ChartManager {
         g.append('g')
             .attr('class', 'chart-axis y-axis')
             .call(yAxis);
+
+        // 軸ラベル（単位表示）を追加
+        if (window.ChartLayoutHelper && unitInfo) {
+            ChartLayoutHelper.addAxisLabels(g, unitInfo, innerWidth, innerHeight);
+        }
 
         // ライン生成器
         const line = d3.line()
@@ -1087,14 +1112,32 @@ class ChartManager {
      * 棒グラフを描画
      */
     renderBarChart(data, config) {
-        const { width, height, margin, xField = 'category', yField = 'value', color = '#10b981' } = config;
+        const { 
+            width, height, margin, 
+            xField = 'category', yField = 'value', 
+            color = '#10b981',
+            title = ''
+        } = config;
         
-        const svg = this.initSVG(width, height);
+        const svg = this.svg;
         const innerWidth = width - margin.left - margin.right;
         const innerHeight = height - margin.top - margin.bottom;
         
         const g = svg.append('g')
             .attr('transform', `translate(${margin.left},${margin.top})`);
+
+        // タイトルを追加
+        if (title) {
+            g.append('text')
+                .attr('class', 'chart-title')
+                .attr('x', 0)
+                .attr('y', -10)
+                .attr('text-anchor', 'start')
+                .attr('font-size', '16px')
+                .attr('font-weight', 'bold')
+                .attr('fill', '#333')
+                .text(title);
+        }
 
         // スケール設定
         const xScale = d3.scaleBand()
@@ -1107,15 +1150,38 @@ class ChartManager {
             .nice()
             .range([innerHeight, 0]);
 
-        // 軸を描画
+        // 単位情報を分析
+        let unitInfo = { xAxis: {}, yAxis: {} };
+        if (window.ChartLayoutHelper) {
+            unitInfo = ChartLayoutHelper.analyzeUnits(data, config);
+        }
+
+        // 軸を描画（単位情報を使ったフォーマッターを使用）
+        let xAxis, yAxis;
+        if (window.ChartLayoutHelper) {
+            const xFormatter = (value) => ChartLayoutHelper.formatAxisWithUnits(value, unitInfo.xAxis);
+            const yFormatter = (value) => ChartLayoutHelper.formatAxisWithUnits(value, unitInfo.yAxis);
+            
+            xAxis = d3.axisBottom(xScale);
+            yAxis = d3.axisLeft(yScale).tickFormat(yFormatter);
+        } else {
+            xAxis = d3.axisBottom(xScale);
+            yAxis = d3.axisLeft(yScale);
+        }
+
         g.append('g')
             .attr('class', 'chart-axis x-axis')
             .attr('transform', `translate(0,${innerHeight})`)
-            .call(d3.axisBottom(xScale));
+            .call(xAxis);
 
         g.append('g')
             .attr('class', 'chart-axis y-axis')
             .call(yAxis);
+
+        // 軸ラベル（単位表示）を追加
+        if (window.ChartLayoutHelper && unitInfo) {
+            ChartLayoutHelper.addAxisLabels(g, unitInfo, innerWidth, innerHeight);
+        }
 
         // 棒を描画
         g.selectAll('.bar')

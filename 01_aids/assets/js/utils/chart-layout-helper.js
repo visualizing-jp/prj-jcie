@@ -25,12 +25,15 @@ class ChartLayoutHelper {
         // データ分析
         const analysis = this.analyzeData(data, config);
 
+        // 単位情報を分析
+        const unitInfo = this.analyzeUnits(data, config);
+
         // 各方向のマージンを計算
         const margins = {
             top: this.calculateTopMargin(baseMargins.top, analysis, config),
             right: this.calculateRightMargin(baseMargins.right, analysis, hasLegend),
             bottom: this.calculateBottomMargin(baseMargins.bottom, analysis),
-            left: this.calculateLeftMargin(baseMargins.left, analysis)
+            left: this.calculateLeftMargin(baseMargins.left, analysis, unitInfo)
         };
 
         // レスポンシブ調整
@@ -194,7 +197,7 @@ class ChartLayoutHelper {
      * @param {Object} analysis - データ分析結果
      * @returns {number} 計算された左マージン
      */
-    static calculateLeftMargin(baseLeft, analysis) {
+    static calculateLeftMargin(baseLeft, analysis, unitInfo = null) {
         let margin = baseLeft;
 
         // 数値の桁数に基づく計算
@@ -202,16 +205,28 @@ class ChartLayoutHelper {
         
         // 最大値の桁数を計算
         const maxAbsValue = Math.max(Math.abs(maxValue), Math.abs(minValue));
-        const formattedMax = this.formatAxisNumber(maxAbsValue);
-        const estimatedWidth = formattedMax.length * 8; // 文字幅8px
+        
+        // 実際のY軸フォーマッターと同じ形式を使用
+        let formattedMax;
+        if (unitInfo && unitInfo.yAxis) {
+            formattedMax = this.formatAxisWithUnits(maxAbsValue, unitInfo.yAxis);
+        } else {
+            formattedMax = this.formatAxisNumber(maxAbsValue);
+        }
+        
+        // より保守的な文字幅計算（日本語も考慮）
+        const estimatedWidth = formattedMax.length * 10; // 文字幅10px（日本語対応）
 
         // 負の値がある場合はマイナス記号分を追加
-        const negativeAdjustment = hasNegativeValues ? 10 : 0;
+        const negativeAdjustment = hasNegativeValues ? 15 : 0;
 
         // Y軸ラベル（単位）の幅も考慮
-        const axisLabelWidth = 30;
+        const axisLabelWidth = 40;
 
-        return Math.max(margin, estimatedWidth + negativeAdjustment + axisLabelWidth);
+        // より安全なマージン計算
+        const calculatedMargin = estimatedWidth + negativeAdjustment + axisLabelWidth;
+        
+        return Math.max(margin, calculatedMargin);
     }
 
     /**
@@ -285,6 +300,317 @@ class ChartLayoutHelper {
                 maximumFractionDigits: decimalPlaces
             });
         }
+    }
+
+    /**
+     * データに基づいて単位情報を分析・推測する
+     * @param {Array} data - チャートデータ
+     * @param {Object} config - チャート設定
+     * @returns {Object} 単位情報
+     */
+    static analyzeUnits(data, config) {
+        const { xField = 'year', yField = 'value' } = config;
+        
+        // 設定で明示的に単位が指定されている場合はそれを使用
+        if (config.units) {
+            return config.units;
+        }
+
+        // データから単位を推測
+        const yValues = data.map(d => DataHelper.safeNumericConversion(d[yField])).filter(v => !isNaN(v));
+        const xValues = data.map(d => DataHelper.safeNumericConversion(d[xField])).filter(v => !isNaN(v));
+        
+        const maxY = Math.max(...yValues, 0);
+        const minY = Math.min(...yValues, 0);
+        const maxX = Math.max(...xValues, 0);
+        const minX = Math.min(...xValues, 0);
+
+        // X軸の単位判定（年度データの場合）
+        const isYearData = DataHelper.isYearData(data, xField);
+        const xAxisUnit = {
+            label: isYearData ? '年' : '数値',
+            suffix: '',
+            format: isYearData ? 'year' : 'number'
+        };
+
+        // Y軸の単位判定
+        let yAxisUnit = {
+            label: '',
+            suffix: '',
+            format: 'number',
+            scale: 'auto'
+        };
+
+        // データファイル名から単位を推測
+        const dataFile = config.dataFile || '';
+        
+        if (dataFile.includes('資金') || dataFile.includes('fund')) {
+            // 資金データ
+            if (maxY >= 1e9) {
+                yAxisUnit = {
+                    label: '資金額（億米ドル）',
+                    suffix: '',
+                    format: 'currency',
+                    scale: 'billion',
+                    unit: 'USD'
+                };
+            } else if (maxY >= 1e6) {
+                yAxisUnit = {
+                    label: '資金額（百万米ドル）',
+                    suffix: '',
+                    format: 'currency',
+                    scale: 'million',
+                    unit: 'USD'
+                };
+            }
+        } else if (dataFile.includes('母子感染') || dataFile.includes('treatment') || 
+                   dataFile.includes('therapy') || dataFile.includes('割合') ||
+                   dataFile.includes('ratio') || (maxY <= 100 && minY >= 0)) {
+            // パーセンテージデータ
+            yAxisUnit = {
+                label: '割合（%）',
+                suffix: '%',
+                format: 'percent',
+                scale: 'none'
+            };
+        } else if (dataFile.includes('infections') || dataFile.includes('deaths') || 
+                   dataFile.includes('感染') || dataFile.includes('死') ||
+                   dataFile.includes('PrEP') || dataFile.includes('new_') ||
+                   dataFile.includes('trend_') || dataFile.includes('normalized')) {
+            // 人数データ
+            if (maxY >= 1e6) {
+                yAxisUnit = {
+                    label: '人数（百万人）',
+                    suffix: '',
+                    format: 'people',
+                    scale: 'million',
+                    unit: 'people'
+                };
+            } else if (maxY >= 1e3) {
+                yAxisUnit = {
+                    label: '人数（千人）',
+                    suffix: '',
+                    format: 'people',
+                    scale: 'thousand',
+                    unit: 'people'
+                };
+            } else {
+                yAxisUnit = {
+                    label: '人数',
+                    suffix: '人',
+                    format: 'people',
+                    scale: 'none',
+                    unit: 'people'
+                };
+            }
+        } else {
+            // デフォルトの場合、値の範囲に基づいて単位を推測
+            if (maxY >= 1e9) {
+                yAxisUnit = {
+                    label: '数値（十億）',
+                    suffix: '',
+                    format: 'number',
+                    scale: 'billion',
+                    unit: 'number'
+                };
+            } else if (maxY >= 1e6) {
+                yAxisUnit = {
+                    label: '数値（百万）',
+                    suffix: '',
+                    format: 'number',
+                    scale: 'million',
+                    unit: 'number'
+                };
+            } else if (maxY >= 1e3) {
+                yAxisUnit = {
+                    label: '数値（千）',
+                    suffix: '',
+                    format: 'number',
+                    scale: 'thousand',
+                    unit: 'number'
+                };
+            } else {
+                yAxisUnit = {
+                    label: '数値',
+                    suffix: '',
+                    format: 'number',
+                    scale: 'none',
+                    unit: 'number'
+                };
+            }
+        }
+
+        const result = {
+            xAxis: xAxisUnit,
+            yAxis: yAxisUnit
+        };
+        
+        // デバッグ用ログ
+        console.log('analyzeUnits result for dataFile:', dataFile);
+        console.log('xAxisUnit:', xAxisUnit);
+        console.log('yAxisUnit:', yAxisUnit);
+        console.log('maxY:', maxY, 'minY:', minY);
+        
+        return result;
+    }
+
+    /**
+     * 単位情報を含めて軸の数値をフォーマットする
+     * @param {number} value - 数値
+     * @param {Object} unitConfig - 単位設定
+     * @param {Object} options - フォーマットオプション
+     * @returns {string} フォーマットされた文字列
+     */
+    static formatAxisWithUnits(value, unitConfig = {}, options = {}) {
+        const { format, scale, suffix, unit } = unitConfig;
+        const { locale = 'ja-JP', decimalPlaces = 1 } = options;
+
+        if (value === 0) return '0';
+
+        let formattedValue = value;
+
+        // スケール変換
+        switch(scale) {
+            case 'billion':
+                formattedValue = value / 1e9;
+                break;
+            case 'million':
+                formattedValue = value / 1e6;
+                break;
+            case 'thousand':
+                formattedValue = value / 1e3;
+                break;
+            case 'none':
+            case 'auto':
+            default:
+                formattedValue = value;
+                break;
+        }
+
+        // フォーマットタイプに応じた処理
+        let formatted;
+        switch(format) {
+            case 'percent':
+                formatted = Math.round(formattedValue * 10) / 10; // 小数点1桁で四捨五入
+                return `${formatted}%`;
+                
+            case 'currency':
+                if (formattedValue >= 1) {
+                    formatted = Math.round(formattedValue * 10) / 10;
+                } else {
+                    formatted = Math.round(formattedValue * 100) / 100;
+                }
+                return formatted.toLocaleString(locale);
+                
+            case 'people':
+                formatted = Math.round(formattedValue * 10) / 10;
+                return formatted.toLocaleString(locale);
+                
+            case 'year':
+                return Math.round(formattedValue).toString();
+                
+            case 'number':
+            default:
+                if (formattedValue >= 1) {
+                    formatted = Math.round(formattedValue * 10) / 10;
+                } else {
+                    formatted = Math.round(formattedValue * 100) / 100;
+                }
+                formatted = formatted.toLocaleString(locale);
+                break;
+        }
+
+        // サフィックス追加
+        return suffix ? `${formatted}${suffix}` : formatted;
+    }
+
+    /**
+     * 軸ラベル（タイトル）を追加する
+     * @param {d3.Selection} g - グループ要素
+     * @param {Object} unitInfo - 単位情報
+     * @param {number} width - チャート幅
+     * @param {number} height - チャート高さ
+     * @param {Object} options - オプション
+     */
+    static addAxisLabels(g, unitInfo, width, height, options = {}) {
+        const {
+            xAxisLabelOffset = 35,
+            yAxisLabelOffset = -40,
+            labelFontSize = '12px',
+            labelColor = '#666'
+        } = options;
+
+        // デバッグ用ログ
+        console.log('addAxisLabels called with unitInfo:', unitInfo);
+
+        // X軸ラベル
+        if (unitInfo.xAxis && unitInfo.xAxis.label) {
+            console.log('Adding X-axis label:', unitInfo.xAxis.label);
+            g.append('text')
+                .attr('class', 'axis-label x-axis-label')
+                .attr('x', width / 2)
+                .attr('y', height + xAxisLabelOffset)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', labelFontSize)
+                .attr('fill', labelColor)
+                .text(unitInfo.xAxis.label);
+        } else {
+            console.log('No X-axis label to add');
+        }
+
+        // Y軸ラベル
+        if (unitInfo.yAxis && unitInfo.yAxis.label) {
+            console.log('Adding Y-axis label:', unitInfo.yAxis.label);
+            g.append('text')
+                .attr('class', 'axis-label y-axis-label')
+                .attr('transform', 'rotate(-90)')
+                .attr('x', -height / 2)
+                .attr('y', yAxisLabelOffset)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', labelFontSize)
+                .attr('fill', labelColor)
+                .text(unitInfo.yAxis.label);
+        } else {
+            console.log('No Y-axis label to add');
+        }
+    }
+
+    /**
+     * 多言語対応の単位定義を取得
+     * @param {string} locale - ロケール
+     * @returns {Object} 単位定義
+     */
+    static getUnitDefinitions(locale = 'ja') {
+        const definitions = {
+            ja: {
+                people: '人',
+                thousand_people: '千人',
+                million_people: '百万人',
+                percent: '%',
+                year: '年',
+                usd: '米ドル',
+                million_usd: '百万米ドル',
+                billion_usd: '億米ドル',
+                ratio: '割合',
+                count: '数',
+                amount: '額'
+            },
+            en: {
+                people: 'people',
+                thousand_people: 'K people',
+                million_people: 'M people',
+                percent: '%',
+                year: 'year',
+                usd: 'USD',
+                million_usd: 'M USD',
+                billion_usd: 'B USD',
+                ratio: 'ratio',
+                count: 'count',
+                amount: 'amount'
+            }
+        };
+
+        return definitions[locale] || definitions.ja;
     }
 
     /**
