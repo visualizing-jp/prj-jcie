@@ -300,6 +300,7 @@
         "center": [0, 0],
         "zoom": 1,
         "visible": true,
+        "mode": "world-overview",
         "highlightCountries": ["Nigeria", "Malawi", "Kenya", "Belize", "United States of America", "Philippines"],
         "cities": []
       }

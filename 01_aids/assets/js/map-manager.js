@@ -418,7 +418,7 @@ class MapManager {
 
         // アニメーション開始前に既存の都市マーカー・ラベルを削除
         const mapGroup = this.svg.select('.map-group');
-        mapGroup.selectAll('.map-city, .city-label')
+        mapGroup.selectAll('.map-city, .city-label, .single-city-marker, .single-city-label, .single-city-info')
             .transition()
             .duration(200)
             .style('opacity', 0)
