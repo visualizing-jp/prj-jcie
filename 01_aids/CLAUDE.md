@@ -244,7 +244,20 @@ svg.attr('viewBox', '0 0 800 600')
 ### 概要
 コードの重複を削減し、保守性を向上させるため、以下の共通ユーティリティクラスを実装。
 
-### 1. SVGHelper (`utils/svg-helper.js`)
+### 1. BaseManager (`utils/base-manager.js`)
+すべてのManagerクラスの基底クラス。
+
+#### 主な機能
+- **共通初期化処理**: constructor、init、setupEventListeners
+- **表示制御**: show/hide（フェードイン・アウト対応）
+- **状態管理**: updateState（エラーハンドリング付き）
+- **設定マージ**: mergeConfig（ディープマージ対応）
+- **非同期処理**: safeAsyncOperation（エラー処理付き）
+- **ユーティリティ**: clearContainer、stopAnimations、getDebugInfo
+- **設定検証**: validateConfig
+- **リソース管理**: destroy
+
+### 2. SVGHelper (`utils/svg-helper.js`)
 D3.jsを使用したSVG操作の共通処理を提供。
 
 #### 主な機能
@@ -256,8 +269,10 @@ D3.jsを使用したSVG操作の共通処理を提供。
 - **calculatePosition**: ビューポート内での要素位置計算
 - **addGridLines**: グリッドラインの追加
 - **createTooltip**: ツールチップコンテナの作成
+- **トランジション機能**: createTransition、fadeIn/fadeOut、scaleTransition、sequenceTransitions
+- **アクセシビリティ対応**: accessibleTransition（prefers-reduced-motion対応）
 
-### 2. AnimationConfig (`utils/animation-config.js`)
+### 3. AnimationConfig (`utils/animation-config.js`)
 D3.jsのトランジション設定を一元管理。
 
 #### 主な機能
@@ -275,7 +290,7 @@ D3.jsのトランジション設定を一元管理。
 - **sequence**: 連続トランジション
 - **アクセシビリティ対応**: prefers-reduced-motionの考慮
 
-### 3. ErrorHandler (`utils/error-handler.js`)
+### 4. ErrorHandler (`utils/error-handler.js`)
 アプリケーション全体のエラー処理を統一管理。
 
 #### 主な機能
@@ -288,34 +303,106 @@ D3.jsのトランジション設定を一元管理。
 - **デバッグ機能**: エラーログの保存・エクスポート
 - **開発環境対応**: localhost環境での詳細デバッグパネル
 
+### 5. CoordinateHelper (`utils/coordinate-helper.js`)
+座標計算とプロジェクション処理のユーティリティクラス。
+
+#### 主な機能
+- **safeProjection**: 安全な座標プロジェクション変換
+- **projectCoordinates**: 座標配列の一括変換
+- **coordsToObject/objectToCoords**: 座標形式の相互変換
+- **pixelDistance/geographicDistance**: 距離計算
+- **calculateBounds**: 座標配列の境界矩形計算
+- **scaleCoordinate**: 座標系のスケール変換
+- **calculateCentroid**: 中心点計算
+- **validateCoordinate**: 座標の妥当性検証
+
+### 6. DataHelper (`utils/data-helper.js`)
+データ処理とバリデーションのユーティリティクラス。
+
+#### 主な機能
+- **validateData**: データの存在チェックとバリデーション
+- **safeNumericConversion**: 型安全な数値変換
+- **applyFilters**: データフィルタリング（AND/OR、範囲、正規表現対応）
+- **compareValues**: 値の比較（大文字小文字、部分一致対応）
+- **isYearData**: 日付データの判定
+- **removeDuplicates**: 重複削除
+- **groupBy**: データのグループ化
+- **sortData**: データのソート
+- **calculateStats**: 統計情報計算
+- **transformToSeries**: 系列データへの変換
+- **handleMissingValues**: 欠損値の処理
+
+### 7. ConfigHelper (`utils/config-helper.js`)
+設定管理のユーティリティクラス。
+
+#### 主な機能
+- **デフォルト設定**: getDefaultChartConfig、getDefaultMapConfig等
+- **mergeConfig**: 設定のディープマージ（配列マージ戦略、型検証対応）
+- **validateConfig**: 設定の検証（JSONスキーマベース）
+- **optimizeConfig**: 設定ファイルの最適化（共通設定の抽出）
+- **deepClone**: オブジェクトのディープクローン
+- **isPlainObject**: プレーンオブジェクトの判定
+
 ### 使用例
 ```javascript
+// BaseManager継承
+class ChartManager extends BaseManager {
+    constructor(containerId) {
+        super(containerId);
+        // 追加の初期化
+    }
+    
+    setupEventListeners() {
+        super.setupEventListeners();
+        // 追加のイベントリスナー
+    }
+}
+
 // SVGHelper
 const { width, height } = SVGHelper.getResponsiveSize(container, {
     defaultWidth: 800,
     defaultHeight: 600,
-    scale: 0.8
+    widthPercent: 80
 });
 const svg = SVGHelper.initSVG(container, width, height);
 
-// AnimationConfig
-AnimationConfig.apply(selection, 'SLOW_SMOOTH')
-    .attr('transform', `translate(${x}, ${y})`);
+// DataHelper
+const validation = DataHelper.validateData(data, ['year', 'value']);
+if (!validation.valid) {
+    console.error('Data validation failed:', validation.error);
+    return;
+}
 
-// ErrorHandler
-ErrorHandler.wrap(() => {
-    // エラーが発生する可能性のある処理
-    chartManager.renderChart(type, data, config);
-}, 'ChartManager.renderChart', {
-    type: ErrorHandler.ERROR_TYPES.RENDER,
-    severity: ErrorHandler.SEVERITY.HIGH
-})();
+// ConfigHelper
+const config = ConfigHelper.mergeConfig(
+    ConfigHelper.getDefaultChartConfig(),
+    userConfig
+);
+```
+
+### スクリプト読み込み順序
+```html
+<!-- 共通ユーティリティ -->
+<script src="assets/js/utils/base-manager.js"></script>
+<script src="assets/js/utils/svg-helper.js"></script>
+<script src="assets/js/utils/animation-config.js"></script>
+<script src="assets/js/utils/error-handler.js"></script>
+<script src="assets/js/utils/coordinate-helper.js"></script>
+<script src="assets/js/utils/data-helper.js"></script>
+<script src="assets/js/utils/config-helper.js"></script>
+
+<!-- アプリケーションスクリプト -->
+<script src="assets/js/pubsub.js"></script>
+<script src="assets/js/chart-manager.js"></script>
+<script src="assets/js/map-manager.js"></script>
+<script src="assets/js/image-manager.js"></script>
+<script src="assets/js/main.js"></script>
 ```
 
 ### 今後の移行計画
-1. 既存のManagerクラスで共通ユーティリティを使用するよう段階的にリファクタリング
-2. TypeScript導入の検討
-3. 単体テストの追加
+1. **進行中**: 既存のManagerクラスをBaseManagerに継承変更
+2. **次フェーズ**: エラーハンドリングの統一化
+3. **将来**: TypeScript導入の検討、単体テストの追加
 
 ### 実装方針
 - グローバルスコープでの提供を継続（window.SVGHelper等）

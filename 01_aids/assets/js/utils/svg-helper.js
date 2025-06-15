@@ -362,6 +362,132 @@ class SVGHelper {
             .style('opacity', 0)
             .style('transition', 'opacity 0.2s');
     }
+
+    // === Transition関連のヘルパーメソッド ===
+
+    /**
+     * 標準トランジションを作成する
+     * @param {number} duration - トランジション時間（ミリ秒）
+     * @param {Function} ease - イージング関数
+     * @param {number} delay - 遅延時間（ミリ秒）
+     * @returns {d3.Transition} トランジション
+     */
+    static createTransition(duration = 1000, ease = d3.easeQuadInOut, delay = 0) {
+        return d3.transition()
+            .duration(duration)
+            .ease(ease)
+            .delay(delay);
+    }
+
+    /**
+     * 段階的（staggered）トランジションを作成する
+     * @param {number} duration - 各要素のトランジション時間
+     * @param {number} staggerDelay - 要素間の遅延時間
+     * @param {Function} ease - イージング関数
+     * @returns {Function} トランジション関数
+     */
+    static createStaggeredTransition(duration = 1000, staggerDelay = 100, ease = d3.easeQuadInOut) {
+        return (d, i) => d3.transition()
+            .duration(duration)
+            .ease(ease)
+            .delay(i * staggerDelay);
+    }
+
+    /**
+     * フェードイン効果を適用する
+     * @param {d3.Selection} selection - 対象要素
+     * @param {number} duration - トランジション時間
+     * @param {number} delay - 遅延時間
+     * @returns {d3.Transition} トランジション
+     */
+    static fadeIn(selection, duration = 500, delay = 0) {
+        return selection
+            .style('opacity', 0)
+            .transition()
+            .duration(duration)
+            .delay(delay)
+            .style('opacity', 1);
+    }
+
+    /**
+     * フェードアウト効果を適用する
+     * @param {d3.Selection} selection - 対象要素
+     * @param {number} duration - トランジション時間
+     * @param {number} delay - 遅延時間
+     * @returns {d3.Transition} トランジション
+     */
+    static fadeOut(selection, duration = 500, delay = 0) {
+        return selection
+            .transition()
+            .duration(duration)
+            .delay(delay)
+            .style('opacity', 0);
+    }
+
+    /**
+     * スケール効果を適用する
+     * @param {d3.Selection} selection - 対象要素
+     * @param {number} fromScale - 開始スケール
+     * @param {number} toScale - 終了スケール
+     * @param {number} duration - トランジション時間
+     * @param {number} delay - 遅延時間
+     * @returns {d3.Transition} トランジション
+     */
+    static scaleTransition(selection, fromScale = 0, toScale = 1, duration = 500, delay = 0) {
+        return selection
+            .style('transform', `scale(${fromScale})`)
+            .transition()
+            .duration(duration)
+            .delay(delay)
+            .style('transform', `scale(${toScale})`);
+    }
+
+    /**
+     * 連続トランジションを実行する
+     * @param {Array} transitionSteps - トランジション設定の配列
+     * @returns {Promise} 全トランジション完了時のPromise
+     */
+    static sequenceTransitions(transitionSteps) {
+        return transitionSteps.reduce((promise, step) => {
+            return promise.then(() => {
+                return new Promise(resolve => {
+                    const { selection, duration = 500, delay = 0, callback } = step;
+                    
+                    const transition = selection
+                        .transition()
+                        .duration(duration)
+                        .delay(delay);
+                    
+                    if (callback) {
+                        callback(transition);
+                    }
+                    
+                    transition.on('end', resolve);
+                });
+            });
+        }, Promise.resolve());
+    }
+
+    /**
+     * 条件付きトランジション（アクセシビリティ対応）
+     * @param {d3.Selection} selection - 対象要素
+     * @param {Function} callback - トランジション設定のコールバック
+     * @param {number} reducedDuration - 縮減されたトランジション時間
+     * @returns {d3.Transition|d3.Selection} トランジション或いは即座の選択
+     */
+    static accessibleTransition(selection, callback, reducedDuration = 100) {
+        // prefers-reduced-motionをチェック
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        
+        if (prefersReducedMotion) {
+            // アニメーションを短縮または無効化
+            const transition = selection.transition().duration(reducedDuration);
+            return callback(transition);
+        } else {
+            // 通常のアニメーション
+            return callback(selection.transition());
+        }
+    }
 }
 
 // グローバルスコープで利用可能にする（ES6モジュール移行前の暫定措置）
