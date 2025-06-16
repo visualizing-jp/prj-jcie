@@ -109,6 +109,7 @@
             "field": "year",
             "range": [1990, 1998]
           },
+          "yRange": [0, 4000000],
           "annotations": [
             {
               "type": "verticalLine",
@@ -158,6 +159,7 @@
           "seriesField": "series",
           "multiSeries": true,
           "title": "新規HIV感染者数の推移（全期間）",
+          "yRange": [0, 4000000],
           "annotations": [
             {
               "type": "verticalLine",
@@ -208,6 +210,7 @@
           "seriesField": "series",
           "multiSeries": true,
           "title": "エイズ関連死亡者数の推移",
+          "yRange": [0, 4000000],
           "annotations": [
             {
               "type": "verticalLine",
@@ -357,7 +360,8 @@
           "multiSeries": false,
           "seriesName": "母子感染率",
           "colors": ["#10b981"],
-          "title": "HIV母子感染率の推移（%）"
+          "title": "HIV母子感染率の推移（%）",
+          "yRange": [0, 30]
         }
       },
       "map": {
