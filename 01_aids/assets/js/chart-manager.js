@@ -1903,6 +1903,90 @@ class ChartManager {
                     .duration(500)
                     .delay(1000) // 点線の後に表示
                     .style('opacity', 1);
+            } else if (annotation.type === 'horizontalLine') {
+                const { value, label, position = 'right' } = annotation;
+                
+                // Y軸の値がデータ範囲内かチェック
+                const yDomain = yScale.domain();
+                if (value < yDomain[0] || value > yDomain[1]) {
+                    console.warn(`Annotation value ${value} is outside Y-axis range [${yDomain[0]}, ${yDomain[1]}]`);
+                    return;
+                }
+
+                const y = yScale(value);
+                
+                // 水平の点線を描画
+                g.append('line')
+                    .attr('class', 'annotation-line horizontal-line')
+                    .attr('x1', 0)
+                    .attr('x2', width)
+                    .attr('y1', y)
+                    .attr('y2', y)
+                    .attr('stroke', '#666')
+                    .attr('stroke-width', 1)
+                    .attr('stroke-dasharray', '5,5')
+                    .style('opacity', 0)
+                    .transition()
+                    .duration(500)
+                    .delay(800) // チャート描画後に表示
+                    .style('opacity', 0.7);
+
+                // ラベルテキストを描画
+                const labelGroup = g.append('g')
+                    .attr('class', 'annotation-label horizontal-label')
+                    .style('opacity', 0);
+
+                // ラベル位置を計算
+                let labelX, labelY, textAnchor;
+                switch (position) {
+                    case 'left':
+                        labelX = 10;
+                        labelY = y - 5;
+                        textAnchor = 'start';
+                        break;
+                    case 'center':
+                        labelX = width / 2;
+                        labelY = y - 5;
+                        textAnchor = 'middle';
+                        break;
+                    case 'right':
+                        labelX = width - 10;
+                        labelY = y - 5;
+                        textAnchor = 'end';
+                        break;
+                    default:
+                        labelX = width - 10;
+                        labelY = y - 5;
+                        textAnchor = 'end';
+                }
+
+                // ラベル背景（読みやすさ向上）
+                const labelText = labelGroup.append('text')
+                    .attr('x', labelX)
+                    .attr('y', labelY)
+                    .attr('text-anchor', textAnchor)
+                    .attr('font-size', '12px')
+                    .attr('font-weight', 'bold')
+                    .attr('fill', '#333')
+                    .text(label);
+
+                // 背景の白い矩形
+                const bbox = labelText.node().getBBox();
+                labelGroup.insert('rect', 'text')
+                    .attr('x', bbox.x - 3)
+                    .attr('y', bbox.y - 2)
+                    .attr('width', bbox.width + 6)
+                    .attr('height', bbox.height + 4)
+                    .attr('fill', 'rgba(255, 255, 255, 0.9)')
+                    .attr('stroke', '#ccc')
+                    .attr('stroke-width', 0.5)
+                    .attr('rx', 3);
+
+                // ラベルをフェードイン
+                labelGroup.transition()
+                    .duration(500)
+                    .delay(1000) // 点線の後に表示
+                    .style('opacity', 1);
             }
         });
     }

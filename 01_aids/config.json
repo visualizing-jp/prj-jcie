@@ -163,8 +163,14 @@
           "annotations": [
             {
               "type": "verticalLine",
+              "year": 1983,
+              "label": "1983年：原因がHIVだと特定",
+              "position": "top-right"
+            },
+            {
+              "type": "verticalLine",
               "year": 1995,
-              "label": "「多剤併用療法」（HAART）が導入",
+              "label": "1995年：「多剤併用療法」（HAART）が導入",
               "position": "top-right"
             }
           ]
@@ -362,7 +368,15 @@
           "seriesName": "母子感染率",
           "colors": ["#10b981"],
           "title": "HIV母子感染率の推移（%）",
-          "yRange": [0, 40]
+          "yRange": [0, 40],
+          "annotations": [
+            {
+              "type": "horizontalLine",
+              "value": 35.2,
+              "label": "最も感染率の高いサハラ以南アフリカ地域での母子間感染率",
+              "position": "right"
+            }
+          ]
         }
       },
       "map": {
@@ -644,7 +658,7 @@
           "yField": "value",
           "xAxisLabel": "年",
           "yAxisLabel": "資金（十億）",
-          "yearRange": [2015, 2025],
+          "yearRange": [2000, 2025],
           "seriesField": "series",
           "multiSeries": true,
           "title": "エイズ対策資金の推移（資金源別）"
