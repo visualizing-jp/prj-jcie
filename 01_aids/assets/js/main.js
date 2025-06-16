@@ -70,6 +70,10 @@ class ScrollytellingApp {
                         }
                     });
                 }
+                // Grid chart の場合
+                if (step.chart?.config?.dataFile) {
+                    dataFiles.add(step.chart.config.dataFile);
+                }
             });
             
             console.log('Data files to load:', Array.from(dataFiles));
@@ -247,6 +251,13 @@ class ScrollytellingApp {
                     }))
                 };
                 pubsub.publish(EVENTS.CHART_UPDATE, tripleChartData);
+            } else if (stepConfig.chart.layout === 'grid' && stepConfig.chart.config) {
+                // Grid chart の場合
+                const gridChartData = {
+                    ...stepConfig.chart,
+                    data: this.getChartData('pie', stepConfig.chart.config.dataFile)
+                };
+                pubsub.publish(EVENTS.CHART_UPDATE, gridChartData);
             } else {
                 // visible: false の場合は最小限の情報で非表示指示
                 if (stepConfig.chart.visible === false) {

@@ -192,52 +192,28 @@
         }
       },
       "chart": {
-        "layout": "triple",
+        "layout": "grid",
         "visible": true,
         "position": {
           "horizontal": "center",
           "vertical": "center",
-          "width": "80%",
-          "height": "80%"
+          "width": "95%",
+          "height": "90%"
         },
-        "charts": [
-          {
-            "id": "adults",
-            "title": "抗HIV治療を受けている成人(15歳以上)HIV陽性者の割合",
-            "dataFile": "data/hiv_treatment_adults.csv",
-            "position": "left",
-            "config": {
-              "width": 350,
-              "height": 400,
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "children",
-            "title": "抗HIV治療を受けているこども(0歳から14歳)のHIV陽性者の割合",
-            "dataFile": "data/hiv_treatment_children.csv",
-            "position": "center",
-            "config": {
-              "width": 350,
-              "height": 400,
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "total",
-            "title": "抗HIV治療を受けているHIV陽性者の割合(合計)",
-            "dataFile": "data/hiv_treatment_total.csv",
-            "position": "right",
-            "config": {
-              "width": 350,
-              "height": 400,
-              "labelField": "label",
-              "valueField": "value"
-            }
-          }
-        ]
+        "config": {
+          "dataFile": "data/ratio_抗HIV治療.csv",
+          "columns": 7,
+          "rows": 2,
+          "chartType": "pie",
+          "chartWidth": 120,
+          "chartHeight": 120,
+          "labelField": "region",
+          "valueField": "percentage",
+          "categoryField": "ageGroup",
+          "title": "地域別HIV治療カバレッジ（%）",
+          "showLabels": true,
+          "showPercentages": true
+        }
       },
       "map": {
         "visible": false

@@ -44,6 +44,12 @@ class ChartManager {
             return;
         }
         
+        // Grid chart layoutの場合
+        if (chartData.layout === 'grid' && chartData.config) {
+            this.updateGridChart(chartData);
+            return;
+        }
+        
         // 従来の単一チャート
         const { type, data, config, visible, updateMode, direction } = chartData;
         
@@ -652,27 +658,20 @@ class ChartManager {
             .nice()
             .range([height, 0]);
 
-        // 統一された色スケール設定
-        let chartColors;
-        if (window.ColorScheme && config.useUnifiedColors !== false) {
-            // 統一カラースキームを使用（ダミーデータでgenerateColorsForChartを呼び出し）
-            const dummyData = series.flatMap(s => s.values.map(v => ({ 
-                ...v, 
-                [config.seriesField || 'series']: s.name 
-            })));
-            chartColors = window.ColorScheme.generateColorsForChart(dummyData, config);
+        // D3標準のカラースケール：地域名から直接色を取得
+        let colorScale;
+        if (config.colors && config.colors.length > 0 && config.multiSeries === false) {
+            // 単一系列の明示色
+            colorScale = d3.scaleOrdinal(config.colors).domain(series.map(d => d.name));
+        } else if (window.ColorScheme && config.useUnifiedColors !== false) {
+            // 統一カラースキーム：地域名→色の直接マッピング
+            colorScale = d3.scaleOrdinal()
+                .domain(series.map(s => s.name))
+                .range(series.map(s => window.ColorScheme.getRegionColor(s.name)));
         } else {
-            // フォールバック：設定で指定された色または既定色
-            chartColors = colors;
+            // フォールバック
+            colorScale = d3.scaleOrdinal(colors).domain(series.map(d => d.name));
         }
-        
-        // 特別なケース：設定で色が明示されている場合はそれを優先
-        if (config.colors && config.colors.length > 0) {
-            chartColors = config.colors;
-        }
-        
-        const colorScale = d3.scaleOrdinal(chartColors)
-            .domain(series.map(d => d.name));
 
         // 単位情報を分析
         let unitInfo = { xAxis: {}, yAxis: {} };
@@ -1099,25 +1098,20 @@ class ChartManager {
             .nice()
             .range([innerHeight, 0]);
 
-        // 統一された色スケール設定
-        let chartColors;
-        if (window.ColorScheme && config.useUnifiedColors !== false) {
-            // 統一カラースキームを使用
-            chartColors = window.ColorScheme.generateColorsForChart(data, config);
-            console.log('Using unified color scheme for regions:', series.map(d => d.name), '→', chartColors);
+        // D3標準のカラースケール：地域名から直接色を取得
+        let colorScale;
+        if (config.colors && config.colors.length > 0 && config.multiSeries === false) {
+            // 単一系列の明示色
+            colorScale = d3.scaleOrdinal(config.colors).domain(series.map(d => d.name));
+        } else if (window.ColorScheme && config.useUnifiedColors !== false) {
+            // 統一カラースキーム：地域名→色の直接マッピング
+            colorScale = d3.scaleOrdinal()
+                .domain(series.map(s => s.name))
+                .range(series.map(s => window.ColorScheme.getRegionColor(s.name)));
         } else {
-            // フォールバック：設定で指定された色または既定色
-            chartColors = colors;
+            // フォールバック
+            colorScale = d3.scaleOrdinal(colors).domain(series.map(d => d.name));
         }
-        
-        // 特別なケース：設定で色が明示されている場合はそれを優先
-        if (config.colors && config.colors.length > 0) {
-            chartColors = config.colors;
-            console.log('Using explicitly configured colors:', chartColors);
-        }
-        
-        const colorScale = d3.scaleOrdinal(chartColors)
-            .domain(series.map(d => d.name));
 
         // 単位情報を分析
         let unitInfo = { xAxis: {}, yAxis: {} };
@@ -1455,8 +1449,8 @@ class ChartManager {
             barColors = [color];
         }
         
-        // 特別なケース：設定で色が明示されている場合はそれを優先
-        if (config.colors && config.colors.length > 0) {
+        // 特別なケース：単一系列で色が明示されている場合のみそれを優先
+        if (config.colors && config.colors.length > 0 && config.multiSeries === false) {
             barColors = config.colors;
         }
 
@@ -1524,8 +1518,8 @@ class ChartManager {
             chartColors = colors;
         }
         
-        // 特別なケース：設定で色が明示されている場合はそれを優先
-        if (config.colors && config.colors.length > 0) {
+        // 特別なケース：単一系列で色が明示されている場合のみそれを優先
+        if (config.colors && config.colors.length > 0 && config.multiSeries === false) {
             chartColors = config.colors;
         }
 
@@ -1664,8 +1658,8 @@ class ChartManager {
             chartColors = colors;
         }
         
-        // 特別なケース：設定で色が明示されている場合はそれを優先
-        if (config.colors && config.colors.length > 0) {
+        // 特別なケース：単一系列で色が明示されている場合のみそれを優先
+        if (config.colors && config.colors.length > 0 && config.multiSeries === false) {
             chartColors = config.colors;
         }
         
@@ -1836,6 +1830,232 @@ class ChartManager {
                     .style('opacity', 1);
             }
         });
+    }
+
+    /**
+     * Grid chart layoutを描画
+     * @param {Object} chartData - チャートデータ
+     */
+    updateGridChart(chartData) {
+        this.show();
+        
+        // SVG要素をクリア
+        this.container.selectAll('*').remove();
+        
+        // データファイルから実際のデータを取得
+        const data = chartData.data;
+        
+        this.renderGridChart(data, chartData.config);
+    }
+    
+    /**
+     * Grid layoutで複数の円グラフを描画
+     * @param {Array} data - チャートデータ
+     * @param {Object} config - 設定
+     */
+    renderGridChart(data, config) {
+        const { 
+            columns = 7, 
+            rows = 2, 
+            chartWidth = 120, 
+            chartHeight = 120,
+            title = '',
+            showLabels = true,
+            showPercentages = true
+        } = config;
+        
+        // データを適切な形式に変換
+        const gridData = this.transformToGridData(data, config);
+        console.log('Grid data:', gridData);
+        
+        // 全体のサイズを計算
+        const totalWidth = columns * chartWidth;
+        const totalHeight = rows * chartHeight + (title ? 40 : 0);
+        
+        const svg = this.initSVG(totalWidth, totalHeight);
+        
+        // タイトルを追加
+        if (title) {
+            svg.append('text')
+                .attr('class', 'chart-title')
+                .attr('x', totalWidth / 2)
+                .attr('y', 25)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '18px')
+                .attr('font-weight', 'bold')
+                .attr('fill', '#333')
+                .text(title);
+        }
+        
+        // グリッドコンテナ
+        const gridContainer = svg.append('g')
+            .attr('transform', `translate(0, ${title ? 40 : 0})`);
+        
+        // 各セルを描画
+        gridData.forEach((cellData, index) => {
+            const col = index % columns;
+            const row = Math.floor(index / columns);
+            const x = col * chartWidth;
+            const y = row * chartHeight;
+            
+            this.renderGridCell(gridContainer, cellData, {
+                x: x,
+                y: y,
+                width: chartWidth,
+                height: chartHeight,
+                showLabels,
+                showPercentages
+            });
+        });
+    }
+    
+    /**
+     * グリッドの各セルを描画
+     */
+    renderGridCell(container, cellData, layout) {
+        const { x, y, width, height, showLabels, showPercentages } = layout;
+        const radius = Math.min(width, height) / 2 - 20;
+        const centerX = x + width / 2;
+        const centerY = y + height / 2;
+        
+        // セルグループを作成
+        const cellGroup = container.append('g')
+            .attr('class', 'grid-cell')
+            .attr('transform', `translate(${centerX}, ${centerY})`);
+        
+        // パイチャートデータ
+        const pieData = d3.pie()
+            .value(d => d.value)
+            .sort(null)(cellData.pieData);
+        
+        // アーク生成器
+        const arc = d3.arc()
+            .innerRadius(0)
+            .outerRadius(radius);
+        
+        // パイスライスを描画
+        const slices = cellGroup.selectAll('.pie-slice')
+            .data(pieData)
+            .enter()
+            .append('g')
+            .attr('class', 'pie-slice');
+        
+        slices.append('path')
+            .attr('d', arc)
+            .attr('fill', d => d.data.color)
+            .attr('stroke', '#fff')
+            .attr('stroke-width', 1)
+            .style('opacity', 0)
+            .transition()
+            .duration(500)
+            .delay((d, i) => i * 100)
+            .style('opacity', 1);
+        
+        // ラベルを追加
+        if (showLabels) {
+            // 地域名
+            cellGroup.append('text')
+                .attr('class', 'region-label')
+                .attr('x', 0)
+                .attr('y', -height/2 + 15)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '10px')
+                .attr('font-weight', 'bold')
+                .attr('fill', '#333')
+                .text(cellData.region);
+            
+            // 年齢層
+            cellGroup.append('text')
+                .attr('class', 'age-label')
+                .attr('x', 0)
+                .attr('y', height/2 - 5)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '9px')
+                .attr('fill', '#666')
+                .text(cellData.ageGroup);
+        }
+        
+        // パーセンテージを中央に表示
+        if (showPercentages) {
+            cellGroup.append('text')
+                .attr('class', 'percentage-label')
+                .attr('x', 0)
+                .attr('y', 5)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '12px')
+                .attr('font-weight', 'bold')
+                .attr('fill', '#333')
+                .text(`${cellData.percentage}%`);
+        }
+    }
+    
+    /**
+     * 生データをグリッド用データに変換
+     */
+    transformToGridData(data, config) {
+        const result = [];
+        const regions = [];
+        
+        console.log('Raw data for transformation:', data);
+        
+        data.forEach(row => {
+            // CSVの最初の列は空白のキー名になっている
+            const region = row[''] || row[Object.keys(row)[0]]; 
+            const adultPercentStr = row['成人（15歳以上）'];
+            const childPercentStr = row['こども（0歳から14歳）'];
+            
+            // パーセント記号を除去して数値に変換
+            const adultPercent = parseInt(adultPercentStr?.replace('%', '') || '0');
+            const childPercent = parseInt(childPercentStr?.replace('%', '') || '0');
+            
+            // 地域名が有効な場合のみ追加
+            if (region && region.trim()) {
+                // ColorSchemeから色を取得
+                const colorScheme = window.ColorScheme;
+                const treatmentColor = colorScheme ? colorScheme.getRegionColor(region) : '#2563eb';
+                const untreatedColor = '#e5e7eb';
+                
+                
+                // 成人データとこどもデータを保存
+                const adultData = {
+                    region: region,
+                    ageGroup: '成人（15歳以上）',
+                    percentage: adultPercent,
+                    pieData: [
+                        { label: '治療中', value: adultPercent, color: treatmentColor },
+                        { label: '未治療', value: 100 - adultPercent, color: untreatedColor }
+                    ]
+                };
+                
+                // こどもデータ（少し明るい色を使用）
+                const childTreatmentColor = colorScheme ? colorScheme.getLighterColor(treatmentColor) : '#3b82f6';
+                const childData = {
+                    region: region,
+                    ageGroup: 'こども（0-14歳）',
+                    percentage: childPercent,
+                    pieData: [
+                        { label: '治療中', value: childPercent, color: childTreatmentColor },
+                        { label: '未治療', value: 100 - childPercent, color: untreatedColor }
+                    ]
+                };
+                
+                // 地域ごとにグループ化してテンポラリに保存
+                regions.push({ adult: adultData, child: childData });
+            }
+        });
+        
+        // 1行目：すべての地域の成人データ（左から右へ）
+        regions.forEach(regionData => {
+            result.push(regionData.adult);
+        });
+        
+        // 2行目：すべての地域のこどもデータ（左から右へ、上段と同じ順序）
+        regions.forEach(regionData => {
+            result.push(regionData.child);
+        });
+        
+        console.log('Transformed grid data:', result);
+        return result;
     }
 
     /**

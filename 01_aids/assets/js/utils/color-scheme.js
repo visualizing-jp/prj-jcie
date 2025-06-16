@@ -51,6 +51,7 @@ class ColorScheme {
             '東欧・中央アジア': '東ヨーロッパ・中央アジア',
             '西欧・中欧・北アメリカ': '西・中央ヨーロッパおよび北米',
             'カリブ海沿岸': 'カリブ海地域',
+            'カリブ海地域': 'カリブ海地域', // CSVファイルの表記
             '全世界': '世界'
         };
     }
@@ -174,8 +175,39 @@ class ColorScheme {
             return standardA.localeCompare(standardB, 'ja');
         });
         
-        // 色配列を生成
+        // 地域名に基づいて統一色配列を生成
         return this.getColorsForRegions(uniqueSeries);
+    }
+    
+    /**
+     * 地域名に対応する色を取得（単一エントリポイント）
+     * @param {string} regionName - 地域名
+     * @returns {string} 色コード
+     */
+    getRegionColor(regionName) {
+        return this.getColorForRegion(regionName);
+    }
+    
+    /**
+     * 色を明るくする
+     * @param {string} color - 元の色コード
+     * @param {number} factor - 明度係数（0.1-0.9、デフォルト0.3）
+     * @returns {string} 明るくした色コード
+     */
+    getLighterColor(color, factor = 0.3) {
+        // HEXカラーをRGBに変換
+        const hex = color.replace('#', '');
+        const r = parseInt(hex.substr(0, 2), 16);
+        const g = parseInt(hex.substr(2, 2), 16);
+        const b = parseInt(hex.substr(4, 2), 16);
+        
+        // 明度を上げる
+        const lighterR = Math.min(255, Math.round(r + (255 - r) * factor));
+        const lighterG = Math.min(255, Math.round(g + (255 - g) * factor));
+        const lighterB = Math.min(255, Math.round(b + (255 - b) * factor));
+        
+        // HEXに変換して返す
+        return `#${lighterR.toString(16).padStart(2, '0')}${lighterG.toString(16).padStart(2, '0')}${lighterB.toString(16).padStart(2, '0')}`;
     }
     
     /**
