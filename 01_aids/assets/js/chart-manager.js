@@ -1867,16 +1867,17 @@ class ChartManager {
             chartHeight = 120,
             title = '',
             showLabels = true,
-            showPercentages = true
+            showPercentages = true,
+            rowSpacing = chartHeight * 0.5  // デフォルトの行間スペーシング（チャート高さの50%）
         } = config;
         
         // データを適切な形式に変換
         const gridData = this.transformToGridData(data, config);
         console.log('Grid data:', gridData);
         
-        // 全体のサイズを計算
+        // 全体のサイズを計算（行間スペーシングを含む）
         const totalWidth = columns * chartWidth;
-        const totalHeight = rows * chartHeight + (title ? 40 : 0);
+        const totalHeight = rows * chartHeight + (rows - 1) * rowSpacing + (title ? 40 : 0);
         
         const svg = this.initSVG(totalWidth, totalHeight);
         
@@ -1897,12 +1898,12 @@ class ChartManager {
         const gridContainer = svg.append('g')
             .attr('transform', `translate(0, ${title ? 40 : 0})`);
         
-        // 各セルを描画
+        // 各セルを描画（行間スペーシングを考慮）
         gridData.forEach((cellData, index) => {
             const col = index % columns;
             const row = Math.floor(index / columns);
             const x = col * chartWidth;
-            const y = row * chartHeight;
+            const y = row * (chartHeight + rowSpacing);  // 行間スペーシングを追加
             
             this.renderGridCell(gridContainer, cellData, {
                 x: x,

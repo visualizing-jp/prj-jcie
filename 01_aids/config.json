@@ -233,6 +233,7 @@
           "chartType": "pie",
           "chartWidth": 120,
           "chartHeight": 120,
+          "rowSpacing": 30,
           "labelField": "region",
           "valueField": "percentage",
           "categoryField": "ageGroup",
