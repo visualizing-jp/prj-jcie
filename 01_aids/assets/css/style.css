@@ -686,3 +686,15 @@ html {
     border: 1px solid #fca5a5;
     color: #dc2626;
 }
+
+/* テキスト非表示状態 */
+.step.text-hidden .max-w-lg,
+.step.text-hidden .text-container,
+.step.text-hidden [class*="bg-white"] {
+    display: none !important;
+}
+
+/* テキスト非表示時のステップ調整 */
+.step.text-hidden {
+    /* 必要に応じて追加のスタイル調整 */
+}

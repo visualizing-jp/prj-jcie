@@ -702,6 +702,13 @@ class ScrollytellingApp {
             return;
         }
 
+        // テキストの表示/非表示をチェック
+        if (stepConfig.text && stepConfig.text.visible === false) {
+            console.log(`Text is hidden for step ${stepIndex}, removing text box`);
+            this.hideTextBox(stepElement);
+            return;
+        }
+
         // テキストポジション設定があるかチェック
         if (stepConfig.text && stepConfig.text.position) {
             console.log(`Applying text positioning for step ${stepIndex}:`, stepConfig.text.position);
@@ -832,8 +839,17 @@ class ScrollytellingApp {
         console.log('Pre-applying text positions to prevent flickering...');
         
         this.config.steps.forEach((stepConfig, stepIndex) => {
-            if (stepConfig.text && stepConfig.text.position) {
-                // 要素を取得
+            if (stepConfig.text && stepConfig.text.visible === false) {
+                // 非表示設定の場合
+                let stepElement = document.querySelector(`[data-step="${stepConfig.id}"]`) ||
+                               document.querySelector(`[data-step="${stepConfig.id.replace(/^step/, '')}"]`) ||
+                               document.querySelector(`[data-step="${stepIndex}"]`);
+                
+                if (stepElement) {
+                    this.hideTextBox(stepElement);
+                }
+            } else if (stepConfig.text && stepConfig.text.position) {
+                // 通常のポジション適用
                 let stepElement = document.querySelector(`[data-step="${stepConfig.id}"]`) ||
                                document.querySelector(`[data-step="${stepConfig.id.replace(/^step/, '')}"]`) ||
                                document.querySelector(`[data-step="${stepIndex}"]`);
@@ -844,6 +860,44 @@ class ScrollytellingApp {
                 }
             }
         });
+    }
+
+    /**
+     * テキストボックス（白い矩形）を非表示にする
+     * @param {HTMLElement} stepElement - ステップ要素
+     */
+    hideTextBox(stepElement) {
+        if (!stepElement) return;
+        
+        // ステップ内の白い矩形（テキストコンテナ）を非表示にする
+        const textContainers = stepElement.querySelectorAll('.max-w-lg, .text-container, [class*="bg-white"]');
+        textContainers.forEach(container => {
+            container.style.display = 'none';
+        });
+        
+        // デバッグ用にクラスを追加
+        stepElement.classList.add('text-hidden');
+        
+        console.log('Text box hidden for step:', stepElement.getAttribute('data-step'));
+    }
+
+    /**
+     * テキストボックスを再表示する
+     * @param {HTMLElement} stepElement - ステップ要素
+     */
+    showTextBox(stepElement) {
+        if (!stepElement) return;
+        
+        // ステップ内の白い矩形（テキストコンテナ）を再表示する
+        const textContainers = stepElement.querySelectorAll('.max-w-lg, .text-container, [class*="bg-white"]');
+        textContainers.forEach(container => {
+            container.style.display = '';
+        });
+        
+        // デバッグ用クラスを削除
+        stepElement.classList.remove('text-hidden');
+        
+        console.log('Text box shown for step:', stepElement.getAttribute('data-step'));
     }
 
 
