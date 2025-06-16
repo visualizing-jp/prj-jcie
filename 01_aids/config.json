@@ -203,9 +203,18 @@
           "yField": "value",
           "xAxisLabel": "年",
           "yAxisLabel": "死者数（百万人）",
+          "yearRange": [1998, 2022],
           "seriesField": "series",
           "multiSeries": true,
-          "title": "エイズ関連死亡者数の推移（2010-2022年）"
+          "title": "エイズ関連死亡者数の推移",
+          "annotations": [
+            {
+              "type": "verticalLine",
+              "year": 2002,
+              "label": "グローバルファンドが創設",
+              "position": "top-right"
+            }
+          ]
         }
       },
       "map": {
@@ -627,6 +636,7 @@
           "yField": "value",
           "xAxisLabel": "年",
           "yAxisLabel": "資金（十億）",
+          "yearRange": [2015, 2025],
           "seriesField": "series",
           "multiSeries": true,
           "title": "エイズ対策資金の推移（資金源別）"

@@ -651,12 +651,25 @@ class ChartManager {
         // スケール設定
         const isYearData = allValues.every(d => !isNaN(d[xField]) && d[xField] > 1900 && d[xField] < 2100);
         
+        // X軸のドメインを決定（設定で年度範囲が指定されていればそれを使用、なければデータ範囲）
+        let xDomain;
+        if (config.yearRange && config.yearRange.length === 2) {
+            // 設定ファイルで年度範囲が指定されている場合
+            xDomain = config.yearRange;
+        } else if (isYearData) {
+            // 年データの場合はデータの範囲を使用
+            xDomain = d3.extent(allValues, d => +d[xField]);
+        } else {
+            // 時間データの場合
+            xDomain = d3.extent(allValues, d => new Date(d[xField]));
+        }
+        
         const xScale = isYearData 
             ? d3.scaleLinear()
-                .domain(d3.extent(allValues, d => +d[xField]))
+                .domain(xDomain)
                 .range([0, width])
             : d3.scaleTime()
-                .domain(d3.extent(allValues, d => new Date(d[xField])))
+                .domain(xDomain)
                 .range([0, width]);
 
         const yScale = d3.scaleLinear()
@@ -1091,12 +1104,25 @@ class ChartManager {
         // スケール設定 - 年データの場合は線形スケールを使用
         const isYearData = allValues.every(d => !isNaN(d[xField]) && d[xField] > 1900 && d[xField] < 2100);
         
+        // X軸のドメインを決定（設定で年度範囲が指定されていればそれを使用、なければデータ範囲）
+        let xDomain;
+        if (config.yearRange && config.yearRange.length === 2) {
+            // 設定ファイルで年度範囲が指定されている場合
+            xDomain = config.yearRange;
+        } else if (isYearData) {
+            // 年データの場合はデータの範囲を使用
+            xDomain = d3.extent(allValues, d => +d[xField]);
+        } else {
+            // 時間データの場合
+            xDomain = d3.extent(allValues, d => new Date(d[xField]));
+        }
+        
         const xScale = isYearData 
             ? d3.scaleLinear()
-                .domain(d3.extent(allValues, d => +d[xField]))
+                .domain(xDomain)
                 .range([0, innerWidth])
             : d3.scaleTime()
-                .domain(d3.extent(allValues, d => new Date(d[xField])))
+                .domain(xDomain)
                 .range([0, innerWidth]);
 
         const yScale = d3.scaleLinear()
