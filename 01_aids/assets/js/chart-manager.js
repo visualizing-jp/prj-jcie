@@ -1011,6 +1011,7 @@ class ChartManager {
     transformToSeries(data, config) {
         const { xField = 'year', yField = 'value', seriesField = 'series' } = config;
         
+        
         // フィルタが設定されている場合は適用
         let filteredData = data;
         if (config.filter) {
@@ -1031,6 +1032,7 @@ class ChartManager {
         
         // 複数系列の場合
         const seriesNames = [...new Set(filteredData.map(d => d[seriesField]))];
+        
         return seriesNames.map(name => ({
             name,
             values: filteredData
@@ -1076,6 +1078,7 @@ class ChartManager {
 
         // データを系列別に変換
         const series = this.transformToSeries(data, config);
+        
         
         // 全データからドメインを計算
         const allValues = series.flatMap(s => s.values);
@@ -1235,6 +1238,7 @@ class ChartManager {
         if (window.ChartLayoutHelper) {
             const seriesNames = series.map(s => s.name);
             legendLayout = ChartLayoutHelper.calculateLegendLayout(seriesNames, width, height);
+            console.log('ChartLayoutHelper legend layout:', legendLayout);
         } else {
             // フォールバック：従来の固定レイアウト
             legendLayout = {
@@ -1242,8 +1246,16 @@ class ChartManager {
                 position: 'right',
                 orientation: 'vertical',
                 itemWidth: 120,
-                itemHeight: 20
+                itemHeight: 20,
+                totalWidth: 120
             };
+        }
+        
+        // bottomポジションが問題を起こしている場合は強制的にrightに変更
+        if (legendLayout.position === 'bottom') {
+            console.log('Forcing legend position from bottom to right to avoid overflow');
+            legendLayout.position = 'right';
+            legendLayout.orientation = 'vertical';
         }
         
         if (!legendLayout.show) return;
@@ -1256,12 +1268,15 @@ class ChartManager {
         let legendX, legendY;
         if (legendLayout.position === 'bottom') {
             legendX = width / 2 - (legendLayout.itemWidth * series.length) / 2;
-            legendY = height + 40;
+            // チャートエリア内の下部に配置（コンテナの外に出ないように）
+            legendY = height - (legendLayout.itemHeight * series.length) - 10;
         } else {
             // 右側配置（デフォルト）
-            legendX = Math.max(20, width - legendLayout.totalWidth);
+            legendX = Math.max(20, width - (legendLayout.totalWidth || legendLayout.itemWidth));
             legendY = 20;
         }
+        
+        console.log('Legend position:', { x: legendX, y: legendY, width, height, position: legendLayout.position });
         
         legend.attr('transform', `translate(${legendX}, ${legendY})`);
         
