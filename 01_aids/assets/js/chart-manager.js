@@ -772,18 +772,18 @@ class ChartManager {
         if (window.ChartLayoutHelper) {
             const seriesNames = series.map(s => s.name);
             legendLayout = ChartLayoutHelper.calculateLegendLayout(seriesNames, width, height);
-            // コンパクト版の調整
+            // コンパクト版の調整：もう少し余裕を持たせる
             legendLayout.itemHeight = 16;
-            legendLayout.itemWidth = Math.min(legendLayout.itemWidth, width * 0.3);
+            legendLayout.itemWidth = Math.min(legendLayout.itemWidth, width * 0.4); // 0.3から0.4に拡大
         } else {
-            // フォールバック：従来の固定レイアウト
+            // フォールバック：従来の固定レイアウト（幅を広げる）
             legendLayout = {
                 show: true,
                 position: 'right',
                 orientation: 'vertical',
-                itemWidth: 100,
+                itemWidth: 140, // 100から140に拡大
                 itemHeight: 16,
-                totalWidth: 100
+                totalWidth: 140 // 100から140に拡大
             };
         }
         
@@ -819,27 +819,48 @@ class ChartManager {
             .attr('font-size', '10px')
             .attr('fill', '#333');
         
-        // コンパクト版でもテキストの長さをチェック
+        // 改善されたテキスト省略処理
         legendTexts.each(function(d) {
             const textElement = d3.select(this);
             const text = d.name;
-            const maxWidth = legendLayout.itemWidth - 20; // アイコン分を除く
+            const maxWidth = legendLayout.itemWidth - 16; // アイコン分を除く
             
-            // テキスト幅を測定
+            // まず完全なテキストを設定
             textElement.text(text);
-            const textWidth = this.getBBox ? this.getBBox().width : text.length * 6; // フォールバック
+            
+            // テキスト幅を安全に測定
+            let textWidth;
+            try {
+                textWidth = this.getBBox().width;
+            } catch (e) {
+                // getBBoxが失敗した場合のフォールバック（文字数ベース）
+                textWidth = text.length * 6;
+            }
             
             if (textWidth > maxWidth) {
-                // テキストを省略（コンパクト版はより積極的に）
-                let truncatedText = text;
-                while (truncatedText.length > 3) {
-                    truncatedText = truncatedText.slice(0, -1);
-                    textElement.text(truncatedText + '...');
-                    if (!this.getBBox || this.getBBox().width <= maxWidth) break;
+                // 地域名の適切な省略戦略
+                let shortenedText = text;
+                
+                // 地域名の場合は意味のある省略を行う
+                if (text.includes('・')) {
+                    // 「東部・南部アフリカ」→「東・南部アフリカ」のような省略
+                    shortenedText = text.replace(/部・/g, '・');
+                } else if (text.includes('（') && text.includes('）')) {
+                    // 括弧内の詳細を除去 「中南米（ラテンアメリカ）」→「中南米」
+                    shortenedText = text.replace(/（[^）]*）/g, '');
                 }
+                
+                // まだ長い場合は文字数で調整
+                if (shortenedText.length > 8) {
+                    shortenedText = shortenedText.substring(0, 7) + '...';
+                }
+                
+                textElement.text(shortenedText);
                 
                 // ツールチップで完全なテキストを表示
                 textElement.append('title').text(text);
+                
+                console.log(`Legend text truncated: "${text}" → "${shortenedText}"`);
             }
         });
     }
@@ -1273,26 +1294,56 @@ class ChartManager {
             .attr('font-size', '12px')
             .attr('fill', '#333');
         
-        // テキストの長さをチェックして必要に応じて省略
+        // 改善されたテキスト省略処理
         legendTexts.each(function(d) {
             const textElement = d3.select(this);
             const text = d.name;
             const maxWidth = legendLayout.itemWidth - 25; // アイコン分を除く
             
-            // テキスト幅を測定
+            // まず完全なテキストを設定
             textElement.text(text);
-            const textWidth = this.getBBox().width;
+            
+            // テキスト幅を安全に測定
+            let textWidth;
+            try {
+                textWidth = this.getBBox().width;
+            } catch (e) {
+                // getBBoxが失敗した場合のフォールバック
+                textWidth = text.length * 7;
+            }
             
             if (textWidth > maxWidth) {
-                // テキストを省略
-                let truncatedText = text;
-                while (truncatedText.length > 0 && this.getBBox().width > maxWidth) {
-                    truncatedText = truncatedText.slice(0, -1);
-                    textElement.text(truncatedText + '...');
+                // 地域名の適切な省略戦略
+                let shortenedText = text;
+                
+                // 地域名の場合は意味のある省略を行う
+                if (text.includes('・')) {
+                    // 「東部・南部アフリカ」→「東・南部アフリカ」のような省略
+                    shortenedText = text.replace(/部・/g, '・');
+                } else if (text.includes('（') && text.includes('）')) {
+                    // 括弧内の詳細を除去 「中南米（ラテンアメリカ）」→「中南米」
+                    shortenedText = text.replace(/（[^）]*）/g, '');
+                }
+                
+                // 再測定して、まだ長い場合は文字数で調整
+                textElement.text(shortenedText);
+                try {
+                    if (this.getBBox().width > maxWidth && shortenedText.length > 10) {
+                        shortenedText = shortenedText.substring(0, 9) + '...';
+                        textElement.text(shortenedText);
+                    }
+                } catch (e) {
+                    // getBBoxが使えない場合は文字数でフォールバック
+                    if (shortenedText.length > 10) {
+                        shortenedText = shortenedText.substring(0, 9) + '...';
+                        textElement.text(shortenedText);
+                    }
                 }
                 
                 // ツールチップで完全なテキストを表示
                 textElement.append('title').text(text);
+                
+                console.log(`Main legend text truncated: "${text}" → "${shortenedText}"`);
             }
         });
     }
