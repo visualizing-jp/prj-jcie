@@ -114,7 +114,7 @@
               "type": "verticalLine",
               "year": 1997,
               "label": "世界の年間新規感染者のピーク",
-              "position": "top-right"
+              "position": "top-left"
             }
           ]
         }
@@ -156,7 +156,15 @@
           "yAxisLabel": "感染者数（百万人）",
           "seriesField": "series",
           "multiSeries": true,
-          "title": "新規HIV感染者数の推移（全期間）"
+          "title": "新規HIV感染者数の推移（全期間）",
+          "annotations": [
+            {
+              "type": "verticalLine",
+              "year": 1995,
+              "label": "「多剤併用療法」（HAART）が導入",
+              "position": "top-right"
+            }
+          ]
         }
       },
       "map": {
@@ -223,8 +231,8 @@
         "position": {
           "horizontal": "center",
           "vertical": "center",
-          "width": "95%",
-          "height": "90%"
+          "width": "80%",
+          "height": "100%"
         },
         "config": {
           "dataFile": "data/ratio_抗HIV治療.csv",
@@ -521,8 +529,8 @@
             "dataFile": "data/trend_africa_young_woman_normalized.csv",
             "position": "left",
             "config": {
-              "widthPercent": 50,
-              "heightPercent": 50,
+              "widthPercent": 70,
+              "heightPercent": 100,
               "xField": "year",
               "yField": "value",
               "seriesField": "series",
@@ -535,8 +543,8 @@
             "dataFile": "data/trend_africa_young_man_normalized.csv",
             "position": "right",
             "config": {
-              "width": 480,
-              "height": 400,
+              "widthPercent": 70,
+              "heightPercent": 100,
               "xField": "year",
               "yField": "value",
               "seriesField": "series",
@@ -681,8 +689,8 @@
           "height": "100%"
         },
         "config": {
-          "width": 1000,
-          "height": 400,
+          "widthPercent": 70,
+          "heightPercent": 100,
           "xField": "year",
           "yField": "value",
           "seriesField": "series",
