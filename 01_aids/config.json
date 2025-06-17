@@ -67,7 +67,11 @@
         "visible": false
       },
       "map": {
-        "visible": false
+        "visible": true,
+        "center": [-100, 40],
+        "zoom": 1.2,
+        "highlightCountries": ["United States", "United States of America", "USA"],
+        "useRegionColors": false
       },
       "image": {
         "visible": false
@@ -76,7 +80,7 @@
     {
       "id": "step3",
       "text": {
-        "content": "新しいステップのプレースホルダー",
+        "content": "感染の世界的拡大",
         "position": {
           "width": "30%",
           "horizontal": "right",
@@ -87,7 +91,11 @@
         "visible": false
       },
       "map": {
-        "visible": false
+        "visible": true,
+        "center": [0, 20],
+        "zoom": 1.0,
+        "useRegionColors": true,
+        "targetRegions": ["西・中央ヨーロッパおよび北米", "アジア・太平洋地域", "東部・南部アフリカ", "西部・中部アフリカ"]
       },
       "image": {
         "visible": false

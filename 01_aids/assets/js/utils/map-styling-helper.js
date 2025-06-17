@@ -15,7 +15,8 @@ class MapStylingHelper {
             useRegionColors = false,
             lightenNonVisited = false,
             visitedCountry = null,
-            lightenAllCountries = false
+            lightenAllCountries = false,
+            targetRegions = []
         } = styleConfig;
 
         const countryName = this.getCountryName(countryFeature);
@@ -30,7 +31,8 @@ class MapStylingHelper {
             const regionStyle = this.getRegionStyle(countryName, {
                 lightenNonVisited,
                 visitedCountry,
-                lightenAllCountries
+                lightenAllCountries,
+                targetRegions
             });
             
             if (regionStyle) {
@@ -64,13 +66,21 @@ class MapStylingHelper {
         const {
             lightenNonVisited = false,
             visitedCountry = null,
-            lightenAllCountries = false
+            lightenAllCountries = false,
+            targetRegions = []
         } = options;
 
         if (!this.isRegionColoringAvailable()) return null;
 
         const region = window.CountryRegionMapping.getRegionForCountry(countryName);
         if (!region) return null;
+
+        // targetRegionsが指定されている場合、対象地域のみ色を付ける
+        if (targetRegions && targetRegions.length > 0) {
+            if (!targetRegions.includes(region)) {
+                return { fill: '#f3f4f6' }; // 対象外の地域は薄いグレー
+            }
+        }
 
         let color = window.ColorScheme.getRegionColor(region);
 

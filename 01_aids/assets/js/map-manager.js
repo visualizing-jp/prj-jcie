@@ -46,9 +46,9 @@ class MapManager {
     updateMap(mapData) {
         console.log('MapManager: updateMap called with:', mapData);
         
-        const { center, zoom, visible, data, highlightCountries = [], cities = [], mode, citiesFile, cityId, useRegionColors = false, lightenNonVisited = false } = mapData;
+        const { center, zoom, visible, data, highlightCountries = [], cities = [], mode, citiesFile, cityId, useRegionColors = false, lightenNonVisited = false, targetRegions = [] } = mapData;
         
-        this.currentView = { center, zoom, highlightCountries, cities, mode, citiesFile, cityId, useRegionColors, lightenNonVisited };
+        this.currentView = { center, zoom, highlightCountries, cities, mode, citiesFile, cityId, useRegionColors, lightenNonVisited, targetRegions };
         console.log('MapManager: Current view set to:', this.currentView);
         console.log('MapManager: Map visible:', visible);
         console.log('MapManager: GeoData available:', !!this.geoData);
@@ -72,10 +72,10 @@ class MapManager {
                 // 地図が既に描画されているかチェック
                 if (!this.svg || this.svg.selectAll('.map-country').empty()) {
                     console.log('MapManager: Initial map rendering...');
-                    this.renderMap(this.geoData, { center, zoom, highlightCountries, cities, useRegionColors, lightenNonVisited });
+                    this.renderMap(this.geoData, { center, zoom, highlightCountries, cities, useRegionColors, lightenNonVisited, targetRegions });
                 } else {
                     console.log('MapManager: Updating existing map...');
-                    this.updateExistingMap({ center, zoom, highlightCountries, cities, useRegionColors, lightenNonVisited });
+                    this.updateExistingMap({ center, zoom, highlightCountries, cities, useRegionColors, lightenNonVisited, targetRegions });
                 }
             } else {
                 console.error('MapManager: No geo data available for rendering');
@@ -217,6 +217,13 @@ class MapManager {
                     if (config.useRegionColors && window.CountryRegionMapping && window.ColorScheme) {
                         const region = window.CountryRegionMapping.getRegionForCountry(countryName);
                         if (region) {
+                            // targetRegionsが指定されている場合、対象地域のみ色を付ける
+                            if (config.targetRegions && config.targetRegions.length > 0) {
+                                if (!config.targetRegions.includes(region)) {
+                                    return '#f3f4f6'; // 対象外の地域は薄いグレー
+                                }
+                            }
+                            
                             let color = window.ColorScheme.getRegionColor(region);
                             
                             // lightenNonVisitedが有効な場合、訪問国以外を明るくする
@@ -457,7 +464,8 @@ class MapManager {
             highlightCountries = [], 
             cities = [],
             useRegionColors = false,
-            lightenNonVisited = false
+            lightenNonVisited = false,
+            targetRegions = []
         } = config;
 
         console.log('MapManager: updateExistingMap called with:', config);
@@ -506,7 +514,7 @@ class MapManager {
             })
             .on('end', () => {
                 // アニメーション完了後に国のハイライトと都市マーカーを更新
-                this.updateCountryHighlights(highlightCountries, useRegionColors, lightenNonVisited);
+                this.updateCountryHighlights(highlightCountries, useRegionColors, lightenNonVisited, targetRegions);
                 this.updateCityMarkers(cities);
             });
     }
@@ -517,7 +525,7 @@ class MapManager {
      * @param {boolean} useRegionColors - 地域色を使用するかどうか
      * @param {boolean} lightenNonVisited - 訪問国以外を明るくするかどうか
      */
-    updateCountryHighlights(highlightCountries, useRegionColors = false, lightenNonVisited = false) {
+    updateCountryHighlights(highlightCountries, useRegionColors = false, lightenNonVisited = false, targetRegions = []) {
         if (!this.svg) return;
 
         this.svg.selectAll('.map-country')
@@ -530,6 +538,13 @@ class MapManager {
                 if (useRegionColors && window.CountryRegionMapping && window.ColorScheme) {
                     const region = window.CountryRegionMapping.getRegionForCountry(countryName);
                     if (region) {
+                        // targetRegionsが指定されている場合、対象地域のみ色を付ける
+                        if (targetRegions && targetRegions.length > 0) {
+                            if (!targetRegions.includes(region)) {
+                                return '#f3f4f6'; // 対象外の地域は薄いグレー
+                            }
+                        }
+                        
                         let color = window.ColorScheme.getRegionColor(region);
                         
                         // lightenNonVisitedが有効な場合、訪問国以外を明るくする
