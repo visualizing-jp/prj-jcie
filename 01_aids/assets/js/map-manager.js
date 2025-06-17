@@ -46,7 +46,13 @@ class MapManager {
     updateMap(mapData) {
         console.log('MapManager: updateMap called with:', mapData);
         
-        const { center, zoom, visible, data, highlightCountries = [], cities = [], mode, citiesFile, cityId, useRegionColors = false, lightenNonVisited = false, targetRegions = [], width = 800, height = 600, widthPercent, heightPercent, aspectRatio } = mapData;
+        const { center, zoom, visible, data, highlightCountries = [], cities = [], mode, citiesFile, cityId, useRegionColors = false, lightenNonVisited = false, targetRegions = [], width = 800, height = 600, widthPercent, heightPercent, aspectRatio, showSpreadingArrows = false } = mapData;
+        
+        // 地図更新の最初に拡散矢印の状態をチェック
+        if (!showSpreadingArrows) {
+            console.log('MapManager: Clearing spreading arrows at start of updateMap');
+            this.clearSpreadingArrows();
+        }
         
         this.currentView = { center, zoom, highlightCountries, cities, mode, citiesFile, cityId, useRegionColors, lightenNonVisited, targetRegions };
         console.log('MapManager: Current view set to:', this.currentView);
@@ -72,10 +78,10 @@ class MapManager {
                 // 地図が既に描画されているかチェック
                 if (!this.svg || this.svg.selectAll('.map-country').empty()) {
                     console.log('MapManager: Initial map rendering...');
-                    this.renderMap(this.geoData, { center, zoom, highlightCountries, cities, useRegionColors, lightenNonVisited, targetRegions, width, height, widthPercent, heightPercent, aspectRatio });
+                    this.renderMap(this.geoData, { center, zoom, highlightCountries, cities, useRegionColors, lightenNonVisited, targetRegions, width, height, widthPercent, heightPercent, aspectRatio, showSpreadingArrows });
                 } else {
                     console.log('MapManager: Updating existing map...');
-                    this.updateExistingMap({ center, zoom, highlightCountries, cities, useRegionColors, lightenNonVisited, targetRegions, width, height, widthPercent, heightPercent, aspectRatio });
+                    this.updateExistingMap({ center, zoom, highlightCountries, cities, useRegionColors, lightenNonVisited, targetRegions, width, height, widthPercent, heightPercent, aspectRatio, showSpreadingArrows });
                 }
             } else {
                 console.error('MapManager: No geo data available for rendering');
@@ -101,6 +107,10 @@ class MapManager {
     hide() {
         console.log('MapManager: Hiding map container');
         this.container.classed('visible', false);
+        
+        // 地図非表示時は拡散矢印も即座にクリア
+        this.clearSpreadingArrows();
+        
         console.log('MapManager: Container classes after hide:', this.container.attr('class'));
     }
 
@@ -229,11 +239,15 @@ class MapManager {
         console.log('renderMap geoData:', geoData);
         console.log('renderMap config:', config);
         
+        // 再描画時は既存の拡散矢印を即座にクリア
+        this.clearSpreadingArrows();
+        
         const { 
             center = [0, 0], 
             zoom = 1, 
             highlightCountries = [], 
-            cities = []
+            cities = [],
+            showSpreadingArrows = false
         } = config;
         
         console.log('renderMap parameters:', { center, zoom, config });
@@ -413,6 +427,14 @@ class MapManager {
                 .style('opacity', 1);
         }
 
+        // エイズ拡散矢印を描画（step3用）
+        if (showSpreadingArrows) {
+            this.drawSpreadingArrows(mapGroup);
+        } else {
+            // showSpreadingArrowsがfalseの場合は拡散矢印を即座に削除
+            this.clearSpreadingArrows();
+        }
+
         // 滑らかなトランジション
         this.animateToView(center, zoom);
     }
@@ -547,10 +569,17 @@ class MapManager {
             height = 600,
             widthPercent,
             heightPercent,
-            aspectRatio
+            aspectRatio,
+            showSpreadingArrows = false
         } = config;
 
         console.log('MapManager: updateExistingMap called with:', config);
+
+        // 最優先で拡散矢印の状態を処理（アニメーション前に実行）
+        if (!showSpreadingArrows) {
+            console.log('MapManager: Clearing spreading arrows immediately');
+            this.clearSpreadingArrows();
+        }
 
         if (!this.svg || !this.projection) {
             console.error('MapManager: No SVG or projection available for update');
@@ -598,6 +627,16 @@ class MapManager {
                 // アニメーション完了後に国のハイライトと都市マーカーを更新
                 this.updateCountryHighlights(highlightCountries, useRegionColors, lightenNonVisited, targetRegions);
                 this.updateCityMarkers(cities);
+                
+                // エイズ拡散矢印を処理（step3用）
+                if (showSpreadingArrows) {
+                    // 新たに拡散矢印を描画
+                    const mapGroup = this.svg.select('.map-group');
+                    if (!mapGroup.empty()) {
+                        this.drawSpreadingArrows(mapGroup);
+                    }
+                }
+                // 注意：showSpreadingArrowsがfalseの場合のクリアは既にupdateExistingMapの開始時に実行済み
             });
     }
 
@@ -711,6 +750,7 @@ class MapManager {
                 
                 return '0.5';
             });
+
     }
 
     /**
@@ -1312,6 +1352,144 @@ class MapManager {
                 severity: ErrorHandler.SEVERITY.LOW
             });
         }
+    }
+
+    /**
+     * 拡散矢印を即座にクリア
+     */
+    clearSpreadingArrows() {
+        if (this.svg) {
+            // 進行中のアニメーションも含めて即座に削除
+            this.svg.selectAll('.spreading-arrows').interrupt().remove();
+            
+            // より強力なクリーンアップ：個別要素も削除
+            this.svg.selectAll('.spreading-flow').interrupt().remove();
+            this.svg.selectAll('.spreading-point').interrupt().remove();
+            this.svg.selectAll('#spreading-arrow').remove();
+            
+            console.log('MapManager: Spreading arrows completely cleared');
+        }
+    }
+
+    /**
+     * エイズ拡散矢印を描画（step3用）
+     * @param {d3.Selection} mapGroup - 地図グループ要素
+     */
+    drawSpreadingArrows(mapGroup) {
+        console.log('MapManager: Drawing spreading arrows');
+        
+        // アメリカから各地域への拡散データ（概念的座標）
+        const spreadingFlows = [
+            {
+                id: 'usa-europe',
+                from: { name: 'アメリカ', coords: [-95, 40] },
+                to: { name: 'ヨーロッパ', coords: [10, 50] },
+                delay: 0
+            },
+            {
+                id: 'usa-asia',
+                from: { name: 'アメリカ', coords: [-95, 40] },
+                to: { name: 'アジア・太平洋', coords: [120, 30] },
+                delay: 150
+            },
+            {
+                id: 'usa-east-africa',
+                from: { name: 'アメリカ', coords: [-95, 40] },
+                to: { name: '東部・南部アフリカ', coords: [35, -10] },
+                delay: 300
+            },
+            {
+                id: 'usa-west-africa',
+                from: { name: 'アメリカ', coords: [-95, 40] },
+                to: { name: '西部・中部アフリカ', coords: [0, 10] },
+                delay: 450
+            }
+        ];
+
+        // SVGマーカー（矢印）を定義
+        const defs = mapGroup.select('defs').empty() ? 
+            mapGroup.append('defs') : mapGroup.select('defs');
+
+        // 既存のマーカーがない場合のみ作成
+        if (defs.select('#spreading-arrow').empty()) {
+            defs.append('marker')
+                .attr('id', 'spreading-arrow')
+                .attr('viewBox', '0 -5 10 10')
+                .attr('refX', 8)
+                .attr('refY', 0)
+                .attr('markerWidth', 6)
+                .attr('markerHeight', 6)
+                .attr('orient', 'auto')
+                .append('path')
+                .attr('d', 'M0,-5L10,0L0,5')
+                .attr('fill', '#ef4444')
+                .attr('stroke', 'none');
+        }
+
+        // 拡散矢印グループを作成
+        const arrowGroup = mapGroup.append('g')
+            .attr('class', 'spreading-arrows');
+
+        // 各フローラインを描画
+        spreadingFlows.forEach(flow => {
+            // 投影座標を計算
+            const fromCoords = this.projection(flow.from.coords);
+            const toCoords = this.projection(flow.to.coords);
+            
+            if (!fromCoords || !toCoords) {
+                console.warn('Invalid coordinates for flow:', flow.id);
+                return;
+            }
+
+            // 曲線パスを生成（制御点を使用）
+            const midX = (fromCoords[0] + toCoords[0]) / 2;
+            const midY = (fromCoords[1] + toCoords[1]) / 2 - 100; // 上に湾曲
+            
+            const pathData = `M ${fromCoords[0]},${fromCoords[1]} Q ${midX},${midY} ${toCoords[0]},${toCoords[1]}`;
+
+            // パスを描画
+            const path = arrowGroup.append('path')
+                .attr('class', `spreading-flow ${flow.id}`)
+                .attr('d', pathData)
+                .attr('fill', 'none')
+                .attr('stroke', '#ef4444')
+                .attr('stroke-width', 3)
+                .attr('stroke-dasharray', '5,5')
+                .attr('marker-end', 'url(#spreading-arrow)')
+                .style('opacity', 0);
+
+            // パスの長さを取得してアニメーション
+            const totalLength = path.node().getTotalLength();
+            
+            path.attr('stroke-dasharray', totalLength + ' ' + totalLength)
+                .attr('stroke-dashoffset', totalLength)
+                .transition()
+                .duration(1200)
+                .delay(flow.delay + 100) // さらに早いタイミングで表示
+                .ease(d3.easeQuadOut)
+                .attr('stroke-dashoffset', 0)
+                .style('opacity', 1);
+
+            // 拡散点（到着地点）を表示
+            arrowGroup.append('circle')
+                .attr('class', `spreading-point ${flow.id}`)
+                .attr('cx', toCoords[0])
+                .attr('cy', toCoords[1])
+                .attr('r', 0)
+                .attr('fill', '#ef4444')
+                .attr('stroke', '#ffffff')
+                .attr('stroke-width', 2)
+                .style('opacity', 0)
+                .transition()
+                .duration(300)
+                .delay(flow.delay + 1000) // パス描画後に表示
+                .attr('r', 6)
+                .style('opacity', 1);
+
+            console.log(`Spreading arrow ${flow.id} added:`, { fromCoords, toCoords, delay: flow.delay });
+        });
+
+        console.log('MapManager: Spreading arrows animation started');
     }
 
     /**
