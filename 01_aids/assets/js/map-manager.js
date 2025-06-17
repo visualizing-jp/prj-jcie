@@ -213,9 +213,31 @@ class MapManager {
                 .style('fill', d => {
                     const countryName = d.properties.NAME || d.properties.name || d.properties.NAME_EN;
                     
-                    // 地域色を適用（地域色が有効な場合はハイライトより優先）
+                    // 地域色を適用
                     if (config.useRegionColors && window.CountryRegionMapping && window.ColorScheme) {
                         const region = window.CountryRegionMapping.getRegionForCountry(countryName);
+                        
+                        // highlightCountriesが指定されている場合、ハイライト国のみ地域色、他は薄いグレー
+                        if (highlightCountries && highlightCountries.length > 0) {
+                            // より厳密な国名マッチング
+                            const isHighlighted = highlightCountries.some(hc => 
+                                countryName === hc || 
+                                countryName.includes('United States') || 
+                                countryName === 'USA' ||
+                                hc.includes(countryName)
+                            );
+                            
+                            if (isHighlighted) {
+                                if (region) {
+                                    return window.ColorScheme.getRegionColor(region); // ハイライト国は地域色
+                                } else {
+                                    return '#3b82f6'; // 地域不明のハイライト国はデフォルトのハイライト色
+                                }
+                            } else {
+                                return '#f3f4f6'; // ハイライト国以外は薄いグレー
+                            }
+                        }
+                        
                         if (region) {
                             // targetRegionsが指定されている場合、対象地域のみ色を付ける
                             if (config.targetRegions && config.targetRegions.length > 0) {
@@ -237,11 +259,6 @@ class MapManager {
                                 if (visitedCountry && countryName !== visitedCountry) {
                                     color = window.ColorScheme.getLighterColor(color, 0.5);
                                 }
-                            }
-                            
-                            // step8の場合：すべての国を50%明るくする
-                            if (highlightCountries && highlightCountries.length > 0) {
-                                color = window.ColorScheme.getLighterColor(color, 0.5);
                             }
                             
                             return color;
@@ -534,9 +551,31 @@ class MapManager {
             .style('fill', d => {
                 const countryName = d.properties.NAME || d.properties.name || d.properties.NAME_EN;
                 
-                // 地域色を適用（地域色が有効な場合はハイライトより優先）
+                // 地域色を適用
                 if (useRegionColors && window.CountryRegionMapping && window.ColorScheme) {
                     const region = window.CountryRegionMapping.getRegionForCountry(countryName);
+                    
+                    // highlightCountriesが指定されている場合、ハイライト国のみ地域色、他は薄いグレー
+                    if (highlightCountries && highlightCountries.length > 0) {
+                        // より厳密な国名マッチング
+                        const isHighlighted = highlightCountries.some(hc => 
+                            countryName === hc || 
+                            countryName.includes('United States') || 
+                            countryName === 'USA' ||
+                            hc.includes(countryName)
+                        );
+                        
+                        if (isHighlighted) {
+                            if (region) {
+                                return window.ColorScheme.getRegionColor(region); // ハイライト国は地域色
+                            } else {
+                                return '#3b82f6'; // 地域不明のハイライト国はデフォルトのハイライト色
+                            }
+                        } else {
+                            return '#f3f4f6'; // ハイライト国以外は薄いグレー
+                        }
+                    }
+                    
                     if (region) {
                         // targetRegionsが指定されている場合、対象地域のみ色を付ける
                         if (targetRegions && targetRegions.length > 0) {
