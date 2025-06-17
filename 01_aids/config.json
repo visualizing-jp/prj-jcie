@@ -388,7 +388,14 @@
     },
     {
       "id": "step9",
-      "text": "世界全体での取り組み",
+      "text": {
+        "content": "世界全体での取り組み",
+        "position": {
+          "width": "60%",
+          "horizontal": "center", 
+          "vertical": "center"
+        }
+      },
       "map": {
         "center": [0, 0],
         "zoom": 1,

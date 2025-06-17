@@ -133,7 +133,7 @@ class ScrollytellingApp {
             
             stepDiv.innerHTML = `
                 <div class="w-full min-h-screen flex items-center">
-                    <div class="max-w-lg mx-auto p-8 bg-white bg-opacity-90 rounded-lg shadow-lg">
+                    <div class="max-w-lg p-8 bg-white bg-opacity-90 rounded-lg shadow-lg">
                         ${city.data.thumbnail ? `
                         <div class="mb-6">
                             <img src="data/thumb/${city.data.thumbnail}" 
@@ -228,6 +228,17 @@ class ScrollytellingApp {
         }
 
         console.log(`Entering step ${index} (direction: ${direction})`, stepConfig);
+
+        // step17の詳細デバッグ（stepConfig.idで判定）
+        if (stepConfig.id === 'step17') {
+            console.log('=== STEP 17 DEBUG ===');
+            console.log('Step index:', index);
+            console.log('Step config:', stepConfig);
+            console.log('Chart config:', stepConfig.chart);
+            console.log('Chart layout:', stepConfig.chart?.layout);
+            console.log('Chart charts:', stepConfig.chart?.charts);
+            console.log('Chart visible:', stepConfig.chart?.visible);
+        }
 
         // チャート更新
         if (stepConfig.chart) {
@@ -373,11 +384,16 @@ class ScrollytellingApp {
     getChartData(type, dataFile) {
         // 新しいデータ構造から指定されたファイルのデータを取得
         if (dataFile && this.data.csv && this.data.csv[dataFile]) {
-            console.log(`Returning data for ${dataFile}:`, this.data.csv[dataFile].slice(0, 2));
-            return this.data.csv[dataFile];
+            const data = this.data.csv[dataFile];
+            console.log(`Returning data for ${dataFile}: ${data.length} records`);
+            if (dataFile.includes('africa_young')) {
+                console.log('Sample data for', dataFile, ':', data.slice(0, 3));
+            }
+            return data;
         }
         
         console.warn(`Data file not found: ${dataFile}`);
+        console.log('Available data files:', Object.keys(this.data.csv || {}));
         return [];
     }
 
@@ -439,8 +455,6 @@ class ScrollytellingApp {
             console.warn('PositionManager not available, skipping positioning');
             return;
         }
-
-        console.log(`Applying positioning for step ${stepIndex}:`, stepConfig);
 
         // チャートポジション設定
         if (stepConfig.chart && stepConfig.chart.visible !== false) {

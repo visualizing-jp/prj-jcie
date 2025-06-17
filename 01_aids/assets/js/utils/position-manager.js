@@ -541,7 +541,11 @@ class PositionManager {
                     parentContainer.classList.add('justify-start');
                     textContainer.classList.remove('mx-auto');
                     textContainer.classList.add('ml-0', 'mr-auto');
-                    if (debugMode) console.log('Applied LEFT positioning to white container');
+                    if (debugMode) {
+                console.log('Applied LEFT positioning to white container');
+                console.log('Parent container classes after LEFT:', Array.from(parentContainer.classList));
+                console.log('Text container classes after LEFT:', Array.from(textContainer.classList));
+            }
                     break;
                 default:
                     parentContainer.classList.add('justify-center');

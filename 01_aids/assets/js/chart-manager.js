@@ -1,8 +1,20 @@
 /**
- * ChartManager - チャート管理クラス
- * D3.jsを使用した各種チャートの描画・更新を管理
+ * ChartManager - レガシーチャート管理クラス
+ * 
+ * 注意: このファイルは後方互換性のために保持されています。
+ * 新しいストリームライン化されたChartManagerは ChartManager.js に移動されました。
+ * 
+ * 新しいChartManagerは以下の特徴があります:
+ * - BaseManagerを継承
+ * - 専門化されたレンダラー（LineChartRenderer, BarChartRenderer, PieChartRenderer, GridChartRenderer）を調整
+ * - ChartTransitionsによる統一されたアニメーション
+ * - よりクリーンで保守しやすいアーキテクチャ
+ * 
+ * 移行スケジュール:
+ * - 現在: 両方のバージョンが利用可能
+ * - 将来: このレガシー版は段階的に非推奨となる予定
  */
-class ChartManager {
+class LegacyChartManager {
     constructor(containerId) {
         // コンテナIDが#chart-containerの場合、#chartを使用
         const actualContainerId = containerId === '#chart-container' ? '#chart' : containerId;
@@ -12,11 +24,17 @@ class ChartManager {
         this.data = null;
         this.config = null;
         
+        // Renderers for specific chart types
+        this.gridChartRenderer = null;
+        
         console.log('ChartManager initialized with container:', actualContainerId);
         this.init();
     }
 
     init() {
+        // Initialize specialized renderers
+        this.initRenderers();
+        
         // イベントリスナーを設定
         pubsub.subscribe(EVENTS.CHART_UPDATE, (data) => {
             this.updateChart(data);
@@ -25,6 +43,16 @@ class ChartManager {
         pubsub.subscribe(EVENTS.RESIZE, () => {
             this.resize();
         });
+    }
+
+    /**
+     * Initialize specialized chart renderers
+     */
+    initRenderers() {
+        // Initialize GridChartRenderer if available
+        if (window.GridChartRenderer) {
+            this.gridChartRenderer = new GridChartRenderer(this.container.node().id ? `#${this.container.node().id}` : '.chart-container');
+        }
     }
 
     /**
@@ -46,7 +74,12 @@ class ChartManager {
         
         // Grid chart layoutの場合
         if (chartData.layout === 'grid' && chartData.config) {
-            this.updateGridChart(chartData);
+            if (this.gridChartRenderer) {
+                this.gridChartRenderer.updateChart(chartData);
+            } else {
+                console.warn('GridChartRenderer not available, falling back to legacy method');
+                this.updateGridChart(chartData);
+            }
             return;
         }
         
@@ -1992,238 +2025,54 @@ class ChartManager {
     }
 
     /**
-     * Grid chart layoutを描画
+     * Grid chart layout legacy fallback (for backward compatibility)
      * @param {Object} chartData - チャートデータ
+     * @deprecated Use GridChartRenderer instead
      */
     updateGridChart(chartData) {
-        this.show();
+        console.warn('ChartManager.updateGridChart is deprecated. Using legacy fallback.');
         
-        // SVG要素をクリア
+        this.show();
         this.container.selectAll('*').remove();
         
-        // データファイルから実際のデータを取得
-        const data = chartData.data;
+        // Display a simple message indicating grid charts are now handled by GridChartRenderer
+        const svg = this.container.append('svg')
+            .attr('width', 400)
+            .attr('height', 200)
+            .attr('viewBox', '0 0 400 200')
+            .style('width', '100%')
+            .style('height', 'auto');
         
-        this.renderGridChart(data, chartData.config);
-    }
-    
-    /**
-     * Grid layoutで複数の円グラフを描画
-     * @param {Array} data - チャートデータ
-     * @param {Object} config - 設定
-     */
-    renderGridChart(data, config) {
-        const { 
-            columns = 7, 
-            rows = 2, 
-            chartWidth = 120, 
-            chartHeight = 120,
-            title = '',
-            showLabels = true,
-            showPercentages = true,
-            rowSpacing = chartHeight * 0.5  // デフォルトの行間スペーシング（チャート高さの50%）
-        } = config;
-        
-        // データを適切な形式に変換
-        const gridData = this.transformToGridData(data, config);
-        console.log('Grid data:', gridData);
-        
-        // 全体のサイズを計算（行間スペーシングを含む）
-        const totalWidth = columns * chartWidth;
-        const totalHeight = rows * chartHeight + (rows - 1) * rowSpacing + (title ? 40 : 0);
-        
-        const svg = this.initSVG(totalWidth, totalHeight);
-        
-        // タイトルを追加
-        if (title) {
-            svg.append('text')
-                .attr('class', 'chart-title')
-                .attr('x', totalWidth / 2)
-                .attr('y', 25)
-                .attr('text-anchor', 'middle')
-                .attr('font-size', '18px')
-                .attr('font-weight', 'bold')
-                .attr('fill', window.AppDefaults?.colors?.text?.primary || '#333')
-                .text(title);
-        }
-        
-        // グリッドコンテナ
-        const gridContainer = svg.append('g')
-            .attr('transform', `translate(0, ${title ? 40 : 0})`);
-        
-        // 各セルを描画（行間スペーシングを考慮）
-        gridData.forEach((cellData, index) => {
-            const col = index % columns;
-            const row = Math.floor(index / columns);
-            const x = col * chartWidth;
-            const y = row * (chartHeight + rowSpacing);  // 行間スペーシングを追加
-            
-            this.renderGridCell(gridContainer, cellData, {
-                x: x,
-                y: y,
-                width: chartWidth,
-                height: chartHeight,
-                showLabels,
-                showPercentages
-            });
-        });
-    }
-    
-    /**
-     * グリッドの各セルを描画
-     */
-    renderGridCell(container, cellData, layout) {
-        const { x, y, width, height, showLabels, showPercentages } = layout;
-        const radius = Math.min(width, height) / 2 - 20;
-        const centerX = x + width / 2;
-        const centerY = y + height / 2;
-        
-        // セルグループを作成
-        const cellGroup = container.append('g')
-            .attr('class', 'grid-cell')
-            .attr('transform', `translate(${centerX}, ${centerY})`);
-        
-        // パイチャートデータ
-        const pieData = d3.pie()
-            .value(d => d.value)
-            .sort(null)(cellData.pieData);
-        
-        // アーク生成器
-        const arc = d3.arc()
-            .innerRadius(0)
-            .outerRadius(radius);
-        
-        // パイスライスを描画
-        const slices = cellGroup.selectAll('.pie-slice')
-            .data(pieData)
-            .enter()
-            .append('g')
-            .attr('class', 'pie-slice');
-        
-        slices.append('path')
-            .attr('d', arc)
-            .attr('fill', d => d.data.color)
-            .attr('stroke', window.AppDefaults?.colors?.text?.white || '#fff')
-            .attr('stroke-width', window.AppDefaults?.strokeWidth?.normal || 1)
-            .style('opacity', 0)
-            .transition()
-            .duration(500)
-            .delay((d, i) => i * 100)
-            .style('opacity', 1);
-        
-        // ラベルを追加
-        if (showLabels) {
-            // 地域名
-            cellGroup.append('text')
-                .attr('class', 'region-label')
-                .attr('x', 0)
-                .attr('y', -height/2 + 15)
-                .attr('text-anchor', 'middle')
-                .attr('font-size', '10px')
-                .attr('font-weight', 'bold')
-                .attr('fill', window.AppDefaults?.colors?.text?.primary || '#333')
-                .text(cellData.region);
-            
-            // 年齢層
-            cellGroup.append('text')
-                .attr('class', 'age-label')
-                .attr('x', 0)
-                .attr('y', height/2 - 5)
-                .attr('text-anchor', 'middle')
-                .attr('font-size', '9px')
-                .attr('fill', window.AppDefaults?.colors?.text?.secondary || '#666')
-                .text(cellData.ageGroup);
-        }
-        
-        // パーセンテージを中央に表示
-        if (showPercentages) {
-            cellGroup.append('text')
-                .attr('class', 'percentage-label')
-                .attr('x', 0)
-                .attr('y', 5)
-                .attr('text-anchor', 'middle')
-                .attr('font-size', '12px')
-                .attr('font-weight', 'bold')
-                .attr('fill', window.AppDefaults?.colors?.text?.primary || '#333')
-                .text(`${cellData.percentage}%`);
-        }
-    }
-    
-    /**
-     * 生データをグリッド用データに変換
-     */
-    transformToGridData(data, config) {
-        const result = [];
-        const regions = [];
-        
-        console.log('Raw data for transformation:', data);
-        
-        data.forEach(row => {
-            // CSVの最初の列は空白のキー名になっている
-            const region = row[''] || row[Object.keys(row)[0]]; 
-            const adultPercentStr = row['成人（15歳以上）'];
-            const childPercentStr = row['こども（0歳から14歳）'];
-            
-            // パーセント記号を除去して数値に変換
-            const adultPercent = parseInt(adultPercentStr?.replace('%', '') || '0');
-            const childPercent = parseInt(childPercentStr?.replace('%', '') || '0');
-            
-            // 地域名が有効な場合のみ追加
-            if (region && region.trim()) {
-                // ColorSchemeから色を取得
-                const colorScheme = window.ColorScheme;
-                const treatmentColor = colorScheme ? colorScheme.getRegionColor(region) : window.AppDefaults?.colors?.accent?.primary || '#2563eb';
-                const untreatedColor = window.AppDefaults?.colors?.background?.neutral || '#e5e7eb';
-                
-                
-                // 成人データとこどもデータを保存
-                const adultData = {
-                    region: region,
-                    ageGroup: '成人（15歳以上）',
-                    percentage: adultPercent,
-                    pieData: [
-                        { label: '治療中', value: adultPercent, color: treatmentColor },
-                        { label: '未治療', value: 100 - adultPercent, color: untreatedColor }
-                    ]
-                };
-                
-                // こどもデータ（少し明るい色を使用）
-                const childTreatmentColor = colorScheme ? colorScheme.getLighterColor(treatmentColor) : window.AppDefaults?.colors?.accent?.secondary || '#3b82f6';
-                const childData = {
-                    region: region,
-                    ageGroup: 'こども（0-14歳）',
-                    percentage: childPercent,
-                    pieData: [
-                        { label: '治療中', value: childPercent, color: childTreatmentColor },
-                        { label: '未治療', value: 100 - childPercent, color: untreatedColor }
-                    ]
-                };
-                
-                // 地域ごとにグループ化してテンポラリに保存
-                regions.push({ adult: adultData, child: childData });
-            }
-        });
-        
-        // 1行目：すべての地域の成人データ（左から右へ）
-        regions.forEach(regionData => {
-            result.push(regionData.adult);
-        });
-        
-        // 2行目：すべての地域のこどもデータ（左から右へ、上段と同じ順序）
-        regions.forEach(regionData => {
-            result.push(regionData.child);
-        });
-        
-        console.log('Transformed grid data:', result);
-        return result;
+        svg.append('text')
+            .attr('x', 200)
+            .attr('y', 100)
+            .attr('text-anchor', 'middle')
+            .attr('font-size', '16px')
+            .attr('fill', window.AppDefaults?.colors?.text?.primary || '#333')
+            .text('Grid charts are now handled by GridChartRenderer');
     }
 
     /**
      * リサイズ処理
      */
     resize() {
+        // Resize specialized renderers
+        if (this.gridChartRenderer) {
+            this.gridChartRenderer.resize();
+        }
+        
+        // Legacy chart handling
         if (this.currentChart && this.data && this.config) {
             this.renderChart(this.currentChart, this.data, this.config);
         }
     }
+}
+
+// 後方互換性のために両方のバージョンをエクスポート
+window.LegacyChartManager = LegacyChartManager;
+
+// 新しいChartManagerが利用できない場合のフォールバック
+if (!window.ChartManager) {
+    console.warn('New ChartManager not available, using legacy version');
+    window.ChartManager = LegacyChartManager;
 }
