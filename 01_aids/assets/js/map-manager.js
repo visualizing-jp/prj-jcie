@@ -1489,7 +1489,7 @@ class MapManager {
             
             const pathData = `M ${fromCoords[0]},${fromCoords[1]} Q ${midX},${midY} ${toCoords[0]},${toCoords[1]}`;
 
-            // パスを描画
+            // パスを描画（最初はマーカーなし）
             const path = arrowGroup.append('path')
                 .attr('class', `spreading-flow ${flow.id}`)
                 .attr('d', pathData)
@@ -1497,7 +1497,6 @@ class MapManager {
                 .attr('stroke', '#ef4444')
                 .attr('stroke-width', 3)
                 .attr('stroke-dasharray', '5,5')
-                .attr('marker-end', 'url(#spreading-arrow)')
                 .style('opacity', 0);
 
             // パスの長さを取得してアニメーション
@@ -1510,7 +1509,11 @@ class MapManager {
                 .delay(flow.delay + 100) // さらに早いタイミングで表示
                 .ease(d3.easeQuadOut)
                 .attr('stroke-dashoffset', 0)
-                .style('opacity', 1);
+                .style('opacity', 1)
+                .on('end', () => {
+                    // 線の描画完了後に矢印マーカーを追加
+                    path.attr('marker-end', 'url(#spreading-arrow)');
+                });
 
 
             console.log(`Spreading arrow ${flow.id} added:`, { fromCoords, toCoords, delay: flow.delay });
