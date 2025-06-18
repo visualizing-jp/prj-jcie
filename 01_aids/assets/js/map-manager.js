@@ -1407,7 +1407,6 @@ class MapManager {
             
             // より強力なクリーンアップ：個別要素も削除
             this.svg.selectAll('.spreading-flow').interrupt().remove();
-            this.svg.selectAll('.spreading-point').interrupt().remove();
             this.svg.selectAll('#spreading-arrow').remove();
             
             console.log('MapManager: Spreading arrows completely cleared');
@@ -1513,21 +1512,6 @@ class MapManager {
                 .attr('stroke-dashoffset', 0)
                 .style('opacity', 1);
 
-            // 拡散点（到着地点）を表示
-            arrowGroup.append('circle')
-                .attr('class', `spreading-point ${flow.id}`)
-                .attr('cx', toCoords[0])
-                .attr('cy', toCoords[1])
-                .attr('r', 0)
-                .attr('fill', '#ef4444')
-                .attr('stroke', '#ffffff')
-                .attr('stroke-width', 2)
-                .style('opacity', 0)
-                .transition()
-                .duration(300)
-                .delay(flow.delay + 1000) // パス描画後に表示
-                .attr('r', 6)
-                .style('opacity', 1);
 
             console.log(`Spreading arrow ${flow.id} added:`, { fromCoords, toCoords, delay: flow.delay });
         });
