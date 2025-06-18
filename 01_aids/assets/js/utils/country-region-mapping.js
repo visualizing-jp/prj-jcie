@@ -46,6 +46,7 @@ class CountryRegionMapping {
             'Kiribati': 'アジア・太平洋地域',
             'Nauru': 'アジア・太平洋地域',
             'Tuvalu': 'アジア・太平洋地域',
+            'Taiwan': 'アジア・太平洋地域',
             
             // カリブ海地域
             'Antigua and Barbuda': 'カリブ海地域',
@@ -195,6 +196,7 @@ class CountryRegionMapping {
             'Belgium': '西・中央ヨーロッパおよび北米',
             'Canada': '西・中央ヨーロッパおよび北米',
             'Cyprus': '西・中央ヨーロッパおよび北米',
+            'N. Cyprus': '西・中央ヨーロッパおよび北米',
             'Denmark': '西・中央ヨーロッパおよび北米',
             'Finland': '西・中央ヨーロッパおよび北米',
             'France': '西・中央ヨーロッパおよび北米',
@@ -229,12 +231,21 @@ class CountryRegionMapping {
             'Congo': 'Republic of the Congo',
             'DR Congo': 'Democratic Republic of the Congo',
             'DRC': 'Democratic Republic of the Congo',
+            'Dem. Rep. Congo': 'Democratic Republic of the Congo',
             'Côte d\'Ivoire': 'Ivory Coast',
             'Burma': 'Myanmar',
             'East Timor': 'Timor-Leste',
             'Cabo Verde': 'Cape Verde',
             'The Gambia': 'Gambia',
-            'The Bahamas': 'Bahamas'
+            'The Bahamas': 'Bahamas',
+            // 地図データの略称対応
+            'Central African Rep.': 'Central African Republic',
+            'Bosnia and Herz.': 'Bosnia and Herzegovina',
+            'Solomon Is.': 'Solomon Islands',
+            'eSwatini': 'Eswatini',
+            'Dominican Rep.': 'Dominican Republic',
+            'Eq. Guinea': 'Equatorial Guinea',
+            'S. Sudan': 'South Sudan'
         };
     }
     
