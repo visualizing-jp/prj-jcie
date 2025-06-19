@@ -823,6 +823,25 @@
           "objectFit": "cover"
         }
       }
+    },
+    {
+      "id": "step25",
+      "text": {
+        "content": "",
+        "visible": false
+      },
+      "chart": {
+        "visible": false
+      },
+      "map": {
+        "visible": false
+      },
+      "image": {
+        "visible": false
+      },
+      "footer": {
+        "visible": true
+      }
     }
   ],
   "settings": {
