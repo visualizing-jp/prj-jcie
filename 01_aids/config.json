@@ -287,7 +287,7 @@
     {
       "id": "step7",
       "text": {
-        "content": "地域別のHIV治療カバレッジ",
+        "content": "地域別のHIV/エイズの治療機会",
         "position": {
           "width": "30%",
           "horizontal": "right",
@@ -329,64 +329,6 @@
     },
     {
       "id": "step8",
-      "text": {
-        "content": "治療の進歩",
-        "position": {
-          "width": "30%",
-          "horizontal": "right",
-          "vertical": "center"
-        }
-      },
-      "chart": {
-        "visible": false
-      },
-      "map": {
-        "visible": false
-      },
-      "image": {
-        "src": "https://placehold.co/800x600/10b981/ffffff?text=Medical+Progress",
-        "alt": "HIV治療の進歩を示す画像",
-        "visible": true,
-        "config": {
-          "width": "100%",
-          "height": "100%",
-          "position": "center",
-          "opacity": 0.9,
-          "objectFit": "cover"
-        }
-      }
-    },
-    {
-      "id": "step9",
-      "text": {
-        "content": "国際的な支援体制の構築",
-        "position": {
-          "width": "30%",
-          "horizontal": "right",
-          "vertical": "center"
-        }
-      },
-      "chart": {
-        "visible": false
-      },
-      "map": {
-        "visible": false
-      },
-      "image": {
-        "src": "https://placehold.co/800x600/2563eb/ffffff?text=Global+Fund+Support",
-        "alt": "国際的な支援体制の構築の画像",
-        "visible": true,
-        "config": {
-          "width": "100%",
-          "height": "100%",
-          "position": "center",
-          "opacity": 0.9,
-          "objectFit": "cover"
-        }
-      }
-    },
-    {
-      "id": "step10",
       "text": {
         "content": "母子感染防止の成果",
         "position": {
