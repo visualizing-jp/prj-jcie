@@ -151,7 +151,7 @@
           "seriesField": "series",
           "multiSeries": true,
           "title": "新規HIV感染者数の推移（1990-1998年）",
-          "dataSource": "UNAIDS Global HIV & AIDS Statistics",
+          "dataSource": "Our World in Data",
           "filter": {
             "type": "range",
             "field": "year",
@@ -207,7 +207,7 @@
           "seriesField": "series",
           "multiSeries": true,
           "title": "新規HIV感染者数の推移（全期間）",
-          "dataSource": "UNAIDS Global HIV & AIDS Statistics",
+          "dataSource": "Our World in Data",
           "yRange": [0, 4000000],
           "annotations": [
             {
@@ -265,7 +265,7 @@
           "seriesField": "series",
           "multiSeries": true,
           "title": "エイズ関連死亡者数の推移",
-          "dataSource": "UNAIDS Global HIV & AIDS Statistics",
+          "dataSource": "Our World in Data",
           "yRange": [0, 4000000],
           "annotations": [
             {
@@ -300,12 +300,12 @@
         "position": {
           "horizontal": "center",
           "vertical": "center",
-          "width": "70%",
+          "width": "100%",
           "height": "100%"
         },
         "config": {
           "dataFile": "data/ratio_抗HIV治療.csv",
-          "columns": 7,
+          "columns": 8,
           "rows": 2,
           "chartType": "pie",
           "chartWidth": 120,
@@ -314,8 +314,8 @@
           "labelField": "region",
           "valueField": "percentage",
           "categoryField": "ageGroup",
-          "title": "地域別HIV治療カバレッジ（%）",
-          "dataSource": "UNAIDS Global HIV & AIDS Statistics",
+          "title": "地域別HIV治療カバレッジ",
+          "dataSource": "UNAIDS 2024 疫学的推計値",
           "showLabels": true,
           "showPercentages": true
         }
@@ -419,7 +419,7 @@
           "seriesName": "母子感染率",
           "colors": ["#10b981"],
           "title": "HIV母子感染率の推移（%）",
-          "dataSource": "UNAIDS Global HIV & AIDS Statistics",
+          "dataSource": "T.B.D.",
           "yRange": [0, 40],
           "annotations": [
             {
@@ -628,7 +628,7 @@
               "xField": "year",
               "yField": "value",
               "seriesField": "series",
-              "dataSource": "UNAIDS Youth Statistics",
+              "dataSource": "UNAIDS epidemiological estimates, 2024",
               "yRange": [0, 500000],
               "multiSeries": true
             }
@@ -644,7 +644,7 @@
               "xField": "year",
               "yField": "value",
               "seriesField": "series",
-              "dataSource": "UNAIDS Youth Statistics",
+              "dataSource": "UNAIDS epidemiological estimates, 2024",
               "yRange": [0, 500000],
               "multiSeries": true
             }
@@ -689,7 +689,7 @@
           "seriesName": "PrEP利用者数",
           "colors": ["#3b82f6"],
           "title": "PrEP（曝露前予防投与）利用者数の推移",
-          "dataSource": "Global PrEP Tracker / UNAIDS"
+          "dataSource": "UNAIDS"
         }
       },
       "map": {
