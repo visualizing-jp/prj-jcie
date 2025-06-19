@@ -653,7 +653,12 @@ a:hover {
     flex-shrink: 0;
     box-sizing: border-box;
     min-width: 300px;
-    max-width: 100%;
+    max-width: none !important;
+}
+
+/* config.jsonでwidth指定がある場合は、それを優先 */
+.positioned-text[style*="width"] .max-w-lg {
+    max-width: none !important;
 }
 
 /* グリッドベースレイアウト対応 */
