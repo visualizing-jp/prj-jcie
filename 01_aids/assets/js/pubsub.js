@@ -85,14 +85,14 @@ window.pubsub = new PubSub();
 
 // イベント名の定数定義
 window.EVENTS = {
-    STEP_ENTER: 'step:enter',
-    STEP_EXIT: 'step:exit',
-    STEP_PROGRESS: 'step:progress',
-    CHART_UPDATE: 'chart:update',
-    MAP_UPDATE: 'map:update',
-    MAP_PROGRESS: 'map:progress',
-    IMAGE_UPDATE: 'image:update',
-    DATA_LOADED: 'data:loaded',
-    DATA_ERROR: 'data:error',
-    RESIZE: 'window:resize'
+    STEP_ENTER: 'step-enter',
+    STEP_EXIT: 'step-exit',
+    STEP_PROGRESS: 'step-progress',
+    CHART_UPDATE: 'chart-update',
+    MAP_UPDATE: 'map-update',
+    MAP_PROGRESS: 'map-progress',
+    IMAGE_UPDATE: 'image-update',
+    DATA_LOADED: 'data-loaded',
+    DATA_ERROR: 'data-error',
+    RESIZE: 'window-resize'
 };

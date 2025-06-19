@@ -1,502 +1,465 @@
 /**
- * ChartManager - レガシーチャート管理クラス
- * 
- * 注意: このファイルは後方互換性のために保持されています。
- * 新しいストリームライン化されたChartManagerは ChartManager.js に移動されました。
- * 
- * 新しいChartManagerは以下の特徴があります:
- * - BaseManagerを継承
- * - 専門化されたレンダラー（LineChartRenderer, BarChartRenderer, PieChartRenderer, GridChartRenderer）を調整
- * - ChartTransitionsによる統一されたアニメーション
- * - よりクリーンで保守しやすいアーキテクチャ
- * 
- * 移行スケジュール:
- * - 現在: 両方のバージョンが利用可能
- * - 将来: このレガシー版は段階的に非推奨となる予定
+ * ChartManager - 新しいストリームライン化されたチャート管理クラス
+ * 専門化されたレンダラー間の調整と統合に特化
+ * BaseManagerを継承し、すべてのチャートタイプを統一的に管理
  */
-class LegacyChartManager {
+class ChartManager extends BaseManager {
     constructor(containerId) {
-        // コンテナIDが#chart-containerの場合、#chartを使用
+        // コンテナIDが#chart-containerの場合、#chartを使用（後方互換性）
         const actualContainerId = containerId === '#chart-container' ? '#chart' : containerId;
-        this.container = d3.select(actualContainerId);
-        this.svg = null;
-        this.currentChart = null;
-        this.data = null;
-        this.config = null;
         
-        // Renderers for specific chart types
-        this.gridChartRenderer = null;
+        super(actualContainerId);
+        
+        // 専門化されたレンダラーのインスタンス
+        this.renderers = {
+            line: null,
+            bar: null,
+            pie: null,
+            grid: null
+        };
+        
+        // 現在アクティブなレンダラーとレイアウト情報
+        this.activeRenderer = null;
+        this.currentLayout = null;
+        this.layoutData = null;
+        
+        // トランジション管理
+        this.transitionManager = null;
         
         console.log('ChartManager initialized with container:', actualContainerId);
+        console.log('ChartManager: Initial renderers state:', this.renderers);
+        
+        // Now that all properties are set up, call init
         this.init();
     }
 
+    /**
+     * 初期化処理
+     */
     init() {
-        // Initialize specialized renderers
-        this.initRenderers();
+        console.log('ChartManager: Starting init()...');
+        console.log('ChartManager: Renderers before super.init():', this.renderers);
         
-        // イベントリスナーを設定
-        pubsub.subscribe(EVENTS.CHART_UPDATE, (data) => {
-            this.updateChart(data);
-        });
+        super.init();
+        
+        console.log('ChartManager: Renderers after super.init():', this.renderers);
+        
+        this.initializeRenderers();
+        this.initializeTransitionManager();
+        
+        console.log('ChartManager: Init complete. Final renderers state:', this.renderers);
+    }
 
-        pubsub.subscribe(EVENTS.RESIZE, () => {
-            this.resize();
+    /**
+     * イベントリスナーを設定
+     */
+    setupEventListeners() {
+        super.setupEventListeners();
+        
+        // チャート更新イベント
+        pubsub.subscribe(EVENTS.CHART_UPDATE, (data) => {
+            console.log('ChartManager: Received CHART_UPDATE event', data);
+            this.updateChart(data);
         });
     }
 
     /**
-     * Initialize specialized chart renderers
+     * 専門化されたレンダラーを初期化
      */
-    initRenderers() {
-        // Initialize GridChartRenderer if available
-        if (window.GridChartRenderer) {
-            this.gridChartRenderer = new GridChartRenderer(this.container.node().id ? `#${this.container.node().id}` : '.chart-container');
+    initializeRenderers() {
+        console.log('ChartManager: Starting renderer initialization...');
+        
+        // renderersオブジェクトが存在しない場合は初期化
+        if (!this.renderers) {
+            this.renderers = {
+                line: null,
+                bar: null,
+                pie: null,
+                grid: null
+            };
+        }
+        
+        const containerId = this.container.node().id ? `#${this.container.node().id}` : '.chart-container';
+        console.log('ChartManager: Using container ID:', containerId);
+        
+        // グローバルで利用可能なレンダラークラスを確認
+        console.log('Available renderer classes:', {
+            LineChartRenderer: !!window.LineChartRenderer,
+            BarChartRenderer: !!window.BarChartRenderer,
+            PieChartRenderer: !!window.PieChartRenderer,
+            GridChartRenderer: !!window.GridChartRenderer
+        });
+        
+        try {
+            // LineChartRenderer
+            if (window.LineChartRenderer) {
+                this.renderers.line = new LineChartRenderer(containerId);
+                console.log('✓ LineChartRenderer initialized successfully');
+                console.log('LineChartRenderer has renderLineChartInGroup:', !!this.renderers.line.renderLineChartInGroup);
+            } else {
+                console.error('✗ LineChartRenderer not available in window');
+            }
+            
+            // BarChartRenderer
+            if (window.BarChartRenderer) {
+                this.renderers.bar = new BarChartRenderer(containerId);
+                console.log('✓ BarChartRenderer initialized successfully');
+            } else {
+                console.error('✗ BarChartRenderer not available in window');
+            }
+            
+            // PieChartRenderer
+            if (window.PieChartRenderer) {
+                this.renderers.pie = new PieChartRenderer(containerId);
+                console.log('✓ PieChartRenderer initialized successfully');
+            } else {
+                console.error('✗ PieChartRenderer not available in window');
+            }
+            
+            // GridChartRenderer
+            if (window.GridChartRenderer) {
+                this.renderers.grid = new GridChartRenderer(containerId);
+                console.log('✓ GridChartRenderer initialized successfully');
+            } else {
+                console.error('✗ GridChartRenderer not available in window');
+            }
+        } catch (error) {
+            console.error('ChartManager: Error initializing renderers:', error);
+            
+            if (window.ErrorHandler) {
+                ErrorHandler.handle(error, 'ChartManager.initializeRenderers', {
+                    type: ErrorHandler.ERROR_TYPES.INITIALIZATION,
+                    severity: ErrorHandler.SEVERITY.HIGH,
+                    context: { containerId }
+                });
+            }
+        }
+        
+        // 初期化結果のサマリー
+        const initializedRenderers = Object.keys(this.renderers).filter(key => this.renderers[key] !== null);
+        console.log(`ChartManager: Renderer initialization complete. Available renderers: [${initializedRenderers.join(', ')}]`);
+        
+        if (initializedRenderers.length === 0) {
+            console.error('ChartManager: WARNING - No renderers were successfully initialized!');
         }
     }
 
     /**
-     * チャートを更新する
+     * トランジション管理を初期化
+     */
+    initializeTransitionManager() {
+        if (window.ChartTransitions) {
+            this.transitionManager = ChartTransitions;
+            console.log('ChartTransitions available for coordination');
+        } else {
+            console.warn('ChartTransitions not available, transitions may be less smooth');
+        }
+    }
+
+    /**
+     * メインのチャート更新メソッド
+     * レイアウトとチャートタイプに基づいて適切なレンダラーに委譲
      * @param {Object} chartData - チャートデータとオプション
      */
     updateChart(chartData) {
-        // Dual chart layoutの場合
-        if (chartData.layout === 'dual' && chartData.charts) {
-            this.updateDualChart(chartData);
-            return;
-        }
-        
-        // Triple chart layoutの場合
-        if (chartData.layout === 'triple' && chartData.charts) {
-            this.updateTripleChart(chartData);
-            return;
-        }
-        
-        // Grid chart layoutの場合
-        if (chartData.layout === 'grid' && chartData.config) {
-            if (this.gridChartRenderer) {
-                this.gridChartRenderer.updateChart(chartData);
-            } else {
-                console.warn('GridChartRenderer not available, falling back to legacy method');
-                this.updateGridChart(chartData);
+        try {
+            // 入力データの検証
+            const validation = this.validateChartData(chartData);
+            if (!validation.valid) {
+                console.error('ChartManager: Invalid chart data:', validation.errors);
+                return;
             }
-            return;
-        }
-        
-        // 従来の単一チャート
-        const { type, data, config, visible, updateMode, direction } = chartData;
-        
-        
-        // updateModeが'transition'で既存チャートと同じタイプ、同じデータファイルの場合
-        if (updateMode === 'transition' && 
-            this.currentChart === type && 
-            this.data && 
-            this.svg &&
-            config.dataFile === this.config?.dataFile) {
-            
-            console.log(`Updating chart with transition mode (direction: ${direction || 'unknown'})`);
-            this.updateChartWithTransition(data, config, direction);
-            return;
-        }
-        
-        // 通常の更新（再描画）
-        this.data = data;
-        this.config = config;
-        this.currentChart = type;
 
-        if (visible) {
-            this.show();
-            this.renderChart(type, data, config);
-        } else {
-            this.hide();
-        }
-    }
+            const { layout, type, visible } = chartData;
 
-    /**
-     * チャートをトランジションで更新する（再描画しない）
-     * @param {Array} data - 新しいデータ
-     * @param {Object} config - 新しい設定
-     * @param {string} direction - スクロール方向 ('up' | 'down')
-     */
-    updateChartWithTransition(data, config, direction = 'down') {
-        if (!this.svg || this.currentChart !== 'line') {
-            console.warn('Cannot update chart with transition: no existing line chart');
-            return;
-        }
+            // 可視性に基づく処理
+            if (!visible) {
+                this.hide();
+                return;
+            }
 
-        this.data = data;
-        this.config = config;
+            // レイアウトベースの振り分け
+            switch (layout) {
+                case 'dual':
+                    this.handleDualLayout(chartData);
+                    break;
+                case 'triple':
+                    this.handleTripleLayout(chartData);
+                    break;
+                case 'grid':
+                    this.handleGridLayout(chartData);
+                    break;
+                default:
+                    this.handleSingleChart(chartData);
+                    break;
+            }
 
-        // 新しいデータを系列別に変換
-        const newSeries = this.transformToSeries(data, config);
-        const allNewValues = newSeries.flatMap(s => s.values);
-        
-        const { width, height } = this.getResponsiveSize(config);
-        
-        // ChartLayoutHelperを使用して動的マージンを計算
-        let margin;
-        if (window.ChartLayoutHelper) {
-            margin = ChartLayoutHelper.calculateDynamicMargins(data, config, {
-                chartType: 'line',
-                hasLegend: config.showLegend !== false && config.multiSeries,
-                screenWidth: window.innerWidth,
-                screenHeight: window.innerHeight
+            // 状態を更新
+            this.updateState({
+                layout: layout || 'single',
+                type: type,
+                data: chartData
             });
-        } else {
-            // フォールバック：従来の固定マージン
-            margin = config.margin || window.AppDefaults?.chartMargin?.compact || { top: 20, right: 20, bottom: 40, left: 40 };
-        }
-        const innerWidth = width - margin.left - margin.right;
-        const innerHeight = height - margin.top - margin.bottom;
-        
-        const { xField = 'year', yField = 'value' } = config;
-        const isYearData = allNewValues.every(d => !isNaN(d[xField]) && d[xField] > 1900 && d[xField] < 2100);
-        
-        // X軸のドメインを決定（設定で年度範囲が指定されていればそれを使用、なければデータ範囲）
-        let xDomain;
-        if (config.yearRange && config.yearRange.length === 2) {
-            // 設定ファイルで年度範囲が指定されている場合
-            xDomain = config.yearRange;
-        } else if (isYearData) {
-            // 年データの場合はデータの範囲を使用
-            xDomain = d3.extent(allNewValues, d => +d[xField]);
-        } else {
-            // 時間データの場合
-            xDomain = d3.extent(allNewValues, d => new Date(d[xField]));
-        }
-        
-        // 新しいスケールを計算
-        const newXScale = isYearData 
-            ? d3.scaleLinear()
-                .domain(xDomain)
-                .range([0, innerWidth])
-            : d3.scaleTime()
-                .domain(xDomain)
-                .range([0, innerWidth]);
 
-        // Y軸のドメインを決定（設定でY軸範囲が指定されていればそれを使用、なければデータ範囲）
-        let yDomain;
-        if (config.yRange && config.yRange.length === 2) {
-            // 設定ファイルでY軸範囲が指定されている場合
-            yDomain = config.yRange;
-        } else {
-            // データの範囲を使用
-            yDomain = d3.extent(allNewValues, d => +d[yField]);
-        }
-        
-        const newYScale = d3.scaleLinear()
-            .domain(yDomain)
-            .nice()
-            .range([innerHeight, 0]);
-
-        const g = this.svg.select('g');
-        const transitionDuration = config.transitionDuration || 1000;
-
-        // 軸をトランジションで更新（より自然なイージング）
-        const newXAxis = isYearData 
-            ? d3.axisBottom(newXScale).tickFormat(d3.format("d"))
-            : d3.axisBottom(newXScale);
-        const newYAxis = d3.axisLeft(newYScale);
-
-        const axisTransition = d3.transition()
-            .duration(transitionDuration)
-            .ease(d3.easeQuadInOut); // より自然なイージング
-
-        g.select('.x-axis')
-            .transition(axisTransition)
-            .call(newXAxis);
-
-        g.select('.y-axis')
-            .transition(axisTransition)
-            .call(newYAxis);
-
-        // 新しいライン生成器
-        const newLine = d3.line()
-            .x(d => isYearData ? newXScale(+d[xField]) : newXScale(new Date(d[xField])))
-            .y(d => newYScale(+d[yField]))
-            .curve(d3.curveMonotoneX);
-
-        // 色スケール
-        const colorScale = d3.scaleOrdinal(config.colors || d3.schemeCategory10)
-            .domain(newSeries.map(d => d.name));
-
-        // Object Constancy: 系列グループをデータバインディング
-        const seriesGroups = g.selectAll('.series-group')
-            .data(newSeries, d => d.name); // 系列名で一意性を保つ
-
-        // ENTER: 新しい系列を追加
-        const enterSeriesGroups = seriesGroups.enter()
-            .append('g')
-            .attr('class', 'series-group');
-
-        // 新しい系列にラインを追加（非表示状態で開始）
-        enterSeriesGroups.append('path')
-            .attr('class', 'chart-line')
-            .attr('stroke', d => colorScale(d.name))
-            .attr('stroke-width', window.AppDefaults?.strokeWidth?.thick || 2)
-            .attr('fill', 'none')
-            .attr('d', d => newLine(d.values))
-            .style('opacity', 0);
-
-        // UPDATE: 既存系列の更新
-        const updateSeriesGroups = seriesGroups;
-
-        // ENTER + UPDATE: 共通処理
-        const allSeriesGroups = enterSeriesGroups.merge(updateSeriesGroups);
-
-        // EXIT: 不要な系列を削除（先に処理）
-        seriesGroups.exit()
-            .transition()
-            .duration(transitionDuration / 2)
-            .ease(d3.easeBackIn)
-            .style('opacity', 0)
-            .remove();
-
-        // 統一されたトランジションを作成
-        const mainTransition = d3.transition()
-            .duration(transitionDuration)
-            .ease(d3.easeQuadInOut); // 軸と同じ自然なイージング
-
-        const fastTransition = d3.transition()
-            .duration(transitionDuration * 0.4)
-            .ease(d3.easeQuadIn); // 削除用の高速トランジション
-
-        // 線と点を完全に同期するため、newSeriesから正確なデータを取得
-        const self = this; // thisのコンテキストを保存
-        allSeriesGroups.each(function(seriesData, seriesIndex) {
-            const group = d3.select(this);
+        } catch (error) {
+            console.error('ChartManager: Error updating chart:', error);
             
-            // ⚠️ 重要: newSeriesから対応する系列データを取得（確実にフィルタリング済み）
-            const currentSeriesData = newSeries.find(s => s.name === seriesData.name) || seriesData;
-            const currentValues = currentSeriesData.values;
-            
-            console.log(`Series ${seriesData.name}: Using ${currentValues.length} data points for both line and circles`);
-            
-            // Object Constancy: 一意キーで各データポイントを追跡
-            const dataWithKeys = currentValues.map(v => ({
-                ...v,
-                seriesName: currentSeriesData.name,
-                uniqueKey: `${currentSeriesData.name}-${v[xField]}` // 系列名と年度で一意キー生成
-            }));
-            
-            // シンプルな差分ベース更新を開始
-            self.updateSeriesWithDiff(group, currentSeriesData, newXScale, newYScale, newLine, colorScale, transitionDuration);
-        });
-
-        console.log(`Chart updated with transition: ${data.length} records displayed`);
-    }
-
-    /**
-     * 差分ベースでシリーズを段階的に更新（シンプル実装）
-     */
-    updateSeriesWithDiff(group, newSeriesData, newXScale, newYScale, newLine, colorScale, transitionDuration) {
-        const lineElement = group.selectAll('.chart-line');
-        const currentLineData = lineElement.datum();
-        const oldValues = currentLineData ? currentLineData.values : [];
-        const newValues = newSeriesData.values;
-        
-        // 差分を計算
-        const oldKeys = new Set(oldValues.map(d => d[this.config?.xField || 'year']));
-        const newKeys = new Set(newValues.map(d => d[this.config?.xField || 'year']));
-        
-        const toAdd = newValues.filter(d => !oldKeys.has(d[this.config?.xField || 'year']));
-        const toRemove = oldValues.filter(d => !newKeys.has(d[this.config?.xField || 'year']));
-        
-        console.log(`Series ${newSeriesData.name}: +${toAdd.length} -${toRemove.length}`);
-        
-        // 現在表示中のデータ
-        let currentDisplayData = [...oldValues];
-        
-        // 段階的更新の間隔
-        const totalChanges = toAdd.length + toRemove.length;
-        const intervalTime = totalChanges > 0 ? transitionDuration / totalChanges : 0;
-        
-        let updateIndex = 0;
-        const self = this; // thisコンテキストを保存
-        
-        // 削除処理（右端から）
-        toRemove.reverse().forEach((dataPoint) => {
-            setTimeout(() => {
-                currentDisplayData = currentDisplayData.filter(d => 
-                    d[self.config?.xField || 'year'] !== dataPoint[self.config?.xField || 'year']
-                );
-                // 線のデータを即座に更新
-                lineElement.datum({ ...newSeriesData, values: currentDisplayData });
-                self.updateLineAndAxes(group, currentDisplayData, newXScale, newYScale, newLine, colorScale);
-            }, updateIndex * intervalTime);
-            updateIndex++;
-        });
-        
-        // 追加処理（左端から右端へ）
-        toAdd.forEach((dataPoint) => {
-            setTimeout(() => {
-                currentDisplayData.push(dataPoint);
-                currentDisplayData.sort((a, b) => a[self.config?.xField || 'year'] - b[self.config?.xField || 'year']);
-                // 線のデータを即座に更新
-                lineElement.datum({ ...newSeriesData, values: currentDisplayData });
-                self.updateLineAndAxes(group, currentDisplayData, newXScale, newYScale, newLine, colorScale);
-            }, updateIndex * intervalTime);
-            updateIndex++;
-        });
-        
-        // 最終的にデータを確実に設定
-        setTimeout(() => {
-            lineElement.datum({ ...newSeriesData, values: newValues });
-        }, transitionDuration);
-    }
-    
-    /**
-     * 線と軸を同期更新
-     */
-    updateLineAndAxes(group, currentData, newXScale, newYScale, newLine, colorScale) {
-        const seriesData = group.datum();
-        
-        // 軸はすべての系列の現在データに基づいて更新
-        const xField = this.config?.xField || 'year';
-        const yField = this.config?.yField || 'value';
-        
-        if (currentData.length > 0) {
-            // 全系列の現在データを収集
-            const g = this.svg.select('g');
-            const allCurrentData = [];
-            
-            g.selectAll('.series-group').each(function() {
-                const seriesGroup = d3.select(this);
-                const lineData = seriesGroup.select('.chart-line').datum();
-                if (lineData && lineData.values) {
-                    allCurrentData.push(...lineData.values);
-                }
-            });
-            
-            // データが存在する場合のみ軸を更新
-            if (allCurrentData.length > 0) {
-                const xExtent = d3.extent(allCurrentData, d => +d[xField]);
-                const yExtent = d3.extent(allCurrentData, d => +d[yField]);
-                
-                newXScale.domain(xExtent);
-                newYScale.domain(yExtent).nice();
-                
-                // 軸を更新（ChartLayoutHelperのフォーマッターを使用）
-                const isYearData = allCurrentData.every(d => !isNaN(d[xField]) && d[xField] > 1900 && d[xField] < 2100);
-                let xAxis, yAxis;
-                
-                if (window.ChartLayoutHelper) {
-                    // 単位情報を分析（現在表示中のデータから）
-                    const unitInfo = ChartLayoutHelper.analyzeUnits(allCurrentData, this.config || {});
-                    const yFormatter = (value) => ChartLayoutHelper.formatAxisWithUnits(value, unitInfo.yAxis);
-                    xAxis = isYearData ? d3.axisBottom(newXScale).tickFormat(d3.format("d")) : d3.axisBottom(newXScale);
-                    yAxis = d3.axisLeft(newYScale).tickFormat(yFormatter);
-                } else {
-                    xAxis = isYearData ? d3.axisBottom(newXScale).tickFormat(d3.format("d")) : d3.axisBottom(newXScale);
-                    yAxis = d3.axisLeft(newYScale);
-                }
-                
-                g.select('.x-axis').transition().duration(200).call(xAxis);
-                g.select('.y-axis').transition().duration(200).call(yAxis);
+            if (window.ErrorHandler) {
+                ErrorHandler.handle(error, 'ChartManager.updateChart', {
+                    type: ErrorHandler.ERROR_TYPES.RENDER,
+                    severity: ErrorHandler.SEVERITY.HIGH,
+                    context: chartData
+                });
             }
         }
-        
-        // 線を更新
-        group.selectAll('.chart-line')
-            .transition()
-            .duration(200)
-            .ease(d3.easeQuadInOut)
-            .attr('d', newLine(currentData))
-            .attr('stroke', colorScale(seriesData.name));
-        
-        // 点を更新
-        const dataWithKeys = currentData.map(v => ({
-            ...v,
-            seriesName: seriesData.name,
-            uniqueKey: `${seriesData.name}-${v[xField]}`
-        }));
-        
-        const circles = group.selectAll('.chart-circle')
-            .data(dataWithKeys, d => d.uniqueKey);
-        
-        // 新しい点を追加
-        circles.enter()
-            .append('circle')
-            .attr('class', 'chart-circle')
-            .attr('r', 0)
-            .attr('fill', colorScale(seriesData.name))
-            .attr('cx', d => newXScale(+d[xField]))
-            .attr('cy', d => newYScale(+d[yField]))
-            .transition()
-            .duration(200)
-            .attr('r', 3);
-        
-        // 既存の点を更新
-        circles.transition()
-            .duration(200)
-            .attr('cx', d => newXScale(+d[xField]))
-            .attr('cy', d => newYScale(+d[yField]));
-        
-        // 不要な点を削除
-        circles.exit()
-            .transition()
-            .duration(200)
-            .attr('r', 0)
-            .remove();
     }
 
     /**
-     * Dual チャートを更新する
-     * @param {Object} dualChartData - Dual チャートデータ
+     * 単一チャートの処理
+     * @param {Object} chartData - チャートデータ
      */
-    updateDualChart(dualChartData) {
-        const { charts, visible } = dualChartData;
+    handleSingleChart(chartData) {
+        const { type } = chartData;
         
-        this.currentChart = 'dual';
-        this.dualCharts = charts;
-
-        if (visible) {
-            this.show();
-            // SVGを新規作成（既存要素をクリア）
-            this.createSVGForLayout('dual');
-            this.renderDualChart(charts);
+        // 前のレンダラーを非表示にする
+        this.hideInactiveRenderers(type);
+        
+        // 適切なレンダラーを取得して委譲
+        const renderer = this.getRenderer(type);
+        if (renderer) {
+            this.activeRenderer = renderer;
+            this.currentLayout = 'single';
+            
+            // レンダラーに処理を委譲
+            renderer.updateChart(chartData);
+            
+            console.log(`ChartManager: Delegated ${type} chart to ${renderer.constructor.name}`);
         } else {
-            this.hide();
+            console.warn(`ChartManager: No renderer available for chart type: ${type}`);
+            this.handleFallback(chartData);
         }
     }
 
     /**
-     * Triple chart layout用の更新メソッド
-     * @param {Object} tripleChartData - Triple chart データ
+     * デュアルレイアウトの処理
+     * @param {Object} chartData - チャートデータ
      */
-    updateTripleChart(tripleChartData) {
-        const { charts, visible } = tripleChartData;
+    handleDualLayout(chartData) {
+        console.log('ChartManager: Handling dual layout', chartData);
         
-        this.currentChart = 'triple';
-        this.tripleCharts = charts;
+        // 全レンダラーを非表示
+        this.hideAllRenderers();
+        
+        // デュアルレイアウト専用の処理
+        this.activeRenderer = null;
+        this.currentLayout = 'dual';
+        this.layoutData = chartData;
+        
+        // コンテナを確実に表示する
+        this.show();
+        
+        // chart-containerも確実に表示する
+        const chartContainer = document.getElementById('chart-container');
+        if (chartContainer) {
+            chartContainer.classList.add('visible');
+            chartContainer.style.display = 'block';
+            chartContainer.style.opacity = '1';
+        }
+        
+        this.renderDualLayout(chartData);
+    }
 
-        if (visible) {
-            this.show();
-            // SVGを新規作成（既存要素をクリア）
-            this.createSVGForLayout('triple');
-            this.renderTripleChart(charts);
+    /**
+     * トリプルレイアウトの処理
+     * @param {Object} chartData - チャートデータ
+     */
+    handleTripleLayout(chartData) {
+        console.log('ChartManager: Handling triple layout');
+        
+        // 全レンダラーを非表示
+        this.hideAllRenderers();
+        
+        // トリプルレイアウト専用の処理
+        this.activeRenderer = null;
+        this.currentLayout = 'triple';
+        this.layoutData = chartData;
+        
+        // 直接描画（従来のロジックを使用）
+        this.show();
+        this.renderTripleLayout(chartData);
+    }
+
+    /**
+     * グリッドレイアウトの処理
+     * @param {Object} chartData - チャートデータ
+     */
+    handleGridLayout(chartData) {
+        console.log('ChartManager: Handling grid layout');
+        
+        // GridChartRendererに委譲
+        const gridRenderer = this.renderers.grid;
+        if (gridRenderer) {
+            // 他のレンダラーを非表示
+            this.hideInactiveRenderers('grid');
+            
+            this.activeRenderer = gridRenderer;
+            this.currentLayout = 'grid';
+            
+            gridRenderer.updateChart(chartData);
         } else {
-            this.hide();
+            console.warn('ChartManager: GridChartRenderer not available');
+            this.handleFallback(chartData);
         }
     }
 
     /**
-     * レイアウト用のSVGを作成（既存要素をクリア）
-     * @param {string} layout - レイアウトタイプ（dual, triple）
+     * 指定されたタイプ以外のレンダラーを非表示にする
+     * @param {string} activeType - アクティブなチャートタイプ
      */
-    createSVGForLayout(layout) {
-        // コンテナをクリア
-        this.container.selectAll('*').remove();
+    hideInactiveRenderers(activeType) {
+        Object.keys(this.renderers).forEach(type => {
+            if (type !== activeType && this.renderers[type]) {
+                this.renderers[type].hide();
+            }
+        });
+    }
+
+    /**
+     * すべてのレンダラーを非表示にする
+     */
+    hideAllRenderers() {
+        Object.values(this.renderers).forEach(renderer => {
+            if (renderer) {
+                renderer.hide();
+            }
+        });
+    }
+
+    /**
+     * チャートタイプに対応するレンダラーを取得
+     * @param {string} type - チャートタイプ
+     * @returns {Object|null} レンダラーインスタンス
+     */
+    getRenderer(type) {
+        console.log(`ChartManager: Getting renderer for type '${type}'`);
+        console.log('Current renderers state:', this.renderers);
+        console.log('Renderers object type:', typeof this.renderers);
+        console.log('Is renderers array?', Array.isArray(this.renderers));
         
+        const renderer = this.renderers[type];
+        if (!renderer) {
+            console.warn(`ChartManager: No renderer available for type: ${type}`);
+            console.log('Available renderer keys:', Object.keys(this.renderers));
+            console.log('Available renderer values:', Object.values(this.renderers));
+        } else {
+            console.log(`ChartManager: Found renderer for ${type}:`, renderer.constructor.name);
+        }
+        return renderer;
+    }
+
+    /**
+     * フォールバック処理（レンダラーが利用できない場合）
+     * @param {Object} chartData - チャートデータ
+     */
+    handleFallback(chartData) {
+        console.warn('ChartManager: Using fallback rendering');
+        
+        // 基本的なエラー表示
+        this.clearContainer();
+        this.show();
+        
+        const errorMessage = this.container.append('div')
+            .attr('class', 'chart-error')
+            .style('text-align', 'center')
+            .style('padding', '40px')
+            .style('color', window.AppDefaults?.colors?.text?.secondary || '#666');
+        
+        errorMessage.append('p')
+            .text(`Chart renderer for "${chartData.type || 'unknown'}" is not available`);
+            
+        errorMessage.append('p')
+            .style('font-size', '0.9em')
+            .text('Please check that all required chart renderer scripts are loaded');
+    }
+
+    /**
+     * デュアルレイアウトを描画（従来のロジック）
+     * @param {Object} chartData - チャートデータ
+     */
+    renderDualLayout(chartData) {
+        console.log('ChartManager: Rendering dual layout');
+        const { charts } = chartData;
+        
+        if (!charts || !Array.isArray(charts)) {
+            console.error('ChartManager: Invalid charts array for dual layout', charts);
+            return;
+        }
+        
+        // コンテナをクリアしてSVGを作成
+        this.clearContainer();
+        const svg = this.createLayoutSVG('dual');
+        
+        if (!svg) {
+            console.error('ChartManager: Failed to create SVG for dual layout');
+            return;
+        }
+        
+        // レイアウト計算
+        const layout = this.calculateDualLayout();
+        
+        // 各チャートを描画
+        charts.forEach((chartConfig, index) => {
+            const chartLayout = {
+                x: index * (layout.chartWidth + layout.spacing),
+                y: layout.marginTop,
+                width: layout.chartWidth,
+                height: layout.chartHeight
+            };
+            
+            this.renderSingleChartInLayout(svg, chartConfig, chartLayout);
+        });
+    }
+
+    /**
+     * トリプルレイアウトを描画（従来のロジック）
+     * @param {Object} chartData - チャートデータ
+     */
+    renderTripleLayout(chartData) {
+        const { charts } = chartData;
+        
+        // コンテナをクリアしてSVGを作成
+        this.clearContainer();
+        const svg = this.createLayoutSVG('triple');
+        
+        // レイアウト計算
+        const layout = this.calculateTripleLayout();
+        
+        // 各チャートを描画
+        charts.forEach((chartConfig, index) => {
+            const chartLayout = {
+                x: index * (layout.chartWidth + layout.spacing),
+                y: layout.marginTop,
+                width: layout.chartWidth,
+                height: layout.chartHeight
+            };
+            
+            this.renderSingleChartInLayout(svg, chartConfig, chartLayout);
+        });
+    }
+
+    /**
+     * レイアウト用のSVGを作成
+     * @param {string} layoutType - レイアウトタイプ
+     * @returns {d3.Selection} SVG要素
+     */
+    createLayoutSVG(layoutType) {
         const containerNode = this.container.node();
-        const containerWidth = containerNode.clientWidth || 800; // フォールバック値
-        const containerHeight = containerNode.clientHeight || 600; // フォールバック値
-        
-        console.log('ChartManager: createSVGForLayout container dimensions:', { containerWidth, containerHeight });
+        const containerWidth = containerNode.clientWidth || 800;
+        const containerHeight = containerNode.clientHeight || 600;
         
         let totalWidth, totalHeight;
         
-        switch (layout) {
+        switch (layoutType) {
             case 'dual':
                 totalWidth = Math.min(containerWidth * 0.9, 1000);
                 totalHeight = Math.min(containerHeight * 0.8, 500);
@@ -512,14 +475,14 @@ class LegacyChartManager {
         
         // SVGHelperを使用してSVGを作成
         if (window.SVGHelper) {
-            this.svg = SVGHelper.initSVG(this.container, totalWidth, totalHeight, {
+            return SVGHelper.initSVG(this.container, totalWidth, totalHeight, {
                 className: 'chart-svg',
                 responsive: true,
                 preserveAspectRatio: 'xMidYMid meet'
             });
         } else {
             // フォールバック
-            this.svg = this.container.append('svg')
+            return this.container.append('svg')
                 .attr('viewBox', `0 0 ${totalWidth} ${totalHeight}`)
                 .style('width', '100%')
                 .style('height', 'auto');
@@ -527,216 +490,231 @@ class LegacyChartManager {
     }
 
     /**
-     * チャートコンテナを表示
+     * デュアルレイアウトの寸法を計算
+     * @returns {Object} レイアウト情報
      */
-    show() {
-        this.container.classed('visible', true);
-    }
-
-    /**
-     * チャートコンテナを非表示
-     */
-    hide() {
-        this.container.classed('visible', false);
-        // コンテンツも完全にクリア
-        this.container.selectAll('*').remove();
-        this.svg = null;
-        this.currentChart = null;
-    }
-
-    /**
-     * SVG要素を初期化
-     */
-    initSVG(width, height) {
-        this.container.selectAll('*').remove();
-        
-        this.svg = this.container
-            .append('svg')
-            .attr('width', width)
-            .attr('height', height)
-            .attr('viewBox', `0 0 ${width} ${height}`)
-            .style('width', '100%')
-            .style('height', '100%');
-            
-        return this.svg;
-    }
-
-    /**
-     * レスポンシブなサイズを計算（viewBox基準版）
-     * @param {Object} config - 設定
-     * @returns {Object} - { width, height }
-     */
-    getResponsiveSize(config) {
-        // SVGHelperが利用可能な場合は共通ユーティリティを使用
-        if (window.SVGHelper) {
-            return SVGHelper.getResponsiveSize(this.container, {
-                defaultWidth: 800,  // viewBoxの基準幅
-                defaultHeight: 600, // viewBoxの基準高さ
-                width: config.width,
-                height: config.height,
-                minWidth: 300,
-                minHeight: 200,
-                maxWidth: 1200,
-                maxHeight: 800,
-                aspectRatio: config.aspectRatio || ((config.width || 800) / (config.height || 600)),
-                widthPercent: config.widthPercent || null,
-                heightPercent: config.heightPercent || null
-            });
-        }
-
-        // フォールバック（SVGHelperが利用できない場合）
-        let width = config.width || 800;
-        let height = config.height || 600;
-
-        // パーセンテージ指定の場合
-        if (config.widthPercent) {
-            width = window.innerWidth * (config.widthPercent / 100);
-        }
-        if (config.heightPercent) {
-            height = window.innerHeight * (config.heightPercent / 100);
-        }
-
-        // アスペクト比を維持
-        if (config.widthPercent && !config.heightPercent && config.aspectRatio) {
-            height = width / config.aspectRatio;
-        }
-        
-        return { width, height };
-    }
-
-    /**
-     * Dual チャートを描画
-     * @param {Array} charts - チャート設定配列
-     */
-    renderDualChart(charts) {
+    calculateDualLayout() {
         const containerNode = this.container.node();
-        const containerWidth = containerNode.clientWidth;
-        const containerHeight = containerNode.clientHeight;
+        const containerWidth = containerNode.clientWidth || 800;
+        const containerHeight = containerNode.clientHeight || 600;
         
-        // 全体のSVGサイズを計算
         const totalWidth = Math.min(containerWidth * 0.9, 1000);
         const totalHeight = Math.min(containerHeight * 0.8, 500);
+        const spacing = 40;
+        const marginTop = 40;
         
-        // 既存のSVGを使用（createSVGForLayoutで作成済み）
-        const svg = this.svg;
-        
-        // 各チャートの幅を計算（間隔を含む）
-        const chartSpacing = 40;
-        const chartWidth = (totalWidth - chartSpacing) / 2;
-        const chartHeight = totalHeight - 60; // タイトル分を確保
-        
-        charts.forEach((chartConfig, index) => {
-            const xOffset = index * (chartWidth + chartSpacing);
-            this.renderSingleChartInDual(svg, chartConfig, {
-                x: xOffset,
-                y: 40,
-                width: chartWidth,
-                height: chartHeight
-            });
-        });
+        return {
+            totalWidth,
+            totalHeight,
+            chartWidth: (totalWidth - spacing) / 2,
+            chartHeight: totalHeight - marginTop - 20,
+            spacing,
+            marginTop
+        };
     }
 
     /**
-     * Dual layout内で単一チャートを描画
+     * トリプルレイアウトの寸法を計算
+     * @returns {Object} レイアウト情報
      */
-    renderSingleChartInDual(svg, chartConfig, layout) {
+    calculateTripleLayout() {
+        const containerNode = this.container.node();
+        const containerWidth = containerNode.clientWidth || 800;
+        const containerHeight = containerNode.clientHeight || 600;
+        
+        const totalWidth = Math.min(containerWidth * 0.95, 1200);
+        const totalHeight = Math.min(containerHeight * 0.8, 500);
+        const spacing = 30;
+        const marginTop = 40;
+        
+        return {
+            totalWidth,
+            totalHeight,
+            chartWidth: (totalWidth - spacing * 2) / 3,
+            chartHeight: totalHeight - marginTop - 20,
+            spacing,
+            marginTop
+        };
+    }
+
+    /**
+     * レイアウト内で単一チャートを描画
+     * @param {d3.Selection} svg - SVG要素
+     * @param {Object} chartConfig - チャート設定
+     * @param {Object} layout - レイアウト情報
+     */
+    renderSingleChartInLayout(svg, chartConfig, layout) {
         const { data, config, title } = chartConfig;
         const { x, y, width, height } = layout;
         
-        // データの存在確認
-        if (!data || data.length === 0) {
-            console.warn('renderSingleChartInDual: No data provided', { data, config, title });
+        if (!data || !Array.isArray(data) || data.length === 0) {
+            console.error('ChartManager: No data for chart in layout', chartConfig);
             return;
         }
-        
-        // ChartLayoutHelperを使用して動的マージンを計算
-        let margin;
-        if (window.ChartLayoutHelper) {
-            margin = ChartLayoutHelper.calculateDynamicMargins(data, config, {
-                chartType: 'line',
-                hasLegend: config.showLegend !== false && config.multiSeries,
-                screenWidth: width,  // 個別チャートの幅を使用
-                screenHeight: height // 個別チャートの高さを使用
-            });
-        } else {
-            // フォールバック：従来の固定マージン
-            margin = config.margin || window.AppDefaults?.chartMargin?.minimal || { top: 20, right: 20, bottom: 40, left: 50 };
-        }
-        const innerWidth = width - margin.left - margin.right;
-        const innerHeight = height - margin.top - margin.bottom;
         
         // チャートグループを作成
         const chartGroup = svg.append('g')
             .attr('transform', `translate(${x}, ${y})`);
         
         // タイトルを追加
-        chartGroup.append('text')
-            .attr('class', 'chart-title')
-            .attr('x', width / 2)
-            .attr('y', -10)
-            .attr('text-anchor', 'middle')
-            .attr('fill', window.AppDefaults?.colors?.text?.primary || '#333')
-            .style('font-family', 'var(--font-family-serif)')
-            .style('font-size', 'var(--font-size-base)')
-            .style('font-weight', 'var(--font-weight-bold)')
-            .text(title);
+        if (title) {
+            chartGroup.append('text')
+                .attr('class', 'chart-title')
+                .attr('x', width / 2)
+                .attr('y', -10)
+                .attr('text-anchor', 'middle')
+                .attr('fill', window.AppDefaults?.colors?.text?.primary || '#333')
+                .style('font-family', 'var(--font-family-serif)')
+                .style('font-size', 'var(--font-size-base)')
+                .style('font-weight', 'var(--font-weight-bold)')
+                .text(title);
+        }
+        
+        // チャートタイプに基づいて適切なレンダリング関数を呼び出し
+        // Dual layoutの場合は明示的にline chartとして扱う
+        const chartType = config.type || 'line';
+        
+        // マージンを計算
+        let margin;
+        if (window.ChartLayoutHelper) {
+            margin = ChartLayoutHelper.calculateDynamicMargins(data, config, {
+                chartType: chartType,
+                hasLegend: config.showLegend !== false && config.multiSeries,
+                screenWidth: width,
+                screenHeight: height
+            });
+        } else {
+            margin = config.margin || { top: 20, right: 20, bottom: 40, left: 50 };
+        }
         
         // チャート描画エリア
         const g = chartGroup.append('g')
             .attr('transform', `translate(${margin.left}, ${margin.top})`);
         
-        // 折れ線グラフを描画（他のタイプも後で追加可能）
-        this.renderLineChartInGroup(g, data, {
+        // チャートタイプ別に描画
+        const adjustedConfig = {
             ...config,
-            width: innerWidth,
-            height: innerHeight,
+            width: width - margin.left - margin.right,
+            height: height - margin.top - margin.bottom,
             margin: { top: 0, right: 0, bottom: 0, left: 0 }
-        });
+        };
+        
+        try {
+            switch (chartType) {
+                case 'line':
+                    this.renderLineChartInGroup(g, data, adjustedConfig);
+                    break;
+                case 'bar':
+                    this.renderBarChartInGroup(g, data, adjustedConfig);
+                    break;
+                case 'pie':
+                    this.renderPieChartInGroup(g, data, adjustedConfig);
+                    break;
+                default:
+                    console.warn(`ChartManager: Unsupported chart type in layout: ${chartType}`);
+                    this.renderLineChartInGroup(g, data, adjustedConfig); // フォールバック
+            }
+            
+            // データソースを表示（チャート外の適切な位置に）
+            const { dataSource = '' } = config;
+            if (dataSource) {
+                this.addDataSourceToLayout(chartGroup, dataSource, width, height, margin);
+            }
+        } catch (error) {
+            console.error(`ChartManager: Error rendering ${chartType} chart in layout:`, error);
+        }
     }
 
     /**
-     * 指定されたグループ内で折れ線グラフを描画
+     * レイアウト内チャートにデータソースを追加
+     * @param {d3.Selection} chartGroup - チャートグループ
+     * @param {string} dataSource - データソース名
+     * @param {number} width - チャート幅
+     * @param {number} height - チャート高さ
+     * @param {Object} margin - マージン情報
+     */
+    addDataSourceToLayout(chartGroup, dataSource, width, height, margin) {
+        chartGroup.append('text')
+            .attr('class', 'chart-data-source')
+            .attr('x', margin.left + 10)
+            .attr('y', height - 5) // チャートグループの下端から5px上
+            .attr('text-anchor', 'start')
+            .attr('font-size', '10px')
+            .attr('fill', window.AppConstants?.APP_COLORS?.TEXT?.LIGHT || '#888')
+            .text(`出典: ${dataSource}`);
+    }
+
+    /**
+     * グループ内で折れ線グラフを描画（LineChartRendererのロジックを使用）
      */
     renderLineChartInGroup(g, data, config) {
-        const { width, height, xField = 'year', yField = 'value', colors = d3.schemeCategory10, multiSeries = true } = config;
-        
-        // データを系列別に変換
-        const series = this.transformToSeries(data, config);
-        
-        // 全データからドメインを計算
-        const allValues = series.flatMap(s => s.values);
-        
-        // スケール設定
-        const isYearData = allValues.every(d => !isNaN(d[xField]) && d[xField] > 1900 && d[xField] < 2100);
-        
-        // X軸のドメインを決定（設定で年度範囲が指定されていればそれを使用、なければデータ範囲）
-        let xDomain;
-        if (config.yearRange && config.yearRange.length === 2) {
-            // 設定ファイルで年度範囲が指定されている場合
-            xDomain = config.yearRange;
-        } else if (isYearData) {
-            // 年データの場合はデータの範囲を使用
-            xDomain = d3.extent(allValues, d => +d[xField]);
+        if (this.renderers.line && typeof this.renderers.line.renderLineChartInGroup === 'function') {
+            try {
+                this.renderers.line.renderLineChartInGroup(g, data, config);
+            } catch (error) {
+                console.error('ChartManager: Error calling LineChartRenderer.renderLineChartInGroup:', error);
+            }
         } else {
-            // 時間データの場合
-            xDomain = d3.extent(allValues, d => new Date(d[xField]));
+            console.warn('ChartManager: LineChartRenderer.renderLineChartInGroup not available');
+            console.log('Available renderer methods:', this.renderers.line ? Object.getOwnPropertyNames(Object.getPrototypeOf(this.renderers.line)) : 'No line renderer');
+            
+            // フォールバック: 基本的な線グラフを直接描画
+            this.fallbackLineChartInGroup(g, data, config);
+        }
+    }
+    
+    /**
+     * LineChartRendererが利用できない場合のフォールバック
+     */
+    fallbackLineChartInGroup(g, data, config) {
+        console.log('ChartManager: Using fallback line chart rendering');
+        
+        const { 
+            width, 
+            height, 
+            xField = 'year', 
+            yField = 'value', 
+            seriesField = 'series',
+            multiSeries = true,
+            yRange,
+            colors = window.AppConstants?.APP_COLORS?.PRIMARY_PALETTE || ['#2563eb', '#dc2626', '#059669', '#d97706', '#7c3aed']
+        } = config;
+        
+        if (!data || data.length === 0) {
+            console.warn('No data for fallback chart');
+            return;
         }
         
-        const xScale = isYearData 
-            ? d3.scaleLinear()
-                .domain(xDomain)
-                .range([0, width])
-            : d3.scaleTime()
-                .domain(xDomain)
-                .range([0, width]);
-
-        // Y軸のドメインを決定（設定でY軸範囲が指定されていればそれを使用、なければデータ範囲）
-        let yDomain;
-        if (config.yRange && config.yRange.length === 2) {
-            // 設定ファイルでY軸範囲が指定されている場合
-            yDomain = config.yRange;
+        // データを系列別に分ける
+        let seriesData;
+        if (multiSeries && seriesField) {
+            // 系列別にデータをグループ化
+            const grouped = d3.group(data, d => d[seriesField]);
+            seriesData = Array.from(grouped, ([key, values]) => ({
+                name: key,
+                values: values.sort((a, b) => +a[xField] - +b[xField])
+            }));
         } else {
-            // データの範囲を使用
+            // 単一系列
+            seriesData = [{
+                name: 'データ',
+                values: data.sort((a, b) => +a[xField] - +b[xField])
+            }];
+        }
+        
+        console.log('Series data:', seriesData);
+        
+        // スケール設定
+        const allValues = seriesData.flatMap(s => s.values);
+        
+        const xScale = d3.scaleLinear()
+            .domain(d3.extent(allValues, d => +d[xField]))
+            .range([0, width]);
+            
+        let yDomain;
+        if (yRange && yRange.length === 2) {
+            yDomain = yRange;
+        } else {
             yDomain = d3.extent(allValues, d => +d[yField]);
         }
         
@@ -744,1343 +722,245 @@ class LegacyChartManager {
             .domain(yDomain)
             .nice()
             .range([height, 0]);
-
-        // D3標準のカラースケール：地域名から直接色を取得
-        let colorScale;
-        if (config.colors && config.colors.length > 0 && config.multiSeries === false) {
-            // 単一系列の明示色
-            colorScale = d3.scaleOrdinal(config.colors).domain(series.map(d => d.name));
-        } else if (window.ColorScheme && config.useUnifiedColors !== false) {
-            // 統一カラースキーム：地域名→色の直接マッピング
-            colorScale = d3.scaleOrdinal()
-                .domain(series.map(s => s.name))
-                .range(series.map(s => window.ColorScheme.getRegionColor(s.name)));
-        } else {
-            // フォールバック
-            colorScale = d3.scaleOrdinal(colors).domain(series.map(d => d.name));
-        }
-
-        // 単位情報を分析
-        let unitInfo = { xAxis: {}, yAxis: {} };
-        if (window.ChartLayoutHelper) {
-            unitInfo = ChartLayoutHelper.analyzeUnits(data, config);
-        }
-
-        // 軸を描画（単位情報を使ったフォーマッターを使用）
-        let xAxis, yAxis;
-        if (window.ChartLayoutHelper) {
-            const xFormatter = (value) => ChartLayoutHelper.formatAxisWithUnits(value, unitInfo.xAxis);
-            const yFormatter = (value) => ChartLayoutHelper.formatAxisWithUnits(value, unitInfo.yAxis);
             
-            xAxis = isYearData 
-                ? d3.axisBottom(xScale).tickFormat(d3.format("d")).ticks(6)
-                : d3.axisBottom(xScale).ticks(6);
-            yAxis = d3.axisLeft(yScale).tickFormat(yFormatter).ticks(5);
-        } else {
-            xAxis = isYearData 
-                ? d3.axisBottom(xScale).tickFormat(d3.format("d")).ticks(6)
-                : d3.axisBottom(xScale).ticks(6);
-            yAxis = d3.axisLeft(yScale).ticks(5);
-        }
-
-        g.append('g')
-            .attr('class', 'chart-axis x-axis')
-            .attr('transform', `translate(0,${height})`)
-            .call(xAxis);
-
-        g.append('g')
-            .attr('class', 'chart-axis y-axis')
-            .call(yAxis);
-
-        // 軸ラベルを統一的に追加（カスタム優先、デフォルト単位フォールバック）
-        if (window.ChartLayoutHelper) {
-            ChartLayoutHelper.addAxisLabels(g, data, config, width, height);
-        }
-
-        // ライン生成器
+        // 線生成器
         const line = d3.line()
-            .x(d => isYearData ? xScale(+d[xField]) : xScale(new Date(d[xField])))
+            .x(d => xScale(+d[xField]))
             .y(d => yScale(+d[yField]))
-            .curve(d3.curveMonotoneX);
-
-        // 系列ごとにラインを描画
-        const seriesGroups = g.selectAll('.series-group')
-            .data(series)
-            .enter()
-            .append('g')
-            .attr('class', 'series-group');
-
-        // ラインを描画
-        seriesGroups.append('path')
-            .attr('class', 'chart-line')
-            .attr('d', d => line(d.values))
-            .attr('stroke', d => colorScale(d.name))
-            .attr('stroke-width', window.AppDefaults?.strokeWidth?.none || 0)
-            .attr('fill', 'none')
-            .transition()
-            .duration(500)
-            .attr('stroke-width', window.AppDefaults?.strokeWidth?.thick || 2);
-
-        // ポイントを描画
-        seriesGroups.selectAll('.chart-circle')
-            .data(d => d.values.map(v => ({ ...v, seriesName: d.name })))
-            .enter()
-            .append('circle')
-            .attr('class', 'chart-circle')
-            .attr('cx', d => isYearData ? xScale(+d[xField]) : xScale(new Date(d[xField])))
-            .attr('cy', d => yScale(+d[yField]))
-            .attr('r', 0)
-            .attr('fill', d => colorScale(d.seriesName))
-            .transition()
-            .duration(500)
-            .delay((d, i) => i * 20)
-            .attr('r', 2);
-
-        // レジェンドを追加（小さいサイズ）
-        if (series.length > 1) {
-            this.addCompactLegend(g, series, colorScale, width, height);
-        }
-
-        // 注釈（アノテーション）を描画
-        if (config.annotations) {
-            this.renderAnnotations(g, config.annotations, { xScale, yScale, width, height, isYearData, xField, yField });
-        }
-    }
-
-    /**
-     * コンパクトなレジェンドを追加
-     */
-    addCompactLegend(g, series, colorScale, width, height) {
-        if (!series || series.length <= 1) return;
-        
-        // ChartLayoutHelperを使用して最適な凡例レイアウトを計算（コンパクト版）
-        let legendLayout;
-        if (window.ChartLayoutHelper) {
-            const seriesNames = series.map(s => s.name);
-            legendLayout = ChartLayoutHelper.calculateLegendLayout(seriesNames, width, height);
-            // コンパクト版の調整：もう少し余裕を持たせる
-            legendLayout.itemHeight = 16;
-            legendLayout.itemWidth = Math.min(legendLayout.itemWidth, width * 0.4); // 0.3から0.4に拡大
-        } else {
-            // フォールバック：従来の固定レイアウト（幅を広げる）
-            legendLayout = {
-                show: true,
-                position: 'right',
-                orientation: 'vertical',
-                itemWidth: 140, // 100から140に拡大
-                itemHeight: 16,
-                totalWidth: 140 // 100から140に拡大
-            };
-        }
-        
-        if (!legendLayout.show) return;
-        
-        // 凡例位置を計算（コンパクト版はより保守的に）
-        const legendX = Math.max(10, width - legendLayout.totalWidth - 10);
-        const legendY = 10;
-        
-        const legend = g.append('g')
-            .attr('class', 'chart-legend compact-legend')
-            .attr('transform', `translate(${legendX}, ${legendY})`);
-
-        const legendItems = legend.selectAll('.legend-item')
-            .data(series)
-            .enter()
-            .append('g')
-            .attr('class', 'legend-item')
-            .attr('transform', (d, i) => `translate(0, ${i * legendLayout.itemHeight})`);
-
-        // コンパクトな凡例アイコン（小さな円）
-        legendItems.append('circle')
-            .attr('cx', 4)
-            .attr('cy', 4)
-            .attr('r', 3)
-            .attr('fill', d => colorScale(d.name));
-
-        // コンパクトな凡例テキスト
-        const legendTexts = legendItems.append('text')
-            .attr('x', 12)
-            .attr('y', 4)
-            .attr('dy', '0.35em')
-            .attr('font-size', '10px')
-            .attr('fill', window.AppDefaults?.colors?.text?.primary || '#333');
-        
-        // 改善されたテキスト省略処理
-        legendTexts.each(function(d) {
-            const textElement = d3.select(this);
-            const text = d.name;
-            const maxWidth = legendLayout.itemWidth - 16; // アイコン分を除く
+            .curve(d3.curveMonotoneX); // スムーズな曲線
             
-            // まず完全なテキストを設定
-            textElement.text(text);
+        // 各系列を描画
+        seriesData.forEach((series, index) => {
+            const color = colors[index % colors.length];
             
-            // テキスト幅を安全に測定
-            let textWidth;
-            try {
-                textWidth = this.getBBox().width;
-            } catch (e) {
-                // getBBoxが失敗した場合のフォールバック（文字数ベース）
-                textWidth = text.length * 6;
-            }
-            
-            if (textWidth > maxWidth) {
-                // 地域名の適切な省略戦略
-                let shortenedText = text;
+            // 線を描画
+            g.append('path')
+                .datum(series.values)
+                .attr('fill', 'none')
+                .attr('stroke', color)
+                .attr('stroke-width', 2)
+                .attr('stroke-opacity', 0.8)
+                .attr('d', line);
                 
-                // 地域名の場合は意味のある省略を行う
-                if (text.includes('・')) {
-                    // 「東部・南部アフリカ」→「東・南部アフリカ」のような省略
-                    shortenedText = text.replace(/部・/g, '・');
-                } else if (text.includes('（') && text.includes('）')) {
-                    // 括弧内の詳細を除去 「中南米（ラテンアメリカ）」→「中南米」
-                    shortenedText = text.replace(/（[^）]*）/g, '');
-                }
-                
-                // まだ長い場合は文字数で調整
-                if (shortenedText.length > 8) {
-                    shortenedText = shortenedText.substring(0, 7) + '...';
-                }
-                
-                textElement.text(shortenedText);
-                
-                // ツールチップで完全なテキストを表示
-                textElement.append('title').text(text);
-                
-                console.log(`Legend text truncated: "${text}" → "${shortenedText}"`);
-            }
-        });
-    }
-
-    /**
-     * チャートを描画（レスポンシブ対応版）
-     * @param {string} type - チャートタイプ
-     * @param {Array} data - データ
-     * @param {Object} config - 設定
-     */
-    renderChart(type, data, config) {
-        const { width, height } = this.getResponsiveSize(config);
-        
-        // ChartLayoutHelperを使用して動的マージンを計算
-        let margin;
-        if (window.ChartLayoutHelper) {
-            margin = ChartLayoutHelper.calculateDynamicMargins(data, config, {
-                chartType: type,
-                hasLegend: config.showLegend !== false && config.multiSeries,
-                screenWidth: window.innerWidth,
-                screenHeight: window.innerHeight
-            });
-        } else {
-            // フォールバック：従来の固定マージン
-            margin = config.margin || window.AppDefaults?.chartMargin?.default || { top: 40, right: 20, bottom: 40, left: 50 };
-        }
-        
-        // SVGHelperを使用してレスポンシブSVGを作成
-        if (window.SVGHelper) {
-            // パーセンテージ指定の場合は実際のピクセルサイズを計算
-            let actualWidth = null;
-            let actualHeight = null;
-            
-            if (config.widthPercent) {
-                actualWidth = window.innerWidth * (config.widthPercent / 100);
-                console.log(`ChartManager: widthPercent=${config.widthPercent}%, actualWidth=${actualWidth}px (window.innerWidth=${window.innerWidth}px)`);
-            }
-            if (config.heightPercent) {
-                actualHeight = window.innerHeight * (config.heightPercent / 100);
-            }
-            
-            // コンテナの実際のサイズを確認
-            const containerRect = this.container.node().getBoundingClientRect();
-            console.log(`ChartManager: Container size: ${containerRect.width}x${containerRect.height}px`);
-            
-            this.svg = SVGHelper.initSVG(this.container, width, height, {
-                className: 'chart-svg',
-                responsive: true,
-                preserveAspectRatio: 'xMidYMid meet',
-                actualWidth: actualWidth,
-                actualHeight: actualHeight
-            });
-            
-            // デバッグ用：チャート背景を緑色に
-            this.svg.append('rect')
-                .attr('width', width)
-                .attr('height', height)
-                .attr('fill', 'lightgreen')
-                .attr('opacity', 0.3);
-        } else {
-            // フォールバック
-            this.container.selectAll('*').remove();
-            this.svg = this.container.append('svg')
-                .attr('viewBox', `0 0 ${width} ${height}`)
-                .style('width', config.widthPercent ? `${config.widthPercent}%` : '100%')
-                .style('height', 'auto');
-                
-            // デバッグ用：チャート背景を緑色に
-            this.svg.append('rect')
-                .attr('width', width)
-                .attr('height', height)
-                .attr('fill', 'lightgreen')
-                .attr('opacity', 0.3);
-        }
-        
-        switch (type) {
-            case 'line':
-                this.renderLineChart(data, { width, height, margin, ...config });
-                break;
-            case 'bar':
-                this.renderBarChart(data, { width, height, margin, ...config });
-                break;
-            case 'pie':
-                this.renderPieChart(data, { width, height, margin, ...config });
-                break;
-            default:
-                console.warn(`Unknown chart type: ${type}`);
-        }
-    }
-
-    /**
-     * データにフィルタを適用
-     * @param {Array} data - 生データ
-     * @param {Object} filterConfig - フィルタ設定
-     * @returns {Array} フィルタ済みデータ
-     */
-    applyFilter(data, filterConfig) {
-        if (!filterConfig || !data || data.length === 0) {
-            return data;
-        }
-
-        const { type, field, range, values, exclude } = filterConfig;
-
-        switch (type) {
-            case 'range':
-                if (range && range.length === 2 && field) {
-                    const [min, max] = range;
-                    return data.filter(d => {
-                        const value = +d[field];
-                        return value >= min && value <= max;
-                    });
-                }
-                break;
-
-            case 'values':
-                if (values && values.length > 0 && field) {
-                    return data.filter(d => values.includes(d[field]));
-                }
-                break;
-
-            case 'exclude':
-                if (exclude && exclude.length > 0 && field) {
-                    return data.filter(d => !exclude.includes(d[field]));
-                }
-                break;
-
-            case 'series':
-                if (values && values.length > 0) {
-                    const seriesField = filterConfig.seriesField || 'series';
-                    return data.filter(d => values.includes(d[seriesField]));
-                }
-                break;
-
-            default:
-                console.warn(`Unknown filter type: ${type}`);
-                return data;
-        }
-
-        return data;
-    }
-
-    /**
-     * データを系列別に変換
-     * @param {Array} data - 生データ
-     * @param {Object} config - 設定
-     * @returns {Array} 系列別データ
-     */
-    transformToSeries(data, config) {
-        const { xField = 'year', yField = 'value', seriesField = 'series' } = config;
-        
-        
-        // フィルタが設定されている場合は適用
-        let filteredData = data;
-        if (config.filter) {
-            filteredData = this.applyFilter(data, config.filter);
-            console.log(`Filter applied: ${data.length} -> ${filteredData.length} records`);
-        }
-        
-        if (config.multiSeries === false) {
-            // 単一系列として強制的に扱う
-            return [{
-                name: config.seriesName || 'Data',
-                values: filteredData.map(d => ({
-                    [xField]: d[xField],
-                    [yField]: d[yField]
-                }))
-            }];
-        }
-        
-        // 複数系列の場合
-        const seriesNames = [...new Set(filteredData.map(d => d[seriesField]))];
-        
-        return seriesNames.map(name => ({
-            name,
-            values: filteredData
-                .filter(d => d[seriesField] === name)
-                .map(d => ({
-                    [xField]: d[xField],
-                    [yField]: d[yField]
-                }))
-        }));
-    }
-
-    /**
-     * 折れ線グラフを描画
-     */
-    renderLineChart(data, config) {
-        const { 
-            width, height, margin, 
-            xField = 'year', yField = 'value', 
-            colors = d3.schemeCategory10,
-            multiSeries = true,
-            title = ''
-        } = config;
-        
-        const svg = this.svg;
-        const innerWidth = width - margin.left - margin.right;
-        const innerHeight = height - margin.top - margin.bottom;
-        
-        const g = svg.append('g')
-            .attr('transform', `translate(${margin.left},${margin.top})`);
-
-        // タイトルを追加
-        if (title) {
-            g.append('text')
-                .attr('class', 'chart-title')
-                .attr('x', 0)
-                .attr('y', -10)
-                .attr('text-anchor', 'start')
-                .style('font-family', 'var(--font-family-serif)')
-                .style('font-size', 'var(--font-size-base)')
-                .style('font-weight', 'var(--font-weight-bold)')
-                .attr('fill', window.AppDefaults?.colors?.text?.primary || '#333')
-                .text(title);
-        }
-
-        // データを系列別に変換
-        const series = this.transformToSeries(data, config);
-        
-        
-        // 全データからドメインを計算
-        const allValues = series.flatMap(s => s.values);
-        
-        // スケール設定 - 年データの場合は線形スケールを使用
-        const isYearData = allValues.every(d => !isNaN(d[xField]) && d[xField] > 1900 && d[xField] < 2100);
-        
-        // X軸のドメインを決定（設定で年度範囲が指定されていればそれを使用、なければデータ範囲）
-        let xDomain;
-        if (config.yearRange && config.yearRange.length === 2) {
-            // 設定ファイルで年度範囲が指定されている場合
-            xDomain = config.yearRange;
-        } else if (isYearData) {
-            // 年データの場合はデータの範囲を使用
-            xDomain = d3.extent(allValues, d => +d[xField]);
-        } else {
-            // 時間データの場合
-            xDomain = d3.extent(allValues, d => new Date(d[xField]));
-        }
-        
-        const xScale = isYearData 
-            ? d3.scaleLinear()
-                .domain(xDomain)
-                .range([0, innerWidth])
-            : d3.scaleTime()
-                .domain(xDomain)
-                .range([0, innerWidth]);
-
-        // Y軸のドメインを決定（設定でY軸範囲が指定されていればそれを使用、なければデータ範囲）
-        let yDomain;
-        if (config.yRange && config.yRange.length === 2) {
-            // 設定ファイルでY軸範囲が指定されている場合
-            yDomain = config.yRange;
-        } else {
-            // データの範囲を使用
-            yDomain = d3.extent(allValues, d => +d[yField]);
-        }
-        
-        const yScale = d3.scaleLinear()
-            .domain(yDomain)
-            .nice()
-            .range([innerHeight, 0]);
-
-        // D3標準のカラースケール：地域名から直接色を取得
-        let colorScale;
-        if (config.colors && config.colors.length > 0 && config.multiSeries === false) {
-            // 単一系列の明示色
-            colorScale = d3.scaleOrdinal(config.colors).domain(series.map(d => d.name));
-        } else if (window.ColorScheme && config.useUnifiedColors !== false) {
-            // 統一カラースキーム：地域名→色の直接マッピング
-            colorScale = d3.scaleOrdinal()
-                .domain(series.map(s => s.name))
-                .range(series.map(s => window.ColorScheme.getRegionColor(s.name)));
-        } else {
-            // フォールバック
-            colorScale = d3.scaleOrdinal(colors).domain(series.map(d => d.name));
-        }
-
-        // 単位情報を分析
-        let unitInfo = { xAxis: {}, yAxis: {} };
-        if (window.ChartLayoutHelper) {
-            unitInfo = ChartLayoutHelper.analyzeUnits(data, config);
-        }
-
-        // 軸を描画（単位情報を使ったフォーマッターを使用）
-        let xAxis, yAxis;
-        if (window.ChartLayoutHelper) {
-            const xFormatter = (value) => ChartLayoutHelper.formatAxisWithUnits(value, unitInfo.xAxis);
-            const yFormatter = (value) => ChartLayoutHelper.formatAxisWithUnits(value, unitInfo.yAxis);
-            
-            xAxis = isYearData 
-                ? d3.axisBottom(xScale).tickFormat(d3.format("d"))  // 年データは整数表示
-                : d3.axisBottom(xScale);
-            yAxis = d3.axisLeft(yScale).tickFormat(yFormatter);
-        } else {
-            xAxis = isYearData 
-                ? d3.axisBottom(xScale).tickFormat(d3.format("d"))  // 年データは整数表示
-                : d3.axisBottom(xScale);
-            yAxis = d3.axisLeft(yScale);
-        }
-
-        g.append('g')
-            .attr('class', 'chart-axis x-axis')
-            .attr('transform', `translate(0,${innerHeight})`)
-            .call(xAxis);
-
-        g.append('g')
-            .attr('class', 'chart-axis y-axis')
-            .call(yAxis);
-
-        // 軸ラベルを統一的に追加（カスタム優先、デフォルト単位フォールバック）
-        if (window.ChartLayoutHelper) {
-            ChartLayoutHelper.addAxisLabels(g, data, config, innerWidth, innerHeight);
-        }
-
-        // ライン生成器
-        const line = d3.line()
-            .x(d => isYearData ? xScale(+d[xField]) : xScale(new Date(d[xField])))
-            .y(d => yScale(+d[yField]))
-            .curve(d3.curveMonotoneX);
-
-        // 系列ごとにラインを描画
-        const seriesGroups = g.selectAll('.series-group')
-            .data(series)
-            .enter()
-            .append('g')
-            .attr('class', 'series-group');
-
-        // 統一されたトランジションを作成（初期描画用）
-        const initialTransition = d3.transition()
-            .duration(600)
-            .ease(d3.easeQuadOut); // 自然な立ち上がり
-
-        // ラインを描画（統一トランジション + データ設定）
-        seriesGroups.append('path')
-            .attr('class', 'chart-line')
-            .datum(d => d) // 系列データを設定
-            .attr('d', d => line(d.values))
-            .attr('stroke', d => colorScale(d.name))
-            .attr('stroke-width', window.AppDefaults?.strokeWidth?.none || 0)
-            .attr('fill', 'none')
-            .style('opacity', 0)
-            .transition(initialTransition)
-            .attr('stroke-width', window.AppDefaults?.strokeWidth?.thick || 2)
-            .style('opacity', 1);
-
-        // Object Constancyを使ったポイント描画（線と同期）
-        seriesGroups.each(function(seriesData) {
-            const group = d3.select(this);
-            
-            // 一意キーでデータポイントを追跡
-            const dataWithKeys = seriesData.values.map(v => ({
-                ...v,
-                seriesName: seriesData.name,
-                uniqueKey: `${seriesData.name}-${v[xField]}`
-            }));
-            
-            const circles = group.selectAll('.chart-circle')
-                .data(dataWithKeys, d => d.uniqueKey);
-
-            // 新しいポイントの追加（線と同じイージング、わずかな遅延）
-            circles.enter()
-                .append('circle')
-                .attr('class', 'chart-circle')
-                .attr('cx', d => isYearData ? xScale(+d[xField]) : xScale(new Date(d[xField])))
+            // データポイントを描画
+            g.selectAll(`.dots-${index}`)
+                .data(series.values)
+                .enter().append('circle')
+                .attr('class', `dots-${index}`)
+                .attr('cx', d => xScale(+d[xField]))
                 .attr('cy', d => yScale(+d[yField]))
-                .attr('r', 0)
-                .attr('fill', d => colorScale(d.seriesName))
-                .style('opacity', 0)
-                .transition(initialTransition)
-                .delay((d, i) => i * 15) // 自然な順次表示
                 .attr('r', 3)
-                .style('opacity', 1);
+                .attr('fill', color)
+                .attr('fill-opacity', 0.7);
         });
-
-        // レジェンドを追加（複数系列の場合のみ）
-        if (series.length > 1) {
-            this.addLegend(svg, series, colorScale, width, height);
-        }
-
-        // 注釈（アノテーション）を描画
-        if (config.annotations) {
-            this.renderAnnotations(g, config.annotations, { xScale, yScale, width: innerWidth, height: innerHeight, isYearData, xField, yField });
-        }
-    }
-
-    /**
-     * レジェンドを追加
-     */
-    addLegend(svg, series, colorScale, width, height) {
-        if (!series || series.length <= 1) return;
-        
-        // ChartLayoutHelperを使用して最適な凡例レイアウトを計算
-        let legendLayout;
-        if (window.ChartLayoutHelper) {
-            const seriesNames = series.map(s => s.name);
-            legendLayout = ChartLayoutHelper.calculateLegendLayout(seriesNames, width, height);
-            console.log('ChartLayoutHelper legend layout:', legendLayout);
-        } else {
-            // フォールバック：従来の固定レイアウト
-            legendLayout = {
-                show: true,
-                position: 'right',
-                orientation: 'vertical',
-                itemWidth: 120,
-                itemHeight: 20,
-                totalWidth: 120
-            };
-        }
-        
-        // bottomポジションが問題を起こしている場合は強制的にrightに変更
-        if (legendLayout.position === 'bottom') {
-            console.log('Forcing legend position from bottom to right to avoid overflow');
-            legendLayout.position = 'right';
-            legendLayout.orientation = 'vertical';
-        }
-        
-        if (!legendLayout.show) return;
-        
-        // 凡例コンテナを作成
-        const legend = svg.append('g')
-            .attr('class', 'chart-legend');
-        
-        // 凡例位置を計算
-        let legendX, legendY;
-        if (legendLayout.position === 'bottom') {
-            legendX = width / 2 - (legendLayout.itemWidth * series.length) / 2;
-            // チャートエリア内の下部に配置（コンテナの外に出ないように）
-            legendY = height - (legendLayout.itemHeight * series.length) - 10;
-        } else {
-            // 右側配置（デフォルト）
-            legendX = Math.max(20, width - (legendLayout.totalWidth || legendLayout.itemWidth));
-            legendY = 20;
-        }
-        
-        console.log('Legend position:', { x: legendX, y: legendY, width, height, position: legendLayout.position });
-        
-        legend.attr('transform', `translate(${legendX}, ${legendY})`);
-        
-        // 凡例アイテムを作成
-        const legendItems = legend.selectAll('.legend-item')
-            .data(series)
-            .enter()
-            .append('g')
-            .attr('class', 'legend-item');
-        
-        // アイテムの配置
-        if (legendLayout.orientation === 'horizontal') {
-            legendItems.attr('transform', (d, i) => `translate(${i * legendLayout.itemWidth}, 0)`);
-        } else {
-            legendItems.attr('transform', (d, i) => `translate(0, ${i * legendLayout.itemHeight})`);
-        }
-        
-        // 凡例アイコン（円）
-        legendItems.append('circle')
-            .attr('cx', 6)
-            .attr('cy', 6)
-            .attr('r', 5)
-            .attr('fill', d => colorScale(d.name));
-        
-        // 凡例テキスト
-        const legendTexts = legendItems.append('text')
-            .attr('x', 16)
-            .attr('y', 6)
-            .attr('dy', '0.35em')
-            .attr('font-size', '12px')
-            .attr('fill', window.AppDefaults?.colors?.text?.primary || '#333');
-        
-        // 改善されたテキスト省略処理
-        legendTexts.each(function(d) {
-            const textElement = d3.select(this);
-            const text = d.name;
-            const maxWidth = legendLayout.itemWidth - 25; // アイコン分を除く
             
-            // まず完全なテキストを設定
-            textElement.text(text);
-            
-            // テキスト幅を安全に測定
-            let textWidth;
-            try {
-                textWidth = this.getBBox().width;
-            } catch (e) {
-                // getBBoxが失敗した場合のフォールバック
-                textWidth = text.length * 7;
-            }
-            
-            if (textWidth > maxWidth) {
-                // 地域名の適切な省略戦略
-                let shortenedText = text;
-                
-                // 地域名の場合は意味のある省略を行う
-                if (text.includes('・')) {
-                    // 「東部・南部アフリカ」→「東・南部アフリカ」のような省略
-                    shortenedText = text.replace(/部・/g, '・');
-                } else if (text.includes('（') && text.includes('）')) {
-                    // 括弧内の詳細を除去 「中南米（ラテンアメリカ）」→「中南米」
-                    shortenedText = text.replace(/（[^）]*）/g, '');
-                }
-                
-                // 再測定して、まだ長い場合は文字数で調整
-                textElement.text(shortenedText);
-                try {
-                    if (this.getBBox().width > maxWidth && shortenedText.length > 10) {
-                        shortenedText = shortenedText.substring(0, 9) + '...';
-                        textElement.text(shortenedText);
-                    }
-                } catch (e) {
-                    // getBBoxが使えない場合は文字数でフォールバック
-                    if (shortenedText.length > 10) {
-                        shortenedText = shortenedText.substring(0, 9) + '...';
-                        textElement.text(shortenedText);
-                    }
-                }
-                
-                // ツールチップで完全なテキストを表示
-                textElement.append('title').text(text);
-                
-                console.log(`Main legend text truncated: "${text}" → "${shortenedText}"`);
-            }
-        });
-    }
-
-    /**
-     * 棒グラフを描画
-     */
-    renderBarChart(data, config) {
-        const { 
-            width, height, margin, 
-            xField = 'category', yField = 'value', 
-            color = window.AppDefaults?.colors?.accent?.success || '#10b981',
-            title = ''
-        } = config;
-        
-        const svg = this.svg;
-        const innerWidth = width - margin.left - margin.right;
-        const innerHeight = height - margin.top - margin.bottom;
-        
-        const g = svg.append('g')
-            .attr('transform', `translate(${margin.left},${margin.top})`);
-
-        // タイトルを追加
-        if (title) {
-            g.append('text')
-                .attr('class', 'chart-title')
-                .attr('x', 0)
-                .attr('y', -10)
-                .attr('text-anchor', 'start')
-                .style('font-family', 'var(--font-family-serif)')
-                .style('font-size', 'var(--font-size-base)')
-                .style('font-weight', 'var(--font-weight-bold)')
-                .attr('fill', window.AppDefaults?.colors?.text?.primary || '#333')
-                .text(title);
-        }
-
-        // スケール設定
-        const xScale = d3.scaleBand()
-            .domain(data.map(d => d[xField]))
-            .range([0, innerWidth])
-            .padding(0.1);
-
-        const yScale = d3.scaleLinear()
-            .domain([0, d3.max(data, d => +d[yField])])
-            .nice()
-            .range([innerHeight, 0]);
-
-        // 単位情報を分析
-        let unitInfo = { xAxis: {}, yAxis: {} };
-        if (window.ChartLayoutHelper) {
-            unitInfo = ChartLayoutHelper.analyzeUnits(data, config);
-        }
-
-        // 軸を描画（単位情報を使ったフォーマッターを使用）
-        let xAxis, yAxis;
-        if (window.ChartLayoutHelper) {
-            const xFormatter = (value) => ChartLayoutHelper.formatAxisWithUnits(value, unitInfo.xAxis);
-            const yFormatter = (value) => ChartLayoutHelper.formatAxisWithUnits(value, unitInfo.yAxis);
-            
-            xAxis = d3.axisBottom(xScale);
-            yAxis = d3.axisLeft(yScale).tickFormat(yFormatter);
-        } else {
-            xAxis = d3.axisBottom(xScale);
-            yAxis = d3.axisLeft(yScale);
-        }
-
+        // 軸を追加
         g.append('g')
-            .attr('class', 'chart-axis x-axis')
-            .attr('transform', `translate(0,${innerHeight})`)
-            .call(xAxis);
-
+            .attr('transform', `translate(0,${height})`)
+            .call(d3.axisBottom(xScale).tickFormat(d3.format('d')));
+            
         g.append('g')
-            .attr('class', 'chart-axis y-axis')
-            .call(yAxis);
-
-        // 軸ラベルを統一的に追加（カスタム優先、デフォルト単位フォールバック）
-        if (window.ChartLayoutHelper) {
-            ChartLayoutHelper.addAxisLabels(g, data, config, innerWidth, innerHeight);
-        }
-
-        // 統一された色設定
-        let barColors;
-        if (window.ColorScheme && config.useUnifiedColors !== false && config.multiColor) {
-            // 複数色の場合は統一カラースキームを使用
-            barColors = window.ColorScheme.generateColorsForChart(data, { 
-                ...config, 
-                seriesField: xField 
+            .call(d3.axisLeft(yScale));
+            
+        // 凡例を追加（複数系列の場合）
+        if (seriesData.length > 1) {
+            const legend = g.append('g')
+                .attr('class', 'legend')
+                .attr('transform', `translate(${width - 120}, 20)`);
+                
+            seriesData.forEach((series, index) => {
+                const legendRow = legend.append('g')
+                    .attr('transform', `translate(0, ${index * 20})`);
+                    
+                legendRow.append('rect')
+                    .attr('width', 15)
+                    .attr('height', 3)
+                    .attr('fill', colors[index % colors.length]);
+                    
+                legendRow.append('text')
+                    .attr('x', 20)
+                    .attr('y', 0)
+                    .attr('dy', '0.35em')
+                    .attr('font-size', '12px')
+                    .attr('fill', window.AppConstants?.APP_COLORS?.TEXT?.PRIMARY || '#333')
+                    .text(series.name);
             });
-        } else if (window.ColorScheme && config.useUnifiedColors !== false && data.length === 1) {
-            // 単一データの場合は地域に応じた色を使用
-            const regionName = data[0][xField];
-            barColors = [window.ColorScheme.getColorForRegion(regionName)];
+        }
+    }
+
+    /**
+     * グループ内で棒グラフを描画
+     */
+    renderBarChartInGroup(g, data, config) {
+        if (this.renderers.bar && this.renderers.bar.renderBarChartInGroup) {
+            this.renderers.bar.renderBarChartInGroup(g, data, config);
         } else {
-            // フォールバック：設定で指定された色
-            barColors = [color];
+            console.warn('ChartManager: BarChartRenderer not available for group rendering');
         }
-        
-        // 特別なケース：単一系列で色が明示されている場合のみそれを優先
-        if (config.colors && config.colors.length > 0 && config.multiSeries === false) {
-            barColors = config.colors;
-        }
-
-        // 棒を描画
-        g.selectAll('.bar')
-            .data(data)
-            .enter()
-            .append('rect')
-            .attr('class', 'bar')
-            .attr('x', d => xScale(d[xField]))
-            .attr('y', innerHeight)
-            .attr('width', xScale.bandwidth())
-            .attr('height', 0)
-            .attr('fill', (d, i) => barColors[i % barColors.length])
-            .transition()
-            .duration(500)
-            .delay((d, i) => i * 100)
-            .attr('y', d => yScale(+d[yField]))
-            .attr('height', d => innerHeight - yScale(+d[yField]));
     }
 
     /**
-     * 円グラフを描画
-     */
-    renderPieChart(data, config) {
-        const { width, height, labelField = 'label', valueField = 'value', colors = d3.schemeCategory10, title = '' } = config;
-        
-        const svg = this.initSVG(width, height);
-        const radius = Math.min(width, height) / 2 - 40;
-        
-        const g = svg.append('g')
-            .attr('transform', `translate(${width/2},${height/2})`);
-        
-        // タイトルを追加
-        if (title) {
-            svg.append('text')
-                .attr('class', 'chart-title')
-                .attr('x', 20)
-                .attr('y', 30)
-                .attr('text-anchor', 'start')
-                .style('font-family', 'var(--font-family-serif)')
-                .style('font-size', 'var(--font-size-base)')
-                .style('font-weight', 'var(--font-weight-bold)')
-                .attr('fill', window.AppDefaults?.colors?.text?.primary || '#333')
-                .text(title);
-        }
-
-        const pie = d3.pie()
-            .value(d => +d[valueField])
-            .sort(null);
-
-        const arc = d3.arc()
-            .innerRadius(0)
-            .outerRadius(radius);
-
-        // 統一された色スケール設定
-        let chartColors;
-        if (window.ColorScheme && config.useUnifiedColors !== false) {
-            // 統一カラースキームを使用
-            chartColors = window.ColorScheme.generateColorsForChart(data, { 
-                ...config, 
-                seriesField: labelField 
-            });
-        } else {
-            // フォールバック：設定で指定された色または既定色
-            chartColors = colors;
-        }
-        
-        // 特別なケース：単一系列で色が明示されている場合のみそれを優先
-        if (config.colors && config.colors.length > 0 && config.multiSeries === false) {
-            chartColors = config.colors;
-        }
-
-        const arcs = g.selectAll('.pie-slice')
-            .data(pie(data))
-            .enter()
-            .append('g')
-            .attr('class', 'pie-slice');
-
-        arcs.append('path')
-            .attr('d', arc)
-            .attr('fill', (d, i) => chartColors[i % chartColors.length])
-            .transition()
-            .duration(500)
-            .delay((d, i) => i * 100)
-            .attrTween('d', function(d) {
-                const interpolate = d3.interpolate({startAngle: 0, endAngle: 0}, d);
-                return function(t) {
-                    return arc(interpolate(t));
-                };
-            });
-
-        // ラベルを追加
-        arcs.append('text')
-            .attr('transform', d => `translate(${arc.centroid(d)})`)
-            .attr('text-anchor', 'middle')
-            .attr('font-size', '12px')
-            .attr('fill', window.AppDefaults?.colors?.text?.white || '#fff')
-            .text(d => d.data[labelField])
-            .style('opacity', 0)
-            .transition()
-            .duration(500)
-            .delay(500)
-            .style('opacity', 1);
-    }
-
-    /**
-     * Triple チャートを描画
-     * @param {Array} charts - チャート設定配列（3つ）
-     */
-    renderTripleChart(charts) {
-        console.log('ChartManager: renderTripleChart called with:', charts);
-        const containerNode = this.container.node();
-        const containerWidth = containerNode.clientWidth;
-        const containerHeight = containerNode.clientHeight;
-        console.log('ChartManager: Container dimensions:', { containerWidth, containerHeight });
-        
-        // 全体のSVGサイズを計算
-        const totalWidth = Math.min(containerWidth * 0.95, 1200);
-        const totalHeight = Math.min(containerHeight * 0.8, 500);
-        
-        // 既存のSVGを使用（createSVGForLayoutで作成済み）
-        const svg = this.svg;
-        
-        // 各チャートの幅を計算（間隔を含む）
-        const chartSpacing = 30;
-        const chartWidth = (totalWidth - chartSpacing * 2) / 3;
-        const chartHeight = totalHeight - 60; // タイトル分を確保
-        
-        charts.forEach((chartConfig, index) => {
-            const xOffset = index * (chartWidth + chartSpacing);
-            this.renderSinglePieChartInTriple(svg, chartConfig, {
-                x: xOffset,
-                y: 40,
-                width: chartWidth,
-                height: chartHeight
-            });
-        });
-    }
-
-    /**
-     * Triple layout内で単一の円グラフを描画
-     */
-    renderSinglePieChartInTriple(svg, chartConfig, layout) {
-        console.log('ChartManager: renderSinglePieChartInTriple called with:', { chartConfig, layout });
-        const { data, config, title } = chartConfig;
-        const { x, y, width, height } = layout;
-        console.log('ChartManager: Data for pie chart:', data);
-        
-        const radius = Math.min(width, height - 80) / 2; // タイトル分を除く
-        
-        // チャートグループを作成
-        const chartGroup = svg.append('g')
-            .attr('transform', `translate(${x}, ${y})`);
-        
-        // タイトルを追加
-        chartGroup.append('text')
-            .attr('x', width / 2)
-            .attr('y', 20)
-            .attr('text-anchor', 'middle')
-            .attr('font-size', '14px')
-            .attr('font-weight', 'bold')
-            .attr('fill', window.AppDefaults?.colors?.text?.primary || '#333')
-            .text(title);
-        
-        // 円グラフ描画エリア
-        const g = chartGroup.append('g')
-            .attr('transform', `translate(${width/2}, ${height/2 + 20})`);
-        
-        // 円グラフを描画
-        this.renderPieChartInGroup(g, data, {
-            ...config,
-            radius: radius
-        });
-    }
-
-    /**
-     * 指定されたグループ内で円グラフを描画
+     * グループ内で円グラフを描画
      */
     renderPieChartInGroup(g, data, config) {
-        const { radius, labelField = 'label', valueField = 'value', colors = d3.schemeCategory10 } = config;
-        
-        // データの合計を計算
-        const total = data.reduce((sum, d) => sum + (+d[valueField]), 0);
-        
-        // パイ生成器
-        const pie = d3.pie()
-            .value(d => +d[valueField])
-            .sort(null);
-        
-        // アーク生成器
-        const arc = d3.arc()
-            .innerRadius(0)
-            .outerRadius(radius);
-        
-        // 統一された色スケール設定
-        let chartColors;
-        if (window.ColorScheme && config.useUnifiedColors !== false) {
-            // 統一カラースキームを使用
-            chartColors = window.ColorScheme.generateColorsForChart(data, { 
-                ...config, 
-                seriesField: labelField 
-            });
+        if (this.renderers.pie && this.renderers.pie.renderPieChartInGroup) {
+            this.renderers.pie.renderPieChartInGroup(g, data, config);
         } else {
-            // フォールバック：設定で指定された色または既定色
-            chartColors = colors;
+            console.warn('ChartManager: PieChartRenderer not available for group rendering');
         }
-        
-        // 特別なケース：単一系列で色が明示されている場合のみそれを優先
-        if (config.colors && config.colors.length > 0 && config.multiSeries === false) {
-            chartColors = config.colors;
-        }
-        
-        const colorScale = d3.scaleOrdinal(chartColors)
-            .domain(data.map(d => d[labelField]));
-        
-        // パイデータを生成
-        const pieData = pie(data);
-        
-        // パイスライスを描画
-        const slices = g.selectAll('.slice')
-            .data(pieData)
-            .enter()
-            .append('g')
-            .attr('class', 'slice');
-        
-        slices.append('path')
-            .attr('class', 'pie-slice')
-            .attr('d', arc)
-            .attr('fill', d => colorScale(d.data[labelField]))
-            .attr('stroke', window.AppDefaults?.colors?.text?.white || '#fff')
-            .attr('stroke-width', window.AppDefaults?.strokeWidth?.normal || 1)
-            .style('opacity', 0)
-            .transition()
-            .duration(500)
-            .delay((d, i) => i * 100)
-            .style('opacity', 1);
-        
-        // ラベルを追加
-        const labelArc = d3.arc()
-            .innerRadius(radius * 0.7)
-            .outerRadius(radius * 0.7);
-        
-        // ラベルグループを作成
-        const labelGroups = slices.append('g')
-            .attr('class', 'pie-label-group')
-            .attr('transform', d => `translate(${labelArc.centroid(d)})`)
-            .style('opacity', 0);
-        
-        // ラベル名を追加
-        labelGroups.append('text')
-            .attr('class', 'pie-label-name')
-            .attr('text-anchor', 'middle')
-            .attr('y', '-0.3em')
-            .attr('font-size', '11px')
-            .attr('font-weight', 'bold')
-            .attr('fill', window.AppDefaults?.colors?.text?.primary || '#333')
-            .text(d => d.data[labelField]);
-        
-        // パーセンテージを追加
-        labelGroups.append('text')
-            .attr('class', 'pie-label-value')
-            .attr('text-anchor', 'middle')
-            .attr('y', '0.8em')
-            .attr('font-size', '11px')
-            .attr('fill', window.AppDefaults?.colors?.text?.secondary || '#666')
-            .text(d => {
-                // 実際のパーセンテージを計算
-                const percentage = (d.data[valueField] / total * 100).toFixed(1);
-                return `${percentage}%`;
-            });
-        
-        // ラベルグループをフェードイン
-        labelGroups.transition()
-            .duration(500)
-            .delay((d, i) => i * 100 + 200)
-            .style('opacity', 1);
     }
 
     /**
-     * チャートに注釈（アノテーション）を描画
-     * @param {Object} g - D3選択オブジェクト（グループ要素）
-     * @param {Array} annotations - 注釈設定の配列
-     * @param {Object} scales - スケールオブジェクト
-     */
-    renderAnnotations(g, annotations, scales) {
-        const { xScale, yScale, width, height, isYearData, xField, yField } = scales;
-
-        annotations.forEach((annotation, index) => {
-            if (annotation.type === 'verticalLine') {
-                const { year, label, position = 'top-right' } = annotation;
-                
-                // 年度がデータ範囲内かチェック
-                const xDomain = xScale.domain();
-                if (year < xDomain[0] || year > xDomain[1]) {
-                    console.warn(`Annotation year ${year} is outside data range [${xDomain[0]}, ${xDomain[1]}]`);
-                    return;
-                }
-
-                const x = xScale(year);
-                
-                // 垂直の点線を描画
-                g.append('line')
-                    .attr('class', 'annotation-line')
-                    .attr('x1', x)
-                    .attr('x2', x)
-                    .attr('y1', 0)
-                    .attr('y2', height)
-                    .attr('stroke', window.AppDefaults?.colors?.text?.secondary || '#666')
-                    .attr('stroke-width', window.AppDefaults?.strokeWidth?.normal || 1)
-                    .attr('stroke-dasharray', '5,5')
-                    .style('opacity', 0)
-                    .transition()
-                    .duration(500)
-                    .delay(800) // チャート描画後に表示
-                    .style('opacity', 0.7);
-
-                // ラベルテキストを描画
-                const labelGroup = g.append('g')
-                    .attr('class', 'annotation-label')
-                    .style('opacity', 0);
-
-                // ラベル位置を計算
-                let labelX, labelY, textAnchor;
-                switch (position) {
-                    case 'top-left':
-                        labelX = x - 10;
-                        labelY = 20;
-                        textAnchor = 'end';
-                        break;
-                    case 'top-right':
-                        labelX = x + 10;
-                        labelY = 20;
-                        textAnchor = 'start';
-                        break;
-                    case 'bottom-left':
-                        labelX = x - 10;
-                        labelY = height - 10;
-                        textAnchor = 'end';
-                        break;
-                    case 'bottom-right':
-                        labelX = x + 10;
-                        labelY = height - 10;
-                        textAnchor = 'start';
-                        break;
-                    default:
-                        labelX = x + 10;
-                        labelY = 20;
-                        textAnchor = 'start';
-                }
-
-                // ラベル背景（読みやすさ向上）
-                const labelText = labelGroup.append('text')
-                    .attr('x', labelX)
-                    .attr('y', labelY)
-                    .attr('text-anchor', textAnchor)
-                    .attr('font-size', '12px')
-                    .attr('font-weight', 'bold')
-                    .attr('fill', window.AppDefaults?.colors?.text?.primary || '#333')
-                    .text(label);
-
-                // 背景の白い矩形（オプション）
-                const bbox = labelText.node().getBBox();
-                labelGroup.insert('rect', 'text')
-                    .attr('x', bbox.x - 3)
-                    .attr('y', bbox.y - 2)
-                    .attr('width', bbox.width + 6)
-                    .attr('height', bbox.height + 4)
-                    .attr('fill', window.AppDefaults?.colors?.background?.overlay || 'rgba(255, 255, 255, 0.9)')
-                    .attr('stroke', window.AppDefaults?.colors?.border?.light || '#ccc')
-                    .attr('stroke-width', window.AppDefaults?.strokeWidth?.thin || 0.5)
-                    .attr('rx', 3);
-
-                // ラベルをフェードイン
-                labelGroup.transition()
-                    .duration(500)
-                    .delay(1000) // 点線の後に表示
-                    .style('opacity', 1);
-            } else if (annotation.type === 'horizontalLine') {
-                const { value, label, position = 'right' } = annotation;
-                
-                // Y軸の値がデータ範囲内かチェック
-                const yDomain = yScale.domain();
-                if (value < yDomain[0] || value > yDomain[1]) {
-                    console.warn(`Annotation value ${value} is outside Y-axis range [${yDomain[0]}, ${yDomain[1]}]`);
-                    return;
-                }
-
-                const y = yScale(value);
-                
-                // 水平の点線を描画
-                g.append('line')
-                    .attr('class', 'annotation-line horizontal-line')
-                    .attr('x1', 0)
-                    .attr('x2', width)
-                    .attr('y1', y)
-                    .attr('y2', y)
-                    .attr('stroke', window.AppDefaults?.colors?.text?.secondary || '#666')
-                    .attr('stroke-width', window.AppDefaults?.strokeWidth?.normal || 1)
-                    .attr('stroke-dasharray', '5,5')
-                    .style('opacity', 0)
-                    .transition()
-                    .duration(500)
-                    .delay(800) // チャート描画後に表示
-                    .style('opacity', 0.7);
-
-                // ラベルテキストを描画
-                const labelGroup = g.append('g')
-                    .attr('class', 'annotation-label horizontal-label')
-                    .style('opacity', 0);
-
-                // ラベル位置を計算
-                let labelX, labelY, textAnchor;
-                switch (position) {
-                    case 'left':
-                        labelX = 10;
-                        labelY = y - 5;
-                        textAnchor = 'start';
-                        break;
-                    case 'center':
-                        labelX = width / 2;
-                        labelY = y - 5;
-                        textAnchor = 'middle';
-                        break;
-                    case 'right':
-                        labelX = width - 10;
-                        labelY = y - 5;
-                        textAnchor = 'end';
-                        break;
-                    default:
-                        labelX = width - 10;
-                        labelY = y - 5;
-                        textAnchor = 'end';
-                }
-
-                // ラベル背景（読みやすさ向上）
-                const labelText = labelGroup.append('text')
-                    .attr('x', labelX)
-                    .attr('y', labelY)
-                    .attr('text-anchor', textAnchor)
-                    .attr('font-size', '12px')
-                    .attr('font-weight', 'bold')
-                    .attr('fill', window.AppDefaults?.colors?.text?.primary || '#333')
-                    .text(label);
-
-                // 背景の白い矩形
-                const bbox = labelText.node().getBBox();
-                labelGroup.insert('rect', 'text')
-                    .attr('x', bbox.x - 3)
-                    .attr('y', bbox.y - 2)
-                    .attr('width', bbox.width + 6)
-                    .attr('height', bbox.height + 4)
-                    .attr('fill', window.AppDefaults?.colors?.background?.overlay || 'rgba(255, 255, 255, 0.9)')
-                    .attr('stroke', window.AppDefaults?.colors?.border?.light || '#ccc')
-                    .attr('stroke-width', window.AppDefaults?.strokeWidth?.thin || 0.5)
-                    .attr('rx', 3);
-
-                // ラベルをフェードイン
-                labelGroup.transition()
-                    .duration(500)
-                    .delay(1000) // 点線の後に表示
-                    .style('opacity', 1);
-            }
-        });
-    }
-
-    /**
-     * Grid chart layout legacy fallback (for backward compatibility)
+     * チャートデータの検証
      * @param {Object} chartData - チャートデータ
-     * @deprecated Use GridChartRenderer instead
+     * @returns {Object} 検証結果
      */
-    updateGridChart(chartData) {
-        console.warn('ChartManager.updateGridChart is deprecated. Using legacy fallback.');
+    validateChartData(chartData) {
+        const errors = [];
         
-        this.show();
-        this.container.selectAll('*').remove();
+        if (!chartData) {
+            errors.push('Chart data is required');
+            return { valid: false, errors };
+        }
         
-        // Display a simple message indicating grid charts are now handled by GridChartRenderer
-        const svg = this.container.append('svg')
-            .attr('width', 400)
-            .attr('height', 200)
-            .attr('viewBox', '0 0 400 200')
-            .style('width', '100%')
-            .style('height', 'auto');
+        // visible: false の場合は最小限の検証のみ
+        if (chartData.visible === false) {
+            return { valid: true, errors: [] };
+        }
         
-        svg.append('text')
-            .attr('class', 'chart-title')
-            .attr('x', 200)
-            .attr('y', 100)
-            .attr('text-anchor', 'middle')
-            .attr('fill', window.AppDefaults?.colors?.text?.primary || '#333')
-            .style('font-family', 'var(--font-family-serif)')
-            .style('font-size', 'var(--font-size-base)')
-            .style('font-weight', 'var(--font-weight-bold)')
-            .text('Grid charts are now handled by GridChartRenderer');
+        // レイアウト特定の検証
+        if (chartData.layout) {
+            if (['dual', 'triple'].includes(chartData.layout)) {
+                if (!chartData.charts || !Array.isArray(chartData.charts)) {
+                    errors.push(`${chartData.layout} layout requires charts array`);
+                }
+            } else if (chartData.layout === 'grid') {
+                if (!chartData.config) {
+                    errors.push('Grid layout requires config object');
+                }
+            }
+        } else {
+            // 単一チャートの検証
+            if (!chartData.type) {
+                errors.push('Chart type is required for single charts');
+            }
+            if (!chartData.data) {
+                errors.push('Chart data is required');
+            }
+        }
+        
+        return {
+            valid: errors.length === 0,
+            errors
+        };
+    }
+
+    /**
+     * レンダラー間のトランジション調整
+     * @param {string} fromType - 元のチャートタイプ
+     * @param {string} toType - 新しいチャートタイプ
+     * @param {Object} options - トランジションオプション
+     */
+    coordinateTransition(fromType, toType, options = {}) {
+        if (!this.transitionManager) {
+            return;
+        }
+        
+        try {
+            // クロスフェードトランジション
+            const fadeOutDuration = options.fadeOutDuration || 300;
+            const fadeInDuration = options.fadeInDuration || 600;
+            
+            const fromRenderer = this.renderers[fromType];
+            const toRenderer = this.renderers[toType];
+            
+            if (fromRenderer && toRenderer) {
+                // フェードアウト -> フェードイン のシーケンス
+                fromRenderer.hide({ transitionDuration: fadeOutDuration })
+                    .on('end', () => {
+                        toRenderer.show({ transitionDuration: fadeInDuration });
+                    });
+            }
+        } catch (error) {
+            console.warn('ChartManager: Error coordinating transition:', error);
+        }
     }
 
     /**
      * リサイズ処理
      */
     resize() {
-        // Resize specialized renderers
-        if (this.gridChartRenderer) {
-            this.gridChartRenderer.resize();
+        super.resize();
+        
+        // アクティブなレンダラーをリサイズ
+        if (this.activeRenderer) {
+            this.activeRenderer.resize();
         }
         
-        // Legacy chart handling
-        if (this.currentChart && this.data && this.config) {
-            this.renderChart(this.currentChart, this.data, this.config);
+        // レイアウトの場合は再描画
+        if (this.currentLayout && ['dual', 'triple'].includes(this.currentLayout) && this.layoutData) {
+            if (this.currentLayout === 'dual') {
+                this.renderDualLayout(this.layoutData);
+            } else if (this.currentLayout === 'triple') {
+                this.renderTripleLayout(this.layoutData);
+            }
         }
+    }
+
+    /**
+     * すべてのレンダラーの状態を取得（デバッグ用）
+     * @returns {Object} レンダラー状態
+     */
+    getRendererStates() {
+        const states = {};
+        Object.keys(this.renderers).forEach(type => {
+            const renderer = this.renderers[type];
+            if (renderer) {
+                states[type] = {
+                    available: true,
+                    visible: renderer.getVisibility(),
+                    currentState: renderer.getCurrentState()
+                };
+            } else {
+                states[type] = { available: false };
+            }
+        });
+        return states;
+    }
+
+    /**
+     * デバッグ情報を取得
+     * @returns {Object} デバッグ情報
+     */
+    getDebugInfo() {
+        return {
+            ...super.getDebugInfo(),
+            activeRenderer: this.activeRenderer?.constructor.name || null,
+            currentLayout: this.currentLayout,
+            rendererStates: this.getRendererStates(),
+            transitionManagerAvailable: !!this.transitionManager
+        };
+    }
+
+    /**
+     * クリーンアップ処理
+     */
+    destroy() {
+        // すべてのレンダラーを破棄
+        Object.values(this.renderers).forEach(renderer => {
+            if (renderer && renderer.destroy) {
+                renderer.destroy();
+            }
+        });
+        
+        this.renderers = {};
+        this.activeRenderer = null;
+        this.currentLayout = null;
+        this.layoutData = null;
+        
+        super.destroy();
     }
 }
 
-// 後方互換性のために両方のバージョンをエクスポート
-window.LegacyChartManager = LegacyChartManager;
-
-// 新しいChartManagerが利用できない場合のフォールバック
-if (!window.ChartManager) {
-    console.warn('New ChartManager not available, using legacy version');
-    window.ChartManager = LegacyChartManager;
-}
+// グローバルスコープで利用可能にする（ES6モジュール移行前の暫定措置）
+window.ChartManager = ChartManager;
