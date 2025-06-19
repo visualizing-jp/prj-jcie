@@ -126,7 +126,7 @@ class ScrollytellingApp {
         
         // 都市データから動的にHTMLを生成
         citiesData.cities.forEach((city, index) => {
-            const stepIndex = 9 + index; // step9から開始
+            const stepIndex = 10 + index; // step10から開始
             const stepDiv = document.createElement('div');
             stepDiv.className = 'step';
             stepDiv.setAttribute('data-step', stepIndex.toString());
