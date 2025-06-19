@@ -158,6 +158,11 @@
             "range": [1990, 1998]
           },
           "yRange": [0, 4000000],
+          "animation": {
+            "mode": "progressive",
+            "duration": 3000,
+            "stepDelay": 200
+          },
           "annotations": [
             {
               "type": "verticalLine",
@@ -209,6 +214,11 @@
           "title": "新規HIV感染者数の推移（全期間）",
           "dataSource": "Our World in Data",
           "yRange": [0, 4000000],
+          "animation": {
+            "mode": "progressive",
+            "duration": 4000,
+            "stepDelay": 150
+          },
           "annotations": [
             {
               "type": "verticalLine",
@@ -267,6 +277,11 @@
           "title": "エイズ関連死亡者数の推移",
           "dataSource": "Our World in Data",
           "yRange": [0, 4000000],
+          "animation": {
+            "mode": "progressive",
+            "duration": 3500,
+            "stepDelay": 180
+          },
           "annotations": [
             {
               "type": "verticalLine",
@@ -363,6 +378,11 @@
           "title": "HIV母子感染率の推移（%）",
           "dataSource": "T.B.D.",
           "yRange": [0, 40],
+          "animation": {
+            "mode": "progressive",
+            "duration": 3500,
+            "stepDelay": 120
+          },
           "annotations": [
             {
               "type": "horizontalLine",
@@ -631,7 +651,12 @@
           "seriesName": "PrEP利用者数",
           "colors": ["#3b82f6"],
           "title": "PrEP（曝露前予防投与）利用者数の推移",
-          "dataSource": "UNAIDS"
+          "dataSource": "UNAIDS",
+          "animation": {
+            "mode": "progressive",
+            "duration": 2500,
+            "stepDelay": 200
+          }
         }
       },
       "map": {
@@ -672,7 +697,12 @@
           "seriesField": "series",
           "multiSeries": true,
           "title": "エイズ対策資金の推移（資金源別）",
-          "dataSource": "Global Fund / Kaiser Family Foundation"
+          "dataSource": "Global Fund / Kaiser Family Foundation",
+          "animation": {
+            "mode": "progressive",
+            "duration": 3000,
+            "stepDelay": 150
+          }
         }
       },
       "map": {

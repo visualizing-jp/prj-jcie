@@ -9,6 +9,7 @@ class LineChartRenderer extends BaseManager {
         this.currentChart = null;
         this.data = null;
         this.config = null;
+        this.animationTimers = []; // アニメーションタイマーを管理
         
         // Initialize after properties are set
         this.init();
@@ -88,6 +89,9 @@ class LineChartRenderer extends BaseManager {
             margin = config.margin || window.AppDefaults?.chartMargin?.default || { top: 40, right: 20, bottom: 40, left: 50 };
         }
         
+        // 完全にコンテナをクリア（stroke-dasharray等の状態もリセット）
+        this.container.selectAll('*').remove();
+        
         // SVGHelperを使用してレスポンシブSVGを作成
         if (window.SVGHelper) {
             // パーセンテージ指定の場合は実際のピクセルサイズを計算
@@ -110,7 +114,6 @@ class LineChartRenderer extends BaseManager {
             });
         } else {
             // フォールバック：従来のSVG作成
-            this.container.selectAll('*').remove();
             this.svg = this.container.append('svg')
                 .attr('width', width)
                 .attr('height', height);
@@ -691,42 +694,49 @@ class LineChartRenderer extends BaseManager {
             .append('g')
             .attr('class', 'series-group');
 
-        // ChartTransitionsを使用してラインを描画
-        const lineElements = seriesGroups.append('path')
-            .attr('class', 'chart-line')
-            .datum(d => d) // 系列データを設定
-            .attr('stroke', d => colorScale(d.name))
-            .attr('stroke-width', window.AppDefaults?.strokeWidth?.thick || 2)
-            .attr('fill', 'none');
+        // プログレッシブアニメーションかどうかをチェック
+        const hasProgressiveAnimation = config.animation && config.animation.mode === 'progressive';
+        
+        let lineElements;
+        if (!hasProgressiveAnimation) {
+            // 通常のライン描画
+            lineElements = seriesGroups.append('path')
+                .attr('class', 'chart-line')
+                .datum(d => d) // 系列データを設定
+                .attr('stroke', d => colorScale(d.name))
+                .attr('stroke-width', window.AppDefaults?.strokeWidth?.thick || 2)
+                .attr('fill', 'none');
 
-        // ライン描画アニメーション
-        ChartTransitions.animateLine(lineElements, line, {
-            chartType: 'line',
-            phase: 'enter',
-            animateEntry: true,
-            duration: 600
-        });
-
-        // ChartTransitionsを使用してポイント描画
-        seriesGroups.each(function(seriesData) {
-            const group = d3.select(this);
-            
-            // 一意キーでデータポイントを追跡
-            const dataWithKeys = ChartTransitions.addObjectKeys(seriesData.values, xField, seriesData.name);
-            
-            const scales = { x: xScale, y: yScale };
-            const pointConfig = {
+            // ChartTransitionsを使用してライン描画
+            ChartTransitions.animateLine(lineElements, line, {
                 chartType: 'line',
                 phase: 'enter',
-                xField: xField,
-                yField: yField,
-                radius: 3,
-                isYearData: isYearData,
+                animateEntry: true,
                 duration: 600
-            };
+            });
+        }
 
-            // ポイントのエンターアニメーション
-            ChartTransitions.createStaggered(
+        // ChartTransitionsを使用してポイント描画（progressiveモード以外）
+        if (!config.animation || config.animation.mode !== 'progressive') {
+            seriesGroups.each(function(seriesData) {
+                const group = d3.select(this);
+                
+                // 一意キーでデータポイントを追跡
+                const dataWithKeys = ChartTransitions.addObjectKeys(seriesData.values, xField, seriesData.name);
+                
+                const scales = { x: xScale, y: yScale };
+                const pointConfig = {
+                    chartType: 'line',
+                    phase: 'enter',
+                    xField: xField,
+                    yField: yField,
+                    radius: 3,
+                    isYearData: isYearData,
+                    duration: 600
+                };
+
+                // ポイントのエンターアニメーション
+                ChartTransitions.createStaggered(
                 group.selectAll('.chart-circle')
                     .data(dataWithKeys, d => d._uniqueKey)
                     .enter()
@@ -737,7 +747,13 @@ class LineChartRenderer extends BaseManager {
             ).call(function(selection) {
                 ChartTransitions.animatePoints(selection, scales, pointConfig);
             });
-        });
+            });
+        }
+
+        // プログレッシブアニメーションが設定されている場合の処理
+        if (hasProgressiveAnimation) {
+            this.renderProgressiveAnimation(seriesGroups, series, line, xScale, yScale, xField, yField, colorScale, config);
+        }
 
         // レジェンドを追加（複数系列の場合のみ）
         if (series.length > 1) {
@@ -871,29 +887,38 @@ class LineChartRenderer extends BaseManager {
             .append('g')
             .attr('class', 'series-group');
 
-        // ラインを描画
-        seriesGroups.append('path')
-            .attr('class', 'chart-line')
-            .datum(d => d) // 系列データを設定
-            .attr('d', d => line(d.values))
-            .attr('stroke', d => colorScale(d.name))
-            .attr('stroke-width', window.AppDefaults?.strokeWidth?.thick || 2)
-            .attr('fill', 'none');
+        // プログレッシブアニメーションの設定をチェック
+        const hasProgressiveAnimation = config.animation && config.animation.mode === 'progressive';
 
-        // ポイントを描画
-        seriesGroups.each(function(seriesData) {
-            const group = d3.select(this);
-            
-            const circles = group.selectAll('.chart-circle')
-                .data(seriesData.values)
-                .enter()
-                .append('circle')
-                .attr('class', 'chart-circle')
-                .attr('cx', d => isYearData ? xScale(+d[xField]) : xScale(new Date(d[xField])))
-                .attr('cy', d => yScale(+d[yField]))
-                .attr('r', 3)
-                .attr('fill', colorScale(seriesData.name));
-        });
+        if (hasProgressiveAnimation) {
+            // プログレッシブアニメーションが設定されている場合は、アニメーション関数で描画
+            this.renderProgressiveAnimation(seriesGroups, series, line, xScale, yScale, xField, yField, colorScale, config);
+        } else {
+            // 通常の描画
+            // ラインを描画
+            seriesGroups.append('path')
+                .attr('class', 'chart-line')
+                .datum(d => d) // 系列データを設定
+                .attr('d', d => line(d.values))
+                .attr('stroke', d => colorScale(d.name))
+                .attr('stroke-width', window.AppDefaults?.strokeWidth?.thick || 2)
+                .attr('fill', 'none');
+
+            // ポイントを描画
+            seriesGroups.each(function(seriesData) {
+                const group = d3.select(this);
+                
+                const circles = group.selectAll('.chart-circle')
+                    .data(seriesData.values)
+                    .enter()
+                    .append('circle')
+                    .attr('class', 'chart-circle')
+                    .attr('cx', d => isYearData ? xScale(+d[xField]) : xScale(new Date(d[xField])))
+                    .attr('cy', d => yScale(+d[yField]))
+                    .attr('r', 3)
+                    .attr('fill', colorScale(seriesData.name));
+            });
+        }
 
         // コンパクトなレジェンドを追加（複数系列の場合のみ）
         if (series.length > 1) {
@@ -1377,6 +1402,140 @@ class LineChartRenderer extends BaseManager {
             .attr('font-size', '10px')
             .attr('fill', '#888')
             .text(`出典: ${dataSource}`);
+    }
+
+    /**
+     * 段階的アニメーション描画
+     * @param {d3.Selection} seriesGroups - 系列グループ
+     * @param {Array} series - 系列データ
+     * @param {Function} line - D3ライン生成器
+     * @param {Function} xScale - X軸スケール
+     * @param {Function} yScale - Y軸スケール
+     * @param {string} xField - X軸フィールド名
+     * @param {string} yField - Y軸フィールド名
+     * @param {Function} colorScale - 色スケール
+     * @param {Object} config - 設定
+     */
+    renderProgressiveAnimation(seriesGroups, series, line, xScale, yScale, xField, yField, colorScale, config) {
+        console.log('LineChartRenderer: Starting progressive animation');
+        
+        const animationConfig = config.animation || {};
+        const totalDuration = animationConfig.duration || 3000;
+        const stepDelay = animationConfig.stepDelay || 200;
+        
+        // 全系列の年度データを収集してソート
+        const allYears = new Set();
+        series.forEach(seriesData => {
+            seriesData.values.forEach(d => {
+                allYears.add(+d[xField]);
+            });
+        });
+        const sortedYears = Array.from(allYears).sort((a, b) => a - b);
+        
+        console.log('LineChartRenderer: Progressive animation years:', sortedYears);
+        
+        // 既存のすべてのアニメーションタイマーをクリア
+        this.clearAllAnimationTimers();
+        
+        // 既存のすべてのトランジションを停止
+        seriesGroups.selectAll('*').interrupt();
+        
+        // 既存のstroke-dash属性を完全にクリア
+        seriesGroups.selectAll('path')
+            .attr('stroke-dasharray', null)
+            .attr('stroke-dashoffset', null)
+            .style('stroke-dasharray', null)
+            .style('stroke-dashoffset', null);
+        
+        // 既存のpath要素とpoint要素をすべて削除して、完全にリセット
+        seriesGroups.selectAll('path').remove();
+        seriesGroups.selectAll('circle').remove();
+        seriesGroups.selectAll('.points-container').remove();
+        
+        // thisのスコープを保存
+        const self = this;
+        
+        // 各系列に対して段階的アニメーションを実行
+        seriesGroups.each(function(seriesData, seriesIndex) {
+            const group = d3.select(this);
+            const color = colorScale(seriesData.name);
+            
+            // 最終的な完全なラインパスを準備
+            const fullLinePath = line(seriesData.values);
+            
+            // ラインパスを作成
+            const linePath = group.append('path')
+                .attr('class', 'chart-line')
+                .attr('stroke', color)
+                .attr('stroke-width', window.AppDefaults?.strokeWidth?.thick || 2)
+                .attr('fill', 'none')
+                .attr('d', fullLinePath); // 完全なパスを設定
+            
+            // パスの全長を取得
+            const totalLength = linePath.node().getTotalLength();
+            
+            // stroke-dasharrayとstroke-dashoffsetを設定して線を非表示に
+            linePath
+                .attr('stroke-dasharray', totalLength + ' ' + totalLength)
+                .attr('stroke-dashoffset', totalLength);
+            
+            // ポイントコンテナを準備
+            const pointsContainer = group.append('g')
+                .attr('class', 'points-container');
+            
+            // すべてのポイントを事前に作成（非表示状態）
+            const allPoints = pointsContainer.selectAll('.chart-circle')
+                .data(seriesData.values)
+                .enter()
+                .append('circle')
+                .attr('class', 'chart-circle')
+                .attr('cx', d => xScale(+d[xField]))
+                .attr('cy', d => yScale(+d[yField]))
+                .attr('r', 0)
+                .attr('fill', color)
+                .attr('stroke', '#fff')
+                .attr('stroke-width', 1)
+                .style('opacity', 0);
+            
+            // 系列全体の開始遅延
+            const seriesStartDelay = seriesIndex * 300;
+            
+            // 滑らかなライン描画アニメーション
+            const lineTimer = setTimeout(() => {
+                linePath
+                    .transition()
+                    .duration(totalDuration * 0.8) // 全期間の80%で線を描画
+                    .ease(d3.easeQuadInOut)
+                    .attr('stroke-dashoffset', 0);
+            }, seriesStartDelay);
+            self.animationTimers.push(lineTimer);
+            
+            // 年度ごとに点を順次表示
+            sortedYears.forEach((year, yearIndex) => {
+                const pointDelay = seriesStartDelay + (yearIndex / sortedYears.length) * totalDuration * 0.8;
+                
+                const pointTimer = setTimeout(() => {
+                    // 該当年度の点を表示
+                    allPoints
+                        .filter(function(d) { return +d[xField] === year; })
+                        .transition()
+                        .duration(300)
+                        .ease(d3.easeBackOut.overshoot(1.2))
+                        .attr('r', 3)
+                        .style('opacity', 1);
+                }, pointDelay);
+                self.animationTimers.push(pointTimer);
+            });
+        });
+    }
+
+    /**
+     * すべてのアニメーションタイマーをクリア
+     */
+    clearAllAnimationTimers() {
+        this.animationTimers.forEach(timer => clearTimeout(timer));
+        this.animationTimers = [];
+        console.log('LineChartRenderer: Cleared all animation timers');
     }
 
     /**
