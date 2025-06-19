@@ -508,7 +508,7 @@ class ScrollytellingApp {
                 </div>
                 
                 <div class="footer-copyright">
-                    © 2024 Japan Center for International Exchange. All rights reserved.
+                    © 2025 Japan Center for International Exchange. All rights reserved.
                 </div>
             </div>
         `;

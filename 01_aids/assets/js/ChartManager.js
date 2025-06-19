@@ -614,9 +614,34 @@ class ChartManager extends BaseManager {
                     console.warn(`ChartManager: Unsupported chart type in layout: ${chartType}`);
                     this.renderLineChartInGroup(g, data, adjustedConfig); // フォールバック
             }
+            
+            // データソースを表示（チャート外の適切な位置に）
+            const { dataSource = '' } = config;
+            if (dataSource) {
+                this.addDataSourceToLayout(chartGroup, dataSource, width, height, margin);
+            }
         } catch (error) {
             console.error(`ChartManager: Error rendering ${chartType} chart in layout:`, error);
         }
+    }
+
+    /**
+     * レイアウト内チャートにデータソースを追加
+     * @param {d3.Selection} chartGroup - チャートグループ
+     * @param {string} dataSource - データソース名
+     * @param {number} width - チャート幅
+     * @param {number} height - チャート高さ
+     * @param {Object} margin - マージン情報
+     */
+    addDataSourceToLayout(chartGroup, dataSource, width, height, margin) {
+        chartGroup.append('text')
+            .attr('class', 'chart-data-source')
+            .attr('x', margin.left + 10)
+            .attr('y', height - 5) // チャートグループの下端から5px上
+            .attr('text-anchor', 'start')
+            .attr('font-size', '10px')
+            .attr('fill', '#888')
+            .text(`出典: ${dataSource}`);
     }
 
     /**

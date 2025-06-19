@@ -139,6 +139,7 @@
           "seriesField": "series",
           "multiSeries": true,
           "title": "新規HIV感染者数の推移（1990-1998年）",
+          "dataSource": "UNAIDS Global HIV & AIDS Statistics",
           "filter": {
             "type": "range",
             "field": "year",
@@ -194,6 +195,7 @@
           "seriesField": "series",
           "multiSeries": true,
           "title": "新規HIV感染者数の推移（全期間）",
+          "dataSource": "UNAIDS Global HIV & AIDS Statistics",
           "yRange": [0, 4000000],
           "annotations": [
             {
@@ -251,6 +253,7 @@
           "seriesField": "series",
           "multiSeries": true,
           "title": "エイズ関連死亡者数の推移",
+          "dataSource": "UNAIDS Global HIV & AIDS Statistics",
           "yRange": [0, 4000000],
           "annotations": [
             {
@@ -300,6 +303,7 @@
           "valueField": "percentage",
           "categoryField": "ageGroup",
           "title": "地域別HIV治療カバレッジ（%）",
+          "dataSource": "UNAIDS Global HIV & AIDS Statistics",
           "showLabels": true,
           "showPercentages": true
         }
@@ -403,6 +407,7 @@
           "seriesName": "母子感染率",
           "colors": ["#10b981"],
           "title": "HIV母子感染率の推移（%）",
+          "dataSource": "UNAIDS Global HIV & AIDS Statistics",
           "yRange": [0, 40],
           "annotations": [
             {
@@ -611,6 +616,7 @@
               "xField": "year",
               "yField": "value",
               "seriesField": "series",
+              "dataSource": "UNAIDS Youth Statistics",
               "yRange": [0, 500000],
               "multiSeries": true
             }
@@ -626,6 +632,7 @@
               "xField": "year",
               "yField": "value",
               "seriesField": "series",
+              "dataSource": "UNAIDS Youth Statistics",
               "yRange": [0, 500000],
               "multiSeries": true
             }
@@ -670,6 +677,7 @@
           "seriesName": "PrEP利用者数",
           "colors": ["#3b82f6"],
           "title": "PrEP（曝露前予防投与）利用者数の推移"
+          "dataSource": "Global PrEP Tracker / UNAIDS"
         }
       },
       "map": {
@@ -710,6 +718,7 @@
           "seriesField": "series",
           "multiSeries": true,
           "title": "エイズ対策資金の推移（資金源別）"
+          "dataSource": "Global Fund / Kaiser Family Foundation"
         }
       },
       "map": {
@@ -776,6 +785,7 @@
           "seriesField": "series",
           "multiSeries": true,
           "title": "エイズ対策資金の必要額と実績の推移"
+          "dataSource": "Global Fund / Kaiser Family Foundation"
         }
       },
       "map": {

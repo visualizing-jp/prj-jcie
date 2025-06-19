@@ -134,7 +134,7 @@ class GridChartRenderer extends BaseManager {
             
             // 全体のサイズを計算（行間スペーシングを含む）
             const totalWidth = columns * chartWidth;
-            const totalHeight = rows * chartHeight + (rows - 1) * rowSpacing + (title ? 40 : 0);
+            const totalHeight = rows * chartHeight + (rows - 1) * rowSpacing + (title ? 40 : 0) + (dataSource ? 30 : 0);
             
             this.svg = this.initSVG(totalWidth, totalHeight);
             

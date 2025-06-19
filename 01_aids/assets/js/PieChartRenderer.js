@@ -371,10 +371,19 @@ class PieChartRenderer extends BaseManager {
         }
         
         const svg = this.svg;
-        const radius = Math.min(width, height) / 2 - 40;
         
+        // 内側の描画エリアを計算
+        const innerWidth = width - margin.left - margin.right;
+        const innerHeight = height - margin.top - margin.bottom;
+        const radius = Math.min(innerWidth, innerHeight) / 2 - 40;
+        
+        // マージンを考慮したグループを作成
         const g = svg.append('g')
-            .attr('transform', `translate(${width/2},${height/2})`);
+            .attr('transform', `translate(${margin.left},${margin.top})`);
+            
+        // パイチャート用の中央グループを作成
+        const pieGroup = g.append('g')
+            .attr('transform', `translate(${innerWidth/2},${innerHeight/2})`);
         
         // タイトルを追加
         if (title) {
@@ -416,7 +425,7 @@ class PieChartRenderer extends BaseManager {
             chartColors = config.colors;
         }
 
-        const arcs = g.selectAll('.pie-slice')
+        const arcs = pieGroup.selectAll('.pie-slice')
             .data(pie(filteredData))
             .enter()
             .append('g')
