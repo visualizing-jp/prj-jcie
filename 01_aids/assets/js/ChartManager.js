@@ -559,12 +559,14 @@ class ChartManager extends BaseManager {
         // タイトルを追加
         if (title) {
             chartGroup.append('text')
+                .attr('class', 'chart-title')
                 .attr('x', width / 2)
                 .attr('y', -10)
                 .attr('text-anchor', 'middle')
-                .attr('font-size', '16px')
-                .attr('font-weight', 'bold')
                 .attr('fill', window.AppDefaults?.colors?.text?.primary || '#333')
+                .style('font-family', 'var(--font-family-serif)')
+                .style('font-size', 'var(--font-size-base)')
+                .style('font-weight', 'var(--font-weight-bold)')
                 .text(title);
         }
         

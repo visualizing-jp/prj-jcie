@@ -359,7 +359,8 @@ class PieChartRenderer extends BaseManager {
             width, height, margin,
             labelField = 'label', valueField = 'value', 
             colors = d3.schemeCategory10, 
-            title = ''
+            title = '',
+            dataSource = ''
         } = config;
         
         // フィルタが設定されている場合は適用
@@ -382,9 +383,10 @@ class PieChartRenderer extends BaseManager {
                 .attr('x', 20)
                 .attr('y', 30)
                 .attr('text-anchor', 'start')
-                .attr('font-size', '16px')
-                .attr('font-weight', 'bold')
                 .attr('fill', window.AppDefaults?.colors?.text?.primary || '#333')
+                .style('font-family', 'var(--font-family-serif)')
+                .style('font-size', 'var(--font-size-base)')
+                .style('font-weight', 'var(--font-weight-bold)')
                 .text(title);
         }
 
@@ -460,6 +462,11 @@ class PieChartRenderer extends BaseManager {
         if (config.annotations) {
             this.renderAnnotations(g, config.annotations, { width, height, labelField, valueField });
         }
+
+        // データソースを表示
+        if (dataSource) {
+            this.addDataSource(svg, dataSource, width, height);
+        }
     }
 
     /**
@@ -516,9 +523,10 @@ class PieChartRenderer extends BaseManager {
             .attr('x', width / 2)
             .attr('y', 20)
             .attr('text-anchor', 'middle')
-            .attr('font-size', '14px')
-            .attr('font-weight', 'bold')
             .attr('fill', window.AppDefaults?.colors?.text?.primary || '#333')
+            .style('font-family', 'var(--font-family-serif)')
+            .style('font-size', 'var(--font-size-base)')
+            .style('font-weight', 'var(--font-weight-bold)')
             .text(title);
         
         // 円グラフ描画エリア
@@ -884,6 +892,24 @@ class PieChartRenderer extends BaseManager {
                     break;
             }
         });
+    }
+
+    /**
+     * データソースを表示
+     * @param {d3.Selection} svg - SVG要素
+     * @param {string} dataSource - データソース名
+     * @param {number} width - チャート幅
+     * @param {number} height - チャート高さ
+     */
+    addDataSource(svg, dataSource, width, height) {
+        svg.append('text')
+            .attr('class', 'chart-data-source')
+            .attr('x', 10)
+            .attr('y', height - 10)
+            .attr('text-anchor', 'start')
+            .attr('font-size', '10px')
+            .attr('fill', '#888')
+            .text(`出典: ${dataSource}`);
     }
 
     /**

@@ -401,7 +401,8 @@ class BarChartRenderer extends BaseManager {
             width, height, margin, 
             xField = 'category', yField = 'value', 
             color = window.AppDefaults?.colors?.accent?.success || '#10b981',
-            title = ''
+            title = '',
+            dataSource = ''
         } = config;
         
         // フィルタが設定されている場合は適用
@@ -425,9 +426,10 @@ class BarChartRenderer extends BaseManager {
                 .attr('x', 0)
                 .attr('y', -10)
                 .attr('text-anchor', 'start')
-                .attr('font-size', '16px')
-                .attr('font-weight', 'bold')
                 .attr('fill', window.AppDefaults?.colors?.text?.primary || '#333')
+                .style('font-family', 'var(--font-family-serif)')
+                .style('font-size', 'var(--font-size-base)')
+                .style('font-weight', 'var(--font-weight-bold)')
                 .text(title);
         }
 
@@ -529,6 +531,11 @@ class BarChartRenderer extends BaseManager {
         // 注釈（アノテーション）を描画
         if (config.annotations) {
             this.renderAnnotations(g, config.annotations, { xScale, yScale, width: innerWidth, height: innerHeight, xField, yField });
+        }
+
+        // データソースを表示
+        if (dataSource) {
+            this.addDataSource(svg, dataSource, width, height);
         }
     }
 
@@ -884,6 +891,24 @@ class BarChartRenderer extends BaseManager {
                     break;
             }
         });
+    }
+
+    /**
+     * データソースを表示
+     * @param {d3.Selection} svg - SVG要素
+     * @param {string} dataSource - データソース名
+     * @param {number} width - チャート幅
+     * @param {number} height - チャート高さ
+     */
+    addDataSource(svg, dataSource, width, height) {
+        svg.append('text')
+            .attr('class', 'chart-data-source')
+            .attr('x', 10)
+            .attr('y', height - 10)
+            .attr('text-anchor', 'start')
+            .attr('font-size', '10px')
+            .attr('fill', '#888')
+            .text(`出典: ${dataSource}`);
     }
 
     /**

@@ -787,6 +787,28 @@ a:hover {
 }
 
 /* D3チャート共通スタイル */
+.chart-title {
+    font-family: var(--font-family-serif) !important;
+    font-size: 16px !important; /* 強制的に16px */
+    font-weight: var(--font-weight-bold) !important;
+}
+
+/* SVG内のtext要素に対する強制スタイル */
+svg text.chart-title {
+    font-family: var(--font-family-serif) !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+}
+
+/* チャートタイトルを更に強力に指定 */
+svg text[class*="chart-title"],
+svg text.chart-title,
+text.chart-title {
+    font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Hiragino Mincho Pro", "Noto Serif JP", serif !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+}
+
 .chart-axis {
     font-size: var(--font-size-xs);
     fill: none;

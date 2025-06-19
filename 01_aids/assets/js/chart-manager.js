@@ -671,12 +671,14 @@ class LegacyChartManager {
         
         // タイトルを追加
         chartGroup.append('text')
+            .attr('class', 'chart-title')
             .attr('x', width / 2)
             .attr('y', -10)
             .attr('text-anchor', 'middle')
-            .attr('font-size', '16px')
-            .attr('font-weight', 'bold')
             .attr('fill', window.AppDefaults?.colors?.text?.primary || '#333')
+            .style('font-family', 'var(--font-family-serif)')
+            .style('font-size', 'var(--font-size-base)')
+            .style('font-weight', 'var(--font-weight-bold)')
             .text(title);
         
         // チャート描画エリア
@@ -1154,8 +1156,9 @@ class LegacyChartManager {
                 .attr('x', 0)
                 .attr('y', -10)
                 .attr('text-anchor', 'start')
-                .attr('font-size', '16px')
-                .attr('font-weight', 'bold')
+                .style('font-family', 'var(--font-family-serif)')
+                .style('font-size', 'var(--font-size-base)')
+                .style('font-weight', 'var(--font-weight-bold)')
                 .attr('fill', window.AppDefaults?.colors?.text?.primary || '#333')
                 .text(title);
         }
@@ -1490,8 +1493,9 @@ class LegacyChartManager {
                 .attr('x', 0)
                 .attr('y', -10)
                 .attr('text-anchor', 'start')
-                .attr('font-size', '16px')
-                .attr('font-weight', 'bold')
+                .style('font-family', 'var(--font-family-serif)')
+                .style('font-size', 'var(--font-size-base)')
+                .style('font-weight', 'var(--font-weight-bold)')
                 .attr('fill', window.AppDefaults?.colors?.text?.primary || '#333')
                 .text(title);
         }
@@ -1599,8 +1603,9 @@ class LegacyChartManager {
                 .attr('x', 20)
                 .attr('y', 30)
                 .attr('text-anchor', 'start')
-                .attr('font-size', '16px')
-                .attr('font-weight', 'bold')
+                .style('font-family', 'var(--font-family-serif)')
+                .style('font-size', 'var(--font-size-base)')
+                .style('font-weight', 'var(--font-weight-bold)')
                 .attr('fill', window.AppDefaults?.colors?.text?.primary || '#333')
                 .text(title);
         }
@@ -2044,11 +2049,14 @@ class LegacyChartManager {
             .style('height', 'auto');
         
         svg.append('text')
+            .attr('class', 'chart-title')
             .attr('x', 200)
             .attr('y', 100)
             .attr('text-anchor', 'middle')
-            .attr('font-size', '16px')
             .attr('fill', window.AppDefaults?.colors?.text?.primary || '#333')
+            .style('font-family', 'var(--font-family-serif)')
+            .style('font-size', 'var(--font-size-base)')
+            .style('font-weight', 'var(--font-weight-bold)')
             .text('Grid charts are now handled by GridChartRenderer');
     }
 

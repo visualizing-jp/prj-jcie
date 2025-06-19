@@ -123,7 +123,8 @@ class GridChartRenderer extends BaseManager {
             title,
             showLabels,
             showPercentages,
-            rowSpacing = chartHeight * 0.5  // デフォルトの行間スペーシング（チャート高さの50%）
+            rowSpacing = chartHeight * 0.5,  // デフォルトの行間スペーシング（チャート高さの50%）
+            dataSource = ''
         } = mergedConfig;
         
         try {
@@ -144,9 +145,10 @@ class GridChartRenderer extends BaseManager {
                     .attr('x', totalWidth / 2)
                     .attr('y', 25)
                     .attr('text-anchor', 'middle')
-                    .attr('font-size', '18px')
-                    .attr('font-weight', 'bold')
                     .attr('fill', window.AppDefaults?.colors?.text?.primary || '#333')
+                    .style('font-family', 'var(--font-family-serif)')
+                    .style('font-size', 'var(--font-size-base)')
+                    .style('font-weight', 'var(--font-weight-bold)')
                     .text(title);
             }
             
@@ -170,6 +172,11 @@ class GridChartRenderer extends BaseManager {
                     showPercentages
                 });
             });
+            
+            // データソースを表示
+            if (dataSource) {
+                this.addDataSource(this.svg, dataSource, totalWidth, totalHeight);
+            }
         } catch (error) {
             console.error('GridChartRenderer: Error during grid chart rendering:', error);
             if (window.ErrorHandler) {
@@ -437,6 +444,24 @@ class GridChartRenderer extends BaseManager {
             valid: errors.length === 0,
             errors
         };
+    }
+
+    /**
+     * データソースを表示
+     * @param {d3.Selection} svg - SVG要素
+     * @param {string} dataSource - データソース名
+     * @param {number} width - チャート幅
+     * @param {number} height - チャート高さ
+     */
+    addDataSource(svg, dataSource, width, height) {
+        svg.append('text')
+            .attr('class', 'chart-data-source')
+            .attr('x', 10)
+            .attr('y', height - 10)
+            .attr('text-anchor', 'start')
+            .attr('font-size', '10px')
+            .attr('fill', '#888')
+            .text(`出典: ${dataSource}`);
     }
 
     /**
