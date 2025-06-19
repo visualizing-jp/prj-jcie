@@ -211,6 +211,9 @@ a:hover {
 
 #site-header .site-nav li {
     margin: 0;
+    min-width: 80px; /* 横幅を統一 */
+    text-align: center;
+    position: relative;
 }
 
 #site-header .site-nav a {
@@ -219,8 +222,12 @@ a:hover {
     font-weight: var(--font-weight-medium);
     font-size: var(--font-size-sm);
     transition: color 0.2s ease;
+    display: block;
+    padding: 4px 8px;
+    position: relative;
 }
 
+/* 汎用的なホバー（エイズ以外で特定のテーマ色が設定されていない場合のフォールバック） */
 #site-header .site-nav a:hover {
     color: #2563eb;
 }
@@ -229,6 +236,48 @@ a:hover {
     color: #111827;
     font-weight: var(--font-weight-bold);
     font-size: var(--font-size-sm);
+    display: block;
+    padding: 4px 8px;
+}
+
+/* リンクバーのスタイル - 結核（青） */
+#site-header .site-nav a[href*="tuberculosis"]::before,
+#site-header .site-nav li:nth-child(2) a::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 6px; /* 高さを二倍に */
+    background-color: #2c5aa0; /* 結核の青色 */
+    border-radius: 3px;
+}
+
+/* 結核リンクのホバー時の文字色 */
+#site-header .site-nav a[href*="tuberculosis"]:hover,
+#site-header .site-nav li:nth-child(2) a:hover {
+    color: #2c5aa0; /* 結核の青色 */
+}
+
+/* リンクバーのスタイル - マラリア（黄色） */
+#site-header .site-nav a[href*="malaria"]::before,
+#site-header .site-nav li:nth-child(3) a::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 6px; /* 高さを二倍に */
+    background-color: #f4a620; /* マラリアの黄色 */
+    border-radius: 3px;
+}
+
+/* マラリアリンクのホバー時の文字色 */
+#site-header .site-nav a[href*="malaria"]:hover,
+#site-header .site-nav li:nth-child(3) a:hover {
+    color: #f4a620; /* マラリアの黄色 */
 }
 
 #container {
