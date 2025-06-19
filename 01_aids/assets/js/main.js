@@ -48,9 +48,15 @@ class ScrollytellingApp {
         try {
             console.log('Starting data loading...');
             
-            // 設定ファイルを最初に読み込む
-            const config = await d3.json('config.json');
-            console.log('Config loaded:', config);
+            // 新しい設定システムを使用して設定を読み込む
+            await window.ConfigLoader.loadAll();
+            const config = window.ConfigLoader.getLegacyCompatibleConfig();
+            
+            // デバッグ情報を出力
+            const env = window.ConfigLoader.getEnvironment();
+            console.log('Environment detected:', env.type);
+            console.log('Config loaded via new system:', config);
+            console.log('Debug mode:', window.ConfigLoader.isDebugMode());
             
             // cities-timeline.jsonを読み込む
             const citiesData = await d3.json('data/cities-timeline.json');

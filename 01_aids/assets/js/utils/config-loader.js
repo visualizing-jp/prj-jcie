@@ -7,8 +7,14 @@ class ConfigLoader {
         this.configs = {
             app: null,
             theme: null,
-            animation: null
+            animation: null,
+            content: null,
+            settings: null,
+            environment: null
         };
+        this.mainConfig = null;
+        this.mergedConfig = null;
+        this.environment = this._detectEnvironment();
         this.loaded = false;
         this.loadPromise = null;
     }
@@ -36,36 +42,190 @@ class ConfigLoader {
      */
     async _loadConfigs() {
         try {
-            const [appConfig, themeConfig, animationConfig] = await Promise.all([
-                this._loadConfig('config/app.config.json'),
-                this._loadConfig('config/theme.config.json'),
-                this._loadConfig('config/animation.config.json')
-            ]);
+            // メイン設定ファイルを読み込み
+            this.mainConfig = await this._loadConfig('config/main.config.json');
+            if (!this.mainConfig) {
+                console.warn('Main config not found, using legacy mode');
+                return this._loadLegacyConfigs();
+            }
 
-            this.configs = {
-                app: appConfig || this._getDefaultAppConfig(),
-                theme: themeConfig || this._getDefaultThemeConfig(),
-                animation: animationConfig || this._getDefaultAnimationConfig()
-            };
+            // 環境設定を読み込み
+            const envConfig = await this._loadEnvironmentConfig();
+            
+            // 設定ファイルを順序に従って読み込み
+            const loadOrder = this.mainConfig.loadOrder || ['environment', 'app', 'theme', 'animation', 'settings', 'content'];
+            
+            for (const configType of loadOrder) {
+                if (configType === 'environment') {
+                    this.configs.environment = envConfig;
+                } else if (this.mainConfig.configFiles[configType]) {
+                    const config = await this._loadConfig(this.mainConfig.configFiles[configType]);
+                    this.configs[configType] = config || this._getDefaultConfig(configType);
+                }
+            }
+
+            // 設定をマージ
+            this.mergedConfig = this._mergeConfigs();
 
             // CSS変数を設定
             this._applyCSSVariables();
 
             this.loaded = true;
-            console.log('All configurations loaded successfully', this.configs);
-            return this.configs;
+            
+            if (this.configs.environment?.debug?.showConfigLoading) {
+                console.log('All configurations loaded successfully', this.configs);
+                console.log('Merged configuration:', this.mergedConfig);
+            }
+            
+            return this.mergedConfig;
 
         } catch (error) {
             console.error('Failed to load configurations, using defaults', error);
-            this.configs = {
-                app: this._getDefaultAppConfig(),
-                theme: this._getDefaultThemeConfig(),
-                animation: this._getDefaultAnimationConfig()
-            };
-            this._applyCSSVariables();
-            this.loaded = true;
-            return this.configs;
+            return this._loadFallbackConfigs();
         }
+    }
+
+    /**
+     * レガシー設定ファイル読み込み（main.config.jsonが無い場合）
+     * @private
+     */
+    async _loadLegacyConfigs() {
+        const [appConfig, themeConfig, animationConfig] = await Promise.all([
+            this._loadConfig('config/app.config.json'),
+            this._loadConfig('config/theme.config.json'),
+            this._loadConfig('config/animation.config.json')
+        ]);
+
+        this.configs = {
+            app: appConfig || this._getDefaultAppConfig(),
+            theme: themeConfig || this._getDefaultThemeConfig(),
+            animation: animationConfig || this._getDefaultAnimationConfig(),
+            environment: this._getDefaultEnvironmentConfig()
+        };
+
+        this._applyCSSVariables();
+        this.loaded = true;
+        return this.configs;
+    }
+
+    /**
+     * フォールバック設定読み込み
+     * @private
+     */
+    async _loadFallbackConfigs() {
+        this.configs = {
+            app: this._getDefaultAppConfig(),
+            theme: this._getDefaultThemeConfig(),
+            animation: this._getDefaultAnimationConfig(),
+            environment: this._getDefaultEnvironmentConfig(),
+            settings: this._getDefaultSettingsConfig(),
+            content: { steps: [] }
+        };
+        
+        this.mergedConfig = this._mergeConfigs();
+        this._applyCSSVariables();
+        this.loaded = true;
+        return this.mergedConfig;
+    }
+
+    /**
+     * 環境設定を読み込み
+     * @private
+     */
+    async _loadEnvironmentConfig() {
+        if (!this.mainConfig?.environment) {
+            return this._getDefaultEnvironmentConfig();
+        }
+
+        let envFile;
+        if (this.mainConfig.environment.auto) {
+            envFile = this.mainConfig.environment[this.environment];
+        } else {
+            envFile = this.mainConfig.environment.development; // デフォルトは開発環境
+        }
+
+        const envConfig = await this._loadConfig(envFile);
+        return envConfig || this._getDefaultEnvironmentConfig();
+    }
+
+    /**
+     * 設定をマージ
+     * @private
+     */
+    _mergeConfigs() {
+        const mergeStrategy = this.mainConfig?.mergeStrategy || {
+            deep: true,
+            arrayMerge: 'replace',
+            overwriteOnConflict: true
+        };
+
+        let merged = {};
+
+        // 環境設定をベースとして開始
+        if (this.configs.environment) {
+            merged = this._deepMerge(merged, this.configs.environment, mergeStrategy);
+        }
+
+        // 他の設定を順序に従ってマージ
+        const loadOrder = this.mainConfig?.loadOrder || ['app', 'theme', 'animation', 'settings', 'content'];
+        
+        for (const configType of loadOrder) {
+            if (configType !== 'environment' && this.configs[configType]) {
+                merged = this._deepMerge(merged, this.configs[configType], mergeStrategy);
+            }
+        }
+
+        return merged;
+    }
+
+    /**
+     * 深いマージ処理
+     * @private
+     */
+    _deepMerge(target, source, strategy) {
+        if (!strategy.deep) {
+            return { ...target, ...source };
+        }
+
+        const result = { ...target };
+
+        for (const key in source) {
+            if (source.hasOwnProperty(key)) {
+                if (Array.isArray(source[key])) {
+                    // 配列の処理
+                    if (strategy.arrayMerge === 'replace') {
+                        result[key] = [...source[key]];
+                    } else if (strategy.arrayMerge === 'concat') {
+                        result[key] = (result[key] || []).concat(source[key]);
+                    }
+                } else if (typeof source[key] === 'object' && source[key] !== null) {
+                    // オブジェクトの再帰マージ
+                    result[key] = this._deepMerge(result[key] || {}, source[key], strategy);
+                } else {
+                    // プリミティブ値
+                    if (strategy.overwriteOnConflict || !(key in result)) {
+                        result[key] = source[key];
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * 環境を検出
+     * @private
+     */
+    _detectEnvironment() {
+        // URLまたはホスト名から環境を判定
+        const hostname = window.location.hostname;
+        const isDev = hostname === 'localhost' || 
+                     hostname === '127.0.0.1' || 
+                     hostname.includes('local') ||
+                     window.location.protocol === 'file:';
+        
+        return isDev ? 'development' : 'production';
     }
 
     /**
@@ -244,6 +404,81 @@ class ConfigLoader {
     }
 
     /**
+     * デフォルト環境設定
+     * @private
+     */
+    _getDefaultEnvironmentConfig() {
+        return {
+            debug: {
+                enabled: false,
+                verbose: false,
+                showConfigLoading: false
+            },
+            performance: {
+                enableCaching: true,
+                preloadData: true,
+                optimizeRenders: true
+            },
+            features: {
+                hotReload: false,
+                devTools: false
+            },
+            paths: {
+                data: "data/",
+                assets: "assets/",
+                config: "config/"
+            }
+        };
+    }
+
+    /**
+     * デフォルト設定取得
+     * @private
+     */
+    _getDefaultSettingsConfig() {
+        return {
+            transition: {
+                duration: 500,
+                ease: "cubic-in-out"
+            },
+            layout: {
+                textPosition: "overlay",
+                chartPosition: "background"
+            },
+            responsive: {
+                breakpoints: {
+                    mobile: 768,
+                    tablet: 1024,
+                    desktop: 1200
+                }
+            }
+        };
+    }
+
+    /**
+     * 設定タイプに応じたデフォルト設定を取得
+     * @private
+     */
+    _getDefaultConfig(configType) {
+        switch (configType) {
+            case 'app':
+                return this._getDefaultAppConfig();
+            case 'theme':
+                return this._getDefaultThemeConfig();
+            case 'animation':
+                return this._getDefaultAnimationConfig();
+            case 'environment':
+                return this._getDefaultEnvironmentConfig();
+            case 'settings':
+                return this._getDefaultSettingsConfig();
+            case 'content':
+                return { steps: [] };
+            default:
+                return {};
+        }
+    }
+
+    /**
      * 設定値を取得（ドット記法対応）
      * @param {string} path - 設定パス (例: 'app.layout.header.height')
      * @param {*} defaultValue - デフォルト値
@@ -251,7 +486,7 @@ class ConfigLoader {
      */
     get(path, defaultValue = null) {
         const keys = path.split('.');
-        let value = this.configs;
+        let value = this.mergedConfig || this.configs;
 
         for (const key of keys) {
             if (value && typeof value === 'object' && key in value) {
@@ -262,6 +497,56 @@ class ConfigLoader {
         }
 
         return value;
+    }
+
+    /**
+     * マージ済み設定全体を取得
+     * @returns {Object} マージ済み設定
+     */
+    getConfig() {
+        return this.mergedConfig || this.configs;
+    }
+
+    /**
+     * 特定の設定ファイルの内容を取得
+     * @param {string} configType - 設定タイプ (content, settings, app, theme, animation, environment)
+     * @returns {Object} 設定内容
+     */
+    getConfigByType(configType) {
+        return this.configs[configType] || {};
+    }
+
+    /**
+     * 環境設定を取得
+     * @returns {Object} 環境設定
+     */
+    getEnvironment() {
+        return {
+            type: this.environment,
+            config: this.configs.environment || {}
+        };
+    }
+
+    /**
+     * デバッグモードかどうかを判定
+     * @returns {boolean} デバッグモード
+     */
+    isDebugMode() {
+        return this.get('debug.enabled', false);
+    }
+
+    /**
+     * 古いconfig.jsonと互換性のある統合設定を取得
+     * @returns {Object} 統合設定（content + settings）
+     */
+    getLegacyCompatibleConfig() {
+        const content = this.configs.content || {};
+        const settings = this.configs.settings || {};
+        
+        return {
+            steps: content.steps || [],
+            settings: settings
+        };
     }
 
     /**
