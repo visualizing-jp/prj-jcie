@@ -280,6 +280,17 @@ a:hover {
     color: #f4a620; /* マラリアの黄色 */
 }
 
+/* 地図上の国名ラベルスタイル - 全パターンに対応 */
+.city-label,
+.single-city-label,
+.timeline-label,
+#map text,
+#map-container text {
+    font-family: "Shippori Mincho", "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Hiragino Mincho Pro", "Noto Serif JP", "HG Mincho E", "MS Mincho", serif !important;
+    font-weight: bold !important;
+    font-size: 16px !important; /* 文字サイズを統一して大きく */
+}
+
 #container {
     position: relative;
 }
