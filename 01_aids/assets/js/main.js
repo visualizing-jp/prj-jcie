@@ -479,18 +479,21 @@ class ScrollytellingApp {
                 <div class="footer-content">
                     <div class="footer-section">
                         <div class="footer-logo">
-                            <img src="assets/images/jcie_logo_white.png" alt="公益財団法人 日本国際交流センター">
+                            <img src="assets/images/fgfj-logo-horizontal-white.svg" alt="公益財団法人 日本国際交流センター">
                         </div>
-                        <p class="footer-tagline">世界と日本をつなぐ民間外交のフロントランナー</p>
+                        <p class="footer-tagline">&nbsp;</p>
                     </div>
 
                     <div class="footer-section">
                         <div class="footer-address">
-                            〒107-0052 東京都港区赤坂1丁目1番12号 明産溜池ビル 7F
+                            〒107-0052 東京都港区赤坂1-1-12 明産溜池ビル7F (公財)日本国際交流センター 内
                         </div>
                         <div class="footer-contact">
                             <div class="contact-item">
-                                <span>TEL</span>03-6277-7811
+                                <span>Email</span>fgfj&lt;at&gt;jcie.or.jp (&lt;at&gt;を@に変更してお送りください)
+                            </div>
+                            <div class="contact-item">
+                                <span>TEL</span>03-6277-7811 (代)
                             </div>
                             <div class="contact-item">
                                 <span>FAX</span>03-6277-6712
@@ -498,17 +501,10 @@ class ScrollytellingApp {
                         </div>
                     </div>
                     
-                    <div class="footer-section">
-                        <ul class="footer-links">
-                            <li><a href="https://jcie.or.jp/inquiry.html">お問い合わせ</a></li>
-                            <li><a href="https://jcie.or.jp/aboutus/overview.html#link02">アクセス</a></li>
-                            <li><a href="https://jcie.or.jp/privacy.html">個人情報保護方針</a></li>
-                        </ul>
-                    </div>
                 </div>
                 
                 <div class="footer-copyright">
-                    © 2025 Japan Center for International Exchange. All rights reserved.
+                    © Japan Center for International Exchange. All rights reserved.
                 </div>
             </div>
         `;
