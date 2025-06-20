@@ -168,6 +168,12 @@
             {
               "type": "verticalLine",
               "year": 1997,
+              "label": "世界の年間新規感染者のピークに達した年",
+              "position": "top-left"
+            },
+            {
+              "type": "horizontalLine",
+              "value": 3300000,
               "label": "世界の年間新規感染者のピーク",
               "position": "top-left"
             }
