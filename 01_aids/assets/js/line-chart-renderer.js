@@ -1260,7 +1260,7 @@ class LineChartRenderer extends BaseManager {
             verticalSpacing: 25, // 垂直方向の最小間隔（前処理用）
             allowExtendedPlacement: true, // チャート外への配置を許可
             maxExtensionWidth: 200, // チャート右端からの最大拡張幅を増加
-            labelPadding: 3 // ラベル周りの余白
+            labelPadding: 6 // ラベル周りの余白
         };
 
         // 小画面の場合は従来の凡例を使用
@@ -1372,7 +1372,7 @@ class LineChartRenderer extends BaseManager {
             maxLabelWidth: width * 0.4, // 最大ラベル幅を広げる
             verticalSpacing: 18, // 垂直間隔を狭く
             maxExtensionWidth: 50, // 拡張幅を小さく
-            labelPadding: 2, // パディングを小さく
+            labelPadding: 4, // パディングを調整
             layoutStrategy: 'compact' // コンパクト配置
         };
         

@@ -715,6 +715,7 @@
           "multiSeries": true,
           "title": "エイズ対策資金の推移（資金源別）",
           "dataSource": "Global Fund / Kaiser Family Foundation",
+          "legendType": "inline",
           "animation": {
             "mode": "progressive",
             "duration": 3000,
