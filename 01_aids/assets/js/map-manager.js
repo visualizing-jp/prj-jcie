@@ -307,6 +307,11 @@ class MapManager {
                     if (config.useRegionColors && window.CountryRegionMapping && window.ColorScheme) {
                         const region = window.CountryRegionMapping.getRegionForCountry(countryName);
                         
+                        // デバッグ：地域マッピングに失敗した国をログ出力
+                        if (!region) {
+                            console.warn('MapManager: No region mapping found for country:', countryName);
+                        }
+                        
                         // highlightCountriesが指定されている場合、ハイライト国のみ地域色、他は薄いグレー
                         if (highlightCountries && highlightCountries.length > 0) {
                             // より厳密な国名マッチング
@@ -686,6 +691,11 @@ class MapManager {
                 // 地域色を適用
                 if (useRegionColors && window.CountryRegionMapping && window.ColorScheme) {
                     const region = window.CountryRegionMapping.getRegionForCountry(countryName);
+                    
+                    // デバッグ：地域マッピングに失敗した国をログ出力
+                    if (!region) {
+                        console.warn('MapManager: No region mapping found for country (updateCountryHighlights):', countryName);
+                    }
                     
                     // highlightCountriesが指定されている場合、ハイライト国のみ地域色、他は薄いグレー
                     if (highlightCountries && highlightCountries.length > 0) {

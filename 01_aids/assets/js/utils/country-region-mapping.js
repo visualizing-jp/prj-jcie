@@ -47,6 +47,7 @@ class CountryRegionMapping {
             'Nauru': 'アジア・太平洋地域',
             'Tuvalu': 'アジア・太平洋地域',
             'Taiwan': 'アジア・太平洋地域',
+            'New Caledonia': 'アジア・太平洋地域',
             
             // カリブ海地域
             'Antigua and Barbuda': 'カリブ海地域',
@@ -88,6 +89,7 @@ class CountryRegionMapping {
             'Uganda': '東部・南部アフリカ',
             'Zambia': '東部・南部アフリカ',
             'Zimbabwe': '東部・南部アフリカ',
+            'Somaliland': '東部・南部アフリカ',
             
             // 東ヨーロッパ・中央アジア
             'Albania': '東ヨーロッパ・中央アジア',
@@ -142,6 +144,7 @@ class CountryRegionMapping {
             'Suriname': '中南米（ラテンアメリカ）',
             'Uruguay': '中南米（ラテンアメリカ）',
             'Venezuela': '中南米（ラテンアメリカ）',
+            'French Guiana': '中南米（ラテンアメリカ）',
             
             // 中東・北アフリカ
             'Algeria': '中東・北アフリカ',
@@ -159,9 +162,11 @@ class CountryRegionMapping {
             'Qatar': '中東・北アフリカ',
             'Saudi Arabia': '中東・北アフリカ',
             'Sudan': '中東・北アフリカ',
+            'S. Sudan': '中東・北アフリカ',
             'Syria': '中東・北アフリカ',
             'Tunisia': '中東・北アフリカ',
             'United Arab Emirates': '中東・北アフリカ',
+            'W. Sahara': '中東・北アフリカ',
             'Yemen': '中東・北アフリカ',
             
             // 西部・中部アフリカ
@@ -220,7 +225,14 @@ class CountryRegionMapping {
             'United States of America': '西・中央ヨーロッパおよび北米',
             'United States': '西・中央ヨーロッパおよび北米',
             'USA': '西・中央ヨーロッパおよび北米',
-            'Vatican City': '西・中央ヨーロッパおよび北米'
+            'Vatican City': '西・中央ヨーロッパおよび北米',
+            'Falkland Islands': '西・中央ヨーロッパおよび北米',
+            'Greenland': '西・中央ヨーロッパおよび北米',
+            'Puerto Rico': '西・中央ヨーロッパおよび北米',
+            
+            // その他・特別地域（南極地域など）
+            'Antarctica': 'その他・特別地域',
+            'Fr. S. Antarctic Lands': 'その他・特別地域'
         };
         
         // 別名・表記ゆれ対応
@@ -232,7 +244,7 @@ class CountryRegionMapping {
             'DR Congo': 'Democratic Republic of the Congo',
             'DRC': 'Democratic Republic of the Congo',
             'Dem. Rep. Congo': 'Democratic Republic of the Congo',
-            'Côte d\'Ivoire': 'Ivory Coast',
+            "Côte d'Ivoire": 'Ivory Coast',
             'Burma': 'Myanmar',
             'East Timor': 'Timor-Leste',
             'Cabo Verde': 'Cape Verde',
@@ -245,7 +257,15 @@ class CountryRegionMapping {
             'eSwatini': 'Eswatini',
             'Dominican Rep.': 'Dominican Republic',
             'Eq. Guinea': 'Equatorial Guinea',
-            'S. Sudan': 'South Sudan'
+            'S. Sudan': 'South Sudan',
+            // 追加のアフリカ地図データ対応
+            'Congo': 'Republic of the Congo',
+            'Falkland Is.': 'Falkland Islands',
+            'Macedonia': 'North Macedonia',
+            'Somaliland': 'Somalia',
+            // フランス領ギアナの別表記
+            'Guyane': 'French Guiana',
+            'Fr. Guiana': 'French Guiana'
         };
     }
     
