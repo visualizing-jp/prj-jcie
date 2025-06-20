@@ -89,6 +89,11 @@ class LineChartRenderer extends BaseManager {
             margin = config.margin || window.AppDefaults?.chartMargin?.default || { top: 40, right: 20, bottom: 40, left: 50 };
         }
         
+        // インラインラベル使用時は右マージンを拡大
+        if (config.legendType === 'inline' && config.multiSeries) {
+            margin.right = Math.max(margin.right, 240); // ラベル用の余白をさらに拡大
+        }
+        
         // 完全にコンテナをクリア（stroke-dasharray等の状態もリセット）
         this.container.selectAll('*').remove();
         
@@ -155,6 +160,11 @@ class LineChartRenderer extends BaseManager {
         } else {
             // フォールバック：従来の固定マージン
             margin = config.margin || window.AppDefaults?.chartMargin?.compact || { top: 20, right: 20, bottom: 40, left: 40 };
+        }
+        
+        // インラインラベル使用時は右マージンを拡大
+        if (config.legendType === 'inline' && config.multiSeries) {
+            margin.right = Math.max(margin.right, 240); // ラベル用の余白をさらに拡大
         }
         const innerWidth = width - margin.left - margin.right;
         const innerHeight = height - margin.top - margin.bottom;
@@ -1213,7 +1223,7 @@ class LineChartRenderer extends BaseManager {
             responsiveThreshold: 600, // この幅以下では従来の凡例にフォールバック
             verticalSpacing: 25, // 垂直方向の最小間隔（前処理用）
             allowExtendedPlacement: true, // チャート外への配置を許可
-            maxExtensionWidth: 100, // チャート右端からの最大拡張幅
+            maxExtensionWidth: 200, // チャート右端からの最大拡張幅を増加
             labelPadding: 3 // ラベル周りの余白
         };
 
@@ -1490,13 +1500,8 @@ class LineChartRenderer extends BaseManager {
         // アンカーY座標でソート（上から下へ）
         const sortedLabels = [...labels].sort((a, b) => a.anchorY - b.anchorY);
         
-        // 利用可能なY座標範囲を計算
-        const minY = 20; // 上端マージン
-        const maxY = height - 20; // 下端マージン
-        const availableHeight = maxY - minY;
-        
         // ラベル間の最小間隔
-        const minSpacing = 25;
+        const minSpacing = 20;
         const labelCount = sortedLabels.length;
         
         // 必要な総高さ
@@ -1504,18 +1509,11 @@ class LineChartRenderer extends BaseManager {
         const totalSpacing = (labelCount - 1) * minSpacing;
         const requiredHeight = totalLabelHeight + totalSpacing;
         
-        console.log(`Available height: ${availableHeight}, Required height: ${requiredHeight}`);
+        // チャート中央を基準にラベルを配置
+        this.distributeLabelsCentered(sortedLabels, height, requiredHeight, minSpacing);
         
-        if (requiredHeight <= availableHeight) {
-            // 十分なスペースがある場合：等間隔で配置
-            this.distributeLabelsEvenly(sortedLabels, minY, maxY, minSpacing);
-        } else {
-            // スペースが不足している場合：圧縮配置
-            this.distributeLabelsCompressed(sortedLabels, minY, maxY);
-        }
-        
-        // X座標を調整（階段状配置で視覚的分離）
-        this.adjustXPositions(sortedLabels, width, config);
+        // X座標を調整（より右寄りで統一された配置）
+        this.adjustXPositionsImproved(sortedLabels, width, config);
         
         console.log('LineChartRenderer: Label placement completed');
         sortedLabels.forEach((label, i) => {
@@ -1524,7 +1522,56 @@ class LineChartRenderer extends BaseManager {
     }
 
     /**
-     * ラベルを等間隔で配置
+     * ラベルをチャート中央基準で配置
+     */
+    distributeLabelsCentered(labels, chartHeight, requiredHeight, minSpacing) {
+        // チャート中央を基準点として計算
+        const chartCenter = chartHeight / 2;
+        
+        // ラベル全体の高さの半分を中央から上下に配置
+        const startY = chartCenter - requiredHeight / 2;
+        
+        // 上端・下端の制限
+        const minY = Math.max(20, startY);
+        const maxY = chartHeight - 20;
+        const availableHeight = maxY - minY;
+        
+        // 実際の配置開始位置を調整
+        let actualStartY = minY;
+        if (requiredHeight <= availableHeight) {
+            // 十分なスペースがある場合は中央寄せ
+            actualStartY = chartCenter - requiredHeight / 2;
+            actualStartY = Math.max(minY, actualStartY);
+        }
+        
+        // ラベルを順次配置
+        let currentY = actualStartY;
+        labels.forEach((label, index) => {
+            label.y = currentY + label.height / 2; // ラベル中心位置
+            currentY += label.height + minSpacing;
+        });
+        
+        console.log(`Centered distribution: chartCenter=${chartCenter}, startY=${actualStartY}, requiredHeight=${requiredHeight}`);
+    }
+
+    /**
+     * X座標を改善された方法で調整（より右寄り、統一感のある配置）
+     */
+    adjustXPositionsImproved(labels, width, config) {
+        // チャート右端からさらに右寄りの位置に配置（引き出し線と折れ線の重複を避ける）
+        const baseX = width + 60; // チャート右端から60px右に移動
+        const maxExtension = config.maxExtensionWidth || 200; // 拡張幅も増加
+        
+        labels.forEach((label, index) => {
+            // 全て同じX位置に揃える（階段状ではなく垂直に整列）
+            label.x = Math.min(baseX, width + maxExtension - label.width - 10);
+        });
+        
+        console.log(`Improved X positioning: baseX=${baseX}, width=${width}`);
+    }
+
+    /**
+     * ラベルを等間隔で配置（レガシー）
      */
     distributeLabelsEvenly(labels, minY, maxY, minSpacing) {
         let currentY = minY;
@@ -1536,7 +1583,7 @@ class LineChartRenderer extends BaseManager {
     }
 
     /**
-     * ラベルを圧縮して配置
+     * ラベルを圧縮して配置（レガシー）
      */
     distributeLabelsCompressed(labels, minY, maxY) {
         const availableHeight = maxY - minY;
@@ -1551,7 +1598,7 @@ class LineChartRenderer extends BaseManager {
     }
 
     /**
-     * X座標を階段状に調整
+     * X座標を階段状に調整（レガシー）
      */
     adjustXPositions(labels, width, config) {
         const baseX = width * 0.85; // チャート右端から少し左
