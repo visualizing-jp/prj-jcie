@@ -132,7 +132,7 @@ class ScrollytellingApp {
         
         // 都市データから動的にHTMLを生成
         citiesData.cities.forEach((city, index) => {
-            const stepIndex = 10 + index; // step10から開始
+            const stepIndex = 11 + index; // step11から開始
             const stepDiv = document.createElement('div');
             stepDiv.className = 'step';
             stepDiv.setAttribute('data-step', stepIndex.toString());
@@ -250,9 +250,9 @@ class ScrollytellingApp {
 
         console.log(`Entering step ${index} (direction: ${direction})`, stepConfig);
 
-        // step17の詳細デバッグ（stepConfig.idで判定）
-        if (stepConfig.id === 'step17') {
-            console.log('=== STEP 17 DEBUG ===');
+        // step18の詳細デバッグ（stepConfig.idで判定）
+        if (stepConfig.id === 'step18') {
+            console.log('=== STEP 18 DEBUG ===');
             console.log('Step index:', index);
             console.log('Step config:', stepConfig);
             console.log('Chart config:', stepConfig.chart);
@@ -480,13 +480,13 @@ class ScrollytellingApp {
             return;
         }
 
-        const stepElement = document.querySelector('[data-step="24"]');
+        const stepElement = document.querySelector('[data-step="25"]');
         if (!stepElement) {
             console.warn('Footer step element not found');
             return;
         }
 
-        // step24の子要素（コンテナdiv）を取得
+        // step25の子要素（コンテナdiv）を取得
         const containerDiv = stepElement.querySelector('div');
         if (!containerDiv) {
             console.warn('Footer container div not found');
