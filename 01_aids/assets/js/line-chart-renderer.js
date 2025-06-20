@@ -756,7 +756,17 @@ class LineChartRenderer extends BaseManager {
         if (hasProgressiveAnimation && config.legendType === 'inline' && series.length > 1) {
             const animationDuration = config.animation?.duration || 3000;
             setTimeout(() => {
-                this.addInlineLabelsWithAnimation(g, series, colorScale, { xScale, yScale, width: innerWidth, height: innerHeight, isYearData, xField, yField });
+                const context = { 
+                    xScale, 
+                    yScale, 
+                    width: innerWidth, 
+                    height: innerHeight, 
+                    isYearData, 
+                    xField, 
+                    yField,
+                    isDualLayout: false // 通常の折れ線グラフは常にfalse
+                };
+                this.addInlineLabelsWithAnimation(g, series, colorScale, context);
             }, animationDuration + 500); // アニメーション完了後500ms待機
         }
 
@@ -765,7 +775,17 @@ class LineChartRenderer extends BaseManager {
             const legendType = config.legendType || 'traditional';
             if (legendType === 'inline' && !hasProgressiveAnimation) {
                 // プログレッシブアニメーションがない場合はすぐに表示
-                this.addInlineLabels(g, series, colorScale, { xScale, yScale, width: innerWidth, height: innerHeight, isYearData, xField, yField });
+                const context = { 
+                    xScale, 
+                    yScale, 
+                    width: innerWidth, 
+                    height: innerHeight, 
+                    isYearData, 
+                    xField, 
+                    yField,
+                    isDualLayout: false // 通常の折れ線グラフは常にfalse
+                };
+                this.addInlineLabels(g, series, colorScale, context);
             } else if (legendType === 'traditional') {
                 this.addLegend(svg, series, colorScale, width, height);
             }
@@ -923,7 +943,17 @@ class LineChartRenderer extends BaseManager {
         if (series.length > 1) {
             const legendType = config.legendType || 'traditional';
             if (legendType === 'inline') {
-                this.addInlineLabels(g, series, colorScale, { xScale, yScale, width, height, isYearData, xField, yField });
+                const context = { 
+                    xScale, 
+                    yScale, 
+                    width, 
+                    height, 
+                    isYearData, 
+                    xField, 
+                    yField,
+                    isDualLayout: config.isDualLayout || false // デュアルレイアウトフラグを追加
+                };
+                this.addInlineLabels(g, series, colorScale, context);
             } else {
                 this.addCompactLegend(g, series, colorScale, width, height);
             }
@@ -1207,7 +1237,13 @@ class LineChartRenderer extends BaseManager {
     addInlineLabels(g, series, colorScale, context) {
         if (!series || series.length <= 1) return;
         
-        const { xScale, yScale, width, height, isYearData, xField, yField } = context;
+        const { xScale, yScale, width, height, isYearData, xField, yField, isDualLayout = false } = context;
+        
+        // デュアルレイアウト（二個並び）用の設定
+        if (isDualLayout) {
+            this.addInlineLabelsDualLayout(g, series, colorScale, context);
+            return;
+        }
         
         // インライン設定のデフォルト値（D3-Labelerに最適化）
         const inlineConfig = {
@@ -1313,6 +1349,193 @@ class LineChartRenderer extends BaseManager {
 
         // ラベルを描画
         this.renderInlineLabels(labelGroup, labels, inlineConfig);
+    }
+    
+    /**
+     * デュアルレイアウト（二個並び）専用のインラインラベル配置
+     * @param {d3.Selection} g - グラフのメインg要素
+     * @param {Array} series - 系列データ
+     * @param {Function} colorScale - 色スケール
+     * @param {Object} context - コンテキスト（スケール、サイズ等）
+     */
+    addInlineLabelsDualLayout(g, series, colorScale, context) {
+        const { xScale, yScale, width, height, isYearData, xField, yField } = context;
+        
+        // デュアルレイアウト専用設定
+        const dualConfig = {
+            fontSize: '11px', // 若干小さくして見やすく
+            fontFamily: 'var(--font-family-serif), "Shippori Mincho", serif',
+            offsetX: 8, // 小さめのオフセット
+            offsetY: 0,
+            minDistance: 15, // 最小距離を短く
+            enableLeaderLines: false, // 引き出し線は無効化
+            maxLabelWidth: width * 0.4, // 最大ラベル幅を広げる
+            verticalSpacing: 18, // 垂直間隔を狭く
+            maxExtensionWidth: 50, // 拡張幅を小さく
+            labelPadding: 2, // パディングを小さく
+            layoutStrategy: 'compact' // コンパクト配置
+        };
+        
+        // 各系列の最後のデータポイントを取得
+        const endPoints = series.map(seriesData => {
+            const lastPoint = seriesData.values[seriesData.values.length - 1];
+            if (!lastPoint) return null;
+
+            const x = isYearData ? xScale(+lastPoint[xField]) : xScale(new Date(lastPoint[xField]));
+            const y = yScale(+lastPoint[yField]);
+            
+            return {
+                name: seriesData.name,
+                x: x,
+                y: y,
+                color: colorScale(seriesData.name),
+                originalX: x,
+                originalY: y
+            };
+        }).filter(point => point !== null);
+
+        if (endPoints.length === 0) {
+            console.warn('LineChartRenderer: No valid end points found for dual layout inline labels');
+            return;
+        }
+
+        // ラベルの初期位置を計算
+        const labels = endPoints.map(point => {
+            const labelText = window.TextMeasurement 
+                ? window.TextMeasurement.truncateText(point.name, dualConfig.maxLabelWidth, { 
+                    fontSize: dualConfig.fontSize,
+                    fontFamily: dualConfig.fontFamily
+                })
+                : point.name;
+
+            const labelWidth = window.TextMeasurement 
+                ? window.TextMeasurement.measureTextWidth(labelText, {
+                    fontSize: dualConfig.fontSize,
+                    fontFamily: dualConfig.fontFamily
+                })
+                : labelText.length * 7; // 小さめのフォントサイズに合わせて調整
+
+            const labelHeight = window.TextMeasurement 
+                ? window.TextMeasurement.measureTextHeight(labelText, {
+                    fontSize: dualConfig.fontSize,
+                    fontFamily: dualConfig.fontFamily
+                })
+                : 12;
+
+            // デュアルレイアウト用のX座標計算（より近くに配置）
+            const baseX = point.x + dualConfig.offsetX;
+            const adjustedX = Math.min(baseX, width + dualConfig.maxExtensionWidth - labelWidth - 3);
+            
+            return {
+                x: adjustedX,
+                y: point.y, // デュアルレイアウトでは中心位置に配置
+                width: labelWidth,
+                height: labelHeight,
+                text: labelText,
+                color: point.color,
+                anchorX: point.x,
+                anchorY: point.y,
+                originalName: point.name,
+                centerY: point.y
+            };
+        });
+
+        // デュアルレイアウト専用の配置アルゴリズム
+        this.applyDualLayoutPlacement(labels, width, height, dualConfig);
+
+        // ラベルグループを作成
+        const labelGroup = g.append('g')
+            .attr('class', 'inline-labels dual-layout');
+
+        // デュアルレイアウト用のラベル描画
+        this.renderDualLayoutLabels(labelGroup, labels, dualConfig);
+    }
+    
+    /**
+     * デュアルレイアウト専用の配置アルゴリズム
+     * @param {Array} labels - ラベル配列
+     * @param {number} width - グラフ幅
+     * @param {number} height - グラフ高さ
+     * @param {Object} config - デュアルレイアウト設定
+     */
+    applyDualLayoutPlacement(labels, width, height, config) {
+        console.log('LineChartRenderer: Applying dual layout placement for', labels.length, 'labels');
+        
+        // Y座標でソート
+        const sortedLabels = [...labels].sort((a, b) => a.anchorY - b.anchorY);
+        
+        // 全体的に上にオフセット（折れ線との重複を避けるため）
+        const upwardOffset = -60; // 上に60px移動
+        
+        // 縦方向の重複を回避（シンプルで確実な方法）
+        for (let i = 0; i < sortedLabels.length; i++) {
+            const currentLabel = sortedLabels[i];
+            
+            if (i === 0) {
+                // 最初のラベルは上方向オフセットを適用
+                currentLabel.y = currentLabel.anchorY + upwardOffset;
+            } else {
+                const previousLabel = sortedLabels[i - 1];
+                const requiredSpacing = config.verticalSpacing;
+                
+                // 前のラベルからの最小間隔を確保
+                const minY = previousLabel.y + requiredSpacing;
+                const preferredY = currentLabel.anchorY + upwardOffset;
+                
+                currentLabel.y = Math.max(minY, preferredY);
+            }
+            
+            // チャート範囲内に収まるように調整
+            currentLabel.y = Math.max(0, Math.min(currentLabel.y, height - 10));
+        }
+        
+        // X座標は固定位置に配置（階段状にしない）
+        const targetX = width + config.offsetX;
+        labels.forEach(label => {
+            label.x = Math.min(targetX, width + config.maxExtensionWidth - label.width - 5);
+        });
+        
+        console.log('LineChartRenderer: Dual layout placement completed with upward offset');
+    }
+    
+    /**
+     * デュアルレイアウト用のラベル描画
+     * @param {d3.Selection} labelGroup - ラベルグループ
+     * @param {Array} labels - ラベル配列
+     * @param {Object} config - デュアルレイアウト設定
+     */
+    renderDualLayoutLabels(labelGroup, labels, config) {
+        const labelTexts = labelGroup.selectAll('.inline-label')
+            .data(labels)
+            .enter()
+            .append('text')
+            .attr('class', 'inline-label dual-layout-label')
+            .attr('x', d => d.x)
+            .attr('y', d => d.y)
+            .attr('dy', '0.35em')
+            .attr('font-size', config.fontSize)
+            .attr('font-family', config.fontFamily)
+            .attr('fill', d => d.color)
+            .attr('text-anchor', 'start')
+            .style('user-select', 'none')
+            .style('pointer-events', 'none')
+            .text(d => d.text);
+
+        // 背景（オプション：視認性向上のため）
+        const backgrounds = labelGroup.selectAll('.label-background')
+            .data(labels)
+            .enter()
+            .insert('rect', '.inline-label')
+            .attr('class', 'label-background dual-layout-bg')
+            .attr('x', d => d.x - config.labelPadding)
+            .attr('y', d => d.y - d.height / 2 - config.labelPadding)
+            .attr('width', d => d.width + config.labelPadding * 2)
+            .attr('height', d => d.height + config.labelPadding * 2)
+            .attr('fill', 'rgba(255, 255, 255, 0.8)')
+            .attr('stroke', 'rgba(0, 0, 0, 0.1)')
+            .attr('stroke-width', 0.5)
+            .attr('rx', 2)
+            .style('pointer-events', 'none');
     }
 
     /**

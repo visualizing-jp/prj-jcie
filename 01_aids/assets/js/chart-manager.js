@@ -650,7 +650,14 @@ class ChartManager extends BaseManager {
     renderLineChartInGroup(g, data, config) {
         if (this.renderers.line && typeof this.renderers.line.renderLineChartInGroup === 'function') {
             try {
-                this.renderers.line.renderLineChartInGroup(g, data, config);
+                // デュアルレイアウトのフラグを追加
+                const isDualLayout = this.currentLayout === 'dual';
+                const configWithDualFlag = {
+                    ...config,
+                    isDualLayout: isDualLayout
+                };
+                
+                this.renderers.line.renderLineChartInGroup(g, data, configWithDualFlag);
             } catch (error) {
                 console.error('ChartManager: Error calling LineChartRenderer.renderLineChartInGroup:', error);
             }
