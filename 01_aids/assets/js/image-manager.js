@@ -1,25 +1,27 @@
 /**
  * ImageManager - 画像管理クラス
  * スクロールに応じた画像の表示・非表示を管理
+ * BaseManagerを継承し、共通機能を活用
  */
-class ImageManager {
+class ImageManager extends BaseManager {
     constructor(containerId) {
-        this.container = d3.select(containerId);
+        super(containerId);
         this.image = d3.select('#image');
         this.currentImage = null;
-        this.config = null;
         
+        // Initialize after properties are set
         this.init();
     }
 
+    /**
+     * 初期化処理（BaseManagerを拡張）
+     */
     init() {
+        super.init();
+        
         // イベントリスナーを設定
         pubsub.subscribe(EVENTS.IMAGE_UPDATE, (data) => {
             this.updateImage(data);
-        });
-
-        pubsub.subscribe(EVENTS.RESIZE, () => {
-            this.resize();
         });
     }
 

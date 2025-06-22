@@ -1,20 +1,27 @@
 /**
  * MapManager - 地図管理クラス
  * D3.jsを使用した世界地図の描画・更新を管理
+ * BaseManagerを継承し、共通機能を活用
  */
-class MapManager {
+class MapManager extends BaseManager {
     constructor(containerId) {
-        this.container = d3.select(containerId);
+        super(containerId);
         this.svg = null;
         this.projection = null;
         this.path = null;
         this.geoData = null;
         this.currentView = null;
         
+        // Initialize after properties are set
         this.init();
     }
 
+    /**
+     * 初期化処理（BaseManagerを拡張）
+     */
     init() {
+        super.init();
+        
         // イベントリスナーを設定
         pubsub.subscribe(EVENTS.MAP_UPDATE, (data) => {
             this.updateMap(data);
@@ -22,10 +29,6 @@ class MapManager {
 
         pubsub.subscribe(EVENTS.MAP_PROGRESS, (data) => {
             this.handleMapProgress(data);
-        });
-
-        pubsub.subscribe(EVENTS.RESIZE, () => {
-            this.resize();
         });
         
         // 都市タイムライン用の状態
