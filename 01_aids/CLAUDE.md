@@ -141,30 +141,80 @@ step関連の問題が発生した場合：
 
 ## 設定ファイル構造
 
-### 基本構造（config.json）
+### 新しい設定システム（v2.0）
+**2024年6月より新しい設定システムを導入**。設定ファイルが機能別に分割され、ConfigLoaderクラスによって統合管理されます。
+
+#### 設定ファイル構成
+```
+config/
+├── main.config.json          # メイン設定（統合）
+├── content.config.json       # コンテンツ設定（steps）
+├── settings.config.json      # アプリケーション設定
+├── app.config.json          # アプリケーション固有設定
+├── theme.config.json        # テーマ設定
+├── animation.config.json    # アニメーション設定
+└── environment/
+    ├── development.json     # 開発環境設定
+    └── production.json      # 本番環境設定
+```
+
+#### ConfigLoaderクラス
+```javascript
+// 使用例
+const configLoader = new ConfigLoader();
+const config = await configLoader.getLegacyCompatibleConfig();
+
+// 旧config.jsonとの互換性を維持
+const steps = config.steps;
+const settings = config.settings;
+```
+
+#### 後方互換性
+- 旧`config.json`は新システムへの移行を示すメタデータファイルとして機能
+- `ConfigLoader.getLegacyCompatibleConfig()`で従来の形式で取得可能
+- 既存コードの変更不要
+
+### 基本構造（content.config.json）
 ```json
 {
   "steps": [
     {
-      "id": "step1",
-      "text": "段落のテキスト内容",
+      "id": "step0",
+      "text": {
+        "content": "段落のテキスト内容",
+        "visible": true,
+        "position": {
+          "width": "30%",
+          "horizontal": "center",
+          "vertical": "center"
+        }
+      },
       "chart": {
         "type": "line",
-        "data": "data/chart1.csv",
+        "dataFile": "data/chart1.csv",
         "visible": true,
-        "size": { "width": 600, "height": 400 }
+        "config": {
+          "width": 600,
+          "height": 400,
+          "title": "チャートタイトル"
+        }
       },
       "map": {
         "center": [35.6762, 139.6503],
         "zoom": 10,
         "visible": false
+      },
+      "image": {
+        "src": "assets/images/sample.jpg",
+        "alt": "画像の説明",
+        "visible": false,
+        "position": {
+          "horizontal": "center",
+          "vertical": "center"
+        }
       }
     }
-  ],
-  "settings": {
-    "transition": { "duration": 500, "ease": "cubic-in-out" },
-    "layout": { "textPosition": "left", "chartPosition": "right" }
-  }
+  ]
 }
 ```
 
@@ -200,6 +250,9 @@ Promise.all([
 - **画像表示機能**: レスポンシブ対応の画像表示
 - **地理的距離機能**: 地図上の距離計算
 - **データフィルタリング機能**: 同一データセットの部分表示・全表示切り替え
+- **専門化レンダラーシステム**: チャートタイプ別の専門レンダラー
+- **新設定システム**: ConfigLoaderクラスによる分散設定管理
+- **拡張ユーティリティ**: 多数の専門ユーティリティクラス
 
 ### データフィルタリング機能の詳細
 - **範囲フィルタ**: 年度や数値の範囲指定（例: 2010-2015年のみ表示）
@@ -426,6 +479,38 @@ D3.jsのトランジション設定を一元管理。
 - **deepClone**: オブジェクトのディープクローン
 - **isPlainObject**: プレーンオブジェクトの判定
 
+### 8. 追加のユーティリティクラス
+
+#### AppConstants (`utils/app-constants.js`)
+アプリケーション全体で使用する定数の管理。
+
+#### ChartLayoutHelper (`utils/chart-layout-helper.js`)
+チャートレイアウトの計算と配置管理。
+
+#### ChartTransitions (`utils/chart-transitions.js`)
+チャート特有のトランジション効果の管理。
+
+#### CityFocusManager (`utils/city-focus-manager.js`)
+地図の都市フォーカス機能の管理。
+
+#### ColorScheme (`utils/color-scheme.js`)
+統一されたカラーパレットとテーマ管理。
+
+#### CountryRegionMapping (`utils/country-region-mapping.js`)
+国と地域のマッピングデータ管理。
+
+#### MapProjectionHelper (`utils/map-projection-helper.js`)
+地図投影法の計算とヘルパー機能。
+
+#### MapStylingHelper (`utils/map-styling-helper.js`)
+地図のスタイリングとテーマ適用。
+
+#### PositionManager (`utils/position-manager.js`)
+要素の位置計算と配置管理。
+
+#### TextMeasurement (`utils/text-measurement.js`)
+テキストサイズ計算と配置最適化。
+
 ### 使用例
 ```javascript
 // BaseManager継承
@@ -465,7 +550,19 @@ const config = ConfigHelper.mergeConfig(
 
 ### スクリプト読み込み順序
 ```html
-<!-- 共通ユーティリティ -->
+<!-- 外部ライブラリ -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://d3js.org/topojson.v3.min.js"></script>
+<script src="https://unpkg.com/scrollama"></script>
+<script src="assets/js/libs/d3-labeler.js"></script>
+
+<!-- 設定システム -->
+<script src="assets/js/utils/config-loader.js"></script>
+<script src="assets/js/config/defaults.js"></script>
+
+<!-- 共通ユーティリティ（基盤） -->
+<script src="assets/js/utils/app-constants.js"></script>
 <script src="assets/js/utils/base-manager.js"></script>
 <script src="assets/js/utils/svg-helper.js"></script>
 <script src="assets/js/utils/animation-config.js"></script>
@@ -473,6 +570,20 @@ const config = ConfigHelper.mergeConfig(
 <script src="assets/js/utils/coordinate-helper.js"></script>
 <script src="assets/js/utils/data-helper.js"></script>
 <script src="assets/js/utils/config-helper.js"></script>
+
+<!-- 共通ユーティリティ（専門） -->
+<script src="assets/js/utils/chart-layout-helper.js"></script>
+<script src="assets/js/utils/color-scheme.js"></script>
+<script src="assets/js/utils/country-region-mapping.js"></script>
+<script src="assets/js/utils/position-manager.js"></script>
+<script src="assets/js/utils/text-measurement.js"></script>
+<script src="assets/js/utils/chart-transitions.js"></script>
+
+<!-- チャートレンダラー -->
+<script src="assets/js/bar-chart-renderer.js"></script>
+<script src="assets/js/line-chart-renderer.js"></script>
+<script src="assets/js/pie-chart-renderer.js"></script>
+<script src="assets/js/grid-chart-renderer.js"></script>
 
 <!-- アプリケーションスクリプト -->
 <script src="assets/js/pubsub.js"></script>
