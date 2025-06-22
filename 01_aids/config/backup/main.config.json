@@ -1,9 +1,11 @@
 {
-  "version": "2.0.0",
-  "description": "Simplified 3-file configuration system",
+  "version": "1.0.0",
   "configFiles": {
-    "content": "config/content.json",
-    "appSettings": "config/app-settings.json"
+    "content": "config/content.config.json",
+    "settings": "config/settings.config.json",
+    "app": "config/app.config.json",
+    "theme": "config/theme.config.json",
+    "animation": "config/animation.config.json"
   },
   "environment": {
     "auto": true,
@@ -12,7 +14,10 @@
   },
   "loadOrder": [
     "environment",
-    "appSettings",
+    "app",
+    "theme", 
+    "animation",
+    "settings",
     "content"
   ],
   "mergeStrategy": {

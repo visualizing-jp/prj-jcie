@@ -51,17 +51,27 @@ class ConfigLoader {
 
             // 環境設定を読み込み
             const envConfig = await this._loadEnvironmentConfig();
+            this.configs.environment = envConfig;
             
-            // 設定ファイルを順序に従って読み込み
-            const loadOrder = this.mainConfig.loadOrder || ['environment', 'app', 'theme', 'animation', 'settings', 'content'];
-            
-            for (const configType of loadOrder) {
-                if (configType === 'environment') {
-                    this.configs.environment = envConfig;
-                } else if (this.mainConfig.configFiles[configType]) {
-                    const config = await this._loadConfig(this.mainConfig.configFiles[configType]);
-                    this.configs[configType] = config || this._getDefaultConfig(configType);
+            // app-settings.jsonを読み込み（統合設定）
+            if (this.mainConfig.configFiles.appSettings) {
+                const appSettings = await this._loadConfig(this.mainConfig.configFiles.appSettings);
+                if (appSettings) {
+                    // 統合設定から個別の設定に分解
+                    this.configs.app = appSettings.app || {};
+                    this.configs.theme = appSettings.theme || {};
+                    this.configs.animation = appSettings.animation || {};
+                    this.configs.settings = {
+                        transition: appSettings.transitions || {},
+                        layout: appSettings.app?.layout || {},
+                        responsive: { breakpoints: appSettings.breakpoints || {} }
+                    };
                 }
+            }
+            
+            // content.jsonを読み込み
+            if (this.mainConfig.configFiles.content) {
+                this.configs.content = await this._loadConfig(this.mainConfig.configFiles.content) || {};
             }
 
             // 設定をマージ
