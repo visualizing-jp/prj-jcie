@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JCIEスペシャルコンテンツ「結核との闘い ～データで見る希望と課題～」</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://d3js.org/topojson.v3.min.js"></script>
+    <script src="https://unpkg.com/scrollama"></script>
+    <script src="../shared/assets/js/libs/d3-labeler.js"></script>
+    
+    <!-- 統一スタイリングシステム -->
+    <link rel="stylesheet" href="../shared/assets/css/shared-base.css">
+    <link rel="stylesheet" href="../shared/assets/css/unified-base.css">
+    <script src="../shared/assets/js/unified-styling.js"></script>
+    <script src="../shared/assets/js/navigation-manager.js"></script>
+    
+    <!-- 感染症固有設定 -->
+    <script>
+        window.DISEASE_TYPE = 'tuberculosis';
+    </script>
+</head>
+<body class="bg-gray-100">
+    <!-- ヘッダー -->
+    <header id="site-header">
+        <div class="site-title">
+            <h1>JCIEスペシャルコンテンツ「結核との闘い ～データで見る希望と課題～」</h1>
+        </div>
+        <nav class="site-nav">
+            <ul>
+                <!-- ナビゲーションはJavaScriptで動的に生成される -->
+            </ul>
+        </nav>
+    </header>
+
+    <!-- メインコンテナ -->
+    <div id="container">
+        <!-- 固定背景（チャート・地図エリア） -->
+        <div id="fixed-background" class="fixed inset-0 w-full h-full">
+            <!-- チャートエリア -->
+            <div id="chart-container" class="absolute inset-0 flex items-center justify-center">
+                <div id="chart"></div>
+            </div>
+            
+            <!-- 地図エリア -->
+            <div id="map-container" class="absolute inset-0">
+                <div id="map" class="w-full h-full"></div>
+            </div>
+            
+            <!-- 画像エリア -->
+            <div id="image-container" class="absolute inset-0 flex items-center justify-center">
+                <img id="image" class="max-w-full max-h-full object-contain" src="" alt="" />
+            </div>
+        </div>
+
+        <!-- スクロール可能なテキストエリア -->
+        <div id="scroll-content" class="relative z-10">
+            <!-- 各段落のステップ -->
+            <div class="step" data-step="0">
+                <div class="w-full min-h-screen flex items-center justify-center relative">
+                    <!-- 背景画像とオーバーレイ用の特別なコンテナ -->
+                    <div class="absolute inset-0 z-0" id="step0-bg-container">
+                        <!-- 背景画像は ImageManager で管理される -->
+                    </div>
+                    
+                    <!-- 黒い半透明オーバーレイ -->
+                    <div class="absolute inset-0 bg-black bg-opacity-70 z-10"></div>
+                    
+                    <!-- タイトルコンテナ -->
+                    <div class="relative z-20 text-center">
+                        <h1 class="text-white font-thin mb-4" style="font-size: 100px; text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8); font-family: 'Shippori Mincho', serif;">結核との闘い</h1>
+                        <p class="text-white font-light" style="font-size: 30px; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8); font-family: 'Shippori Mincho', serif;">～データで見る希望と課題～</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step" data-step="1">
+                <div class="w-full min-h-screen flex items-center">
+                    <div class="max-w-lg mx-auto p-8 bg-white bg-opacity-90 rounded-lg shadow-lg">
+                        <p class="text-gray-700 leading-relaxed">
+                            <p>結核は世界で最も古くから知られている感染症の一つですが、今でも年間約1000万人が感染し、150万人以上が命を落としています。</p>
+                            <p>&nbsp;</p>
+                            <p>多くの人にとって「過去の病気」と思われがちな結核ですが、実際には現在でも世界の公衆衛生上の重大な脅威として存在し続けています。</p>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step" data-step="2">
+                <div class="w-full min-h-screen flex items-center">
+                    <div class="max-w-lg mx-auto p-8 bg-white bg-opacity-90 rounded-lg shadow-lg">
+                        <p class="text-gray-700 leading-relaxed">
+                            <p>結核の治療は、抗結核薬の開発により大きく進歩しました。適切な治療を受ければ、ほとんどの結核患者が完治できるようになりました。</p>
+                            <p>&nbsp;</p>
+                            <p>しかし、薬剤耐性結核の増加や、HIV感染者における結核の重篤化など、新たな課題も浮上しています。</p>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step" data-step="3">
+                <div class="w-full min-h-screen flex items-center">
+                    <div class="max-w-lg mx-auto p-8 bg-white bg-opacity-90 rounded-lg shadow-lg">
+                        <h2 class="text-2xl font-bold mb-4">結核の歴史と現状</h2>
+                        <p class="text-gray-700 leading-relaxed">
+                            <p>結核は人類史上、最も多くの命を奪った感染症として知られています。19世紀から20世紀初頭にかけて、「白死病」と呼ばれ恐れられていました。</p>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step" data-step="4">
+                <div class="w-full min-h-screen flex items-center">
+                    <div class="max-w-lg mx-auto p-8 bg-white bg-opacity-90 rounded-lg shadow-lg">
+                        <p class="text-gray-700 leading-relaxed">
+                            <p>1944年にストレプトマイシンが発見され、結核の化学療法が始まりました。その後も多くの抗結核薬が開発され、治療成績は飛躍的に改善しました。</p>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step" data-step="5">
+                <div class="w-full min-h-screen flex items-center">
+                    <div class="max-w-lg mx-auto p-8 bg-white bg-opacity-90 rounded-lg shadow-lg">
+                        <p class="text-gray-700 leading-relaxed">
+                            <p>現在、世界の結核患者の約3分の2は8か国（インド、インドネシア、中国、フィリピン、パキスタン、ナイジェリア、バングラデシュ、南アフリカ）に集中しています。</p>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step" data-step="6">
+                <div class="w-full min-h-screen flex items-center">
+                    <div class="max-w-lg mx-auto p-8 bg-white bg-opacity-90 rounded-lg shadow-lg">
+                        <h2 class="text-2xl font-bold mb-4">薬剤耐性結核の脅威</h2>
+                        <p class="text-gray-700 leading-relaxed">
+                            <p>最も深刻な課題の一つが薬剤耐性結核です。不適切な治療や治療の中断により、結核菌が薬剤に対する耐性を獲得してしまいます。</p>
+                            <p>&nbsp;</p>
+                            <p>多剤耐性結核（MDR-TB）や超多剤耐性結核（XDR-TB）は、治療が困難で死亡率も高く、公衆衛生上の重大な脅威となっています。</p>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step" data-step="10">
+                <div class="w-full min-h-screen flex items-center justify-center">
+                    <div class="max-w-lg mx-auto p-8 bg-white bg-opacity-90 rounded-lg shadow-lg">
+                        <h2 class="text-2xl font-bold mb-4">ひとりひとりのエピソード</h2>
+                        <p class="text-gray-700 leading-relaxed">
+                            <p>結核治療の現場で、ひとりひとりの『希望』が未来へとつながり、多くの命が救われてきた実話を紹介します。</p>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 都市ステップは動的に生成されます（step11-17） -->
+            <div id="city-steps-container"></div>
+
+            <div class="step" data-step="19">
+                <div class="w-full min-h-screen flex items-center">
+                    <div class="max-w-lg mx-auto p-8 bg-white bg-opacity-90 rounded-lg shadow-lg">
+                        <h2 class="text-2xl font-bold mb-4">課題と解決策</h2>
+                        <p class="text-gray-700 leading-relaxed">
+                            <p>結核対策の主な課題は、早期発見・早期治療の推進、薬剤耐性結核への対応、そして社会経済的な要因への取り組みです。</p>
+                            <p>&nbsp;</p>
+                            <p>貧困、栄養不良、過密な住環境などが結核の感染リスクを高めており、これらの根本的な問題への対処が重要です。</p>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step" data-step="20">
+                <div class="w-full min-h-screen flex items-center">
+                    <div class="max-w-lg mx-auto p-8 bg-white bg-opacity-90 rounded-lg shadow-lg">
+                        <h2 class="text-2xl font-bold mb-4">グローバルファンドの貢献</h2>
+                        <p class="text-gray-700 leading-relaxed">
+                            <p>グローバルファンドは2002年の設立以来、結核対策においても重要な役割を果たしています。診断技術の向上、治療薬の普及、医療体制の強化などを支援しています。</p>
+                            <p>&nbsp;</p>
+                            <p>これらの取り組みにより、結核による死亡率は大幅に減少し、多くの命が救われています。</p>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step" data-step="25">
+                <div class="w-full min-h-screen flex items-center">
+                    <!-- フッターコンテンツは main.js で動的に生成される -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- スクリプト読み込み -->
+    <!-- 感染症タイプ設定（最初に設定） -->
+    <script>
+        window.DISEASE_TYPE = 'tuberculosis';
+    </script>
+    
+    <!-- 感染症設定（ConfigLoaderより前に読み込む） -->
+    <script src="../shared/assets/js/config/disease-config.js"></script>
+    
+    <!-- 設定読み込み -->
+    <script src="../shared/assets/js/utils/config-loader.js"></script>
+    
+    <!-- グローバル設定 -->
+    <script src="../shared/assets/js/config/defaults.js"></script>
+    
+    <!-- 共通ユーティリティ -->
+    <script src="../shared/assets/js/utils/app-constants.js"></script>
+    <script src="../shared/assets/js/utils/base-manager.js"></script>
+    <script src="../shared/assets/js/utils/svg-helper.js"></script>
+    <script src="../shared/assets/js/utils/error-handler.js"></script>
+    <script src="../shared/assets/js/utils/chart-layout-helper.js"></script>
+    <script src="../shared/assets/js/utils/color-scheme.js"></script>
+    <script src="../shared/assets/js/utils/country-region-mapping.js"></script>
+    <script src="../shared/assets/js/utils/position-manager.js"></script>
+    <script src="../shared/assets/js/utils/text-measurement.js"></script>
+    
+    <!-- 地図・都市関連ユーティリティ -->
+    <script src="../shared/assets/js/utils/city-focus-manager.js"></script>
+    <script src="../shared/assets/js/utils/map-projection-helper.js"></script>
+    <script src="../shared/assets/js/utils/map-styling-helper.js"></script>
+    
+    <!-- Chart transitions -->
+    <script src="../shared/assets/js/utils/chart-transitions.js"></script>
+    
+    <!-- Chart renderers -->
+    <script src="../shared/assets/js/bar-chart-renderer.js"></script>
+    <script src="../shared/assets/js/line-chart-renderer.js"></script>
+    <script src="../shared/assets/js/pie-chart-renderer.js"></script>
+    <script src="../shared/assets/js/grid-chart-renderer.js"></script>
+    
+    <!-- アプリケーションスクリプト -->
+    <script src="../shared/assets/js/pubsub.js"></script>
+    <script src="../shared/assets/js/chart-manager.js"></script>
+    <script src="../shared/assets/js/map-manager.js"></script>
+    <script src="../shared/assets/js/image-manager.js"></script>
+    <script src="../shared/assets/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,154 @@
+{
+  "steps": [
+    {
+      "id": "step0",
+      "image": {
+        "visible": true,
+        "src": "assets/images/tb-hero.jpg",
+        "alt": "結核との闘い"
+      },
+      "text": {
+        "visible": false
+      }
+    },
+    {
+      "id": "step1",
+      "chart": {
+        "visible": false
+      },
+      "text": {
+        "visible": true
+      }
+    },
+    {
+      "id": "step2",
+      "chart": {
+        "visible": false
+      },
+      "text": {
+        "visible": true
+      }
+    },
+    {
+      "id": "step3",
+      "chart": {
+        "visible": false
+      },
+      "text": {
+        "visible": true
+      }
+    },
+    {
+      "id": "step4",
+      "chart": {
+        "visible": false
+      },
+      "text": {
+        "visible": true
+      }
+    },
+    {
+      "id": "step5",
+      "chart": {
+        "visible": true,
+        "type": "line",
+        "dataFile": "trend_tb_cases_normalized.csv",
+        "title": "結核データの推移",
+        "xField": "year",
+        "yField": "value",
+        "config": {
+          "width": 600,
+          "height": 400,
+          "margin": {
+            "top": 20,
+            "right": 30,
+            "bottom": 40,
+            "left": 50
+          }
+        }
+      },
+      "text": {
+        "visible": true,
+        "position": {
+          "horizontal": "left",
+          "vertical": "center"
+        }
+      }
+    },
+    {
+      "id": "step6",
+      "chart": {
+        "visible": false
+      },
+      "text": {
+        "visible": true
+      }
+    },
+    {
+      "id": "step10",
+      "chart": {
+        "visible": false
+      },
+      "text": {
+        "visible": true
+      }
+    },
+    {
+      "id": "step11",
+      "map": {
+        "visible": true,
+        "mode": "cities-timeline"
+      },
+      "text": {
+        "visible": false
+      }
+    },
+    {
+      "id": "step12",
+      "map": {
+        "visible": true,
+        "mode": "cities-timeline"
+      },
+      "text": {
+        "visible": false
+      }
+    },
+    {
+      "id": "step13",
+      "map": {
+        "visible": true,
+        "mode": "cities-timeline"
+      },
+      "text": {
+        "visible": false
+      }
+    },
+    {
+      "id": "step19",
+      "chart": {
+        "visible": false
+      },
+      "text": {
+        "visible": true
+      }
+    },
+    {
+      "id": "step20",
+      "chart": {
+        "visible": false
+      },
+      "text": {
+        "visible": true
+      }
+    },
+    {
+      "id": "step25",
+      "footer": {
+        "visible": true
+      },
+      "text": {
+        "visible": false
+      }
+    }
+  ]
+}

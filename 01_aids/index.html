@@ -12,26 +12,33 @@
     <script src="https://d3js.org/topojson.v3.min.js"></script>
     <script src="https://unpkg.com/scrollama"></script>
     <script src="../shared/assets/js/libs/d3-labeler.js"></script>
+    
+    <!-- 統一スタイリングシステム -->
     <link rel="stylesheet" href="../shared/assets/css/shared-base.css">
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="../shared/assets/css/unified-base.css">
+    <script src="../shared/assets/js/unified-styling.js"></script>
+    <script src="../shared/assets/js/navigation-manager.js"></script>
+    
+    <!-- 感染症固有設定 -->
+    <script>
+        window.DISEASE_TYPE = 'aids';
+    </script>
 </head>
 <body class="bg-gray-100">
     <!-- ヘッダー -->
-    <header id="site-header" class="fixed top-0 left-0 w-full h-15 bg-white shadow-md z-50 flex items-center justify-between px-6">
+    <header id="site-header">
         <div class="site-title">
-            <h1 class="text-lg font-bold text-gray-800">JCIEスペシャルコンテンツ「HIV/エイズとの闘い ～データで見る希望と課題～」</h1>
+            <h1>JCIEスペシャルコンテンツ「HIV/エイズとの闘い ～データで見る希望と課題～」</h1>
         </div>
         <nav class="site-nav">
-            <ul class="flex space-x-6">
-                <li><span class="text-gray-900 font-bold cursor-default">エイズ</span></li>
-                <li><a href="#" class="text-gray-600 hover:text-blue-600 transition-colors duration-200">結核</a></li>
-                <li><a href="#" class="text-gray-600 hover:text-blue-600 transition-colors duration-200">マラリア</a></li>
+            <ul>
+                <!-- ナビゲーションはJavaScriptで動的に生成される -->
             </ul>
         </nav>
     </header>
 
     <!-- メインコンテナ -->
-    <div id="container" class="relative min-h-screen" style="padding-top: 60px;">
+    <div id="container">
         <!-- 固定背景（チャート・地図エリア） -->
         <div id="fixed-background" class="fixed inset-0 w-full h-full">
             <!-- チャートエリア -->

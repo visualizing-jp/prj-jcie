@@ -1,0 +1,22 @@
+{
+  "environment": "development",
+  "debugging": {
+    "enabled": true,
+    "logLevel": "debug",
+    "showConsoleOutput": true
+  },
+  "disease": {
+    "type": "tuberculosis",
+    "name": "結核との闘い",
+    "theme": {
+      "primaryColor": "#4ecdc4",
+      "secondaryColor": "#6fd4cc",
+      "accentColor": "#3bb8b0"
+    }
+  },
+  "performance": {
+    "enableAnimations": true,
+    "optimizeCharts": false,
+    "cacheData": false
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "cities": [
+    {
+      "id": "delhi",
+      "country": "India",
+      "coordinates": [77.209, 28.6139],
+      "data": {
+        "title": "デリー：結核対策の最前線",
+        "description": "インドの首都デリーでは、人口密度の高さと大気汚染により結核の感染率が高くなっています。しかし、革新的な診断技術の導入により、早期発見・早期治療が進んでいます。",
+        "thumbnail": "tb_delhi.jpg",
+        "url": "#"
+      }
+    },
+    {
+      "id": "jakarta",
+      "country": "Indonesia", 
+      "coordinates": [106.8456, -6.2088],
+      "data": {
+        "title": "ジャカルタ：コミュニティ主導の治療",
+        "description": "インドネシアのジャカルタでは、地域住民が主体となった結核治療支援プログラムが成功を収めています。患者の治療継続率が大幅に改善されました。",
+        "thumbnail": "tb_jakarta.jpg",
+        "url": "#"
+      }
+    },
+    {
+      "id": "beijing",
+      "country": "China",
+      "coordinates": [116.4074, 39.9042],
+      "data": {
+        "title": "北京：薬剤耐性結核への挑戦",
+        "description": "中国の北京では、薬剤耐性結核の治療に新しい薬剤の組み合わせが試験され、良好な結果を示しています。この取り組みが世界の結核治療に新たな希望をもたらしています。",
+        "thumbnail": "tb_beijing.jpg",
+        "url": "#"
+      }
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "version": "2.0.0",
+  "description": "Tuberculosis-specific configuration system",
+  "configFiles": {
+    "content": "content.json",
+    "appSettings": "app-settings.json"
+  },
+  "environment": {
+    "auto": true,
+    "development": "environment/development.json",
+    "production": "environment/production.json"
+  },
+  "loadOrder": [
+    "environment",
+    "appSettings", 
+    "content"
+  ],
+  "mergeStrategy": {
+    "deep": true,
+    "arrayMerge": "replace",
+    "overwriteOnConflict": true
+  },
+  "fallbacks": {
+    "useDefaults": true,
+    "continueOnError": true,
+    "logErrors": true
+  }
+}

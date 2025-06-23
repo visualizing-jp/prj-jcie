@@ -1,0 +1,430 @@
+/* ==================================================
+   統一スタイリングシステム - 全感染症共通ベース
+   ================================================== */
+
+/* CSS Variables for Typography, Colors, Animation, and Layout */
+:root {
+    /* Font Families */
+    --font-family-primary: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+    --font-family-heading: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+    --font-family-serif: "Shippori Mincho", "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "Hiragino Mincho Pro", "Noto Serif JP", "HG Mincho E", "MS Mincho", serif;
+    
+    /* Font Sizes */
+    --font-size-xs: 0.75rem;      /* 12px */
+    --font-size-sm: 0.875rem;     /* 14px */
+    --font-size-base: 1rem;       /* 16px */
+    --font-size-lg: 1.125rem;     /* 18px */
+    --font-size-xl: 1.25rem;      /* 20px */
+    --font-size-2xl: 1.5rem;      /* 24px */
+    --font-size-3xl: 1.875rem;    /* 30px */
+    --font-size-4xl: 2.25rem;     /* 36px */
+    
+    /* Font Weights */
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+    
+    /* Line Heights */
+    --line-height-tight: 1.25;
+    --line-height-normal: 1.5;
+    --line-height-relaxed: 1.625;
+    --line-height-loose: 1.75;
+    
+    /* Letter Spacing */
+    --letter-spacing-tight: -0.025em;
+    --letter-spacing-normal: 0em;
+    --letter-spacing-wide: 0.025em;
+    
+    /* Animation Durations */
+    --animation-instant: 0ms;
+    --animation-fast: 150ms;
+    --animation-short: 300ms;
+    --animation-default: 500ms;
+    --animation-long: 800ms;
+    --animation-slow: 1200ms;
+    --animation-very-slow: 2000ms;
+    
+    /* Easing Functions */
+    --easing-linear: linear;
+    --easing-ease: ease;
+    --easing-ease-in: ease-in;
+    --easing-ease-out: ease-out;
+    --easing-ease-in-out: ease-in-out;
+    --easing-quad-in: cubic-bezier(0.550, 0.085, 0.680, 0.530);
+    --easing-quad-out: cubic-bezier(0.250, 0.460, 0.450, 0.940);
+    --easing-quad-in-out: cubic-bezier(0.455, 0.030, 0.515, 0.955);
+    --easing-cubic-in: cubic-bezier(0.550, 0.055, 0.675, 0.190);
+    --easing-cubic-out: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+    --easing-cubic-in-out: cubic-bezier(0.645, 0.045, 0.355, 1.000);
+    
+    /* 感染症固有の色変数 - DiseaseDetectorにより動的に設定される */
+    --disease-primary: var(--color-primary-red);
+    --disease-secondary: var(--color-primary-red);
+    --disease-accent: var(--color-primary-red);
+    
+    /* 共通色システム */
+    --color-primary-blue: #2563eb;
+    --color-primary-red: #dc2626;
+    --color-primary-green: #059669;
+    --color-primary-orange: #d97706;
+    --color-primary-purple: #7c3aed;
+    --color-primary-cyan: #0891b2;
+    --color-primary-pink: #be185d;
+    --color-primary-lime: #65a30d;
+    
+    --color-text-primary: #1f2937;
+    --color-text-secondary: #374151;
+    --color-text-body: #4b5563;
+    --color-text-light: #6b7280;
+    --color-text-muted: #9ca3af;
+    --color-text-white: #ffffff;
+    
+    --color-background-white: #ffffff;
+    --color-background-light: #f9fafb;
+    --color-background-gray: #f3f4f6;
+    --color-background-dark: #1f2937;
+    
+    --color-border-light: #e5e7eb;
+    --color-border-default: #d1d5db;
+    --color-border-dark: #9ca3af;
+    
+    --color-accent-success: #10b981;
+    --color-accent-info: #3b82f6;
+    --color-accent-warning: #f59e0b;
+    --color-accent-error: #ef4444;
+    
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-default: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    
+    /* Layout */
+    --header-height: 60px;
+}
+
+/* ==================================================
+   ヘッダー共通スタイル
+   ================================================== */
+
+#site-header {
+    height: var(--header-height);
+    background: var(--color-background-white);
+    box-shadow: var(--shadow-md);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1.5rem;
+}
+
+.site-title h1 {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+}
+
+.site-nav ul {
+    display: flex;
+    gap: 1.5rem;
+}
+
+#site-header .site-nav a {
+    color: var(--color-text-light);
+    text-decoration: none;
+    transition: color var(--animation-short) var(--easing-ease-in-out);
+}
+
+#site-header .site-nav a:hover {
+    color: #2563eb;
+}
+
+/* 現在のページ（span要素）のスタイル */
+#site-header .site-nav span {
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-sm);
+    display: block;
+    padding: 4px 8px;
+    cursor: default;
+    position: relative;
+}
+
+/* 現在のページの感染症カラーバー */
+#site-header .site-nav span::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 6px;
+    background-color: var(--disease-primary);
+    border-radius: 3px;
+}
+
+/* リンク項目の感染症カラーバー - 結核 */
+#site-header .site-nav a[href*="tuberculosis"]::before,
+#site-header .site-nav li:nth-child(2) a::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 6px;
+    background-color: #4ecdc4; /* 結核のteal色 */
+    border-radius: 3px;
+}
+
+#site-header .site-nav a[href*="tuberculosis"]:hover,
+#site-header .site-nav li:nth-child(2) a:hover {
+    color: #4ecdc4;
+}
+
+/* リンク項目の感染症カラーバー - マラリア */
+#site-header .site-nav a[href*="malaria"]::before,
+#site-header .site-nav li:nth-child(3) a::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 6px;
+    background-color: #f4a620; /* マラリアの黄色 */
+    border-radius: 3px;
+}
+
+#site-header .site-nav a[href*="malaria"]:hover,
+#site-header .site-nav li:nth-child(3) a:hover {
+    color: #f4a620;
+}
+
+/* ==================================================
+   メインコンテナとレイアウト
+   ================================================== */
+
+#container {
+    position: relative;
+    min-height: 100vh;
+    padding-top: var(--header-height);
+}
+
+#fixed-background {
+    position: fixed;
+    top: var(--header-height);
+    left: 0;
+    width: 100%;
+    height: calc(100vh - var(--header-height));
+    z-index: 1;
+}
+
+#scroll-content {
+    position: relative;
+    z-index: 10;
+}
+
+/* チャートコンテナのスタイル */
+#chart-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 1;
+    transition: opacity var(--animation-default) var(--easing-ease-in-out);
+}
+
+#chart-container.visible {
+    opacity: 1;
+}
+
+/* 地図コンテナのスタイル */
+#map-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 1;
+    transition: opacity var(--animation-default) var(--easing-ease-in-out);
+}
+
+/* 画像コンテナのスタイル */
+#image-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 1;
+    transition: opacity var(--animation-default) var(--easing-ease-in-out);
+}
+
+/* スクロールテキストエリア */
+#scrolly-text {
+    position: relative;
+    z-index: 10;
+}
+
+.step {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+/* 地図上の国名ラベルスタイル */
+.city-label,
+.single-city-label,
+.timeline-label,
+#map text,
+#map-container text {
+    font-family: var(--font-family-serif) !important;
+    font-weight: var(--font-weight-bold) !important;
+    font-size: 16px !important;
+}
+
+/* ==================================================
+   フッター共通スタイル
+   ================================================== */
+
+.site-footer {
+    background-color: rgb(118, 80, 127);
+    color: #ffffff;
+    padding: 3rem 0 2rem 0;
+    margin-top: 0;
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    width: 100%;
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem 4rem;
+    align-items: start;
+}
+
+.footer-section h3 {
+    font-family: var(--font-family-serif);
+    font-size: 1.25rem;
+    font-weight: var(--font-weight-bold);
+    margin: 0 0 1rem 0;
+    color: #ffffff;
+}
+
+.footer-logo {
+    margin-bottom: 1rem;
+}
+
+.footer-logo img {
+    height: auto;
+    max-width: 200px;
+    filter: brightness(0) invert(1);
+}
+
+.footer-tagline {
+    font-size: 0.875rem;
+    color: #d1d5db;
+    margin: 0.5rem 0 0 0;
+    font-style: italic;
+}
+
+.footer-address {
+    font-size: 0.875rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    color: #e5e7eb;
+    white-space: nowrap;
+}
+
+.footer-contact {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.contact-item {
+    font-size: 0.875rem;
+    color: #e5e7eb;
+    white-space: nowrap;
+}
+
+.contact-item span {
+    font-weight: var(--font-weight-medium);
+    color: #ffffff;
+    margin-right: 0.25rem;
+}
+
+.footer-links {
+    display: none;
+}
+
+.footer-copyright {
+    border-top: 1px solid #374151;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    text-align: center;
+    font-size: 0.75rem;
+    color: #9ca3af;
+}
+
+/* ==================================================
+   レスポンシブ対応
+   ================================================== */
+
+@media (max-width: 768px) {
+    .footer-content {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    
+    .footer-contact {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .footer-container {
+        padding: 0 1rem;
+    }
+    
+    .site-footer {
+        padding: 2rem 0 1.5rem 0;
+    }
+    
+    #site-header .site-title h1 {
+        font-size: var(--font-size-base);
+    }
+    
+    .site-nav ul {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
