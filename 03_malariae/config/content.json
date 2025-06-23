@@ -3,7 +3,7 @@
     {
       "id": "step0",
       "text": {
-        "content": "<div class=\"text-container\"><h1>結核との闘い</h1><div class=\"subtitle\">～データで見る希望と課題～</div></div>",
+        "content": "<div class=\"text-container\"><h1>マラリアとの闘い（仮）</h1><div class=\"subtitle\">～データで見る希望と課題～（仮タイトル）</div></div>",
         "visible": true,
         "position": {
           "horizontal": "center",
@@ -19,9 +19,9 @@
         "visible": false
       },
       "image": {
+        "src": "assets/images/malaria-hero.jpg",
+        "alt": "マラリアとの闘い（仮画像）",
         "visible": true,
-        "src": "assets/images/tb-hero.jpg",
-        "alt": "結核との闘い",
         "position": {
           "horizontal": "center",
           "vertical": "center",
@@ -76,8 +76,8 @@
       "chart": {
         "visible": true,
         "type": "line",
-        "dataFile": "trend_tb_cases_normalized.csv",
-        "title": "結核データの推移",
+        "dataFile": "trend_malaria_cases_normalized.csv",
+        "title": "マラリアデータの推移",
         "xField": "year",
         "yField": "value",
         "config": {

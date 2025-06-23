@@ -1,0 +1,33 @@
+{
+  "version": "1.0.0",
+  "configFiles": {
+    "content": "content.config.json",
+    "settings": "settings.config.json",
+    "app": "app.config.json",
+    "theme": "theme.config.json",
+    "animation": "animation.config.json"
+  },
+  "environment": {
+    "auto": true,
+    "development": "environment/development.json",
+    "production": "environment/production.json"
+  },
+  "loadOrder": [
+    "environment",
+    "app",
+    "theme", 
+    "animation",
+    "settings",
+    "content"
+  ],
+  "mergeStrategy": {
+    "deep": true,
+    "arrayMerge": "replace",
+    "overwriteOnConflict": true
+  },
+  "fallbacks": {
+    "useDefaults": true,
+    "continueOnError": true,
+    "logErrors": true
+  }
+}

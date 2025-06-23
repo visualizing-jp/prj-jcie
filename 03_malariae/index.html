@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JCIEスペシャルコンテンツ「マラリアとの闘い ～データで見る希望と課題～」</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://d3js.org/topojson.v3.min.js"></script>
+    <script src="https://unpkg.com/scrollama"></script>
+    <script src="../shared/assets/js/libs/d3-labeler.js"></script>
+    
+    <!-- 統一スタイリングシステム -->
+    <link rel="stylesheet" href="../shared/assets/css/shared-base.css">
+    <link rel="stylesheet" href="../shared/assets/css/unified-base.css">
+    <script src="../shared/assets/js/unified-styling.js"></script>
+    <script src="../shared/assets/js/navigation-manager.js"></script>
+    
+    <!-- 感染症固有設定 -->
+    <script>
+        window.DISEASE_TYPE = 'malariae';
+    </script>
+</head>
+<body class="bg-gray-100">
+    <!-- ヘッダー -->
+    <header id="site-header">
+        <div class="site-title">
+            <h1>JCIEスペシャルコンテンツ「マラリアとの闘い ～データで見る希望と課題～」</h1>
+        </div>
+        <nav class="site-nav">
+            <ul>
+                <!-- ナビゲーションはJavaScriptで動的に生成される -->
+            </ul>
+        </nav>
+    </header>
+
+    <!-- メインコンテナ -->
+    <div id="container">
+        <!-- 固定背景（チャート・地図エリア） -->
+        <div id="fixed-background">
+            <!-- チャートエリア -->
+            <div id="chart-container">
+                <div id="chart"></div>
+            </div>
+            
+            <!-- 地図エリア -->
+            <div id="map-container">
+                <div id="map"></div>
+            </div>
+            
+            <!-- 画像エリア -->
+            <div id="image-container">
+                <div id="image"></div>
+            </div>
+        </div>
+
+        <!-- スクロールテキストエリア -->
+        <div id="scrolly-text">
+            <div class="text-section" id="text-section">
+                <!-- テキストステップはJavaScriptで動的に生成 -->
+
+                <div class="step" data-step="0">
+                    <div class="w-full min-h-screen flex items-center justify-center relative">
+                        <!-- 背景画像とオーバーレイ用の特別なコンテナ -->
+                        <div class="absolute inset-0 z-0" id="step0-bg-container">
+                            <!-- 背景画像は ImageManager で管理される -->
+                        </div>
+                        
+                        <!-- 黒い半透明オーバーレイ -->
+                        <div class="absolute inset-0 bg-black bg-opacity-70 z-10"></div>
+                        
+                        <!-- タイトルコンテナ -->
+                        <div class="relative z-20 text-center">
+                            <h1 class="text-white font-thin mb-4" style="font-size: 100px; text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8); font-family: 'Shippori Mincho', serif;">マラリアとの闘い（仮）</h1>
+                            <p class="text-white font-light" style="font-size: 30px; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8); font-family: 'Shippori Mincho', serif;">～データで見る希望と課題～（仮タイトル）</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step" data-step="1">
+                    <div class="w-full min-h-screen flex items-center">
+                        <div class="max-w-lg mx-auto p-8 bg-white bg-opacity-90 rounded-lg shadow-lg">
+                            <h2 class="text-2xl font-bold mb-4">マラリアとの闘い</h2>
+                            <p class="text-gray-700 leading-relaxed">
+                                マラリアは蚊によって媒介される感染症で、特にサハラ以南アフリカ地域で深刻な問題となっています。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step" data-step="2">
+                    <div class="w-full min-h-screen flex items-center">
+                        <div class="max-w-lg mx-auto p-8 bg-white bg-opacity-90 rounded-lg shadow-lg">
+                            <h2 class="text-2xl font-bold mb-4">グローバルファンドの取り組み</h2>
+                            <p class="text-gray-700 leading-relaxed">
+                                2002年に設立されたグローバルファンドは、マラリア対策においても重要な役割を果たしています。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step" data-step="3">
+                    <div class="w-full min-h-screen flex items-center">
+                        <div class="max-w-lg mx-auto p-8 bg-white bg-opacity-90 rounded-lg shadow-lg">
+                            <h2 class="text-2xl font-bold mb-4">予防対策の効果</h2>
+                            <p class="text-gray-700 leading-relaxed">
+                                殺虫剤処理済み蚊帳の配布や室内残留散布などの予防対策により、マラリアの感染率は大幅に減少しました。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step" data-step="4">
+                    <div class="w-full min-h-screen flex items-center">
+                        <div class="max-w-lg mx-auto p-8 bg-white bg-opacity-90 rounded-lg shadow-lg">
+                            <h2 class="text-2xl font-bold mb-4">治療へのアクセス改善</h2>
+                            <p class="text-gray-700 leading-relaxed">
+                                迅速診断検査キットの普及と効果的な治療薬の提供により、マラリアによる死亡率が大幅に改善されています。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step" data-step="5">
+                    <div class="w-full min-h-screen flex items-center">
+                        <div class="max-w-lg mx-auto p-8 bg-white bg-opacity-90 rounded-lg shadow-lg">
+                            <h2 class="text-2xl font-bold mb-4">データで見る成果</h2>
+                            <p class="text-gray-700 leading-relaxed">
+                                マラリアの死亡者数と新規感染者数の推移をデータで確認してみましょう。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step" data-step="10">
+                    <div class="w-full min-h-screen flex items-center justify-center">
+                        <div class="max-w-lg mx-auto p-8 bg-white bg-opacity-90 rounded-lg shadow-lg">
+                            <h2 class="text-2xl font-bold mb-4">世界全体での取り組み</h2>
+                            <p class="text-gray-700 leading-relaxed">
+                                マラリア対策は世界規模での協力が重要です。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step" data-step="11">
+                    <div class="w-full min-h-screen flex items-center justify-center">
+                        <div class="max-w-lg mx-auto p-8 bg-white bg-opacity-90 rounded-lg shadow-lg">
+                            <h2 class="text-2xl font-bold mb-4">マラリア対策の成功事例</h2>
+                            <p class="text-gray-700 leading-relaxed">
+                                各地域での成功事例をご紹介します。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 都市ステップコンテナ -->
+                <div id="city-steps-container"></div>
+
+                <div class="step" data-step="25">
+                    <div class="w-full min-h-screen flex items-center">
+                        <!-- フッターコンテンツは main.js で動的に生成される -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 共通スクリプト -->
+    <script>
+        window.DISEASE_TYPE = 'malariae';
+    </script>
+    
+    <script src="../shared/assets/js/config/disease-config.js"></script>
+    <script src="../shared/assets/js/utils/config-loader.js"></script>
+    <script src="../shared/assets/js/config/defaults.js"></script>
+    <script src="../shared/assets/js/utils/svg-helper.js"></script>
+    <script src="../shared/assets/js/utils/position-manager.js"></script>
+    <script src="../shared/assets/js/utils/chart-transitions.js"></script>
+    <script src="../shared/assets/js/pubsub.js"></script>
+    <script src="../shared/assets/js/utils/base-manager.js"></script>
+    <script src="../shared/assets/js/line-chart-renderer.js"></script>
+    <script src="../shared/assets/js/bar-chart-renderer.js"></script>
+    <script src="../shared/assets/js/pie-chart-renderer.js"></script>
+    <script src="../shared/assets/js/grid-chart-renderer.js"></script>
+    <script src="../shared/assets/js/image-manager.js"></script>
+    <script src="../shared/assets/js/chart-manager.js"></script>
+    <script src="../shared/assets/js/map-manager.js"></script>
+    <script src="../shared/assets/js/main.js"></script>
+</body>
+</html>

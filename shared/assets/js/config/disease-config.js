@@ -59,9 +59,9 @@ const DISEASE_CONFIG = {
         nameEn: 'Fighting Malaria',
         subtitle: '～データで見る希望と課題～',
         color: {
-            primary: '#45b7d1',
-            secondary: '#67c4d7',
-            accent: '#2a9bbf'
+            primary: '#f4a620',
+            secondary: '#f6b84a',
+            accent: '#e89813'
         },
         navigation: {
             current: 'マラリア',

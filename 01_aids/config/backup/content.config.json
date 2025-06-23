@@ -3,8 +3,14 @@
     {
       "id": "step0",
       "text": {
-        "content": "",
-        "visible": false
+        "content": "<div class=\"text-container\"><h1>HIV/エイズとの闘い</h1><div class=\"subtitle\">～データで見る希望と課題～</div></div>",
+        "visible": true,
+        "position": {
+          "horizontal": "center",
+          "vertical": "center",
+          "width": "100%",
+          "height": "100%"
+        }
       },
       "chart": {
         "visible": false
