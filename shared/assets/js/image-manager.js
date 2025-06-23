@@ -187,3 +187,6 @@ class ImageManager extends BaseManager {
         }
     }
 }
+
+// グローバルスコープで利用可能にする（ES6モジュール移行前の暫定措置）
+window.ImageManager = ImageManager;

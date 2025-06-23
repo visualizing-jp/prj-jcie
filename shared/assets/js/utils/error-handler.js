@@ -191,15 +191,25 @@ class ErrorHandler {
 
         // エラー表示要素を作成
         const errorDiv = document.createElement('div');
+        if (!errorDiv) {
+            console.error('Failed to create error notification element');
+            return;
+        }
         errorDiv.id = 'error-notification';
         errorDiv.className = `error-notification error-${errorInfo.severity}`;
-        errorDiv.innerHTML = `
-            <div class="error-content">
-                <span class="error-icon">⚠️</span>
-                <span class="error-message">${userMessage}</span>
-                <button class="error-close" onclick="this.parentElement.parentElement.remove()">×</button>
-            </div>
-        `;
+        
+        try {
+            errorDiv.innerHTML = `
+                <div class="error-content">
+                    <span class="error-icon">⚠️</span>
+                    <span class="error-message">${userMessage}</span>
+                    <button class="error-close" onclick="this.parentElement.parentElement.remove()">×</button>
+                </div>
+            `;
+        } catch (error) {
+            console.error('Failed to set innerHTML for error notification:', error);
+            return;
+        }
 
         // スタイルを適用
         errorDiv.style.cssText = `
@@ -278,21 +288,30 @@ class ErrorHandler {
      */
     static showDebugPanel(errorInfo) {
         const debugPanel = document.createElement('div');
+        if (!debugPanel) {
+            console.error('Failed to create debug panel element');
+            return;
+        }
         debugPanel.id = 'error-debug-panel';
-        debugPanel.innerHTML = `
-            <div style="position: fixed; bottom: 20px; left: 20px; max-width: ${window.AppDefaults?.errorModal?.maxWidth || '600px'}; 
-                        background: #2c3e50; color: #ecf0f1; padding: 20px; 
-                        border-radius: 8px; font-family: monospace; font-size: 12px;
-                        max-height: ${window.AppDefaults?.errorModal?.imageMaxHeight || '400px'}; overflow-y: auto; z-index: 10001;">
-                <h3 style="margin-top: 0;">Debug Information</h3>
-                <pre>${JSON.stringify(errorInfo, null, 2)}</pre>
-                <button onclick="this.parentElement.remove()" 
-                        style="margin-top: 10px; padding: 5px 10px; cursor: pointer;">
-                    Close
-                </button>
-            </div>
-        `;
-        document.body.appendChild(debugPanel);
+        
+        try {
+            debugPanel.innerHTML = `
+                <div style="position: fixed; bottom: 20px; left: 20px; max-width: ${window.AppDefaults?.errorModal?.maxWidth || '600px'}; 
+                            background: #2c3e50; color: #ecf0f1; padding: 20px; 
+                            border-radius: 8px; font-family: monospace; font-size: 12px;
+                            max-height: ${window.AppDefaults?.errorModal?.imageMaxHeight || '400px'}; overflow-y: auto; z-index: 10001;">
+                    <h3 style="margin-top: 0;">Debug Information</h3>
+                    <pre>${JSON.stringify(errorInfo, null, 2)}</pre>
+                    <button onclick="this.parentElement.remove()" 
+                            style="margin-top: 10px; padding: 5px 10px; cursor: pointer;">
+                        Close
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(debugPanel);
+        } catch (error) {
+            console.error('Failed to set innerHTML for debug panel:', error);
+        }
     }
 
     /**

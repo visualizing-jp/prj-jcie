@@ -1508,3 +1508,6 @@ class MapManager extends BaseManager {
         super.destroy();
     }
 }
+
+// グローバルスコープで利用可能にする（ES6モジュール移行前の暫定措置）
+window.MapManager = MapManager;

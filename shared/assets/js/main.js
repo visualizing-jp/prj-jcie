@@ -127,10 +127,15 @@ class ScrollytellingApp {
         citiesData.cities.forEach((city, index) => {
             const stepIndex = 11 + index; // step11から開始
             const stepDiv = document.createElement('div');
+            if (!stepDiv) {
+                console.error('Failed to create step element');
+                return;
+            }
             stepDiv.className = 'step';
             stepDiv.setAttribute('data-step', stepIndex.toString());
             
-            stepDiv.innerHTML = `
+            try {
+                stepDiv.innerHTML = `
                 <div class="w-full min-h-screen flex items-center">
                     <div class="max-w-lg p-8 bg-white bg-opacity-90 rounded-lg shadow-lg">
                         ${city.data.thumbnail ? `
@@ -160,9 +165,13 @@ class ScrollytellingApp {
                         ` : ''}
                     </div>
                 </div>
-            `;
-            
-            container.appendChild(stepDiv);
+                `;
+                
+                container.appendChild(stepDiv);
+            } catch (error) {
+                console.error('Failed to set innerHTML for city step:', error);
+                console.error('City data:', city);
+            }
         });
         
     }
@@ -468,9 +477,14 @@ class ScrollytellingApp {
 
         // フッター要素を作成
         const footer = document.createElement('footer');
+        if (!footer) {
+            console.error('Failed to create footer element');
+            return;
+        }
         footer.className = 'site-footer';
         
-        footer.innerHTML = `
+        try {
+            footer.innerHTML = `
             <div class="footer-container">
                 <div class="footer-content">
                     <div class="footer-section">
@@ -503,9 +517,12 @@ class ScrollytellingApp {
                     © Japan Center for International Exchange. All rights reserved.
                 </div>
             </div>
-        `;
+            `;
 
-        containerDiv.appendChild(footer);
+            containerDiv.appendChild(footer);
+        } catch (error) {
+            console.error('Failed to set innerHTML for footer:', error);
+        }
     }
 
     /**
@@ -961,8 +978,17 @@ class ScrollytellingApp {
 
 }
 
+// グローバルスコープで利用可能にする（ES6モジュール移行前の暫定措置）
+window.ScrollytellingApp = ScrollytellingApp;
+
 // DOMContentLoaded後にアプリケーションを開始
 document.addEventListener('DOMContentLoaded', () => {
+    // 診断モードでは自動初期化をスキップ
+    if (window.DIAGNOSIS_MODE) {
+        console.log('📋 Diagnosis Mode: ScrollytellingApp auto-initialization skipped');
+        return;
+    }
+    
     window.app = new ScrollytellingApp();
 });
 
