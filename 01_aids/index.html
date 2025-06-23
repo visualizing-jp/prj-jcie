@@ -259,7 +259,15 @@
     </div>
 
     <!-- スクリプト読み込み -->
-    <!-- 設定読み込み（最初に読み込む） -->
+    <!-- 感染症タイプ設定（最初に設定） -->
+    <script>
+        window.DISEASE_TYPE = 'aids';
+    </script>
+    
+    <!-- 感染症設定（ConfigLoaderより前に読み込む） -->
+    <script src="assets/js/config/disease-config.js"></script>
+    
+    <!-- 設定読み込み -->
     <script src="assets/js/utils/config-loader.js"></script>
     
     <!-- グローバル設定 -->

@@ -2,13 +2,13 @@
   "version": "2.0.0",
   "description": "Simplified 3-file configuration system",
   "configFiles": {
-    "content": "config/content.json",
-    "appSettings": "config/app-settings.json"
+    "content": "content.json",
+    "appSettings": "app-settings.json"
   },
   "environment": {
     "auto": true,
-    "development": "config/environment/development.json",
-    "production": "config/environment/production.json"
+    "development": "environment/development.json",
+    "production": "environment/production.json"
   },
   "loadOrder": [
     "environment",

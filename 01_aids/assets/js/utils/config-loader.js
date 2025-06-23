@@ -1,6 +1,7 @@
 /**
  * ConfigLoader - 外部設定ファイルの読み込みと管理
  * JSON設定ファイルを読み込み、フォールバック値を提供
+ * 感染症別の動的パス解決に対応
  */
 class ConfigLoader {
     constructor() {
@@ -17,6 +18,19 @@ class ConfigLoader {
         this.environment = this._detectEnvironment();
         this.loaded = false;
         this.loadPromise = null;
+        this.diseaseDetector = null;
+        this._initializeDiseaseDetector();
+    }
+
+    /**
+     * 感染症検出器を初期化
+     * @private
+     */
+    _initializeDiseaseDetector() {
+        // DiseaseDetectorが利用可能な場合は使用
+        if (window.DiseaseDetector) {
+            this.diseaseDetector = window.DiseaseDetector;
+        }
     }
 
     /**
@@ -42,8 +56,14 @@ class ConfigLoader {
      */
     async _loadConfigs() {
         try {
-            // メイン設定ファイルを読み込み
-            this.mainConfig = await this._loadConfig('config/main.config.json');
+            // 感染症検出器が未初期化の場合は再初期化
+            if (!this.diseaseDetector) {
+                this._initializeDiseaseDetector();
+            }
+
+            // メイン設定ファイルを読み込み（感染症対応パス）
+            const mainConfigPath = this._resolveConfigPath('main.config.json');
+            this.mainConfig = await this._loadConfig(mainConfigPath);
             if (!this.mainConfig) {
                 console.warn('Main config not found, using legacy mode');
                 return this._loadLegacyConfigs();
@@ -55,7 +75,8 @@ class ConfigLoader {
             
             // app-settings.jsonを読み込み（統合設定）
             if (this.mainConfig.configFiles.appSettings) {
-                const appSettings = await this._loadConfig(this.mainConfig.configFiles.appSettings);
+                const appSettingsPath = this._resolveConfigPath(this.mainConfig.configFiles.appSettings);
+                const appSettings = await this._loadConfig(appSettingsPath);
                 if (appSettings) {
                     // 統合設定から個別の設定に分解
                     this.configs.app = appSettings.app || {};
@@ -71,7 +92,8 @@ class ConfigLoader {
             
             // content.jsonを読み込み
             if (this.mainConfig.configFiles.content) {
-                this.configs.content = await this._loadConfig(this.mainConfig.configFiles.content) || {};
+                const contentPath = this._resolveConfigPath(this.mainConfig.configFiles.content);
+                this.configs.content = await this._loadConfig(contentPath) || {};
             }
 
             // 設定をマージ
@@ -89,6 +111,12 @@ class ConfigLoader {
 
         } catch (error) {
             console.error('Failed to load configurations, using defaults', error);
+            console.error('Error details:', {
+                message: error.message,
+                stack: error.stack,
+                diseaseDetector: !!this.diseaseDetector,
+                mainConfig: this.mainConfig
+            });
             return this._loadFallbackConfigs();
         }
     }
@@ -152,8 +180,22 @@ class ConfigLoader {
             envFile = this.mainConfig.environment.development; // デフォルトは開発環境
         }
 
-        const envConfig = await this._loadConfig(envFile);
-        return envConfig || this._getDefaultEnvironmentConfig();
+        // 環境設定ファイルパスを解決
+        const envConfigPath = this._resolveConfigPath(envFile);
+        const envConfig = await this._loadConfig(envConfigPath);
+        
+        // 感染症別のパス設定を環境設定に統合
+        const finalEnvConfig = envConfig || this._getDefaultEnvironmentConfig();
+        if (this.diseaseDetector) {
+            const diseaseConfig = this.diseaseDetector.getDiseaseConfig();
+            finalEnvConfig.paths = {
+                ...finalEnvConfig.paths,
+                ...diseaseConfig.paths
+            };
+            finalEnvConfig.disease = diseaseConfig;
+        }
+        
+        return finalEnvConfig;
     }
 
     /**
@@ -237,18 +279,79 @@ class ConfigLoader {
     }
 
     /**
+     * 設定ファイルパスを解決（感染症対応）
+     * @private
+     */
+    _resolveConfigPath(configFile) {
+        if (this.diseaseDetector) {
+            return this.diseaseDetector.resolveConfigPath(configFile);
+        }
+        // フォールバック（従来の動作）
+        return `config/${configFile}`;
+    }
+
+    /**
+     * データファイルパスを解決（感染症対応）
+     * @param {string} dataFile - データファイル名（data/プレフィックス付きも対応）
+     * @returns {string} 解決されたパス
+     */
+    resolveDataPath(dataFile) {
+        // data/プレフィックスが既にある場合はそのまま返す
+        if (dataFile.startsWith('data/')) {
+            return dataFile;
+        }
+        
+        if (this.diseaseDetector) {
+            return this.diseaseDetector.resolveDataPath(dataFile);
+        }
+        // フォールバック（従来の動作）
+        return `data/${dataFile}`;
+    }
+
+    /**
+     * アセットパスを解決（感染症対応）
+     * @param {string} assetFile - アセットファイル名（assets/プレフィックス付きも対応）
+     * @param {string} subType - サブタイプ
+     * @returns {string} 解決されたパス
+     */
+    resolveAssetPath(assetFile, subType = '') {
+        // assets/プレフィックスが既にある場合はそのまま返す
+        if (assetFile.startsWith('assets/')) {
+            return assetFile;
+        }
+        
+        if (this.diseaseDetector) {
+            return this.diseaseDetector.resolveAssetPath(assetFile, subType);
+        }
+        // フォールバック（従来の動作）
+        return `assets/${assetFile}`;
+    }
+
+    /**
+     * 感染症設定を取得
+     * @returns {Object} 感染症設定
+     */
+    getDiseaseConfig() {
+        if (this.diseaseDetector) {
+            return this.diseaseDetector.getDiseaseConfig();
+        }
+        return null;
+    }
+
+    /**
      * 単一の設定ファイルを読み込む
      * @private
      */
     async _loadConfig(path) {
         try {
+            console.log(`📁 Loading config: ${path}`);
             const response = await fetch(path);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             return await response.json();
         } catch (error) {
-            console.warn(`Failed to load ${path}:`, error);
+            console.warn(`❌ Failed to load ${path}:`, error);
             return null;
         }
     }
@@ -259,6 +362,16 @@ class ConfigLoader {
      */
     _applyCSSVariables() {
         const root = document.documentElement;
+
+        // 感染症別テーマカラーを最初に設定
+        if (this.diseaseDetector) {
+            const diseaseConfig = this.diseaseDetector.getDiseaseConfig();
+            Object.entries(diseaseConfig.color).forEach(([key, value]) => {
+                root.style.setProperty(`--disease-color-${key}`, value);
+            });
+            // 主要カラーをシステム全体のprimaryに設定
+            root.style.setProperty(`--color-primary`, diseaseConfig.color.primary);
+        }
 
         // アニメーション時間
         if (this.configs.animation?.durations) {
@@ -274,7 +387,7 @@ class ConfigLoader {
             });
         }
 
-        // 色設定
+        // 色設定（感染症テーマカラーが上書き優先）
         if (this.configs.theme?.colors) {
             this._flattenObject(this.configs.theme.colors, 'color').forEach(({ key, value }) => {
                 root.style.setProperty(`--${key}`, value);

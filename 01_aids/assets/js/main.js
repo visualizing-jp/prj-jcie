@@ -53,8 +53,9 @@ class ScrollytellingApp {
             // デバッグ情報を出力
             const env = window.ConfigLoader.getEnvironment();
             
-            // cities-timeline.jsonを読み込む
-            const citiesData = await d3.json('data/cities-timeline.json');
+            // cities-timeline.jsonを読み込む（感染症対応パス）
+            const citiesDataPath = window.ConfigLoader.resolveDataPath('cities-timeline.json');
+            const citiesData = await d3.json(citiesDataPath);
             
             // 設定から必要なデータファイルを抽出
             const dataFiles = new Set();
@@ -77,16 +78,16 @@ class ScrollytellingApp {
             });
             
             
-            // 動的にデータファイルを読み込む
+            // 動的にデータファイルを読み込む（感染症対応パス）
             const dataPromises = [
-                ...Array.from(dataFiles).map(file => d3.csv(file)),
-                d3.json('data/countries-110m.json')
+                ...Array.from(dataFiles).map(file => d3.csv(window.ConfigLoader.resolveDataPath(file))),
+                d3.json(window.ConfigLoader.resolveDataPath('countries-110m.json'))
             ];
             
             const dataResults = await Promise.all(dataPromises);
             const mapData = dataResults.pop(); // 最後は地図データ
             
-            // ファイル名でデータをマッピング
+            // ファイル名でデータをマッピング（元のファイル名をキーとして使用）
             const csvData = {};
             Array.from(dataFiles).forEach((file, index) => {
                 csvData[file] = dataResults[index];
