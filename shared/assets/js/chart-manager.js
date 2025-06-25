@@ -269,6 +269,7 @@ class ChartManager extends BaseManager {
      * @param {Object} chartData - チャートデータ
      */
     handleGridLayout(chartData) {
+        console.log('ChartManager: handleGridLayout called with:', chartData);
         
         // GridChartRendererに委譲
         const gridRenderer = this.renderers.grid;
@@ -279,7 +280,17 @@ class ChartManager extends BaseManager {
             this.activeRenderer = gridRenderer;
             this.currentLayout = 'grid';
             
-            gridRenderer.updateChart(chartData);
+            // position設定をconfig内に統合してGridChartRendererに渡す
+            const enhancedChartData = {
+                ...chartData,
+                config: {
+                    ...chartData.config,
+                    position: chartData.position // position設定をconfigに統合
+                }
+            };
+            
+            console.log('ChartManager: Passing enhanced data to GridChartRenderer:', enhancedChartData);
+            gridRenderer.updateChart(enhancedChartData);
         } else {
             console.warn('ChartManager: GridChartRenderer not available');
             this.handleFallback(chartData);

@@ -231,47 +231,13 @@
     z-index: 10;
 }
 
-/* チャートコンテナのスタイル */
-#chart-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    opacity: 0;
-    transition: opacity var(--animation-default) var(--easing-ease-in-out);
-    pointer-events: none;
-}
+/* ==================================================
+   コンテンツコンテナの統一スタイル
+   ================================================== */
 
-#chart-container.visible {
-    opacity: 1;
-    pointer-events: auto;
-}
-
-/* 地図コンテナのスタイル */
-#map-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    opacity: 0;
-    transition: opacity var(--animation-default) var(--easing-ease-in-out);
-    pointer-events: none;
-}
-
-#map-container.visible {
-    opacity: 1;
-    pointer-events: auto;
-}
-
-/* 画像コンテナのスタイル */
+/* 基本コンテナスタイル - 全コンテナ共通 */
+#chart-container,
+#map-container,
 #image-container {
     position: absolute;
     top: 0;
@@ -281,11 +247,15 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    /* BaseManagerによる表示制御 - デフォルトは非表示 */
     opacity: 0;
-    transition: opacity var(--animation-default) var(--easing-ease-in-out);
     pointer-events: none;
+    transition: opacity var(--animation-default) var(--easing-ease-in-out);
 }
 
+/* 表示状態 - BaseManagerの.visibleクラスで制御 */
+#chart-container.visible,
+#map-container.visible,
 #image-container.visible {
     opacity: 1;
     pointer-events: auto;

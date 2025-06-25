@@ -63,20 +63,15 @@ class ImageManager extends BaseManager {
     }
 
     /**
-     * 画像コンテナを非表示
+     * 画像コンテナを非表示（BaseManagerの統一メソッドを使用）
      */
-    hide() {
-        this.container.classed('visible', false);
+    hide(options = {}) {
+        // BaseManagerの統一hideメソッドを呼び出す
+        super.hide(options);
         
-        // 通常の画像要素をクリア
+        // 画像特有のクリーンアップ処理
         if (this.image) {
-            this.image
-                .transition()
-                .duration(300)
-                .style('opacity', 0)
-                .on('end', function() {
-                    d3.select(this).attr('src', '');
-                });
+            this.image.attr('src', '');
         }
         
         // step0の背景画像もクリア
