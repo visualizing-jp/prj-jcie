@@ -68,6 +68,17 @@ class ImageManager extends BaseManager {
     hide() {
         this.container.classed('visible', false);
         
+        // 通常の画像要素をクリア
+        if (this.image) {
+            this.image
+                .transition()
+                .duration(300)
+                .style('opacity', 0)
+                .on('end', function() {
+                    d3.select(this).attr('src', '');
+                });
+        }
+        
         // step0の背景画像もクリア
         const step0BgContainer = d3.select('#step0-bg-container');
         if (!step0BgContainer.empty()) {

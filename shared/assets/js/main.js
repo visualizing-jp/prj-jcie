@@ -320,12 +320,16 @@ class ScrollytellingApp {
             };
             pubsub.publish(EVENTS.MAP_UPDATE, mapData);
         } else {
-            // Map configuration not found
+            // 地図設定がない場合は明示的に非表示にする
+            pubsub.publish(EVENTS.MAP_UPDATE, { visible: false });
         }
 
         // 画像更新
         if (stepConfig.image) {
             pubsub.publish(EVENTS.IMAGE_UPDATE, stepConfig.image);
+        } else {
+            // 画像設定がない場合は明示的に非表示にする
+            pubsub.publish(EVENTS.IMAGE_UPDATE, { visible: false });
         }
 
         // フッター更新

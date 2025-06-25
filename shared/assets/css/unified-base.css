@@ -273,8 +273,14 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    opacity: 1;
+    opacity: 0;
     transition: opacity var(--animation-default) var(--easing-ease-in-out);
+    pointer-events: none;
+}
+
+#image-container.visible {
+    opacity: 1;
+    pointer-events: auto;
 }
 
 /* スクロールテキストエリア */
