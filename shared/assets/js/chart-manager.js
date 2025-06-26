@@ -5,10 +5,13 @@
  */
 class ChartManager extends BaseManager {
     constructor(containerId) {
-        // コンテナIDが#chart-containerの場合、#chartを使用（後方互換性）
-        const actualContainerId = containerId === '#chart-container' ? '#chart' : containerId;
+        // position制御を正しく行うため、常に#chart-containerを使用
+        const actualContainerId = containerId === '#chart' ? '#chart-container' : containerId;
         
         super(actualContainerId);
+        
+        // chart要素への参照も保持（描画用）
+        this.chartElement = d3.select('#chart');
         
         // 専門化されたレンダラーのインスタンス
         this.renderers = {
@@ -343,10 +346,10 @@ class ChartManager extends BaseManager {
         console.warn('ChartManager: Using fallback rendering');
         
         // 基本的なエラー表示
-        this.clearContainer();
+        this.clearChartContainer();
         this.show();
         
-        const errorMessage = this.container.append('div')
+        const errorMessage = this.chartElement.append('div')
             .attr('class', 'chart-error')
             .style('text-align', 'center')
             .style('padding', '40px')
@@ -373,11 +376,19 @@ class ChartManager extends BaseManager {
         }
         
         // コンテナをクリアしてSVGを作成（スタイル操作を削除）
-        this.clearContainer();
+        this.clearChartContainer();
         
         // BaseManagerの統一position処理を使用
         if (position) {
+            console.log('ChartManager: Applying position settings for dual layout:', position);
             this.applyPositionSettings(position);
+            
+            // デバッグ: 適用されたクラスを確認
+            const containerElement = this.container.node();
+            if (containerElement) {
+                console.log('ChartManager: Container classes after position application:', containerElement.className);
+                console.log('ChartManager: Container computed styles:', window.getComputedStyle(containerElement).alignItems);
+            }
         }
         
         const svg = this.createLayoutSVG('dual', chartData);
@@ -411,7 +422,7 @@ class ChartManager extends BaseManager {
         const { charts } = chartData;
         
         // コンテナをクリアしてSVGを作成
-        this.clearContainer();
+        this.clearChartContainer();
         const svg = this.createLayoutSVG('triple');
         
         // レイアウト計算
@@ -437,6 +448,7 @@ class ChartManager extends BaseManager {
      * @returns {d3.Selection} SVG要素
      */
     createLayoutSVG(layoutType, chartData = {}) {
+        // SVGは#chart要素に作成するが、サイズは#chart-containerから取得
         const containerNode = this.container.node();
         const containerWidth = containerNode.clientWidth || 800;
         const containerHeight = containerNode.clientHeight || 600;
@@ -467,16 +479,16 @@ class ChartManager extends BaseManager {
             }
         }
         
-        // SVGHelperを使用してSVGを作成
+        // SVGHelperを使用してSVGを作成（#chart要素に作成）
         if (window.SVGHelper) {
-            return SVGHelper.initSVG(this.container, totalWidth, totalHeight, {
+            return SVGHelper.initSVG(this.chartElement, totalWidth, totalHeight, {
                 className: 'chart-svg',
                 responsive: true,
                 preserveAspectRatio: 'xMidYMid meet'
             });
         } else {
             // フォールバック
-            return this.container.append('svg')
+            return this.chartElement.append('svg')
                 .attr('viewBox', `0 0 ${totalWidth} ${totalHeight}`)
                 .style('width', '100%')
                 .style('height', 'auto');
@@ -983,6 +995,15 @@ class ChartManager extends BaseManager {
             rendererStates: this.getRendererStates(),
             transitionManagerAvailable: !!this.transitionManager
         };
+    }
+
+    /**
+     * チャート専用のコンテナクリア処理
+     */
+    clearChartContainer() {
+        if (this.chartElement && !this.chartElement.empty()) {
+            this.chartElement.selectAll('*').remove();
+        }
     }
 
     /**
