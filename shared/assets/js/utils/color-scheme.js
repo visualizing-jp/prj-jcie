@@ -111,8 +111,8 @@ class ColorScheme {
      * @returns {string} 色コード
      */
     getColorForRegion(regionName) {
-        if (!regionName) {
-            console.warn('ColorScheme: Empty region name provided');
+        if (!regionName || regionName.trim() === '') {
+            // 空の地域名の場合は警告を出さずにデフォルト色を返す（ダミーデータ対応）
             return this.getFallbackColor('Unknown');
         }
         

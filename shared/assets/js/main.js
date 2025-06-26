@@ -123,7 +123,16 @@ class ScrollytellingApp {
             return;
         }
         
-        // 都市データから動的にHTMLを生成
+        // 感染症タイプを確認して都市ステップ生成を制御
+        const diseaseType = window.DISEASE_TYPE || this.detectDiseaseFromURL();
+        
+        // マラリアでは都市ステップを生成しない（HTMLで直接記述済み）
+        if (diseaseType === 'malariae') {
+            console.log('Malaria: Skipping city steps generation (using HTML-defined steps)');
+            return;
+        }
+        
+        // 都市データから動的にHTMLを生成（AIDS、結核用）
         citiesData.cities.forEach((city, index) => {
             const stepIndex = 11 + index; // step11から開始
             const stepDiv = document.createElement('div');
@@ -452,6 +461,63 @@ class ScrollytellingApp {
     }
 
     /**
+     * フッター表示stepを動的に決定
+     * @returns {string} フッター表示step番号
+     */
+    determineFooterStep() {
+        // 1. 設定ファイルからフッターstepを探す（最優先）
+        if (this.config && this.config.steps) {
+            for (let i = 0; i < this.config.steps.length; i++) {
+                const step = this.config.steps[i];
+                if (step.footer && step.footer.visible) {
+                    // step{番号}からdata-step用の番号を抽出
+                    const stepNumber = step.id.replace('step', '');
+                    console.log(`Footer step found in config: ${stepNumber}`);
+                    return stepNumber;
+                }
+            }
+        }
+        
+        // 2. HTMLから最後のstepを探す
+        const allSteps = document.querySelectorAll('.step[data-step]');
+        if (allSteps.length > 0) {
+            const lastStep = allSteps[allSteps.length - 1];
+            const lastStepNumber = lastStep.getAttribute('data-step');
+            console.log(`Footer step detected from HTML: ${lastStepNumber}`);
+            return lastStepNumber;
+        }
+        
+        // 3. 感染症別フォールバック値
+        const diseaseType = window.DISEASE_TYPE || this.detectDiseaseFromURL();
+        const diseaseFooterSteps = {
+            'aids': '25',           // 01_aids
+            'malariae': '32',       // 03_malariae  
+            'tuberculosis': '30'    // 02_tuberculosis（仮値、将来調整予定）
+        };
+        
+        if (diseaseFooterSteps[diseaseType]) {
+            console.log(`Footer step fallback for ${diseaseType}: ${diseaseFooterSteps[diseaseType]}`);
+            return diseaseFooterSteps[diseaseType];
+        }
+        
+        // 4. 最終フォールバック
+        console.log('Footer step using final fallback: 25');
+        return '25';
+    }
+
+    /**
+     * URLから感染症タイプを検出（フォールバック用）
+     * @returns {string} 感染症タイプ
+     */
+    detectDiseaseFromURL() {
+        const pathname = window.location.pathname;
+        if (pathname.includes('01_aids')) return 'aids';
+        if (pathname.includes('02_tuberculosis')) return 'tuberculosis';
+        if (pathname.includes('03_malariae')) return 'malariae';
+        return 'aids'; // デフォルト
+    }
+
+    /**
      * フッターを描画
      * @param {Object} footerConfig - フッター設定
      */
@@ -460,7 +526,9 @@ class ScrollytellingApp {
             return;
         }
 
-        const stepElement = document.querySelector('[data-step="25"]');
+        // フッター表示stepを動的に決定
+        const footerStepNumber = this.determineFooterStep();
+        const stepElement = document.querySelector(`[data-step="${footerStepNumber}"]`);
         if (!stepElement) {
             console.warn('Footer step element not found');
             return;
@@ -776,6 +844,11 @@ class ScrollytellingApp {
             return;
         }
 
+        // step0（表紙）は特別な構造なのでテキストポジショニングを適用しない
+        if (stepConfig.id === 'step0' || stepIndex === 0) {
+            return;
+        }
+
         // 現在のステップ要素を取得
         let stepElement = document.querySelector(`[data-step="${stepConfig.id}"]`) ||
                          document.querySelector(`[data-step="${stepConfig.id.replace(/^step/, '')}"]`) ||
@@ -791,6 +864,7 @@ class ScrollytellingApp {
             this.hideTextBox(stepElement);
             return;
         }
+
 
         // テキストポジション設定があるかチェック
         if (stepConfig.text && stepConfig.text.position) {
@@ -942,6 +1016,7 @@ class ScrollytellingApp {
             }
         });
     }
+
 
     /**
      * テキストボックス（白い矩形）を非表示にする

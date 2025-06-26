@@ -254,9 +254,17 @@ class MapManager extends BaseManager {
         
         // 投影法を設定（モード別スケール調整）
         const scaleMultiplier = (mode === 'single-city') ? 1.0 : 1.5; // 都市モードでは拡大なし
+        
+        // 座標の安全性をチェック（NaN防止）
+        const safeCenter = [
+            (center && typeof center[0] === 'number' && !isNaN(center[0])) ? center[0] : 0,
+            (center && typeof center[1] === 'number' && !isNaN(center[1])) ? center[1] : 0
+        ];
+        const safeZoom = (typeof zoom === 'number' && !isNaN(zoom) && zoom > 0) ? zoom : 1;
+        
         this.projection = d3.geoNaturalEarth1()
-            .scale(zoom * 150 * scaleMultiplier)
-            .center(center)
+            .scale(safeZoom * 150 * scaleMultiplier)
+            .center(safeCenter)
             .translate([svgWidth / 2, svgHeight / 2]);
             
         this.path = d3.geoPath().projection(this.projection);
@@ -274,7 +282,8 @@ class MapManager extends BaseManager {
                 .attr('class', 'map-country')
                 .attr('d', this.path)
                 .style('fill', d => {
-                    const countryName = d.properties.NAME || d.properties.name || d.properties.NAME_EN;
+                    // 地図データの実際の構造に合わせて国名を取得（空文字列の場合はデフォルト値を使用）
+                    const countryName = d.properties.name || d.properties.NAME || d.properties.NAME_EN || 'Unknown';
                     
                     // 地域色を適用
                     if (config.useRegionColors && window.CountryRegionMapping && window.ColorScheme) {
@@ -347,7 +356,8 @@ class MapManager extends BaseManager {
                     return window.AppConstants?.APP_COLORS?.BACKGROUND?.LIGHT || '#d1d5db';
                 })
                 .style('stroke', d => {
-                    const countryName = d.properties.NAME || d.properties.name || d.properties.NAME_EN;
+                    // 地図データの実際の構造に合わせて国名を取得（空文字列の場合はデフォルト値を使用）
+                    const countryName = d.properties.name || d.properties.NAME || d.properties.NAME_EN || 'Unknown';
                     
                     // 地域色適用時は境界を強調（ハイライト国も含む）
                     if (config.useRegionColors) {
@@ -362,7 +372,8 @@ class MapManager extends BaseManager {
                     return window.AppConstants?.APP_COLORS?.TEXT?.WHITE || '#fff';
                 })
                 .style('stroke-width', d => {
-                    const countryName = d.properties.NAME || d.properties.name || d.properties.NAME_EN;
+                    // 地図データの実際の構造に合わせて国名を取得（空文字列の場合はデフォルト値を使用）
+                    const countryName = d.properties.name || d.properties.NAME || d.properties.NAME_EN || 'Unknown';
                     
                     // 地域色適用時は境界線を少し太く（ハイライト国も含む）
                     if (config.useRegionColors) {
@@ -1110,7 +1121,8 @@ class MapManager extends BaseManager {
                 .attr('class', 'map-country')
                 .attr('d', this.path)
                 .style('fill', d => {
-                    const countryName = d.properties.NAME || d.properties.name || d.properties.NAME_EN;
+                    // 地図データの実際の構造に合わせて国名を取得（空文字列の場合はデフォルト値を使用）
+                    const countryName = d.properties.name || d.properties.NAME || d.properties.NAME_EN || 'Unknown';
                     
                     // 地域色を適用（地域色が有効な場合は常に優先）
                     if (this.currentView && this.currentView.useRegionColors && window.CountryRegionMapping && window.ColorScheme) {
@@ -1204,7 +1216,8 @@ class MapManager extends BaseManager {
                     this.svg.selectAll('.map-country')
                         .attr('d', this.path)
                         .style('fill', d => {
-                            const countryName = d.properties.NAME || d.properties.name || d.properties.NAME_EN;
+                            // 地図データの実際の構造に合わせて国名を取得（空文字列の場合はデフォルト値を使用）
+                    const countryName = d.properties.name || d.properties.NAME || d.properties.NAME_EN || 'Unknown';
                             
                             // 地域色を適用
                             if (this.currentView && this.currentView.useRegionColors && window.CountryRegionMapping && window.ColorScheme) {

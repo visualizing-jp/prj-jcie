@@ -49,10 +49,11 @@ class ImageManager extends BaseManager {
     }
 
     /**
-     * 画像コンテナを表示
+     * 画像コンテナを表示（BaseManagerの統一メソッドを使用）
      */
     show() {
-        this.container.classed('visible', true);
+        // BaseManagerの統一showメソッドを呼び出す
+        super.show();
     }
 
     /**
@@ -64,7 +65,7 @@ class ImageManager extends BaseManager {
         
         // 画像特有のクリーンアップ処理
         if (this.image) {
-            this.image.attr('src', '');
+            this.image.selectAll('img').remove();
         }
         
         // step0の背景画像もクリア
@@ -124,20 +125,23 @@ class ImageManager extends BaseManager {
             }
         }
 
-        // 通常の画像処理
-        this.image
+        // 通常の画像処理 - 既存のimg要素を削除して新しく作成
+        this.image.selectAll('*').remove();
+        
+        const imageElement = this.image.append('img')
             .attr('src', src)
             .attr('alt', alt)
             .style('opacity', 0)
             .style('width', width)
             .style('height', height)
-            .style('object-fit', objectFit);
+            .style('object-fit', objectFit)
+            .style('display', 'block');
 
         // ポジション設定
         this.setImagePosition(position);
 
         // フェードイン効果
-        this.image
+        imageElement
             .transition()
             .duration(500)
             .style('opacity', opacity);
