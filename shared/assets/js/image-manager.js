@@ -20,11 +20,8 @@ class ImageManager extends BaseManager {
     init() {
         super.init();
         
-        console.log('🖼️ ImageManager: Initializing and subscribing to IMAGE_UPDATE events');
-        
         // イベントリスナーを設定
         pubsub.subscribe(EVENTS.IMAGE_UPDATE, (data) => {
-            console.log('🖼️ ImageManager: Received IMAGE_UPDATE event');
             this.updateImage(data);
         });
     }
@@ -34,15 +31,12 @@ class ImageManager extends BaseManager {
      * @param {Object} imageData - 画像データとオプション
      */
     updateImage(imageData) {
-        console.log('🖼️ ImageManager.updateImage called with:', imageData);
-        
         const { src, alt, config, visible, position } = imageData;
         
         this.config = config;
         this.currentImage = { src, alt, visible, position };
 
         if (visible && src) {
-            console.log(`🖼️ ImageManager: Showing image ${src}`);
             this.show();
             this.loadImage(src, alt, config);
             
@@ -51,7 +45,6 @@ class ImageManager extends BaseManager {
                 this.applyPositionSettings(position);
             }
         } else {
-            console.log('🖼️ ImageManager: Hiding image (visible:', visible, 'src:', src, ')');
             this.hide();
         }
     }

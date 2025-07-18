@@ -130,7 +130,6 @@ class ScrollytellingApp {
             const cityRange = window.StepMapper.getCityStepsRange();
             if (cityRange && cityRange.start !== undefined) {
                 startStep = cityRange.start;
-                console.log(`City steps start from StepMapper: ${startStep}`);
             } else {
                 console.warn('StepMapper: Unable to get city steps range, using fallback');
             }
@@ -147,7 +146,6 @@ class ScrollytellingApp {
                 'malariae': 23     // マラリア: step23から開始
             };
             startStep = cityStepStart[diseaseType] || 11;
-            console.log(`City steps fallback for ${diseaseType}: ${startStep}`);
         }
         
         // 都市データから動的にHTMLを生成（全感染症対応）
@@ -196,19 +194,14 @@ class ScrollytellingApp {
             
             // configに都市ステップを追加
             if (this.config && this.config.steps) {
-                console.log(`🔧 Adding dynamic city step ${stepIndex} for ${city.id}:`, cityStepConfig);
-                
                 // 既存の同じstepがあるかチェック（論理名ベース）
                 const cityStepLogicalName = `city-episodes-${cityIndex}`;
                 const existingStepIndex = this.config.steps.findIndex(step => step.id === cityStepLogicalName);
                 if (existingStepIndex !== -1) {
-                    console.log(`⚠️ Replacing existing ${cityStepLogicalName} with dynamic config`);
                     this.config.steps[existingStepIndex] = cityStepConfig;
                 } else {
                     this.config.steps.push(cityStepConfig);
                 }
-                
-                console.log(`📋 Total steps after adding: ${this.config.steps.length}`);
             }
             
             try {
@@ -319,7 +312,10 @@ class ScrollytellingApp {
         const stepLogicalName = response.element.getAttribute('data-step');
         const stepConfig = this.config?.steps?.find(step => step.id === stepLogicalName);
         
-        console.log(`[SCROLLAMA DEBUG] Step detected: index=${index}, stepId=${stepLogicalName}, direction=${direction}`);
+        // デバッグ用ログ（開発環境のみ）
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            console.log(`[SCROLLAMA DEBUG] Step detected: index=${index}, stepId=${stepLogicalName}, direction=${direction}`);
+        }
         
         if (!stepConfig) {
             console.warn(`No config found for step ${stepLogicalName} (index ${index})`);
@@ -419,10 +415,8 @@ class ScrollytellingApp {
 
         // 画像更新
         if (stepConfig.image) {
-            console.log(`📸 Publishing IMAGE_UPDATE for ${stepLogicalName}:`, stepConfig.image);
             pubsub.publish(EVENTS.IMAGE_UPDATE, stepConfig.image);
         } else {
-            console.log(`📸 No image config found for ${stepLogicalName}, hiding image`);
             // 画像設定がない場合は明示的に非表示にする
             pubsub.publish(EVENTS.IMAGE_UPDATE, { visible: false });
         }
@@ -558,7 +552,6 @@ class ScrollytellingApp {
         if (window.StepMapper) {
             const footerIndex = window.StepMapper.getFooterStepIndex();
             if (footerIndex !== null) {
-                console.log(`Footer step from StepMapper: ${footerIndex}`);
                 return footerIndex.toString();
             }
         }
@@ -573,7 +566,6 @@ class ScrollytellingApp {
                         window.StepMapper.getIndex(step.id) : 
                         null;
                     if (stepIndex !== null) {
-                        console.log(`Footer step found in config: ${step.id} → ${stepIndex}`);
                         return stepIndex.toString();
                     }
                 }
