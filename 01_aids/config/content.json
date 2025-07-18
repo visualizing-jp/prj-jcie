@@ -1,7 +1,7 @@
 {
   "steps": [
     {
-      "id": "step0",
+      "id": "opening",
       "text": {
         "content": "",
         "visible": false
@@ -25,12 +25,12 @@
         "config": {
           "opacity": 1.0,
           "objectFit": "cover",
-          "specialMode": "step0-background"
+          "specialMode": "opening-background"
         }
       }
     },
     {
-      "id": "step1",
+      "id": "intro",
       "text": {
         "content": "エイズ対策の物語",
         "visible": true,
@@ -63,7 +63,7 @@
       }
     },
     {
-      "id": "step2",
+      "id": "treatment-progress",
       "text": {
         "content": "はじめに",
         "position": {
@@ -95,7 +95,7 @@
       }
     },
     {
-      "id": "step3",
+      "id": "history-overview",
       "text": {
         "content": "エイズの歴史",
         "position": {
@@ -122,7 +122,7 @@
       }
     },
     {
-      "id": "step4",
+      "id": "early-expansion",
       "text": {
         "content": "感染の世界的拡大\n\n1990年代に入ると、感染はヨーロッパやアジア、アフリカなどに急速に拡大していきました。",
         "position": {
@@ -150,7 +150,7 @@
       }
     },
     {
-      "id": "step5",
+      "id": "peak-crisis",
       "text": {
         "content": "新規感染者数の推移（1990-1998年）",
         "position": {
@@ -225,7 +225,7 @@
       }
     },
     {
-      "id": "step6",
+      "id": "treatment-breakthrough",
       "text": {
         "content": "新規感染者数の推移（全期間データ）",
         "position": {
@@ -296,7 +296,7 @@
       }
     },
     {
-      "id": "step7",
+      "id": "death-statistics",
       "text": {
         "content": "エイズの死者数",
         "position": {
@@ -362,7 +362,7 @@
       }
     },
     {
-      "id": "step8",
+      "id": "regional-disparity",
       "text": {
         "content": "地域別のHIV/エイズの治療機会",
         "position": {
@@ -405,7 +405,7 @@
       }
     },
     {
-      "id": "step9",
+      "id": "mother-child-prevention",
       "text": {
         "content": "母子感染防止の成果",
         "position": {
@@ -475,7 +475,7 @@
       }
     },
     {
-      "id": "step10",
+      "id": "episode-intro",
       "text": {
         "content": "世界全体での取り組み",
         "position": {
@@ -497,7 +497,7 @@
       }
     },
     {
-      "id": "step11",
+      "id": "city-episodes-0",
       "text": {
         "content": "ムリカットの物語",
         "position": {
@@ -518,7 +518,7 @@
       }
     },
     {
-      "id": "step12",
+      "id": "city-episodes-1",
       "text": {
         "content": "闘うマラウイの女性達",
         "position": {
@@ -539,7 +539,7 @@
       }
     },
     {
-      "id": "step13",
+      "id": "city-episodes-2",
       "text": {
         "content": "ローズマリーの物語",
         "position": {
@@ -560,7 +560,7 @@
       }
     },
     {
-      "id": "step14",
+      "id": "city-episodes-3",
       "text": {
         "content": "エリカ・カステヤノスの物語",
         "position": {
@@ -581,7 +581,7 @@
       }
     },
     {
-      "id": "step15",
+      "id": "city-episodes-4",
       "text": {
         "content": "マーク・ダイブル（支援者）の物語",
         "position": {
@@ -602,7 +602,7 @@
       }
     },
     {
-      "id": "step16",
+      "id": "city-episodes-5",
       "text": {
         "content": "モーリーン・ムレンガの物語",
         "position": {
@@ -623,7 +623,7 @@
       }
     },
     {
-      "id": "step17",
+      "id": "city-episodes-6",
       "text": {
         "content": "ジェフリー・アカバの物語",
         "position": {
@@ -644,7 +644,7 @@
       }
     },
     {
-      "id": "step19",
+      "id": "remaining-challenges",
       "text": {
         "content": "それでもなお存在する課題",
         "position": {
@@ -723,7 +723,7 @@
       }
     },
     {
-      "id": "step20",
+      "id": "solution-approaches",
       "text": {
         "content": "解決に向けて",
         "position": {
@@ -777,7 +777,7 @@
       }
     },
     {
-      "id": "step21",
+      "id": "funding-crisis",
       "text": {
         "content": "継続的な支援の重要性",
         "position": {
@@ -839,7 +839,7 @@
       }
     },
     {
-      "id": "step22",
+      "id": "solidarity-message",
       "text": {
         "content": "連帯の力",
         "position": {
@@ -868,7 +868,7 @@
       }
     },
     {
-      "id": "step23",
+      "id": "call-to-action",
       "text": {
         "content": "今後の展望",
         "position": {
@@ -897,7 +897,7 @@
       }
     },
     {
-      "id": "step25",
+      "id": "footer",
       "text": {
         "content": "",
         "visible": false

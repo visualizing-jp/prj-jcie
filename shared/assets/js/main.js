@@ -123,32 +123,48 @@ class ScrollytellingApp {
             return;
         }
         
-        // 感染症タイプを確認して都市ステップの開始番号を決定
-        const diseaseType = window.DISEASE_TYPE || this.detectDiseaseFromURL();
+        // StepMapperを使用して都市ステップの開始番号を決定
+        let startStep = 11; // デフォルト値
         
-        // 感染症別の都市ステップ開始番号
-        const cityStepStart = {
-            'aids': 11,        // AIDS: step11から開始
-            'tuberculosis': 11, // 結核: step11から開始
-            'malariae': 23     // マラリア: step23から開始
-        };
+        if (window.StepMapper) {
+            const cityRange = window.StepMapper.getCityStepsRange();
+            if (cityRange && cityRange.start !== undefined) {
+                startStep = cityRange.start;
+                console.log(`City steps start from StepMapper: ${startStep}`);
+            } else {
+                console.warn('StepMapper: Unable to get city steps range, using fallback');
+            }
+        } else {
+            console.warn('StepMapper not available, using fallback');
+        }
         
-        const startStep = cityStepStart[diseaseType] || 11;
+        // フォールバック：感染症別の都市ステップ開始番号
+        if (startStep === 11) { // デフォルト値のままの場合のみフォールバック適用
+            const diseaseType = window.DISEASE_TYPE || this.detectDiseaseFromURL();
+            const cityStepStart = {
+                'aids': 11,        // AIDS: step11から開始
+                'tuberculosis': 11, // 結核: step11から開始
+                'malariae': 23     // マラリア: step23から開始
+            };
+            startStep = cityStepStart[diseaseType] || 11;
+            console.log(`City steps fallback for ${diseaseType}: ${startStep}`);
+        }
         
         // 都市データから動的にHTMLを生成（全感染症対応）
         citiesData.cities.forEach((city, index) => {
             const stepIndex = startStep + index;
+            const cityIndex = index; // indexをcityIndexとして明示的に定義
             const stepDiv = document.createElement('div');
             if (!stepDiv) {
                 console.error('Failed to create step element');
                 return;
             }
             stepDiv.className = 'step';
-            stepDiv.setAttribute('data-step', stepIndex.toString());
+            stepDiv.setAttribute('data-step', `city-episodes-${cityIndex}`);
             
             // 都市ステップの設定をconfigに追加
             const cityStepConfig = {
-                id: `step${stepIndex}`,
+                id: `city-episodes-${cityIndex}`,
                 text: {
                     content: city.data.title,
                     visible: true,
@@ -182,10 +198,11 @@ class ScrollytellingApp {
             if (this.config && this.config.steps) {
                 console.log(`🔧 Adding dynamic city step ${stepIndex} for ${city.id}:`, cityStepConfig);
                 
-                // 既存の同じstepがあるかチェック
-                const existingStepIndex = this.config.steps.findIndex(step => step.id === `step${stepIndex}`);
+                // 既存の同じstepがあるかチェック（論理名ベース）
+                const cityStepLogicalName = `city-episodes-${cityIndex}`;
+                const existingStepIndex = this.config.steps.findIndex(step => step.id === cityStepLogicalName);
                 if (existingStepIndex !== -1) {
-                    console.log(`⚠️ Replacing existing step${stepIndex} with dynamic config`);
+                    console.log(`⚠️ Replacing existing ${cityStepLogicalName} with dynamic config`);
                     this.config.steps[existingStepIndex] = cityStepConfig;
                 } else {
                     this.config.steps.push(cityStepConfig);
@@ -297,18 +314,21 @@ class ScrollytellingApp {
      */
     handleStepEnter(response) {
         const { index, direction } = response;
-        const stepConfig = this.config?.steps?.[index];
         
-        console.log(`[SCROLLAMA DEBUG] Step detected: index=${index}, stepId=${stepConfig?.id || 'undefined'}, direction=${direction}`);
+        // 論理名ベース: HTMLのdata-step属性から論理名を取得
+        const stepLogicalName = response.element.getAttribute('data-step');
+        const stepConfig = this.config?.steps?.find(step => step.id === stepLogicalName);
+        
+        console.log(`[SCROLLAMA DEBUG] Step detected: index=${index}, stepId=${stepLogicalName}, direction=${direction}`);
         
         if (!stepConfig) {
-            console.warn(`No config found for step ${index}`);
+            console.warn(`No config found for step ${stepLogicalName} (index ${index})`);
             return;
         }
 
 
-        // step18の詳細デバッグ（stepConfig.idで判定）
-        if (stepConfig.id === 'step18') {
+        // remaining-challengesの詳細デバッグ
+        if (stepConfig.id === 'remaining-challenges') {
             // Debug information for step18 (removed for performance)
         }
 
@@ -351,12 +371,22 @@ class ScrollytellingApp {
                     
                     // 逆方向スクロールでトランジション対応を判定
                     if (direction === 'up') {
-                        // 現在のstepから、次のstep（より大きいindex）を探す
-                        const nextStepConfig = this.config?.steps?.[index + 1];
-                        // 次のstepと同じデータファイル、かつ次のstepがtransitionモードの場合
-                        if (nextStepConfig?.chart?.dataFile === stepConfig.chart.dataFile &&
-                            nextStepConfig?.chart?.updateMode === 'transition') {
-                            updateMode = 'transition';
+                        // HTMLのインデックス順序を使用して次のステップを取得
+                        const allSteps = document.querySelectorAll('.step[data-step]');
+                        const currentStepIndex = Array.from(allSteps).findIndex(step => 
+                            step.getAttribute('data-step') === stepLogicalName
+                        );
+                        
+                        if (currentStepIndex >= 0 && currentStepIndex < allSteps.length - 1) {
+                            const nextStepElement = allSteps[currentStepIndex + 1];
+                            const nextStepLogicalName = nextStepElement.getAttribute('data-step');
+                            const nextStepConfig = this.config?.steps?.find(step => step.id === nextStepLogicalName);
+                            
+                            // 次のstepと同じデータファイル、かつ次のstepがtransitionモードの場合
+                            if (nextStepConfig?.chart?.dataFile === stepConfig.chart.dataFile &&
+                                nextStepConfig?.chart?.updateMode === 'transition') {
+                                updateMode = 'transition';
+                            }
                         }
                     }
                     
@@ -428,7 +458,10 @@ class ScrollytellingApp {
      */
     handleStepProgress(response) {
         const { index, progress, direction } = response;
-        const stepConfig = this.config?.steps?.[index];
+        
+        // 論理名ベース: HTMLのdata-step属性から論理名を取得
+        const stepLogicalName = response.element.getAttribute('data-step');
+        const stepConfig = this.config?.steps?.find(step => step.id === stepLogicalName);
         
         if (!stepConfig) {
             return;
@@ -519,29 +552,48 @@ class ScrollytellingApp {
      * @returns {string} フッター表示step番号
      */
     determineFooterStep() {
-        // 1. 設定ファイルからフッターstepを探す（最優先）
+        // 1. StepMapperを使用してフッターステップを取得（最優先）
+        if (window.StepMapper) {
+            const footerIndex = window.StepMapper.getFooterStepIndex();
+            if (footerIndex !== null) {
+                console.log(`Footer step from StepMapper: ${footerIndex}`);
+                return footerIndex.toString();
+            }
+        }
+        
+        // 2. 設定ファイルからフッターstepを探す
         if (this.config && this.config.steps) {
             for (let i = 0; i < this.config.steps.length; i++) {
                 const step = this.config.steps[i];
                 if (step.footer && step.footer.visible) {
-                    // step{番号}からdata-step用の番号を抽出
-                    const stepNumber = step.id.replace('step', '');
-                    console.log(`Footer step found in config: ${stepNumber}`);
-                    return stepNumber;
+                    // 論理名からインデックス番号を取得
+                    const stepIndex = window.StepMapper ? 
+                        window.StepMapper.getIndex(step.id) : 
+                        null;
+                    if (stepIndex !== null) {
+                        console.log(`Footer step found in config: ${step.id} → ${stepIndex}`);
+                        return stepIndex.toString();
+                    }
                 }
             }
         }
         
-        // 2. HTMLから最後のstepを探す
+        // 3. HTMLから最後のstepを探す（フォールバック）
         const allSteps = document.querySelectorAll('.step[data-step]');
         if (allSteps.length > 0) {
             const lastStep = allSteps[allSteps.length - 1];
-            const lastStepNumber = lastStep.getAttribute('data-step');
-            console.log(`Footer step detected from HTML: ${lastStepNumber}`);
-            return lastStepNumber;
+            const lastStepLogicalName = lastStep.getAttribute('data-step');
+            // 論理名をインデックス番号に変換
+            const lastStepIndex = window.StepMapper ? 
+                window.StepMapper.getIndex(lastStepLogicalName) : 
+                null;
+            if (lastStepIndex !== null) {
+                console.log(`Footer step detected from HTML: ${lastStepLogicalName} → ${lastStepIndex}`);
+                return lastStepIndex.toString();
+            }
         }
         
-        // 3. 感染症別フォールバック値
+        // 4. 感染症別フォールバック値
         const diseaseType = window.DISEASE_TYPE || this.detectDiseaseFromURL();
         const diseaseFooterSteps = {
             'aids': '25',           // 01_aids: step11-17(7都市) + step25(フッター)
@@ -554,7 +606,7 @@ class ScrollytellingApp {
             return diseaseFooterSteps[diseaseType];
         }
         
-        // 4. 最終フォールバック
+        // 5. 最終フォールバック
         console.log('Footer step using final fallback: 25');
         return '25';
     }
@@ -580,9 +632,8 @@ class ScrollytellingApp {
             return;
         }
 
-        // フッター表示stepを動的に決定
-        const footerStepNumber = this.determineFooterStep();
-        const stepElement = document.querySelector(`[data-step="${footerStepNumber}"]`);
+        // フッター表示stepを論理名で取得
+        const stepElement = document.querySelector(`[data-step="footer"]`);
         if (!stepElement) {
             console.warn('Footer step element not found');
             return;
@@ -1049,10 +1100,8 @@ class ScrollytellingApp {
         
         this.config.steps.forEach((stepConfig, stepIndex) => {
             if (stepConfig.text && stepConfig.text.visible === false) {
-                // 非表示設定の場合
-                let stepElement = document.querySelector(`[data-step="${stepConfig.id}"]`) ||
-                               document.querySelector(`[data-step="${stepConfig.id.replace(/^step/, '')}"]`) ||
-                               document.querySelector(`[data-step="${stepIndex}"]`);
+                // 非表示設定の場合：論理名で直接HTMLを検索
+                let stepElement = document.querySelector(`[data-step="${stepConfig.id}"]`);
                 
                 if (stepElement) {
                     this.hideTextBox(stepElement);

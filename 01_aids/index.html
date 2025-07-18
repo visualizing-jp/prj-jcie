@@ -60,7 +60,7 @@
         <!-- スクロール可能なテキストエリア -->
         <div id="scroll-content" class="relative z-10">
             <!-- 各段落のステップ -->
-            <div class="step" data-step="0">
+            <div class="step" data-step="opening">
                 <div class="w-full min-h-screen flex items-center justify-center relative">
                     <!-- 背景画像とオーバーレイ用の特別なコンテナ -->
                     <div class="absolute inset-0 z-0" id="step0-bg-container">
@@ -78,7 +78,7 @@
                 </div>
             </div>
 
-            <div class="step" data-step="1">
+            <div class="step" data-step="intro">
                 <div class="w-full min-h-screen flex items-center">
                     <div class="max-w-lg mx-auto p-8 bg-white bg-opacity-90 rounded-lg shadow-lg">
                         <p class="text-gray-700 leading-relaxed">
@@ -90,7 +90,7 @@
                 </div>
             </div>
 
-            <div class="step" data-step="2">
+            <div class="step" data-step="treatment-progress">
                 <div class="w-full min-h-screen flex items-center">
                     <div class="max-w-lg mx-auto p-8 bg-white bg-opacity-90 rounded-lg shadow-lg">
                         <p class="text-gray-700 leading-relaxed">
@@ -102,7 +102,7 @@
                 </div>
             </div>
 
-            <div class="step" data-step="3">
+            <div class="step" data-step="history-overview">
                 <div class="w-full min-h-screen flex items-center">
                     <div class="max-w-lg mx-auto p-8 bg-white bg-opacity-90 rounded-lg shadow-lg">
                         <h2 class="text-2xl font-bold mb-4">エイズの歴史的経緯</h2>
@@ -113,7 +113,7 @@
                 </div>
             </div>
 
-            <div class="step" data-step="4">
+            <div class="step" data-step="early-expansion">
                 <div class="w-full min-h-screen flex items-center">
                     <div class="max-w-lg mx-auto p-8 bg-white bg-opacity-90 rounded-lg shadow-lg">
                         <p class="text-gray-700 leading-relaxed">
@@ -123,7 +123,7 @@
                 </div>
             </div>
 
-            <div class="step" data-step="5">
+            <div class="step" data-step="peak-crisis">
                 <div class="w-full min-h-screen flex items-center">
                     <div class="max-w-lg mx-auto p-8 bg-white bg-opacity-90 rounded-lg shadow-lg">
                         <p class="text-gray-700 leading-relaxed">
@@ -133,7 +133,7 @@
                 </div>
             </div>
 
-            <div class="step" data-step="6">
+            <div class="step" data-step="treatment-breakthrough">
                 <div class="w-full min-h-screen flex items-center">
                     <div class="max-w-lg mx-auto p-8 bg-white bg-opacity-90 rounded-lg shadow-lg">
                         <p class="text-gray-700 leading-relaxed">
@@ -144,7 +144,7 @@
                 </div>
             </div>
 
-            <div class="step" data-step="7">
+            <div class="step" data-step="death-statistics">
                 <div class="w-full min-h-screen flex items-center">
                     <div class="max-w-lg mx-auto p-8 bg-white bg-opacity-90 rounded-lg shadow-lg">
                         <h2 class="text-2xl font-bold mb-4">エイズの死者数</h2>
@@ -158,7 +158,7 @@
                 </div>
             </div>
 
-            <div class="step" data-step="8">
+            <div class="step" data-step="regional-disparity">
                 <div class="w-full min-h-screen flex items-center">
                     <div class="max-w-lg mx-auto p-8 bg-white bg-opacity-90 rounded-lg shadow-lg">
                         <h2 class="text-2xl font-bold mb-4">治療機会の地域格差</h2>
@@ -171,7 +171,7 @@
             </div>
 
 
-            <div class="step" data-step="9">
+            <div class="step" data-step="mother-child-prevention">
                 <div class="w-full min-h-screen flex items-center">
                     <div class="max-w-lg mx-auto p-8 bg-white bg-opacity-90 rounded-lg shadow-lg">
                         <h2 class="text-2xl font-bold mb-4">母子感染防止の成果</h2>
@@ -183,7 +183,7 @@
                 </div>  
             </div>
 
-            <div class="step" data-step="10">
+            <div class="step" data-step="episode-intro">
                 <div class="w-full min-h-screen flex items-center justify-center">
                     <div class="max-w-lg mx-auto p-8 bg-white bg-opacity-90 rounded-lg shadow-lg">
                         <h2 class="text-2xl font-bold mb-4">ひとりひとりのエピソード</h2>
@@ -197,7 +197,7 @@
             <!-- 都市ステップは動的に生成されます（step11-17） -->
             <div id="city-steps-container"></div>
 
-            <div class="step" data-step="19">
+            <div class="step" data-step="remaining-challenges">
                 <div class="w-full min-h-screen flex items-center">
                     <div class="max-w-lg mx-auto p-8 bg-white bg-opacity-90 rounded-lg shadow-lg">
                         <h2 class="text-2xl font-bold mb-4">4.それでもなお存在する課題</h2>
@@ -211,7 +211,7 @@
                 </div>
             </div>
 
-            <div class="step" data-step="20">
+            <div class="step" data-step="solution-approaches">
                 <div class="w-full min-h-screen flex items-center">
                     <div class="max-w-lg mx-auto p-8 bg-white bg-opacity-90 rounded-lg shadow-lg">
                         <h2 class="text-2xl font-bold mb-4">5.解決に向けて</h2>
@@ -223,7 +223,7 @@
                 </div>
             </div>
 
-            <div class="step" data-step="21">
+            <div class="step" data-step="funding-crisis">
                 <div class="w-full min-h-screen flex items-center">
                     <div class="max-w-lg mx-auto p-8 bg-white bg-opacity-90 rounded-lg shadow-lg">
                         <p class="text-gray-700 leading-relaxed">
@@ -235,7 +235,7 @@
                 </div>
             </div>
 
-            <div class="step" data-step="22">
+            <div class="step" data-step="solidarity-message">
                 <div class="w-full min-h-screen flex items-center">
                     <div class="max-w-lg mx-auto p-8 bg-white bg-opacity-90 rounded-lg shadow-lg">
                         <h2 class="text-2xl font-bold mb-4">連帯の力</h2>
@@ -247,7 +247,7 @@
                 </div>
             </div>
 
-            <div class="step" data-step="23">
+            <div class="step" data-step="call-to-action">
                 <div class="w-full min-h-screen flex items-center">
                     <div class="max-w-lg mx-auto p-8 bg-white bg-opacity-90 rounded-lg shadow-lg">
                         <p class="text-gray-700 leading-relaxed">
@@ -258,7 +258,7 @@
             </div>
 
 
-            <div class="step" data-step="25">
+            <div class="step" data-step="footer">
                 <div class="w-full min-h-screen flex items-center">
                     <!-- フッターコンテンツは main.js で動的に生成される -->
                 </div>
@@ -288,6 +288,10 @@
     <script src="../shared/assets/js/utils/error-handler.js"></script>
     <script src="../shared/assets/js/utils/chart-layout-helper.js"></script>
     <script src="../shared/assets/js/utils/chart-formatter-helper.js"></script>
+    
+    <!-- Step Management System -->
+    <script src="../shared/assets/js/utils/step-definitions.js"></script>
+    <script src="../shared/assets/js/utils/step-mapper.js"></script>
     <script src="../shared/assets/js/utils/color-scheme.js"></script>
     <script src="../shared/assets/js/utils/country-region-mapping.js"></script>
     <script src="../shared/assets/js/utils/position-manager.js"></script>
