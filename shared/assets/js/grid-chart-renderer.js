@@ -159,18 +159,23 @@ class GridChartRenderer extends BaseManager {
             }
             
             // コンテナサイズに基づいて個々のチャートサイズを計算
-            const availableWidth = actualContainerWidth - 80; // より多くのマージンを確保
+            const availableWidth = actualContainerWidth - 40; // マージンを減らして画面内に収める
             const availableHeight = containerHeight - (title ? 40 : 0) - (dataSource ? 30 : 0) - 40;
             
-            // 個々のチャートサイズを大きく計算
-            const calculatedChartWidth = Math.max(availableWidth / columns, 100); // 最小100px
-            const calculatedChartHeight = Math.max((availableHeight - (rows - 1) * rowSpacing) / rows, 100); // 最小100px
+            // レスポンシブサイズ計算（最大・最小値を考慮）
+            const maxWidth = mergedConfig.maxChartWidth || 140;
+            const maxHeight = mergedConfig.maxChartHeight || 140;
+            const minWidth = mergedConfig.minChartWidth || 80;
+            const minHeight = mergedConfig.minChartHeight || 80;
+            
+            const calculatedChartWidth = Math.min(maxWidth, Math.max(minWidth, availableWidth / columns));
+            const calculatedChartHeight = Math.min(maxHeight, Math.max(minHeight, (availableHeight - (rows - 1) * rowSpacing) / rows));
             
             console.log('GridChartRenderer: calculatedChartWidth =', calculatedChartWidth, 'calculatedChartHeight =', calculatedChartHeight);
             console.log('GridChartRenderer: totalWidth =', columns * calculatedChartWidth + 80, 'totalHeight =', rows * calculatedChartHeight + (rows - 1) * rowSpacing + (title ? 40 : 0) + (dataSource ? 30 : 0) + 40);
             
-            // 実際の全体サイズを計算
-            const totalWidth = columns * calculatedChartWidth + 80; // マージン分を追加
+            // 実際の全体サイズを計算（マージンを最小限に）
+            const totalWidth = columns * calculatedChartWidth + 40; // マージンを減らして表示領域を幅幅扩張
             const totalHeight = rows * calculatedChartHeight + (rows - 1) * rowSpacing + (title ? 40 : 0) + (dataSource ? 30 : 0) + 40;
             
             this.svg = this.initSVG(totalWidth, totalHeight);
@@ -201,8 +206,8 @@ class GridChartRenderer extends BaseManager {
             gridData.forEach((cellData, index) => {
                 const col = index % columns;
                 const row = Math.floor(index / columns);
-                const x = col * calculatedChartWidth;
-                const y = row * (calculatedChartHeight + rowSpacing);  // 行間スペーシングを追加
+                const x = col * calculatedChartWidth + 20; // 左マージンを追加
+                const y = row * (calculatedChartHeight + rowSpacing) + 20;  // 上マージンと行間スペーシングを追加
                 
                 console.log(`GridChartRenderer: Cell ${index} - x:${x}, y:${y}, width:${calculatedChartWidth}, height:${calculatedChartHeight}`);
                 
@@ -422,77 +427,63 @@ class GridChartRenderer extends BaseManager {
     }
     
     /**
-     * 生データをグリッド用データに変換
+     * データ構造を自動分析
+     * @param {Array} data - 生データ
+     * @returns {Object} データ構造の分析結果
+     */
+    analyzeDataStructure(data) {
+        if (!data || data.length === 0) return null;
+        
+        const firstRow = data[0];
+        const columns = Object.keys(firstRow);
+        
+        // 最初の列（地域/ラベル列）を特定
+        const labelField = columns[0] === '' ? '' : columns[0];
+        
+        // 値列を特定（数値またはパーセンテージを含む列）
+        const valueFields = columns.slice(1).filter(col => {
+            const sampleValue = firstRow[col];
+            return sampleValue && (sampleValue.includes('%') || !isNaN(parseFloat(sampleValue)));
+        });
+        
+        return {
+            labelField,
+            valueFields,
+            hasPercentages: valueFields.some(field => firstRow[field]?.includes('%')),
+            dataType: valueFields.length > 1 ? 'multi-category' : 'single-value'
+        };
+    }
+    
+    /**
+     * 生データをグリッド用データに変換（汎用版）
      * @param {Array} data - 生データ
      * @param {Object} config - 設定
      * @returns {Array} 変換されたグリッドデータ
      */
     transformToGridData(data, config) {
         const result = [];
-        const regions = [];
-        
         
         try {
-            data.forEach(row => {
-                // CSVの最初の列は空白のキー名になっている
-                const region = row[''] || row[Object.keys(row)[0]]; 
-                const adultPercentStr = row['成人（15歳以上）'];
-                const childPercentStr = row['こども（0歳から14歳）'];
-                
-                // パーセント記号を除去して数値に変換
-                const adultPercent = parseInt(adultPercentStr?.replace('%', '') || '0');
-                const childPercent = parseInt(childPercentStr?.replace('%', '') || '0');
-                
-                // 地域名が有効な場合のみ追加
-                if (region && region.trim()) {
-                    // ColorSchemeから色を取得
-                    const colorScheme = window.ColorScheme;
-                    const treatmentColor = colorScheme ? 
-                        colorScheme.getRegionColor(region) : 
-                        window.AppDefaults?.colors?.accent?.info || '#3b82f6';
-                    const untreatedColor = window.AppDefaults?.colors?.background?.light || '#e5e7eb';
-                    
-                    // 成人データとこどもデータを保存
-                    const adultData = {
-                        region: region,
-                        ageGroup: '成人（15歳以上）',
-                        percentage: adultPercent,
-                        pieData: [
-                            { label: '治療中', value: adultPercent, color: treatmentColor },
-                            { label: '未治療', value: 100 - adultPercent, color: untreatedColor }
-                        ]
-                    };
-                    
-                    // こどもデータ（少し明るい色を使用）
-                    const childTreatmentColor = colorScheme ? 
-                        colorScheme.getLighterColor(treatmentColor) : 
-                        window.AppDefaults?.colors?.accent?.info || '#60a5fa';
-                    const childData = {
-                        region: region,
-                        ageGroup: 'こども（0-14歳）',
-                        percentage: childPercent,
-                        pieData: [
-                            { label: '治療中', value: childPercent, color: childTreatmentColor },
-                            { label: '未治療', value: 100 - childPercent, color: untreatedColor }
-                        ]
-                    };
-                    
-                    // 地域ごとにグループ化してテンポラリに保存
-                    regions.push({ adult: adultData, child: childData });
-                }
-            });
+            // データ構造を自動分析
+            const structure = this.analyzeDataStructure(data);
+            if (!structure) {
+                throw new Error('Unable to analyze data structure');
+            }
             
-            // 1行目：すべての地域の成人データ（左から右へ）
-            regions.forEach(regionData => {
-                result.push(regionData.adult);
-            });
+            // 設定から値フィールドを取得（設定優先、なければ自動検出）
+            const valueField = config.valueField || structure.valueFields[0];
+            const labelField = config.labelField || structure.labelField;
             
-            // 2行目：すべての地域のこどもデータ（左から右へ、上段と同じ順序）
-            regions.forEach(regionData => {
-                result.push(regionData.child);
-            });
+            // AIDS型（複数カテゴリ）とマラリア型（単一値）を判定
+            const isMultiCategory = structure.dataType === 'multi-category' && structure.valueFields.length > 1;
             
-            return result;
+            if (isMultiCategory) {
+                // AIDS型：複数カテゴリのパーセンテージデータ（成人・子供など）
+                return this.transformMultiCategoryData(data, structure, config);
+            } else {
+                // マラリア型：単一値の分布データ（地域別割合など）
+                return this.transformSingleValueData(data, structure, config, valueField, labelField);
+            }
         } catch (error) {
             console.error('GridChartRenderer: Error transforming data:', error);
             if (window.ErrorHandler) {
@@ -504,6 +495,139 @@ class GridChartRenderer extends BaseManager {
             }
             return [];
         }
+    }
+    
+    /**
+     * 複数カテゴリデータの変換（AIDS型）
+     * @param {Array} data - 生データ
+     * @param {Object} structure - データ構造
+     * @param {Object} config - 設定
+     * @returns {Array} 変換されたデータ
+     */
+    transformMultiCategoryData(data, structure, config) {
+        const result = [];
+        const regions = [];
+        const { labelField, valueFields } = structure;
+        
+        data.forEach(row => {
+            const region = row[labelField];
+            if (!region || !region.trim()) return;
+            
+            // ColorSchemeから色を取得
+            const colorScheme = window.ColorScheme;
+            const treatmentColor = colorScheme ? 
+                colorScheme.getRegionColor(region) : 
+                window.AppDefaults?.colors?.accent?.info || '#3b82f6';
+            const untreatedColor = window.AppDefaults?.colors?.background?.light || '#e5e7eb';
+            
+            const categoryData = [];
+            
+            valueFields.forEach((field, index) => {
+                const valueStr = row[field];
+                const value = parseInt(valueStr?.replace('%', '') || '0');
+                
+                // カテゴリごとに異なる色を使用
+                const categoryColor = index === 0 ? treatmentColor : 
+                    (colorScheme ? colorScheme.getLighterColor(treatmentColor) : '#60a5fa');
+                
+                categoryData.push({
+                    region: region,
+                    ageGroup: field,
+                    percentage: value,
+                    pieData: [
+                        { label: '対象', value: value, color: categoryColor },
+                        { label: 'その他', value: 100 - value, color: untreatedColor }
+                    ]
+                });
+            });
+            
+            regions.push(categoryData);
+        });
+        
+        // 行ごとに配置（1行目：全地域の1カテゴリ目、2行目：全地域の2カテゴリ目）
+        for (let categoryIndex = 0; categoryIndex < valueFields.length; categoryIndex++) {
+            regions.forEach(regionData => {
+                if (regionData[categoryIndex]) {
+                    result.push(regionData[categoryIndex]);
+                }
+            });
+        }
+        
+        return result;
+    }
+    
+    /**
+     * 単一値データの変換（マラリア型）
+     * @param {Array} data - 生データ
+     * @param {Object} structure - データ構造
+     * @param {Object} config - 設定
+     * @param {string} valueField - 値フィールド名
+     * @param {string} labelField - ラベルフィールド名
+     * @returns {Array} 変換されたデータ
+     */
+    transformSingleValueData(data, structure, config, valueField, labelField) {
+        const result = [];
+        const colorScheme = window.ColorScheme;
+        
+        // マラリアの場合：複数の値フィールドが指定されているかチェック
+        const valueFields = config.valueFields || [valueField];
+        
+        if (valueFields.length > 1) {
+            // 複数値フィールド：感染者と死亡者の割合を別々に表示
+            // 1行目：全地域の感染者割合、2行目：全地域の死亡者割合
+            valueFields.forEach((field, fieldIndex) => {
+                data.forEach((row, regionIndex) => {
+                    const label = row[labelField];
+                    const valueStr = row[field];
+                    
+                    if (!label || !label.trim()) return;
+                    
+                    const value = parseFloat(valueStr?.replace('%', '') || '0');
+                    const baseColor = colorScheme ? 
+                        colorScheme.getRegionColor(label) : 
+                        window.AppDefaults?.colors?.accent?.info || '#3b82f6';
+                    
+                    // フィールドごとに色の調子を変える
+                    const color = fieldIndex === 0 ? baseColor : 
+                        (colorScheme ? colorScheme.getDarkerColor(baseColor) : baseColor);
+                    
+                    result.push({
+                        region: label,
+                        ageGroup: field, // 「感染者の割合」または「死亡者の割合」
+                        percentage: value,
+                        pieData: [
+                            { label: '対象地域', value: value, color: color },
+                            { label: 'その他地域', value: Math.max(0, 100 - value), color: window.AppDefaults?.colors?.background?.light || '#e5e7eb' }
+                        ]
+                    });
+                });
+            });
+        } else {
+            // 単一値フィールド：従来の動作
+            data.forEach(row => {
+                const label = row[labelField];
+                const valueStr = row[valueField];
+                
+                if (!label || !label.trim()) return;
+                
+                const value = parseFloat(valueStr?.replace('%', '') || '0');
+                const color = colorScheme ? 
+                    colorScheme.getRegionColor(label) : 
+                    window.AppDefaults?.colors?.accent?.info || '#3b82f6';
+                
+                result.push({
+                    region: label,
+                    ageGroup: config.title || '分布',
+                    percentage: value,
+                    pieData: [
+                        { label: label, value: value, color: color },
+                        { label: 'その他', value: Math.max(0, 100 - value), color: window.AppDefaults?.colors?.background?.light || '#e5e7eb' }
+                    ]
+                });
+            });
+        }
+        
+        return result;
     }
 
     /**
