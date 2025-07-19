@@ -168,7 +168,7 @@ class ScrollytellingApp {
                     visible: true,
                     position: {
                         width: "30%",
-                        horizontal: "center",
+                        horizontal: "left",
                         vertical: "center"
                     }
                 },

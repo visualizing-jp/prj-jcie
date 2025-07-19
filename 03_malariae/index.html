@@ -40,19 +40,19 @@
     <!-- メインコンテナ -->
     <div id="container">
         <!-- 固定背景（チャート・地図エリア） -->
-        <div id="fixed-background">
+        <div id="fixed-background" class="fixed inset-0 w-full h-full">
             <!-- チャートエリア -->
-            <div id="chart-container">
+            <div id="chart-container" class="absolute inset-0 flex items-center justify-center">
                 <div id="chart"></div>
             </div>
             
             <!-- 地図エリア -->
-            <div id="map-container">
-                <div id="map"></div>
+            <div id="map-container" class="absolute inset-0">
+                <div id="map" class="w-full h-full"></div>
             </div>
             
             <!-- 画像エリア -->
-            <div id="image-container">
+            <div id="image-container" class="absolute inset-0 flex items-center justify-center">
                 <div id="image"></div>
             </div>
         </div>
