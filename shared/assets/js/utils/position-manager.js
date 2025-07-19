@@ -477,14 +477,14 @@ class PositionManager {
 
         // テキストコンテナ（白背景の部分）とその親要素を取得
         const textContainer = stepElement.querySelector('.max-w-lg, .text-content, div[class*="bg-white"]');
-        const parentContainer = stepElement.querySelector('.w-full.min-h-screen.flex.items-center');
+        const parentContainer = stepElement.querySelector('.w-full.min-h-screen.flex');
         
         // Debug mode text container information (removed for performance)
         
         if (textContainer && parentContainer) {
             // 親要素のFlexboxで白い矩形の位置を制御
             parentContainer.classList.remove('justify-center', 'justify-start', 'justify-end');
-            textContainer.classList.remove('mx-auto', 'ml-auto', 'mr-auto');
+            textContainer.classList.remove('mx-auto', 'ml-auto', 'mr-auto', 'mr-0', 'ml-0');
             
             switch (horizontal.toLowerCase()) {
                 case 'right':
@@ -496,7 +496,6 @@ class PositionManager {
                     parentContainer.classList.add('justify-start');
                     textContainer.classList.remove('mx-auto');
                     textContainer.classList.add('ml-0', 'mr-auto');
-                    // Debug information for left positioning (removed for performance)
                     break;
                 default:
                     parentContainer.classList.add('justify-center');

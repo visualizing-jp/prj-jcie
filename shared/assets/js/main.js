@@ -198,6 +198,25 @@ class ScrollytellingApp {
                 const cityStepLogicalName = `city-episodes-${cityIndex}`;
                 const existingStepIndex = this.config.steps.findIndex(step => step.id === cityStepLogicalName);
                 if (existingStepIndex !== -1) {
+                    // 既存設定がある場合は、content.jsonの設定を優先してマージ
+                    const existingConfig = this.config.steps[existingStepIndex];
+                    
+                    // テキスト設定のマージ（content.jsonの位置設定を保持）
+                    if (existingConfig.text && existingConfig.text.position) {
+                        cityStepConfig.text.position = {
+                            ...cityStepConfig.text.position,
+                            ...existingConfig.text.position
+                        };
+                    }
+                    
+                    // マップ設定のマージ
+                    if (existingConfig.map) {
+                        cityStepConfig.map = {
+                            ...cityStepConfig.map,
+                            ...existingConfig.map
+                        };
+                    }
+                    
                     this.config.steps[existingStepIndex] = cityStepConfig;
                 } else {
                     this.config.steps.push(cityStepConfig);
@@ -206,8 +225,8 @@ class ScrollytellingApp {
             
             try {
                 stepDiv.innerHTML = `
-                <div class="w-full min-h-screen flex items-center">
-                    <div class="max-w-lg p-8 bg-white bg-opacity-90 rounded-lg shadow-lg">
+                <div class="w-full min-h-screen flex items-center justify-center">
+                    <div class="max-w-lg p-8 bg-white bg-opacity-90 rounded-lg shadow-lg mx-auto">
                         ${city.data.thumbnail ? `
                         <div class="mb-6">
                             <img src="data/thumb/${city.data.thumbnail}" 
