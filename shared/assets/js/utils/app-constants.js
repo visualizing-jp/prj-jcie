@@ -12,7 +12,10 @@ const COUNTRY_MAPPING = {
     'Kenya': 'ケニア',
     'Belize': 'ベリーズ',
     'United States of America': 'アメリカ',
-    'Philippines': 'フィリピン'
+    'Philippines': 'フィリピン',
+    'El Salvador': 'エルサルバドル',
+    'Niger': 'ニジェール',
+    'Myanmar': 'ミャンマー'
 };
 
 /**
