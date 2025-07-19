@@ -900,8 +900,13 @@
     {
       "id": "artemisinin-resistance",
       "text": {
-        "content": "",
-        "visible": false
+        "content": "さらに深刻なのは、カンボジアやタイの一部地域で、アルテミシニンだけでなく、併用して使う薬にも耐性を示す「多剤耐性」のマラリア原虫が現れていることです。これは、現在広く使われている治療法が効かなくなる可能性があるという、非常に重大な問題です。",
+        "visible": true,
+        "position": {
+          "width": "30%",
+          "horizontal": "center",
+          "vertical": "center"
+        }
       },
       "chart": {
         "visible": false
@@ -944,11 +949,40 @@
     {
       "id": "funding-challenges",
       "text": {
-        "content": "",
-        "visible": false
+        "content": "また、マラリア対策に使われる資金の不足も課題となっています。2010年ごろまでは世界的に資金が増えていましたが、その後は伸び悩んでいます。",
+        "visible": true,
+        "position": {
+          "width": "30%",
+          "horizontal": "right",
+          "vertical": "center"
+        }
       },
       "chart": {
-        "visible": false
+        "type": "line",
+        "dataFile": "data/マラリア対策関連ODA予算の推移.csv",
+        "visible": true,
+        "position": {
+          "horizontal": "left",
+          "vertical": "center",
+          "width": "70%"
+        },
+        "config": {
+          "widthPercent": 70,
+          "height": 400,
+          "title": "マラリア対策関連ODA予算の推移",
+          "xField": "年",
+          "yField": "ドル（単位、100万ドル）",
+          "multiSeries": false,
+          "yAxisLabel": "予算（100万ドル）",
+          "dataSource": "OECD調べ",
+          "legendType": "none",
+          "yearRange": [2000, 2025],
+          "yAxisFormat": {
+            "type": "number",
+            "decimals": 0
+          },
+          "colors": ["#f4a620"]
+        }
       },
       "map": {
         "visible": false
@@ -967,8 +1001,13 @@
     {
       "id": "prevention-shortage",
       "text": {
-        "content": "",
-        "visible": false
+        "content": "その影響で、感染の広がりが深刻なサハラ以南のアフリカでは、殺虫剤をしみこませた蚊帳（ITN）や、家の中に何度も噴霧して使う殺虫剤（IRS）など、予防に効果的な道具が足りなくなっているという報告もあります。",
+        "visible": true,
+        "position": {
+          "width": "30%",
+          "horizontal": "center",
+          "vertical": "center"
+        }
       },
       "chart": {
         "visible": false
@@ -990,8 +1029,13 @@
     {
       "id": "climate-impact",
       "text": {
-        "content": "",
-        "visible": false
+        "content": "さらに、マラリア感染の増加には気候変動の影響も関係していると考えられています。気温や湿度、雨の量が変わることで、マラリアを媒介するハマダラカという蚊が暮らしやすい地域が広がっているのです。日本のように、平均気温が年々上がっている国でも、マラリアは決して「他人事」ではなくなっています。",
+        "visible": true,
+        "position": {
+          "width": "30%",
+          "horizontal": "center",
+          "vertical": "center"
+        }
       },
       "chart": {
         "visible": false
@@ -1013,8 +1057,13 @@
     {
       "id": "global-responsibility",
       "text": {
-        "content": "",
-        "visible": false
+        "content": "いまやマラリアの撲滅は、一部の地域だけの問題ではなく、世界全体で取り組むべき「私たち自身の課題」なのです。",
+        "visible": true,
+        "position": {
+          "width": "30%",
+          "horizontal": "center",
+          "vertical": "center"
+        }
       },
       "chart": {
         "visible": false
