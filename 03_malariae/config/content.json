@@ -517,7 +517,31 @@
         }
       },
       "chart": {
-        "visible": false
+        "type": "line",
+        "dataFile": "data/Malaria-El-Savador-Cases-and-Deaths_transformed.csv",
+        "visible": true,
+        "position": {
+          "horizontal": "left",
+          "vertical": "center",
+          "width": "70%"
+        },
+        "config": {
+          "widthPercent": 70,
+          "height": 400,
+          "title": "エルサルバドルのマラリア感染者数・死者数の推移",
+          "xField": "year",
+          "yField": "value",
+          "seriesField": "series",
+          "multiSeries": true,
+          "yAxisLabel": "人数",
+          "dataSource": "WHO World malaria report 2024",
+          "legendType": "inline",
+          "yAxisFormat": {
+            "type": "number",
+            "decimals": 0
+          },
+          "colors": ["#e74c3c", "#34495e"]
+        }
       },
       "map": {
         "visible": false
@@ -538,7 +562,31 @@
         }
       },
       "chart": {
-        "visible": false
+        "type": "line",
+        "dataFile": "data/Malaria-El-Savador-Cases-and-Deaths_transformed.csv",
+        "visible": true,
+        "position": {
+          "horizontal": "left",
+          "vertical": "center",
+          "width": "70%"
+        },
+        "config": {
+          "widthPercent": 70,
+          "height": 400,
+          "title": "エルサルバドルのマラリア感染者数・死者数の推移",
+          "xField": "year",
+          "yField": "value",
+          "seriesField": "series",
+          "multiSeries": true,
+          "yAxisLabel": "人数",
+          "dataSource": "WHO World malaria report 2024",
+          "legendType": "inline",
+          "yAxisFormat": {
+            "type": "number",
+            "decimals": 0
+          },
+          "colors": ["#e74c3c", "#34495e"]
+        }
       },
       "map": {
         "visible": false
