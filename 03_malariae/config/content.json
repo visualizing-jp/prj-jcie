@@ -663,7 +663,35 @@
         }
       },
       "chart": {
-        "visible": false
+        "type": "line",
+        "dataFile": "data/Malaria-Niger-Cases-and-Deaths_transformed.csv",
+        "visible": true,
+        "position": {
+          "horizontal": "left",
+          "vertical": "center",
+          "width": "70%"
+        },
+        "config": {
+          "widthPercent": 70,
+          "height": 400,
+          "title": "ニジェールのマラリア感染者数・死者数の推移",
+          "xField": "year",
+          "yField": "value",
+          "seriesField": "series",
+          "multiSeries": true,
+          "yAxisLabel": "人数",
+          "dataSource": "WHO World malaria report 2024",
+          "legendType": "inline",
+          "yAxisFormat": {
+            "type": "japanese",
+            "decimals": 0,
+            "units": {
+              "万": 10000,
+              "億": 100000000
+            }
+          },
+          "colors": ["#e74c3c", "#8b4513"]
+        }
       },
       "map": {
         "visible": false
