@@ -308,9 +308,14 @@
             "id": "indonesia",
             "type": "line",
             "title": "インドネシア",
-            "dataFile": "indonesia_tb_trend.csv",
+            "dataFile": "data/indonesia_tb_trend.csv",
             "position": "left",
             "config": {
+              "widthPercent": 70,
+              "heightPercent": 100,
+              "xField": "year",
+              "yField": "value",
+              "yAxisLabel": "感染者数（人）",
               "margin": {
                 "top": 40,
                 "right": 30,
@@ -329,9 +334,14 @@
             "id": "vietnam",
             "type": "line",
             "title": "ベトナム",
-            "dataFile": "vietnam_tb_trend.csv",
+            "dataFile": "data/vietnam_tb_trend.csv",
             "position": "right",
             "config": {
+              "widthPercent": 70,
+              "heightPercent": 100,
+              "xField": "year",
+              "yField": "value",
+              "yAxisLabel": "感染者数（人）",
               "margin": {
                 "top": 40,
                 "right": 30,
