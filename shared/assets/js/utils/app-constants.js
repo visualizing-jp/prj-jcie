@@ -15,7 +15,10 @@ const COUNTRY_MAPPING = {
     'Philippines': 'フィリピン',
     'El Salvador': 'エルサルバドル',
     'Niger': 'ニジェール',
-    'Myanmar': 'ミャンマー'
+    'Myanmar': 'ミャンマー',
+    'Indonesia': 'インドネシア',
+    'Vietnam': 'ベトナム',
+    'South Africa': '南アフリカ'
 };
 
 /**
