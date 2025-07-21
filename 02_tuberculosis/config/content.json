@@ -74,22 +74,7 @@
     {
       "id": "historical-impact",
       "chart": {
-        "visible": true,
-        "type": "line",
-        "dataFile": "trend_tb_cases_normalized.csv",
-        "title": "結核データの推移",
-        "xField": "year",
-        "yField": "value",
-        "config": {
-          "width": 600,
-          "height": 400,
-          "margin": {
-            "top": 20,
-            "right": 30,
-            "bottom": 40,
-            "left": 50
-          }
-        }
+        "visible": false
       },
       "text": {
         "visible": true,
@@ -111,7 +96,26 @@
     {
       "id": "japan-history-1935",
       "chart": {
-        "visible": false
+        "visible": true,
+        "type": "line",
+        "dataFile": "japan_tb_cases.csv",
+        "title": "日本国内における新規登録結核患者数の推移",
+        "config": {
+          "widthPercent": 90,
+          "heightPercent": 70,
+          "margin": {
+            "top": 40,
+            "right": 50,
+            "bottom": 60,
+            "left": 80
+          },
+          "xAxis": {
+            "title": "年度"
+          },
+          "yAxis": {
+            "title": "新規登録患者数（人）"
+          }
+        }
       },
       "text": {
         "visible": true
@@ -120,7 +124,26 @@
     {
       "id": "japan-bcg-introduction",
       "chart": {
-        "visible": false
+        "visible": true,
+        "type": "line",
+        "dataFile": "japan_tb_cases.csv",
+        "title": "日本国内における新規登録結核患者数の推移",
+        "config": {
+          "widthPercent": 90,
+          "heightPercent": 70,
+          "margin": {
+            "top": 40,
+            "right": 50,
+            "bottom": 60,
+            "left": 80
+          },
+          "xAxis": {
+            "title": "年度"
+          },
+          "yAxis": {
+            "title": "新規登録患者数（人）"
+          }
+        }
       },
       "text": {
         "visible": true
@@ -129,7 +152,26 @@
     {
       "id": "japan-postwar-improvement",
       "chart": {
-        "visible": false
+        "visible": true,
+        "type": "line",
+        "dataFile": "japan_tb_cases.csv",
+        "title": "日本国内における新規登録結核患者数の推移",
+        "config": {
+          "widthPercent": 90,
+          "heightPercent": 70,
+          "margin": {
+            "top": 40,
+            "right": 50,
+            "bottom": 60,
+            "left": 80
+          },
+          "xAxis": {
+            "title": "年度"
+          },
+          "yAxis": {
+            "title": "新規登録患者数（人）"
+          }
+        }
       },
       "text": {
         "visible": true
@@ -138,7 +180,26 @@
     {
       "id": "japan-current-status",
       "chart": {
-        "visible": false
+        "visible": true,
+        "type": "line",
+        "dataFile": "japan_tb_cases.csv",
+        "title": "日本国内における新規登録結核患者数の推移",
+        "config": {
+          "widthPercent": 90,
+          "heightPercent": 70,
+          "margin": {
+            "top": 40,
+            "right": 50,
+            "bottom": 60,
+            "left": 80
+          },
+          "xAxis": {
+            "title": "年度"
+          },
+          "yAxis": {
+            "title": "新規登録患者数（人）"
+          }
+        }
       },
       "text": {
         "visible": true
@@ -156,7 +217,54 @@
     {
       "id": "covid-impact",
       "chart": {
-        "visible": false
+        "visible": true,
+        "type": "line",
+        "dataFile": "tb_infections_trend.csv",
+        "title": "結核感染者数（推移）の推移",
+        "config": {
+          "widthPercent": 90,
+          "heightPercent": 70,
+          "margin": {
+            "top": 40,
+            "right": 50,
+            "bottom": 60,
+            "left": 80
+          },
+          "xAxis": {
+            "title": "年"
+          },
+          "yAxis": {
+            "title": "感染者数（人）"
+          }
+        }
+      },
+      "text": {
+        "visible": true
+      }
+    },
+    {
+      "id": "covid-impact-2",
+      "chart": {
+        "visible": true,
+        "type": "line",
+        "dataFile": "tb_deaths_trend.csv",
+        "title": "結核による推定死者数の推移",
+        "config": {
+          "widthPercent": 90,
+          "heightPercent": 70,
+          "margin": {
+            "top": 40,
+            "right": 50,
+            "bottom": 60,
+            "left": 80
+          },
+          "xAxis": {
+            "title": "年"
+          },
+          "yAxis": {
+            "title": "死者数（人）"
+          }
+        }
       },
       "text": {
         "visible": true
@@ -185,73 +293,60 @@
       }
     },
     {
-      "id": "city-episodes-start",
-      "map": {
-        "visible": true,
-        "mode": "single-city",
-        "cityId": "indonesia1",
-        "citiesFile": "data/cities-timeline.json",
-        "useRegionColors": true,
-        "lightenNonVisited": true,
-        "widthPercent": 100,
-        "heightPercent": 100
-      },
-      "text": {
-        "visible": false
-      }
-    },
-    {
-      "id": "city-episodes-1",
-      "map": {
-        "visible": true,
-        "mode": "single-city",
-        "cityId": "indonesia2",
-        "citiesFile": "data/cities-timeline.json",
-        "useRegionColors": true,
-        "lightenNonVisited": true,
-        "widthPercent": 100,
-        "heightPercent": 100
-      },
-      "text": {
-        "visible": false
-      }
-    },
-    {
-      "id": "city-episodes-2",
-      "map": {
-        "visible": true,
-        "mode": "single-city",
-        "cityId": "vietnam",
-        "citiesFile": "data/cities-timeline.json",
-        "useRegionColors": true,
-        "lightenNonVisited": true,
-        "widthPercent": 100,
-        "heightPercent": 100
-      },
-      "text": {
-        "visible": false
-      }
-    },
-    {
-      "id": "city-episodes-3",
-      "map": {
-        "visible": true,
-        "mode": "single-city",
-        "cityId": "southafrica",
-        "citiesFile": "data/cities-timeline.json",
-        "useRegionColors": true,
-        "lightenNonVisited": true,
-        "widthPercent": 100,
-        "heightPercent": 100
-      },
-      "text": {
-        "visible": false
-      }
-    },
-    {
       "id": "drug-resistance",
       "chart": {
-        "visible": false
+        "layout": "dual",
+        "visible": true,
+        "position": {
+          "horizontal": "left",
+          "vertical": "center",
+          "width": "70%",
+          "height": "100%"
+        },
+        "charts": [
+          {
+            "id": "indonesia",
+            "type": "line",
+            "title": "インドネシア",
+            "dataFile": "indonesia_tb_trend.csv",
+            "position": "left",
+            "config": {
+              "margin": {
+                "top": 40,
+                "right": 30,
+                "bottom": 60,
+                "left": 80
+              },
+              "xAxis": {
+                "title": "年"
+              },
+              "yAxis": {
+                "title": "感染者数（人）"
+              }
+            }
+          },
+          {
+            "id": "vietnam",
+            "type": "line",
+            "title": "ベトナム",
+            "dataFile": "vietnam_tb_trend.csv",
+            "position": "right",
+            "config": {
+              "margin": {
+                "top": 40,
+                "right": 30,
+                "bottom": 60,
+                "left": 80
+              },
+              "xAxis": {
+                "title": "年"
+              },
+              "yAxis": {
+                "title": "感染者数（人）"
+              }
+            }
+          }
+        ]
       },
       "text": {
         "visible": true
