@@ -1068,14 +1068,23 @@ class MapManager extends BaseManager {
             this.visibleCities = [];
             this.singleCityMode = true;
             
-            // 既存の地図がある場合（world-overviewなどから遷移）は、スムーズにアニメーション
+            // 統一システム: 常にrenderMapを使用（設定駆動）
             if (this.svg && this.projection && this.geoData) {
                 // 既存の地図を使ってスムーズにトランジション
                 this.animateToCity(targetCity);
                 this.mapInitialized = true;
             } else {
-                // 初回の場合のみ地図を初期化
-                this.initializeSingleCityMap(targetCity);
+                // 初回の場合も統一されたrenderMapを使用
+                const cityCoords = this.getCityCoordinates(targetCity);
+                this.renderMap(this.geoData, {
+                    center: cityCoords,
+                    zoom: 6, // 統一されたズーム値
+                    mode: 'single-city',
+                    widthPercent: 100,
+                    heightPercent: 100,
+                    useRegionColors: true,
+                    lightenNonVisited: true
+                });
                 this.mapInitialized = true;
             }
             

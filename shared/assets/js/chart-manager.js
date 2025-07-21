@@ -449,11 +449,33 @@ class ChartManager extends BaseManager {
             
             // データが読み込まれたチャートを描画
             chartsWithData.forEach((chartConfig, index) => {
+                // 個別チャートのサイズ設定を考慮したレイアウト計算
+                let chartWidth = layout.chartWidth;
+                let chartHeight = layout.chartHeight;
+                
+                // 個別チャートのconfig内にwidthPercent/heightPercentがある場合は適用
+                if (chartConfig.config) {
+                    const containerNode = this.container.node();
+                    const containerWidth = containerNode.clientWidth || 800;
+                    const containerHeight = containerNode.clientHeight || 600;
+                    
+                    if (chartConfig.config.widthPercent) {
+                        // widthPercentを使用してサイズを再計算
+                        const totalAvailableWidth = containerWidth * 0.95;
+                        chartWidth = Math.max((totalAvailableWidth * chartConfig.config.widthPercent / 100 - layout.spacing) / 2, 400);
+                    }
+                    
+                    if (chartConfig.config.heightPercent) {
+                        // heightPercentを使用してサイズを再計算
+                        chartHeight = Math.max(containerHeight * chartConfig.config.heightPercent / 100 - layout.marginTop - 20, 350);
+                    }
+                }
+                
                 const chartLayout = {
-                    x: index * (layout.chartWidth + layout.spacing),
+                    x: index * (chartWidth + layout.spacing),
                     y: layout.marginTop,
-                    width: layout.chartWidth,
-                    height: layout.chartHeight
+                    width: chartWidth,
+                    height: chartHeight
                 };
                 
                 
@@ -527,11 +549,11 @@ class ChartManager extends BaseManager {
             totalWidth = this.calculateDimensionFromPosition(position.width, containerWidth, 'width');
             totalHeight = this.calculateDimensionFromPosition(position.height, containerHeight, 'height');
         } else {
-            // 従来のデフォルト計算
+            // 従来のデフォルト計算 - より大きなサイズに調整
             switch (layoutType) {
                 case 'dual':
-                    totalWidth = Math.min(containerWidth * 0.9, 1000);
-                    totalHeight = Math.max(Math.min(containerHeight * 0.8, 600), 400); // 最小高さ400px
+                    totalWidth = Math.min(containerWidth * 0.95, 1400); // 幅を拡大
+                    totalHeight = Math.max(Math.min(containerHeight * 0.85, 800), 500); // 高さを拡大、最小高さ500px
                     break;
                 case 'triple':
                     totalWidth = Math.min(containerWidth * 0.95, 1200);
@@ -548,14 +570,26 @@ class ChartManager extends BaseManager {
             return SVGHelper.initSVG(this.chartElement, totalWidth, totalHeight, {
                 className: 'chart-svg',
                 responsive: true,
-                preserveAspectRatio: 'xMidYMid meet'
+                preserveAspectRatio: 'xMidYMid meet',
+                actualWidth: layoutType === 'dual' ? totalWidth : null,
+                actualHeight: layoutType === 'dual' ? totalHeight : null
             });
         } else {
             // フォールバック
-            return this.chartElement.append('svg')
-                .attr('viewBox', `0 0 ${totalWidth} ${totalHeight}`)
-                .style('width', '100%')
-                .style('height', 'auto');
+            const svg = this.chartElement.append('svg')
+                .attr('viewBox', `0 0 ${totalWidth} ${totalHeight}`);
+            
+            if (layoutType === 'dual') {
+                // dual layoutでは固定サイズ表示
+                svg.style('width', `${totalWidth}px`)
+                   .style('height', `${totalHeight}px`);
+            } else {
+                // 通常のレスポンシブ表示
+                svg.style('width', '100%')
+                   .style('height', 'auto');
+            }
+            
+            return svg;
         }
     }
 
@@ -576,16 +610,21 @@ class ChartManager extends BaseManager {
             totalWidth = this.calculateDimensionFromPosition(position.width, containerWidth, 'width');
             totalHeight = this.calculateDimensionFromPosition(position.height, containerHeight, 'height');
         } else {
-            // 従来のデフォルト計算
-            totalWidth = Math.min(containerWidth * 0.9, 1000);
-            totalHeight = Math.max(Math.min(containerHeight * 0.8, 600), 400); // 最小高さ400px確保
+            // 従来のデフォルト計算 - より大きなサイズに変更
+            totalWidth = Math.min(containerWidth * 0.95, 1400); // 幅を拡大
+            totalHeight = Math.max(Math.min(containerHeight * 0.85, 800), 500); // 高さを拡大、最小高さ500px
         }
+        
+        // dual layout では2つのチャートが収まる十分なサイズを確保
+        totalWidth = Math.max(totalWidth, 1200); // dual layout の最小幅を確保
+        totalHeight = Math.max(totalHeight, 700); // dual layout の最小高さを確保
         
         const spacing = 40;
         const marginTop = 40;
         
-        const chartWidth = Math.max((totalWidth - spacing) / 2, 300); // 最小幅300px
-        const chartHeight = Math.max(totalHeight - marginTop - 20, 300); // 最小高さ300px
+        // より大きなチャートサイズを確保
+        const chartWidth = Math.max((totalWidth - spacing) / 2, 500); // 最小幅500px
+        const chartHeight = Math.max(totalHeight - marginTop - 20, 400); // 最小高さ400px
         
         return {
             totalWidth,
@@ -1005,11 +1044,7 @@ class ChartManager extends BaseManager {
         if (typeof value === 'string') {
             if (value.endsWith('%')) {
                 const percentage = parseFloat(value) / 100;
-                if (dimension === 'width') {
-                    return containerSize * percentage;
-                } else if (dimension === 'height') {
-                    return window.innerHeight * percentage;
-                }
+                return containerSize * percentage;
             } else if (value.endsWith('px')) {
                 return parseFloat(value);
             } else if (value.endsWith('vh')) {
