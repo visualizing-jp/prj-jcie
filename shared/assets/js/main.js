@@ -405,13 +405,38 @@ class ScrollytellingApp {
                         }
                     }
                     
-                    const chartData = {
-                        ...stepConfig.chart,
-                        ...stepConfig.chart.config, // configの内容もトップレベルにマージ
-                        data: this.getChartData(stepConfig.chart.type, stepConfig.chart.dataFile),
-                        updateMode: updateMode,
-                        direction: direction // スクロール方向を追加
-                    };
+                    // 統一レイアウトシステム: layout認識型処理
+                    let chartData;
+                    const layout = stepConfig.chart.layout || 'single';
+                    
+                    if (layout === 'dual' || layout === 'triple') {
+                        // 複数チャートレイアウト: charts配列をそのまま渡す
+                        chartData = {
+                            ...stepConfig.chart,
+                            ...stepConfig.chart.config, // configがある場合は展開
+                            updateMode: updateMode,
+                            direction: direction
+                            // chartsは配列のまま、dataは個別に読み込み不要
+                        };
+                    } else if (layout === 'grid') {
+                        // gridレイアウト: configをそのまま渡す
+                        chartData = {
+                            ...stepConfig.chart,
+                            ...stepConfig.chart.config, // configの内容をトップレベルに展開
+                            updateMode: updateMode,
+                            direction: direction
+                            // gridレイアウトはChartManagerでデータ読み込み
+                        };
+                    } else {
+                        // 単一チャート（default）: 従来の処理
+                        chartData = {
+                            ...stepConfig.chart,
+                            ...stepConfig.chart.config, // configの内容もトップレベルにマージ
+                            data: this.getChartData(stepConfig.chart.type, stepConfig.chart.dataFile),
+                            updateMode: updateMode,
+                            direction: direction
+                        };
+                    }
                     pubsub.publish(EVENTS.CHART_UPDATE, chartData);
                 }
             }
