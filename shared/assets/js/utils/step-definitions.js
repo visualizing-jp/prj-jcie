@@ -85,6 +85,43 @@ window.STEP_DEFINITIONS = {
     contentType: 'chart'
   },
 
+  // マラリア特有ステップ
+  'artemisinin-resistance': { 
+    type: 'fixed', 
+    description: 'アルテミシニン耐性の問題（マラリア特有）',
+    contentType: 'text'
+  },
+  
+  'multi-drug-resistance': { 
+    type: 'fixed', 
+    description: '多剤耐性マラリア（マラリア特有）',
+    contentType: 'text'
+  },
+  
+  'funding-challenges': { 
+    type: 'fixed', 
+    description: '資金不足の課題（マラリア特有）',
+    contentType: 'chart'
+  },
+  
+  'prevention-shortage': { 
+    type: 'fixed', 
+    description: '予防道具の不足（マラリア特有）',
+    contentType: 'text'
+  },
+  
+  'climate-impact': { 
+    type: 'fixed', 
+    description: '気候変動の影響（マラリア特有）',
+    contentType: 'text'
+  },
+  
+  'global-responsibility': { 
+    type: 'fixed', 
+    description: '世界的な責任（マラリア特有）',
+    contentType: 'text'
+  },
+
 
   // ===============================
   // 都市エピソードセクション（step11-17）
