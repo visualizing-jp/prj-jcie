@@ -138,7 +138,7 @@
           "seriesField": "series",
           "multiSeries": true,
           "yAxisLabel": "人数",
-          "dataSource": "WHO World malaria report 2024",
+          "dataSource": "【To Be Delivered】",
           "legendType": "inline",
           "yAxisFormat": {
             "type": "japanese",
@@ -193,7 +193,7 @@
           "labelField": "地域",
           "valueFields": ["感染者の割合", "死亡者の割合"],
           "title": "地域別マラリア感染者・死亡者分布",
-          "dataSource": "WHO World malaria report 2024",
+          "dataSource": "【To Be Delivered】",
           "chartSizeMode": "responsive",
           "maxChartWidth": 140,
           "maxChartHeight": 140,
@@ -433,7 +433,7 @@
           "seriesField": "series",
           "multiSeries": true,
           "yAxisLabel": "配布数（万張）/ 使用率（%）",
-          "dataSource": "WHO World malaria report 2024",
+          "dataSource": "【To Be Delivered】",
           "legendType": "inline",
           "yAxisFormat": {
             "type": "mixed",
@@ -534,7 +534,7 @@
           "seriesField": "series",
           "multiSeries": true,
           "yAxisLabel": "人数",
-          "dataSource": "WHO World malaria report 2024",
+          "dataSource": "【To Be Delivered】",
           "legendType": "inline",
           "yAxisFormat": {
             "type": "number",
@@ -579,7 +579,7 @@
           "seriesField": "series",
           "multiSeries": true,
           "yAxisLabel": "人数",
-          "dataSource": "WHO World malaria report 2024",
+          "dataSource": "【To Be Delivered】",
           "legendType": "inline",
           "yAxisFormat": {
             "type": "number",
@@ -680,7 +680,7 @@
           "seriesField": "series",
           "multiSeries": true,
           "yAxisLabel": "人数",
-          "dataSource": "WHO World malaria report 2024",
+          "dataSource": "【To Be Delivered】",
           "legendType": "inline",
           "yAxisFormat": {
             "type": "japanese",
@@ -981,7 +981,7 @@
             "type": "number",
             "decimals": 0
           },
-          "colors": ["#f4a620"]
+          "colors": ["#f4a620"],
         }
       },
       "map": {
