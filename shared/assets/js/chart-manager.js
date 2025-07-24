@@ -667,7 +667,8 @@ class ChartManager extends BaseManager {
      * @param {Object} layout - レイアウト情報
      */
     renderSingleChartInLayout(svg, chartConfig, layout) {
-        const { data, config, title } = chartConfig;
+        const { data, config } = chartConfig;
+        const title = config.title;
         const { x, y, width, height } = layout;
         
         if (!data || !Array.isArray(data) || data.length === 0) {
