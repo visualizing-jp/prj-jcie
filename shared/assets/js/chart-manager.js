@@ -21,6 +21,12 @@ class ChartManager extends BaseManager {
             grid: null
         };
         
+        // レイアウト管理クラスのインスタンス
+        this.layouts = {
+            dual: null,
+            triple: null
+        };
+        
         // 現在アクティブなレンダラーとレイアウト情報
         this.activeRenderer = null;
         this.currentLayout = null;
@@ -43,6 +49,7 @@ class ChartManager extends BaseManager {
         
         
         this.initializeRenderers();
+        this.initializeLayoutManagers();
         this.initializeTransitionManager();
         
     }
@@ -125,6 +132,31 @@ class ChartManager extends BaseManager {
             console.error('ChartManager: WARNING - No renderers were successfully initialized!');
         }
     }
+    
+    /**
+     * レイアウト管理クラスを初期化
+     */
+    initializeLayoutManagers() {
+        try {
+            // DualLayout
+            if (window.DualLayout) {
+                this.layouts.dual = new DualLayout(this.containerId);
+                console.log('✓ DualLayout initialized successfully');
+            } else {
+                console.error('✗ DualLayout not available in window');
+            }
+            
+            // TripleLayout
+            if (window.TripleLayout) {
+                this.layouts.triple = new TripleLayout(this.containerId);
+                console.log('✓ TripleLayout initialized successfully');
+            } else {
+                console.error('✗ TripleLayout not available in window');
+            }
+        } catch (error) {
+            console.error('Error initializing layout managers:', error);
+        }
+    }
 
     /**
      * トランジション管理を初期化
@@ -160,17 +192,24 @@ class ChartManager extends BaseManager {
             }
 
             // レイアウトベースの振り分け
+            // デバッグログ追加
+            console.log('ChartManager: Layout detection:', { layout, type, chartData });
+            
             switch (layout) {
                 case 'dual':
+                    console.log('ChartManager: Handling dual layout');
                     this.handleDualLayout(chartData);
                     break;
                 case 'triple':
+                    console.log('ChartManager: Handling triple layout');
                     this.handleTripleLayout(chartData);
                     break;
                 case 'grid':
+                    console.log('ChartManager: Handling grid layout');
                     this.handleGridLayout(chartData);
                     break;
                 default:
+                    console.log('ChartManager: Handling single chart');
                     this.handleSingleChart(chartData);
                     break;
             }
@@ -224,54 +263,87 @@ class ChartManager extends BaseManager {
      * デュアルレイアウトの処理
      * @param {Object} chartData - チャートデータ
      */
-    handleDualLayout(chartData) {
-        
-        // 全レンダラーを非表示
-        this.hideAllRenderers();
-        
-        // デュアルレイアウト専用の処理
-        this.activeRenderer = null;
-        this.currentLayout = 'dual';
-        this.layoutData = chartData;
-        
-        // コンテナを確実に表示する
-        this.show();
-        
-        // chart-containerも確実に表示し、既存SVGも復元
-        const chartContainer = document.getElementById('chart-container');
-        if (chartContainer) {
-            chartContainer.classList.add('visible');
-            chartContainer.style.display = 'block';
-            chartContainer.style.opacity = '1';
+    async handleDualLayout(chartData) {
+        try {
+            // 全レンダラーを非表示
+            this.hideAllRenderers();
+            
+            // DualLayoutクラスに委譲
+            const dualLayout = this.layouts.dual;
+            if (!dualLayout) {
+                throw new Error('DualLayout not initialized');
+            }
+            
+            // レイアウト状態の更新
+            this.activeRenderer = null;
+            this.currentLayout = 'dual';
+            this.layoutData = chartData;
+            
+            // LayoutConfigから統一設定を適用
+            if (window.LayoutConfig && window.LayoutConfig.getPreset) {
+                const preset = chartData.preset || 'DUAL_HORIZONTAL';
+                const layoutConfig = LayoutConfig.getPreset(preset, chartData.position);
+                if (layoutConfig) {
+                    chartData.position = { ...layoutConfig.position, ...chartData.position };
+                    chartData.spacing = chartData.spacing || layoutConfig.spacing;
+                    chartData.arrangement = chartData.arrangement || layoutConfig.arrangement;
+                }
+            }
+            
+            // コンテナを表示
+            this.show();
+            
+            // DualLayoutで描画
+            const success = await dualLayout.render(chartData);
+            if (!success) {
+                console.error('Failed to render dual layout');
+                this.renderFallbackError('Dual layout rendering failed');
+            }
+        } catch (error) {
+            ErrorHandler.handle(error, {
+                context: 'ChartManager.handleDualLayout',
+                chartData
+            });
+            this.renderFallbackError('Dual layout error: ' + error.message);
         }
-        
-        // 既存SVGがある場合は再表示
-        if (this.chartElement && !this.chartElement.empty()) {
-            this.chartElement.selectAll('svg')
-                .style('opacity', 1)
-                .style('pointer-events', 'auto');
-        }
-        
-        this.renderDualLayout(chartData);
     }
 
     /**
      * トリプルレイアウトの処理
      * @param {Object} chartData - チャートデータ
      */
-    handleTripleLayout(chartData) {
-        
-        // 全レンダラーを非表示
-        this.hideAllRenderers();
-        
-        // トリプルレイアウト専用の処理
-        this.activeRenderer = null;
-        this.currentLayout = 'triple';
-        this.layoutData = chartData;
-        
-        // 直接描画（従来のロジックを使用）
-        this.show();
-        this.renderTripleLayout(chartData);
+    async handleTripleLayout(chartData) {
+        try {
+            // 全レンダラーを非表示
+            this.hideAllRenderers();
+            
+            // TripleLayoutクラスに委譲
+            const tripleLayout = this.layouts.triple;
+            if (!tripleLayout) {
+                throw new Error('TripleLayout not initialized');
+            }
+            
+            // レイアウト状態の更新
+            this.activeRenderer = null;
+            this.currentLayout = 'triple';
+            this.layoutData = chartData;
+            
+            // コンテナを表示
+            this.show();
+            
+            // TripleLayoutで描画
+            const success = await tripleLayout.render(chartData);
+            if (!success) {
+                console.error('Failed to render triple layout');
+                this.renderFallbackError('Triple layout rendering failed');
+            }
+        } catch (error) {
+            ErrorHandler.handle(error, {
+                context: 'ChartManager.handleTripleLayout',
+                chartData
+            });
+            this.renderFallbackError('Triple layout error: ' + error.message);
+        }
     }
 
     /**
@@ -288,6 +360,25 @@ class ChartManager extends BaseManager {
             
             this.activeRenderer = gridRenderer;
             this.currentLayout = 'grid';
+            
+            // LayoutConfigから統一設定を適用
+            if (window.LayoutConfig && window.LayoutConfig.getPreset) {
+                const preset = chartData.preset || 'GRID_AUTO';
+                const layoutConfig = LayoutConfig.getPreset(preset, chartData.position);
+                if (layoutConfig) {
+                    chartData.position = { ...layoutConfig.position, ...chartData.position };
+                    
+                    // Grid Layout: 手動設定（columns/rows）が存在する場合はgridMode: autoを適用しない
+                    const hasManualGrid = chartData.config?.columns !== undefined && chartData.config?.rows !== undefined;
+                    
+                    chartData.config = {
+                        ...chartData.config,
+                        gridMode: hasManualGrid ? 'manual' : (chartData.config?.gridMode || layoutConfig.gridMode),
+                        spacing: chartData.config?.spacing || layoutConfig.spacing,
+                        chartSize: chartData.config?.chartSize || layoutConfig.chartSize
+                    };
+                }
+            }
             
             // position設定をconfig内に統合してGridChartRendererに渡す
             const enhancedChartData = {
@@ -1096,6 +1187,48 @@ class ChartManager extends BaseManager {
             } else if (this.currentLayout === 'triple') {
                 this.renderTripleLayout(this.layoutData);
             }
+        }
+    }
+
+    /**
+     * フォールバックエラー表示
+     * @param {string} message - エラーメッセージ
+     */
+    renderFallbackError(message) {
+        try {
+            this.clearChartContainer();
+            
+            // containerのD3セレクションを安全に取得
+            let container;
+            if (this.container && this.container.node) {
+                // 既にD3セレクション
+                container = this.container;
+            } else if (this.container) {
+                // DOM要素
+                container = d3.select(this.container);
+            } else {
+                // フォールバック
+                container = d3.select('#chart-container');
+            }
+            
+            container
+                .style('display', 'flex')
+                .style('align-items', 'center')
+                .style('justify-content', 'center')
+                .style('min-height', '400px')
+                .append('div')
+                .style('text-align', 'center')
+                .style('color', '#666')
+                .style('font-family', 'sans-serif')
+                .html(`
+                    <h3 style="margin: 0 0 10px 0; color: #d32f2f;">チャート表示エラー</h3>
+                    <p style="margin: 0; font-size: 0.9em;">${message}</p>
+                    <p style="margin: 10px 0 0 0; font-size: 0.8em; color: #999;">
+                        ページを再読み込みしてお試しください
+                    </p>
+                `);
+        } catch (error) {
+            console.error('Error rendering fallback error:', error);
         }
     }
 

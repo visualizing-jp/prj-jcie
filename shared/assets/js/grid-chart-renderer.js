@@ -120,20 +120,34 @@ class GridChartRenderer extends BaseManager {
      * @param {Object} config - 設定
      */
     renderGridChart(data, config) {
+        // レイアウト設定を統合
+        const layoutDefaults = window.LayoutConfig ? 
+            LayoutConfig.getLayoutConfig('grid') : {};
+        
         // デフォルト設定をAppDefaultsから取得
         const defaultConfig = {
+            gridMode: 'fixed',  // 'fixed' または 'auto'
             columns: 7, 
             rows: 2, 
-            chartWidth: 120,  // 元の設定を維持
-            chartHeight: 120, // 元の設定を維持
+            chartWidth: layoutDefaults.chartSize?.width || 120,
+            chartHeight: layoutDefaults.chartSize?.height || 120,
             title: '',
             showLabels: true,
             showPercentages: true,
-            rowSpacing: null  // nullの場合、chartHeightの50%を使用
+            rowSpacing: null,  // nullの場合、chartHeightの50%を使用
+            position: layoutDefaults.position
         };
 
         // AppDefaultsとの設定マージ
         const mergedConfig = BaseManager.mergeConfig(defaultConfig, config);
+        
+        // gridMode が 'auto' の場合、データから最適なグリッドを計算
+        if (mergedConfig.gridMode === 'auto' && data && data.length > 0) {
+            const optimalGrid = this.calculateOptimalGrid(data.length, mergedConfig);
+            mergedConfig.columns = optimalGrid.columns;
+            mergedConfig.rows = optimalGrid.rows;
+            console.log('GridChartRenderer: Auto-calculated grid:', optimalGrid);
+        }
         
         const { 
             columns, 
@@ -633,6 +647,51 @@ class GridChartRenderer extends BaseManager {
         }
         
         return result;
+    }
+
+    /**
+     * データ数から最適なグリッドレイアウトを計算
+     * @param {number} itemCount - アイテム数
+     * @param {Object} config - 設定
+     * @returns {Object} 最適なグリッド設定
+     */
+    calculateOptimalGrid(itemCount, config = {}) {
+        // LayoutConfigが利用可能な場合は使用
+        if (window.LayoutConfig && typeof LayoutConfig.calculateOptimalGrid === 'function') {
+            const containerNode = this.container.node();
+            const containerWidth = containerNode.offsetWidth || 800;
+            const containerHeight = containerNode.offsetHeight || 600;
+            
+            return LayoutConfig.calculateOptimalGrid(itemCount, {
+                maxColumns: config.maxColumns || 10,
+                maxRows: config.maxRows || 5,
+                aspectRatio: config.chartWidth / config.chartHeight || 1,
+                containerAspectRatio: containerWidth / containerHeight
+            });
+        }
+        
+        // フォールバック実装
+        const maxColumns = config.maxColumns || 10;
+        const maxRows = config.maxRows || 5;
+        
+        // 正方形に近い形を目指す
+        let optimalColumns = Math.ceil(Math.sqrt(itemCount));
+        optimalColumns = Math.min(optimalColumns, maxColumns);
+        
+        let optimalRows = Math.ceil(itemCount / optimalColumns);
+        optimalRows = Math.min(optimalRows, maxRows);
+        
+        // 収まらない場合は列数を調整
+        if (optimalColumns * optimalRows < itemCount) {
+            optimalColumns = Math.ceil(itemCount / optimalRows);
+        }
+        
+        return {
+            columns: optimalColumns,
+            rows: optimalRows,
+            totalItems: itemCount,
+            actualItems: optimalColumns * optimalRows
+        };
     }
 
     /**
