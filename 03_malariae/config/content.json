@@ -976,7 +976,7 @@
           "heightPercent": 100,
           "title": "マラリア対策関連ODA予算の推移",
           "xField": "year",
-          "yField": "ドル（単位、100万ドル）",
+          "yField": "value",
           "multiSeries": false,
           "yAxisLabel": "予算（億ドル）",
           "dataSource": "OECD調べ",
