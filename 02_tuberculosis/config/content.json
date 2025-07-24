@@ -99,6 +99,7 @@
         "visible": true,
         "type": "line",
         "dataFile": "japan_tb_cases.csv",
+        "title": "日本国内における新規登録結核患者数の推移",
         "config": {
           "widthPercent": 90,
           "heightPercent": 70,
@@ -128,6 +129,7 @@
         "visible": true,
         "type": "line",
         "dataFile": "japan_tb_cases.csv",
+        "title": "日本国内における新規登録結核患者数の推移",
         "config": {
           "widthPercent": 90,
           "heightPercent": 70,
@@ -157,6 +159,7 @@
         "visible": true,
         "type": "line",
         "dataFile": "japan_tb_cases.csv",
+        "title": "日本国内における新規登録結核患者数の推移",
         "config": {
           "widthPercent": 90,
           "heightPercent": 70,
@@ -186,6 +189,7 @@
         "visible": true,
         "type": "line",
         "dataFile": "japan_tb_cases.csv",
+        "title": "日本国内における新規登録結核患者数の推移",
         "config": {
           "widthPercent": 90,
           "heightPercent": 70,
@@ -224,6 +228,7 @@
         "visible": true,
         "type": "line",
         "dataFile": "tb_infections_trend.csv",
+        "title": "結核感染者数の推移",
         "config": {
           "widthPercent": 90,
           "heightPercent": 70,
@@ -253,6 +258,7 @@
         "visible": true,
         "type": "line",
         "dataFile": "tb_deaths_trend.csv",
+        "title": "結核による推定死者数の推移",
         "config": {
           "widthPercent": 90,
           "heightPercent": 70,
@@ -313,6 +319,7 @@
           {
             "id": "indonesia",
             "type": "line",
+            "title": "インドネシア",
             "dataFile": "data/indonesia_tb_trend.csv",
             "position": "left",
             "config": {
@@ -340,6 +347,7 @@
           {
             "id": "vietnam",
             "type": "line",
+            "title": "ベトナム",
             "dataFile": "data/vietnam_tb_trend.csv",
             "position": "right",
             "config": {
@@ -376,6 +384,7 @@
         "visible": true,
         "type": "line",
         "dataFile": "結核対策予算の推移.csv",
+        "title": "結核対策予算の推移",
         "config": {
           "widthPercent": 90,
           "heightPercent": 60,
