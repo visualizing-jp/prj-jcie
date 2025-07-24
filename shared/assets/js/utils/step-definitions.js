@@ -76,6 +76,15 @@ window.STEP_DEFINITIONS = {
     contentType: 'text'
   },
 
+  // ===============================
+  // 感染症別特有ステップ
+  // ===============================
+  'drug-resistance': { 
+    type: 'fixed', 
+    description: '薬剤耐性の課題（結核特有）',
+    contentType: 'chart'
+  },
+
 
   // ===============================
   // 都市エピソードセクション（step11-17）

@@ -349,26 +349,10 @@ class ScrollytellingApp {
 
         // チャート更新
         if (stepConfig.chart) {
-            if (stepConfig.chart.layout === 'dual' && stepConfig.chart.charts) {
-                // Dual chart の場合
-                const dualChartData = {
-                    ...stepConfig.chart,
-                    charts: stepConfig.chart.charts.map(chartConfig => ({
-                        ...chartConfig,
-                        data: this.getChartData(chartConfig.type || 'line', chartConfig.dataFile)
-                    }))
-                };
-                pubsub.publish(EVENTS.CHART_UPDATE, dualChartData);
-            } else if (stepConfig.chart.layout === 'triple' && stepConfig.chart.charts) {
-                // Triple chart の場合
-                const tripleChartData = {
-                    ...stepConfig.chart,
-                    charts: stepConfig.chart.charts.map(chartConfig => ({
-                        ...chartConfig,
-                        data: this.getChartData('pie', chartConfig.dataFile)
-                    }))
-                };
-                pubsub.publish(EVENTS.CHART_UPDATE, tripleChartData);
+            // 旧の個別レイアウト処理を削除し、統一レイアウトシステムに移行
+            // dual/triple/gridレイアウトは下記の統一システムで処理される
+            if (false) {
+                // 削除済み: 個別のlayout処理
             } else if (stepConfig.chart.layout === 'grid' && stepConfig.chart.config) {
                 // Grid chart の場合
                 const gridChartData = {
