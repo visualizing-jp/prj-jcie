@@ -20,7 +20,7 @@
       },
       "image": {
         "visible": true,
-        "src": "assets/images/tb-hero.jpg",
+        "src": "assets/images/opening.jpg",
         "alt": "結核との闘い",
         "position": {
           "horizontal": "center",
@@ -46,7 +46,25 @@
           "vertical": "center"
         }
       },
+      "image": {
+        "visible": true,
+        "src": "assets/images/intro.jpg",
+        "alt": "",
+        "position": {
+          "horizontal": "center",
+          "vertical": "center",
+          "width": "100%",
+          "height": "100%"
+        },
+        "config": {
+          "opacity": 1.0,
+          "objectFit": "cover"
+        }
+      },
       "chart": {
+        "visible": false
+      },
+      "map": {
         "visible": false
       }
     },
@@ -59,6 +77,21 @@
           "width": "30%",
           "horizontal": "center",
           "vertical": "center"
+        }
+      },
+      "image": {
+        "visible": true,
+        "src": "assets/images/global-burden.jpg",
+        "alt": "",
+        "position": {
+          "horizontal": "center",
+          "vertical": "center",
+          "width": "100%",
+          "height": "100%"
+        },
+        "config": {
+          "opacity": 1.0,
+          "objectFit": "cover"
         }
       },
       "chart": {
@@ -76,6 +109,21 @@
           "vertical": "center"
         }
       },
+      "image": {
+        "visible": true,
+        "src": "assets/images/transmission.jpg",
+        "alt": "",
+        "position": {
+          "horizontal": "center",
+          "vertical": "center",
+          "width": "100%",
+          "height": "100%"
+        },
+        "config": {
+          "opacity": 1.0,
+          "objectFit": "cover"
+        }
+      },
       "chart": {
         "visible": false
       }
@@ -89,6 +137,21 @@
           "width": "30%",
           "horizontal": "center",
           "vertical": "center"
+        }
+      },
+      "image": {
+        "visible": true,
+        "src": "assets/images/infection-vs-disease.jpg",
+        "alt": "",
+        "position": {
+          "horizontal": "center",
+          "vertical": "center",
+          "width": "100%",
+          "height": "100%"
+        },
+        "config": {
+          "opacity": 1.0,
+          "objectFit": "cover"
         }
       },
       "chart": {
@@ -106,6 +169,21 @@
           "vertical": "center"
         }
       },
+      "image": {
+        "visible": true,
+        "src": "assets/images/historical-impact.jpg",
+        "alt": "",
+        "position": {
+          "horizontal": "center",
+          "vertical": "center",
+          "width": "100%",
+          "height": "100%"
+        },
+        "config": {
+          "opacity": 1.0,
+          "objectFit": "cover"
+        }
+      },
       "chart": {
         "visible": false
       }
@@ -119,6 +197,21 @@
           "width": "30%",
           "horizontal": "center",
           "vertical": "center"
+        }
+      },
+      "image": {
+        "visible": true,
+        "src": "assets/images/medical-breakthroughs.jpg",
+        "alt": "",
+        "position": {
+          "horizontal": "center",
+          "vertical": "center",
+          "width": "100%",
+          "height": "100%"
+        },
+        "config": {
+          "opacity": 1.0,
+          "objectFit": "cover"
         }
       },
       "chart": {
@@ -298,6 +391,21 @@
           "width": "30%",
           "horizontal": "center",
           "vertical": "center"
+        }
+      },
+      "image": {
+        "visible": true,
+        "src": "assets/images/global-end-tb-strategy.jpg",
+        "alt": "",
+        "position": {
+          "horizontal": "center",
+          "vertical": "center",
+          "width": "100%",
+          "height": "100%"
+        },
+        "config": {
+          "opacity": 1.0,
+          "objectFit": "cover"
         }
       },
       "chart": {
@@ -532,6 +640,21 @@
           "vertical": "center"
         }
       },
+      "image": {
+        "visible": true,
+        "src": "assets/images/covid-setback.jpg",
+        "alt": "",
+        "position": {
+          "horizontal": "center",
+          "vertical": "center",
+          "width": "100%",
+          "height": "100%"
+        },
+        "config": {
+          "opacity": 1.0,
+          "objectFit": "cover"
+        }
+      },
       "chart": {
         "visible": false
       }
@@ -547,6 +670,21 @@
           "vertical": "center"
         }
       },
+      "image": {
+        "visible": true,
+        "src": "assets/images/drug-development-delay.jpg",
+        "alt": "",
+        "position": {
+          "horizontal": "center",
+          "vertical": "center",
+          "width": "100%",
+          "height": "100%"
+        },
+        "config": {
+          "opacity": 1.0,
+          "objectFit": "cover"
+        }
+      },
       "chart": {
         "visible": false
       }
@@ -560,6 +698,21 @@
           "width": "30%",
           "horizontal": "center",
           "vertical": "center"
+        }
+      },
+      "image": {
+        "visible": true,
+        "src": "assets/images/comprehensive-approach.jpg",
+        "alt": "",
+        "position": {
+          "horizontal": "center",
+          "vertical": "center",
+          "width": "100%",
+          "height": "100%"
+        },
+        "config": {
+          "opacity": 1.0,
+          "objectFit": "cover"
         }
       },
       "chart": {
