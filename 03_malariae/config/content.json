@@ -16,8 +16,8 @@
         "visible": false
       },
       "image": {
-        "src": "https://placehold.co/600x400/EEE/31343C",
-        "alt": "マラリアとの闘い（仮画像）",
+        "src": "assets/images/opening.jpg",
+        "alt": "マラリアとの闘い",
         "visible": true,
         "position": {
           "horizontal": "center",
@@ -43,21 +43,26 @@
           "vertical": "center"
         }
       },
+      "image": {
+        "visible": true,
+        "src": "assets/images/intro.jpg",
+        "alt": "",
+        "position": {
+          "horizontal": "center",
+          "vertical": "center",
+          "width": "100%",
+          "height": "100%"
+        },
+        "config": {
+          "opacity": 1.0,
+          "objectFit": "cover"
+        }
+      },
       "chart": {
         "visible": false
       },
       "map": {
         "visible": false
-      },
-      "image": {
-        "src": "https://placehold.co/600x400/EEE/31343C",
-        "alt": "step1",
-        "visible": true,
-        "config": {
-          "width": "100%",
-          "height": "100%",
-          "objectFit": "cover"
-        }
       }
     },
     {
@@ -71,13 +76,25 @@
           "vertical": "center"
         }
       },
+      "image": {
+        "visible": true,
+        "src": "assets/images/poverty-disease.jpg",
+        "alt": "",
+        "position": {
+          "horizontal": "center",
+          "vertical": "center",
+          "width": "100%",
+          "height": "100%"
+        },
+        "config": {
+          "opacity": 1.0,
+          "objectFit": "cover"
+        }
+      },
       "chart": {
         "visible": false
       },
       "map": {
-        "visible": false
-      },
-      "image": {
         "visible": false
       }
     },
@@ -92,21 +109,26 @@
           "vertical": "center"
         }
       },
+      "image": {
+        "visible": true,
+        "src": "assets/images/tropical-malaria.jpg",
+        "alt": "",
+        "position": {
+          "horizontal": "center",
+          "vertical": "center",
+          "width": "100%",
+          "height": "100%"
+        },
+        "config": {
+          "opacity": 1.0,
+          "objectFit": "cover"
+        }
+      },
       "chart": {
         "visible": false
       },
       "map": {
         "visible": false
-      },
-      "image": {
-        "src": "https://placehold.co/600x400/EEE/31343C",
-        "alt": "step3",
-        "visible": true,
-        "config": {
-          "width": "100%",
-          "height": "100%",
-          "objectFit": "cover"
-        }
       }
     },
     {
@@ -215,21 +237,26 @@
           "vertical": "center"
         }
       },
+      "image": {
+        "visible": true,
+        "src": "assets/images/mal-04.jpg",
+        "alt": "",
+        "position": {
+          "horizontal": "center",
+          "vertical": "center",
+          "width": "100%",
+          "height": "100%"
+        },
+        "config": {
+          "opacity": 1.0,
+          "objectFit": "cover"
+        }
+      },
       "chart": {
         "visible": false
       },
       "map": {
         "visible": false
-      },
-      "image": {
-        "src": "https://placehold.co/600x400/EEE/31343C",
-        "alt": "step6",
-        "visible": true,
-        "config": {
-          "width": "100%",
-          "height": "100%",
-          "objectFit": "cover"
-        }
       }
     },
     {
@@ -243,21 +270,26 @@
           "vertical": "center"
         }
       },
+      "image": {
+        "visible": true,
+        "src": "assets/images/parasite-reproduction.jpg",
+        "alt": "",
+        "position": {
+          "horizontal": "center",
+          "vertical": "center",
+          "width": "100%",
+          "height": "100%"
+        },
+        "config": {
+          "opacity": 1.0,
+          "objectFit": "cover"
+        }
+      },
       "chart": {
         "visible": false
       },
       "map": {
         "visible": false
-      },
-      "image": {
-        "src": "https://placehold.co/600x400/EEE/31343C",
-        "alt": "step7",
-        "visible": true,
-        "config": {
-          "width": "100%",
-          "height": "100%",
-          "objectFit": "cover"
-        }
       }
     },
     {
@@ -271,21 +303,26 @@
           "vertical": "center"
         }
       },
+      "image": {
+        "visible": true,
+        "src": "assets/images/red-blood-cells.jpg",
+        "alt": "",
+        "position": {
+          "horizontal": "center",
+          "vertical": "center",
+          "width": "100%",
+          "height": "100%"
+        },
+        "config": {
+          "opacity": 1.0,
+          "objectFit": "cover"
+        }
+      },
       "chart": {
         "visible": false
       },
       "map": {
         "visible": false
-      },
-      "image": {
-        "src": "https://placehold.co/600x400/EEE/31343C",
-        "alt": "step8",
-        "visible": true,
-        "config": {
-          "width": "100%",
-          "height": "100%",
-          "objectFit": "cover"
-        }
       }
     },
     {
@@ -299,21 +336,26 @@
           "vertical": "center"
         }
       },
+      "image": {
+        "visible": true,
+        "src": "assets/images/organ-damage.jpg",
+        "alt": "",
+        "position": {
+          "horizontal": "center",
+          "vertical": "center",
+          "width": "100%",
+          "height": "100%"
+        },
+        "config": {
+          "opacity": 1.0,
+          "objectFit": "cover"
+        }
+      },
       "chart": {
         "visible": false
       },
       "map": {
         "visible": false
-      },
-      "image": {
-        "src": "https://placehold.co/600x400/EEE/31343C",
-        "alt": "step9",
-        "visible": true,
-        "config": {
-          "width": "100%",
-          "height": "100%",
-          "objectFit": "cover"
-        }
       }
     },
     {
@@ -327,21 +369,26 @@
           "vertical": "center"
         }
       },
+      "image": {
+        "visible": true,
+        "src": "assets/images/prevention-treatment.jpg",
+        "alt": "",
+        "position": {
+          "horizontal": "center",
+          "vertical": "center",
+          "width": "100%",
+          "height": "100%"
+        },
+        "config": {
+          "opacity": 1.0,
+          "objectFit": "cover"
+        }
+      },
       "chart": {
         "visible": false
       },
       "map": {
         "visible": false
-      },
-      "image": {
-        "src": "https://placehold.co/600x400/EEE/31343C",
-        "alt": "step10",
-        "visible": true,
-        "config": {
-          "width": "100%",
-          "height": "100%",
-          "objectFit": "cover"
-        }
       }
     },
     {
@@ -355,21 +402,26 @@
           "vertical": "center"
         }
       },
+      "image": {
+        "visible": true,
+        "src": "assets/images/who-eradication-campaign.jpg",
+        "alt": "",
+        "position": {
+          "horizontal": "center",
+          "vertical": "center",
+          "width": "100%",
+          "height": "100%"
+        },
+        "config": {
+          "opacity": 1.0,
+          "objectFit": "cover"
+        }
+      },
       "chart": {
         "visible": false
       },
       "map": {
         "visible": false
-      },
-      "image": {
-        "src": "https://placehold.co/600x400/EEE/31343C",
-        "alt": "step11",
-        "visible": true,
-        "config": {
-          "width": "100%",
-          "height": "100%",
-          "objectFit": "cover"
-        }
       }
     },
     {
@@ -383,21 +435,26 @@
           "vertical": "center"
         }
       },
+      "image": {
+        "visible": true,
+        "src": "assets/images/artemisinin-discovery.jpg",
+        "alt": "",
+        "position": {
+          "horizontal": "center",
+          "vertical": "center",
+          "width": "100%",
+          "height": "100%"
+        },
+        "config": {
+          "opacity": 1.0,
+          "objectFit": "cover"
+        }
+      },
       "chart": {
         "visible": false
       },
       "map": {
         "visible": false
-      },
-      "image": {
-        "src": "https://placehold.co/600x400/EEE/31343C",
-        "alt": "step12",
-        "visible": true,
-        "config": {
-          "width": "100%",
-          "height": "100%",
-          "objectFit": "cover"
-        }
       }
     },
     {
@@ -457,21 +514,26 @@
           "vertical": "center"
         }
       },
+      "image": {
+        "visible": true,
+        "src": "assets/images/mal-07.jpg",
+        "alt": "",
+        "position": {
+          "horizontal": "center",
+          "vertical": "center",
+          "width": "100%",
+          "height": "100%"
+        },
+        "config": {
+          "opacity": 1.0,
+          "objectFit": "cover"
+        }
+      },
       "chart": {
         "visible": false
       },
       "map": {
         "visible": false
-      },
-      "image": {
-        "src": "https://placehold.co/600x400/EEE/31343C",
-        "alt": "step14",
-        "visible": true,
-        "config": {
-          "width": "100%",
-          "height": "100%",
-          "objectFit": "cover"
-        }
       }
     },
     {
@@ -485,21 +547,26 @@
           "vertical": "center"
         }
       },
+      "image": {
+        "visible": true,
+        "src": "assets/images/regional-successes.jpg",
+        "alt": "",
+        "position": {
+          "horizontal": "center",
+          "vertical": "center",
+          "width": "100%",
+          "height": "100%"
+        },
+        "config": {
+          "opacity": 1.0,
+          "objectFit": "cover"
+        }
+      },
       "chart": {
         "visible": false
       },
       "map": {
         "visible": false
-      },
-      "image": {
-        "src": "https://placehold.co/600x400/EEE/31343C",
-        "alt": "step15",
-        "visible": true,
-        "config": {
-          "width": "100%",
-          "height": "100%",
-          "objectFit": "cover"
-        }
       }
     },
     {
@@ -885,21 +952,26 @@
           "vertical": "center"
         }
       },
+      "image": {
+        "visible": true,
+        "src": "assets/images/remaining-challenges.jpg",
+        "alt": "",
+        "position": {
+          "horizontal": "center",
+          "vertical": "center",
+          "width": "100%",
+          "height": "100%"
+        },
+        "config": {
+          "opacity": 1.0,
+          "objectFit": "cover"
+        }
+      },
       "chart": {
         "visible": false
       },
       "map": {
         "visible": false
-      },
-      "image": {
-        "src": "https://placehold.co/600x400/EEE/31343C",
-        "alt": "remaining-challenges",
-        "visible": true,
-        "config": {
-          "width": "100%",
-          "height": "100%",
-          "objectFit": "cover"
-        }
       }
     },
     {
@@ -913,21 +985,26 @@
           "vertical": "center"
         }
       },
+      "image": {
+        "visible": true,
+        "src": "assets/images/artemisinin-resistance.jpg",
+        "alt": "",
+        "position": {
+          "horizontal": "center",
+          "vertical": "center",
+          "width": "100%",
+          "height": "100%"
+        },
+        "config": {
+          "opacity": 1.0,
+          "objectFit": "cover"
+        }
+      },
       "chart": {
         "visible": false
       },
       "map": {
         "visible": false
-      },
-      "image": {
-        "src": "https://placehold.co/600x400/EEE/31343C",
-        "alt": "drug-resistance",
-        "visible": true,
-        "config": {
-          "width": "100%",
-          "height": "100%",
-          "objectFit": "cover"
-        }
       }
     },
     {
@@ -945,9 +1022,6 @@
         "visible": false
       },
       "map": {
-        "visible": false
-      },
-      "image": {
         "visible": false
       }
     },
@@ -1018,21 +1092,26 @@
           "vertical": "center"
         }
       },
+      "image": {
+        "visible": true,
+        "src": "assets/images/prevention-shortage.jpg",
+        "alt": "",
+        "position": {
+          "horizontal": "center",
+          "vertical": "center",
+          "width": "100%",
+          "height": "100%"
+        },
+        "config": {
+          "opacity": 1.0,
+          "objectFit": "cover"
+        }
+      },
       "chart": {
         "visible": false
       },
       "map": {
         "visible": false
-      },
-      "image": {
-        "src": "https://placehold.co/600x400/EEE/31343C",
-        "alt": "prevention-tools-shortage",
-        "visible": true,
-        "config": {
-          "width": "100%",
-          "height": "100%",
-          "objectFit": "cover"
-        }
       }
     },
     {
@@ -1046,21 +1125,26 @@
           "vertical": "center"
         }
       },
+      "image": {
+        "visible": true,
+        "src": "assets/images/climate-impact.jpg",
+        "alt": "",
+        "position": {
+          "horizontal": "center",
+          "vertical": "center",
+          "width": "100%",
+          "height": "100%"
+        },
+        "config": {
+          "opacity": 1.0,
+          "objectFit": "cover"
+        }
+      },
       "chart": {
         "visible": false
       },
       "map": {
         "visible": false
-      },
-      "image": {
-        "src": "https://placehold.co/600x400/EEE/31343C",
-        "alt": "climate-change-impact",
-        "visible": true,
-        "config": {
-          "width": "100%",
-          "height": "100%",
-          "objectFit": "cover"
-        }
       }
     },
     {
@@ -1074,21 +1158,26 @@
           "vertical": "center"
         }
       },
+      "image": {
+        "visible": true,
+        "src": "assets/images/global-responsibility.jpg",
+        "alt": "",
+        "position": {
+          "horizontal": "center",
+          "vertical": "center",
+          "width": "100%",
+          "height": "100%"
+        },
+        "config": {
+          "opacity": 1.0,
+          "objectFit": "cover"
+        }
+      },
       "chart": {
         "visible": false
       },
       "map": {
         "visible": false
-      },
-      "image": {
-        "src": "https://placehold.co/600x400/EEE/31343C",
-        "alt": "global-responsibility",
-        "visible": true,
-        "config": {
-          "width": "100%",
-          "height": "100%",
-          "objectFit": "cover"
-        }
       }
     },
     {
