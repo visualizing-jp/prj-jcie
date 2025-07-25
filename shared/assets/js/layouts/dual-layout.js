@@ -157,7 +157,8 @@ class DualLayout extends BaseLayout {
             
             // チャートの描画
             renderer.renderChart(chartConfig.type, chartData.data, {
-                ...chartConfig,
+                ...chartConfig.config,  // config内の設定を展開
+                ...chartConfig,         // その他の設定
                 width: size.width,
                 height: size.height
             });

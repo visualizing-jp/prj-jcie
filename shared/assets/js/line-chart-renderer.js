@@ -216,8 +216,12 @@ class LineChartRenderer extends BaseManager {
         
         const newYScale = d3.scaleLinear()
             .domain(yDomain)
-            .nice()
             .range([innerHeight, 0]);
+        
+        // yRangeが明示的に設定されていない場合のみnice()を適用
+        if (!(this.config && this.config.yRange && this.config.yRange.length === 2)) {
+            newYScale.nice();
+        }
 
         const g = this.svg.select('g');
         const transitionDuration = config.transitionDuration || 1000;
@@ -396,7 +400,12 @@ class LineChartRenderer extends BaseManager {
                 const yExtent = d3.extent(allCurrentData, d => +d[yField]);
                 
                 newXScale.domain(xExtent);
-                newYScale.domain(yExtent).nice();
+                newYScale.domain(yExtent);
+                
+                // yRangeが明示的に設定されていない場合のみnice()を適用
+                if (!(this.config && this.config.yRange && this.config.yRange.length === 2)) {
+                    newYScale.nice();
+                }
                 
                 // 軸を更新（ChartLayoutHelperのフォーマッターを使用）
                 const isYearData = allCurrentData.every(d => !isNaN(d[xField]) && d[xField] > 1900 && d[xField] < 2100);
@@ -406,15 +415,36 @@ class LineChartRenderer extends BaseManager {
                 if (this.config && this.config.yAxisFormat) {
                     xAxis = isYearData ? d3.axisBottom(newXScale).tickFormat(d3.format("d")) : d3.axisBottom(newXScale);
                     yAxis = d3.axisLeft(newYScale).tickFormat(d => ChartFormatterHelper.formatYAxisValue(d, this.config.yAxisFormat));
+                    
+                    // yAxisのtickValues設定がある場合は適用
+                    if (this.config.yAxis && this.config.yAxis.tickValues) {
+                        yAxis.tickValues(this.config.yAxis.tickValues);
+                    } else if (this.config.yAxis && this.config.yAxis.ticks) {
+                        yAxis.ticks(this.config.yAxis.ticks);
+                    }
                 } else if (window.ChartLayoutHelper) {
                     // 単位情報を分析（現在表示中のデータから）
                     const unitInfo = ChartLayoutHelper.analyzeUnits(allCurrentData, this.config || {});
                     const yFormatter = (value) => ChartLayoutHelper.formatAxisWithUnits(value, unitInfo.yAxis);
                     xAxis = isYearData ? d3.axisBottom(newXScale).tickFormat(d3.format("d")) : d3.axisBottom(newXScale);
                     yAxis = d3.axisLeft(newYScale).tickFormat(yFormatter);
+                    
+                    // yAxisのtickValues設定がある場合は適用
+                    if (this.config && this.config.yAxis && this.config.yAxis.tickValues) {
+                        yAxis.tickValues(this.config.yAxis.tickValues);
+                    } else if (this.config && this.config.yAxis && this.config.yAxis.ticks) {
+                        yAxis.ticks(this.config.yAxis.ticks);
+                    }
                 } else {
                     xAxis = isYearData ? d3.axisBottom(newXScale).tickFormat(d3.format("d")) : d3.axisBottom(newXScale);
                     yAxis = d3.axisLeft(newYScale);
+                    
+                    // yAxisのtickValues設定がある場合は適用
+                    if (this.config && this.config.yAxis && this.config.yAxis.tickValues) {
+                        yAxis.tickValues(this.config.yAxis.tickValues);
+                    } else if (this.config && this.config.yAxis && this.config.yAxis.ticks) {
+                        yAxis.ticks(this.config.yAxis.ticks);
+                    }
                 }
                 
                 g.select('.x-axis').transition().duration(200).call(xAxis);
@@ -646,8 +676,12 @@ class LineChartRenderer extends BaseManager {
         
         const yScale = d3.scaleLinear()
             .domain(yDomain)
-            .nice()
             .range([innerHeight, 0]);
+        
+        // yRangeが明示的に設定されていない場合のみnice()を適用
+        if (!(config.yRange && config.yRange.length === 2)) {
+            yScale.nice();
+        }
 
         // D3標準のカラースケール：地域名から直接色を取得
         const colorScale = this.createColorScale(series, config);
@@ -680,6 +714,13 @@ class LineChartRenderer extends BaseManager {
         yAxis = yFormatter 
             ? d3.axisLeft(yScale).tickFormat(yFormatter)
             : d3.axisLeft(yScale);
+            
+        // yAxisのtickValues設定がある場合は適用
+        if (config.yAxis && config.yAxis.tickValues) {
+            yAxis.tickValues(config.yAxis.tickValues);
+        } else if (config.yAxis && config.yAxis.ticks) {
+            yAxis.ticks(config.yAxis.ticks);
+        }
         
         // X軸フォーマッター（将来の拡張用）
         if (window.ChartLayoutHelper && !config.xAxisFormat) {
@@ -875,8 +916,12 @@ class LineChartRenderer extends BaseManager {
         
         const yScale = d3.scaleLinear()
             .domain(yDomain)
-            .nice()
             .range([height, 0]);
+        
+        // yRangeが明示的に設定されていない場合のみnice()を適用
+        if (!(config.yRange && config.yRange.length === 2)) {
+            yScale.nice();
+        }
 
         // D3標準のカラースケール：地域名から直接色を取得
         const colorScale = this.createColorScale(series, config);
@@ -909,6 +954,13 @@ class LineChartRenderer extends BaseManager {
         yAxis = yFormatter 
             ? d3.axisLeft(yScale).tickFormat(yFormatter)
             : d3.axisLeft(yScale);
+            
+        // yAxisのtickValues設定がある場合は適用
+        if (config.yAxis && config.yAxis.tickValues) {
+            yAxis.tickValues(config.yAxis.tickValues);
+        } else if (config.yAxis && config.yAxis.ticks) {
+            yAxis.ticks(config.yAxis.ticks);
+        }
         
         // X軸フォーマッター（将来の拡張用）
         if (window.ChartLayoutHelper && !config.xAxisFormat) {
