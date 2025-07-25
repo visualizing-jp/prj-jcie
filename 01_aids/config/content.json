@@ -112,7 +112,7 @@
         "center": [-100, 40],
         "zoom": 1.8,
         "widthPercent": 100,
-        "heightPercent": 60,
+        "heightPercent": 100,
         "useRegionColors": true,
         "lightenAllCountries": true,
         "highlightCountries": ["United States", "United States of America", "USA"]
