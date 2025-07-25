@@ -301,6 +301,11 @@ class ConfigLoader {
             return dataFile;
         }
         
+        // cities-timeline.jsonはconfig/フォルダから読み込む
+        if (dataFile === 'cities-timeline.json') {
+            return 'config/cities-timeline.json';
+        }
+        
         if (this.diseaseDetector) {
             return this.diseaseDetector.resolveDataPath(dataFile);
         }
