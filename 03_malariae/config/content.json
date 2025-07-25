@@ -67,7 +67,7 @@
         "visible": true,
         "position": {
           "width": "30%",
-          "horizontal": "right",
+          "horizontal": "center",
           "vertical": "center"
         }
       },
@@ -403,7 +403,7 @@
     {
       "id": "comprehensive-approach",
       "text": {
-        "content": "ステップ13のテキスト",
+        "content": "",
         "visible": true,
         "position": {
           "width": "30%",
@@ -736,10 +736,10 @@
     {
       "id": "country-episodes",
       "text": {
-        "content": "＜国ごとのエピソード＞",
+        "content": "",
         "visible": true,
         "position": {
-          "width": "30%",
+          "width": "60%",
           "horizontal": "center",
           "vertical": "center"
         }
