@@ -8,20 +8,22 @@ class DualLayout extends BaseLayout {
         this.charts = [];
         this.renderers = new Map();
     }
+    
 
     /**
      * デュアルレイアウトの描画
-     * @param {Object} config - レイアウト設定
+     * @param {Object} config - レイアウト設定（データ込み）
      */
     async render(config) {
         console.log('DualLayout: Starting render with config:', config);
+        
         try {
             // レイアウト設定の取得
             const layoutConfig = this.getLayoutConfig(config);
             console.log('DualLayout: Layout config:', layoutConfig);
             
-            // データの読み込み
-            const chartsData = await this.loadChartsData(config.charts);
+            // データの準備（main.jsから渡されたデータを使用）
+            const chartsData = this.prepareChartsData(config.charts);
             
             // コンテナの準備
             this.prepareContainer(layoutConfig);
@@ -65,33 +67,31 @@ class DualLayout extends BaseLayout {
     }
 
     /**
-     * チャートデータの読み込み
+     * チャートデータの準備（main.jsから渡されたデータを使用）
      * @private
      */
-    async loadChartsData(charts) {
+    prepareChartsData(charts) {
         if (!charts || charts.length !== 2) {
             throw new Error('Dual layout requires exactly 2 charts configuration');
         }
 
-        const loadPromises = charts.map(async (chartConfig) => {
-            try {
-                const data = await d3.csv(chartConfig.dataFile);
+        return charts.map((chartConfig) => {
+            // main.jsで既に読み込まれたデータが添付されているはず
+            if (chartConfig.data) {
                 return {
                     config: chartConfig,
-                    data: data,
+                    data: chartConfig.data,
                     error: null
                 };
-            } catch (error) {
-                console.error(`Failed to load data from ${chartConfig.dataFile}:`, error);
+            } else {
+                console.error(`No data provided for chart: ${chartConfig.dataFile || 'unknown'}`);
                 return {
                     config: chartConfig,
                     data: null,
-                    error: error
+                    error: new Error(`No data provided for chart: ${chartConfig.dataFile || 'unknown'}`)
                 };
             }
         });
-
-        return await Promise.all(loadPromises);
     }
 
     /**
@@ -100,22 +100,24 @@ class DualLayout extends BaseLayout {
      */
     prepareContainer(layoutConfig) {
         try {
-            // 既存の内容をクリア
-            if (typeof this.clearContainer === 'function') {
-                this.clearContainer();
-            }
+            console.log('DualLayout: Preparing container with config:', layoutConfig);
             
-            // メインコンテナの設定
+            // メインコンテナの設定（原子操作で競合回避）
             const container = d3.select('#chart-container');
-            container.selectAll('*').remove(); // 確実にクリア
             
+            // 既存のコンテンツを一度にクリア
+            container.selectAll('*').remove();
+            
+            // コンテナスタイルを一度に設定
             container
                 .classed('dual-layout-container', true)
                 .style('display', 'flex')
                 .style('flex-direction', layoutConfig.arrangement === 'vertical' ? 'column' : 'row')
                 .style('gap', `${layoutConfig.spacing || 40}px`)
                 .style('width', '100%')
-                .style('height', '100%');
+                .style('height', '100%')
+                .style('visibility', 'visible')
+                .style('opacity', '1');
             
             // 各チャート用のコンテナを作成
             this.chartContainers = [];
@@ -124,10 +126,13 @@ class DualLayout extends BaseLayout {
                     .attr('class', `dual-chart-container chart-${i}`)
                     .style('flex', '1')
                     .style('min-width', '0')
-                    .style('position', 'relative');
+                    .style('position', 'relative')
+                    .style('display', 'block');
                 
                 this.chartContainers.push(chartContainer);
             }
+            
+            console.log('DualLayout: Container prepared successfully');
         } catch (error) {
             console.error('Error preparing container:', error);
             throw error;
@@ -135,13 +140,16 @@ class DualLayout extends BaseLayout {
     }
 
     /**
-     * 各チャートの描画
+     * 各チャートの描画（同期処理で競合回避）
      * @private
      */
     renderCharts(chartsData, layoutConfig) {
+        console.log('DualLayout: Starting chart rendering for', chartsData.length, 'charts');
+        
         for (let i = 0; i < chartsData.length; i++) {
             const chartData = chartsData[i];
             if (chartData.error || !chartData.data) {
+                console.warn(`DualLayout: Chart ${i} has error or no data:`, chartData.error);
                 this.renderErrorState(i, chartData.error);
                 continue;
             }
@@ -149,26 +157,38 @@ class DualLayout extends BaseLayout {
             const container = this.chartContainers[i];
             const chartConfig = chartData.config;
             
+            console.log(`DualLayout: Rendering chart ${i} of type ${chartConfig.type}`);
+            
             // チャートサイズの計算
             const size = this.calculateChartSize(container.node(), chartConfig, layoutConfig);
             
             // チャートタイプに応じたレンダラーの取得または作成
             const renderer = this.getOrCreateRenderer(chartConfig.type, i, container.node());
             
-            // チャートの描画
-            renderer.renderChart(chartConfig.type, chartData.data, {
-                ...chartConfig.config,  // config内の設定を展開
-                ...chartConfig,         // その他の設定
-                width: size.width,
-                height: size.height
-            });
-            
-            this.charts[i] = {
-                renderer,
-                config: chartConfig,
-                data: chartData.data
-            };
+            try {
+                // チャートの描画（同期処理）
+                renderer.renderChart(chartConfig.type, chartData.data, {
+                    ...chartConfig.config,  // config内の設定を展開
+                    ...chartConfig,         // その他の設定
+                    width: size.width,
+                    height: size.height
+                });
+                
+                this.charts[i] = {
+                    renderer,
+                    config: chartConfig,
+                    data: chartData.data
+                };
+                
+                console.log(`DualLayout: Chart ${i} rendered successfully`);
+                
+            } catch (error) {
+                console.error(`DualLayout: Error rendering chart ${i}:`, error);
+                this.renderErrorState(i, error);
+            }
         }
+        
+        console.log('DualLayout: All charts rendering completed');
     }
 
     /**

@@ -11,15 +11,15 @@ class TripleLayout extends BaseLayout {
 
     /**
      * トリプルレイアウトの描画
-     * @param {Object} config - レイアウト設定
+     * @param {Object} config - レイアウト設定（データ込み）
      */
     async render(config) {
         try {
             // レイアウト設定の取得
             const layoutConfig = this.getLayoutConfig(config);
             
-            // データの読み込み
-            const chartsData = await this.loadChartsData(config.charts);
+            // データの準備（main.jsから渡されたデータを使用）
+            const chartsData = this.prepareChartsData(config.charts);
             
             // コンテナの準備
             this.prepareContainer(layoutConfig);
@@ -63,33 +63,31 @@ class TripleLayout extends BaseLayout {
     }
 
     /**
-     * チャートデータの読み込み
+     * チャートデータの準備（main.jsから渡されたデータを使用）
      * @private
      */
-    async loadChartsData(charts) {
+    prepareChartsData(charts) {
         if (!charts || charts.length !== 3) {
             throw new Error('Triple layout requires exactly 3 charts configuration');
         }
 
-        const loadPromises = charts.map(async (chartConfig) => {
-            try {
-                const data = await d3.csv(chartConfig.dataFile);
+        return charts.map((chartConfig) => {
+            // main.jsで既に読み込まれたデータが添付されているはず
+            if (chartConfig.data) {
                 return {
                     config: chartConfig,
-                    data: data,
+                    data: chartConfig.data,
                     error: null
                 };
-            } catch (error) {
-                console.error(`Failed to load data from ${chartConfig.dataFile}:`, error);
+            } else {
+                console.error(`No data provided for chart: ${chartConfig.dataFile || 'unknown'}`);
                 return {
                     config: chartConfig,
                     data: null,
-                    error: error
+                    error: new Error(`No data provided for chart: ${chartConfig.dataFile || 'unknown'}`)
                 };
             }
         });
-
-        return await Promise.all(loadPromises);
     }
 
     /**

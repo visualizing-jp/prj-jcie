@@ -265,9 +265,6 @@ class ChartManager extends BaseManager {
      */
     async handleDualLayout(chartData) {
         try {
-            // 全レンダラーを非表示
-            this.hideAllRenderers();
-            
             // DualLayoutクラスに委譲
             const dualLayout = this.layouts.dual;
             if (!dualLayout) {
@@ -293,7 +290,7 @@ class ChartManager extends BaseManager {
             // コンテナを表示
             this.show();
             
-            // DualLayoutで描画
+            // DualLayoutで描画（クリア処理はDualLayoutが責任）
             const success = await dualLayout.render(chartData);
             if (!success) {
                 console.error('Failed to render dual layout');
@@ -314,9 +311,6 @@ class ChartManager extends BaseManager {
      */
     async handleTripleLayout(chartData) {
         try {
-            // 全レンダラーを非表示
-            this.hideAllRenderers();
-            
             // TripleLayoutクラスに委譲
             const tripleLayout = this.layouts.triple;
             if (!tripleLayout) {
@@ -331,7 +325,7 @@ class ChartManager extends BaseManager {
             // コンテナを表示
             this.show();
             
-            // TripleLayoutで描画
+            // TripleLayoutで描画（クリア処理はTripleLayoutが責任）
             const success = await tripleLayout.render(chartData);
             if (!success) {
                 console.error('Failed to render triple layout');

@@ -105,7 +105,7 @@ class LineChartRenderer extends BaseManager {
             margin.right = Math.max(margin.right, 240); // ラベル用の余白をさらに拡大
         }
         
-        // 完全にコンテナをクリア（stroke-dasharray等の状態もリセット）
+        // コンテナクリア
         this.container.selectAll('*').remove();
         
         // SVGHelperを使用してレスポンシブSVGを作成

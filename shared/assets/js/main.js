@@ -394,13 +394,21 @@ class ScrollytellingApp {
                     const layout = stepConfig.chart.layout || 'single';
                     
                     if (layout === 'dual' || layout === 'triple') {
-                        // 複数チャートレイアウト: charts配列をそのまま渡す
+                        // 複数チャートレイアウト: charts配列に事前読み込みデータを添付
+                        const chartsWithData = stepConfig.chart.charts.map(chartConfig => {
+                            const data = this.getChartData(chartConfig.type, chartConfig.dataFile);
+                            return {
+                                ...chartConfig,
+                                data: data
+                            };
+                        });
+                        
                         chartData = {
                             ...stepConfig.chart,
                             ...stepConfig.chart.config, // configがある場合は展開
+                            charts: chartsWithData, // データ付きのcharts配列
                             updateMode: updateMode,
                             direction: direction
-                            // chartsは配列のまま、dataは個別に読み込み不要
                         };
                     } else if (layout === 'grid') {
                         // gridレイアウト: configをそのまま渡す
