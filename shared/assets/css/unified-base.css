@@ -356,11 +356,11 @@
    Step0 ヒーロースタイル（全感染症共通）
    ================================================== */
 
-.step[data-step="0"] {
+.step[data-step="0"], .step[data-step="opening"] {
     position: relative;
 }
 
-.step[data-step="0"]::before {
+.step[data-step="0"]::before, .step[data-step="opening"]::before {
     content: '';
     position: absolute;
     top: 0;
@@ -371,7 +371,7 @@
     z-index: 1;
 }
 
-.step[data-step="0"] .text-container {
+.step[data-step="0"] .text-container, .step[data-step="opening"] .text-container {
     position: relative;
     z-index: 2;
     background: rgba(0, 0, 0, 0.6);
@@ -382,7 +382,7 @@
     max-width: 600px;
 }
 
-.step[data-step="0"] .text-container h1 {
+.step[data-step="0"] .text-container h1, .step[data-step="opening"] .text-container h1 {
     color: white;
     font-size: 2.5rem;
     font-weight: var(--font-weight-bold);
@@ -391,7 +391,7 @@
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
 }
 
-.step[data-step="0"] .text-container .subtitle {
+.step[data-step="0"] .text-container .subtitle, .step[data-step="opening"] .text-container .subtitle {
     color: rgba(255, 255, 255, 0.9);
     font-size: 1.25rem;
     text-align: center;

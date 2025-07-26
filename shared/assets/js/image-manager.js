@@ -66,7 +66,9 @@ class ImageManager extends BaseManager {
         
         // 画像特有のクリーンアップ処理
         if (this.imageElement) {
-            this.imageElement.attr('src', '').style('opacity', 0);
+            this.imageElement.style('opacity', 0);
+            // src属性を削除（空文字列ではなく削除）
+            this.imageElement.node().removeAttribute('src');
         }
         
         // step0の背景画像もクリア

@@ -532,6 +532,7 @@ class ScrollytellingApp {
         return [];
     }
 
+
     /**
      * リサイズハンドラーを初期化
      */
@@ -981,7 +982,7 @@ class ScrollytellingApp {
         }
 
         // step0（表紙）は特別な構造なのでテキストポジショニングを適用しない
-        if (stepConfig.id === 'step0' || stepLogicalName === 'step0') {
+        if (stepConfig.id === 'step0' || stepConfig.id === 'opening' || stepLogicalName === 'step0' || stepLogicalName === 'opening') {
             return;
         }
 
