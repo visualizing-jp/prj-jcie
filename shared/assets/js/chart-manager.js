@@ -558,6 +558,11 @@ class ChartManager extends BaseManager {
         
         // データを取得
         const data = chartConfig.data;
+        console.log(`DEBUG: Drawing ${position} chart - dataFile: ${chartConfig.dataFile}, data length: ${data ? data.length : 'null'}`);
+        if (data && data.length > 0) {
+            console.log(`DEBUG: First row of ${position} data:`, data[0]);
+            console.log(`DEBUG: Chart ${position} title: ${chartConfig.title}`);
+        }
         if (!data || data.length === 0) {
             console.error(`ChartManager: No data available for ${position} chart`);
             return;
@@ -1593,10 +1598,9 @@ class ChartManager extends BaseManager {
      */
     clearChartContainer() {
         if (this.chartElement && !this.chartElement.empty()) {
-            // SVGを削除せず、opacity制御で非表示にする
-            this.chartElement.selectAll('svg')
-                .style('opacity', 0)
-                .style('pointer-events', 'none');
+            // SVGを完全に削除（DualLayout用の確実なクリア）
+            this.chartElement.selectAll('*').remove();
+            console.log('ChartManager: Chart container completely cleared');
         }
     }
 
