@@ -75,7 +75,7 @@ window.AppDefaults = {
         // 背景カラー
         background: {
             white: '#fff',
-            light: '#f5f5f5',
+            light: '#DDDDDD',
             dark: '#333',
             overlay: 'rgba(255, 255, 255, 0.9)',
             shadow: 'rgba(0, 0, 0, 0.1)',

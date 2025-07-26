@@ -174,6 +174,14 @@ class ColorScheme {
      * @returns {string} 色コード
      */
     getFallbackColor(regionName) {
+        // 「残り」「その他」「余り」などの場合は専用色を返す
+        const remainderTerms = ['残り', 'その他', '余り', 'remainder', 'other', 'rest'];
+        const normalizedName = regionName.toLowerCase().trim();
+        
+        if (remainderTerms.some(term => normalizedName.includes(term.toLowerCase()))) {
+            return '#DDDDDD'; // 残り部分専用色
+        }
+        
         // 文字列ハッシュベースで一貫した色を生成
         let hash = 0;
         for (let i = 0; i < regionName.length; i++) {
