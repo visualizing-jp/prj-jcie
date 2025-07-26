@@ -248,7 +248,7 @@ class ScrollytellingApp {
                         <div class="mt-4">
                             <a href="${city.data.url}" target="_blank" rel="noopener noreferrer" 
                                class="text-blue-600 hover:text-blue-800 text-sm underline">
-                                詳しい記事を読む →
+                                詳しく知る→
                             </a>
                         </div>
                         ` : ''}
