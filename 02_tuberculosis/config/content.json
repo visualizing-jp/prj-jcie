@@ -541,7 +541,7 @@
           {
             "id": "indonesia",
             "type": "line",
-            "title": "インドネシア",
+            "title": "インドネシアにおける結核感染者数の推移",
             "dataFile": "data/indonesia_tb_trend.csv",
             "position": "left",
             "config": {
@@ -550,6 +550,7 @@
               "xField": "year",
               "yField": "value",
               "yAxisLabel": "感染者数（万人）",
+              "color": "#ff6b6b",
               "margin": {
                 "top": 40,
                 "right": 30,
@@ -559,7 +560,7 @@
               "xAxis": {
                 "title": "年"
               },
-              "yRange": [0, 1000000],
+              "yRange": [0, 1200000],
               "yAxis": {
                 "ticks": 5,
                 "tickValues": [0, 200000, 400000, 600000, 800000, 1000000]
@@ -579,7 +580,7 @@
           {
             "id": "vietnam",
             "type": "line",
-            "title": "ベトナム",
+            "title": "ベトナムにおける結核感染者数の推移",
             "dataFile": "data/vietnam_tb_trend.csv",
             "position": "right",
             "config": {
@@ -588,6 +589,7 @@
               "xField": "year",
               "yField": "value",
               "yAxisLabel": "感染者数（万人）",
+              "color": "#4ecdc4",
               "margin": {
                 "top": 40,
                 "right": 30,
@@ -597,7 +599,7 @@
               "xAxis": {
                 "title": "年"
               },
-              "yRange": [0, 1000000],
+              "yRange": [0, 1200000],
               "yAxis": {
                 "ticks": 5,
                 "tickValues": [0, 200000, 400000, 600000, 800000, 1000000]
@@ -652,6 +654,10 @@
             "title": "年"
           },
           "yAxisLabel": "予算【単位不明】",
+          "yAxisFormat": {
+            "type": "number",
+            "decimals": 0
+          },
           "xField": "year",
           "seriesField": "series",
           "series": ["国内予算", "国際予算"],
