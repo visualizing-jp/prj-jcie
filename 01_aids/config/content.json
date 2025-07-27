@@ -385,8 +385,8 @@
           "columns": 8,
           "rows": 2,
           "chartType": "pie",
-          "chartWidth": 120,
-          "chartHeight": 120,
+          "widthPercent": 100,
+          "heightPercent": 100,
           "rowSpacing": 30,
           "labelField": "region",
           "valueField": "percentage",
@@ -394,7 +394,12 @@
           "title": "地域別HIV治療カバレッジ",
           "dataSource": "UNAIDS 2024 疫学的推計値",
           "showLabels": true,
-          "showPercentages": true
+          "showPercentages": true,
+          "chartSizeMode": "responsive",
+          "maxChartWidth": 120,
+          "maxChartHeight": 120,
+          "minChartWidth": 80,
+          "minChartHeight": 80
         }
       },
       "map": {
