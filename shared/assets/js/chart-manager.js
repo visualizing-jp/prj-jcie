@@ -635,11 +635,14 @@ class ChartManager extends BaseManager {
             .y(d => yScale(+d[yField]))
             .curve(d3.curveMonotoneX);
         
+        // 色設定を取得（config.colorを優先、なければデフォルト）
+        const chartColor = chartConfig.config.color || '#4ecdc4';
+        
         chartGroup.append('path')
             .datum(data)
             .attr('class', 'line')
             .attr('fill', 'none')
-            .attr('stroke', '#4ecdc4')
+            .attr('stroke', chartColor)
             .attr('stroke-width', 2)
             .attr('d', line);
         
@@ -651,7 +654,7 @@ class ChartManager extends BaseManager {
             .attr('cx', d => xScale(+d[xField]))
             .attr('cy', d => yScale(+d[yField]))
             .attr('r', 3)
-            .attr('fill', '#4ecdc4');
+            .attr('fill', chartColor);
         
         console.log(`ChartManager: Successfully drew ${chartConfig.type} chart in ${position} position`);
     }

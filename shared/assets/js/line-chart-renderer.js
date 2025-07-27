@@ -567,6 +567,7 @@ class LineChartRenderer extends BaseManager {
     transformToSeries(data, config) {
         const { xField = 'year', yField = 'value', seriesField = 'series' } = config;
         
+        
         // フィルタが設定されている場合は適用
         let filteredData = data;
         if (config.filter) {
@@ -575,19 +576,32 @@ class LineChartRenderer extends BaseManager {
         
         if (config.multiSeries === false) {
             // 単一系列として強制的に扱う
-            return [{
+            const result = [{
                 name: config.seriesName || 'Data',
                 values: filteredData.map(d => ({
                     [xField]: d[xField],
                     [yField]: d[yField]
                 }))
             }];
+            return result;
         }
         
         // 複数系列の場合
         const seriesNames = [...new Set(filteredData.map(d => d[seriesField]))];
         
-        return seriesNames.map(name => ({
+        if (seriesNames.length === 1 && seriesNames[0] === undefined) {
+            // seriesFieldが存在しない場合は単一系列として扱う
+            const result = [{
+                name: config.title || 'Data',
+                values: filteredData.map(d => ({
+                    [xField]: d[xField],
+                    [yField]: d[yField]
+                }))
+            }];
+            return result;
+        }
+        
+        const result = seriesNames.map(name => ({
             name,
             values: filteredData
                 .filter(d => d[seriesField] === name)
@@ -596,6 +610,7 @@ class LineChartRenderer extends BaseManager {
                     [yField]: d[yField]
                 }))
         }));
+        return result;
     }
 
     /**
@@ -2423,8 +2438,10 @@ class LineChartRenderer extends BaseManager {
      * @returns {Function} D3カラースケール
      */
     createColorScale(series, config) {
-        
-        if (config.colors && config.colors.length > 0 && config.multiSeries === false) {
+        // 単一色設定が指定されている場合（dualレイアウト対応）
+        if (config.color) {
+            return () => config.color;
+        } else if (config.colors && config.colors.length > 0 && config.multiSeries === false) {
             // 単一系列の明示色
             return d3.scaleOrdinal(config.colors).domain(series.map(d => d.name));
         } else if (window.ColorScheme && config.useUnifiedColors !== false) {
