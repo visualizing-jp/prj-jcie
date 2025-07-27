@@ -450,7 +450,21 @@
           },
           "yRange": [0, 14000000],
           "title": "結核感染者数の推移",
-          "dataSource": "公益財団法人結核予防会結核研究所疫学情報センター"
+          "dataSource": "公益財団法人結核予防会結核研究所疫学情報センター",
+          "annotations": [
+            {
+              "type": "verticalLine",
+              "year": 2020,
+              "label": "2020年",
+              "position": "top-right"
+            },
+            {
+              "type": "verticalLine",
+              "year": 2023,
+              "label": "2023年",
+              "position": "top-right"
+            }
+          ]
         }
       }
     },
@@ -490,6 +504,14 @@
               "万": 10000
             }
           },
+          "annotations": [
+            {
+              "type": "verticalLine",
+              "year": 2023,
+              "label": "2023年",
+              "position": "top-right"
+            }
+          ],
           "title": "結核による推定死者数の推移",
           "dataSource": "【To Be Delivered】"
         }
