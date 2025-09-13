@@ -18,7 +18,8 @@ class ChartManager extends BaseManager {
             line: null,
             bar: null,
             pie: null,
-            grid: null
+            grid: null,
+            'stacked-bar': null
         };
         
         // レイアウト管理クラスのインスタンス
@@ -77,7 +78,8 @@ class ChartManager extends BaseManager {
                 line: null,
                 bar: null,
                 pie: null,
-                grid: null
+                grid: null,
+                'stacked-bar': null
             };
         }
         
@@ -118,6 +120,14 @@ class ChartManager extends BaseManager {
                 }
             } else {
                 console.error('✗ GridChartRenderer not available in window');
+            }
+
+            // StackedBarChartRenderer
+            if (window.StackedBarChartRenderer) {
+                this.renderers['stacked-bar'] = new StackedBarChartRenderer(containerId);
+                console.log('✓ StackedBarChartRenderer initialized successfully');
+            } else {
+                console.error('✗ StackedBarChartRenderer not available in window');
             }
         } catch (error) {
             console.error('ChartManager: Error initializing renderers:', error);

@@ -472,7 +472,7 @@
         }
       },
       "chart": {
-        "type": "line",
+        "type": "stacked-bar",
         "dataFile": "data/蚊帳の配布数と使っている人の割合_transformed.csv",
         "visible": true,
         "position": {
@@ -483,20 +483,16 @@
         "config": {
           "widthPercent": 70,
           "heightPercent": 100,
-          "title": "配布された蚊帳に対する、蚊帳を使っている人の割合",
+          "title": "蚊帳の使用状況の推移",
           "xField": "year",
-          "yField": "value",
-          "seriesField": "series",
-          "multiSeries": true,
           "yAxisLabel": "割合（%）",
-          "dataSource": "【To Be Delivered】",
-          "legendType": "inline",
+          "stackKeys": ["蚊帳を使っている人の割合", "蚊帳を使っていない人の割合"],
+          "colors": ["#f4a620", "#cccccc"],
           "yAxisFormat": {
             "type": "number",
-            "decimals": 1
+            "suffix": "%"
           },
-          "yRange": [0, 100],
-          "colors": ["#ff6b35", "#4ecdc4"]
+          "dataSource": "【To Be Delivered】"
         }
       },
       "map": {
