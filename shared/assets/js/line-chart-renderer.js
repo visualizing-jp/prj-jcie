@@ -916,7 +916,7 @@ class LineChartRenderer extends BaseManager {
      * 指定されたグループ内で折れ線グラフを描画
      */
     renderLineChartInGroup(g, data, config) {
-        const { width, height, xField = 'year', yField = 'value', colors = d3.schemeCategory10, multiSeries = true } = config;
+        const { width, height, xField = 'year', yField = 'value', colors = d3.schemeCategory10, multiSeries = true, dataSource = '' } = config;
         
         // データを系列別に変換
         const series = this.transformToSeries(data, config);
@@ -1095,6 +1095,19 @@ class LineChartRenderer extends BaseManager {
             } else {
                 this.addCompactLegend(g, series, colorScale, width, height);
             }
+        }
+
+        // データソースを表示
+        if (dataSource) {
+            g.append('text')
+                .attr('class', 'chart-data-source')
+                .attr('x', 0)
+                .attr('y', height + 35) // X軸の下に配置
+                .attr('text-anchor', 'start')
+                .style('font-size', '12px')
+                .style('fill', '#888')
+                .style('font-style', 'normal')
+                .text(`出典: ${dataSource}`);
         }
     }
 

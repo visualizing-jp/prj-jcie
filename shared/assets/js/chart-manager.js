@@ -665,6 +665,19 @@ class ChartManager extends BaseManager {
             .attr('cy', d => yScale(+d[yField]))
             .attr('r', 3)
             .attr('fill', chartColor);
+
+        // データソースを表示
+        if (chartConfig.config.dataSource) {
+            svgGroup.append('text')
+                .attr('class', 'chart-data-source')
+                .attr('x', 0)
+                .attr('y', layout.chartHeight - 5)
+                .attr('text-anchor', 'start')
+                .style('font-size', '12px')
+                .style('fill', '#888')
+                .style('font-style', 'normal')
+                .text(`出典: ${chartConfig.config.dataSource}`);
+        }
         
         console.log(`ChartManager: Successfully drew ${chartConfig.type} chart in ${position} position`);
     }
