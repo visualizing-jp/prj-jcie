@@ -546,7 +546,7 @@
         "visible": true,
         "position": {
           "width": "30%",
-          "horizontal": "center",
+          "horizontal": "right",
           "vertical": "center"
         }
       },
