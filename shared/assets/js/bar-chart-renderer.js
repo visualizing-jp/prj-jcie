@@ -1,8 +1,8 @@
 /**
  * BarChartRenderer - 棒グラフの描画と更新を専門的に扱うクラス
- * BaseManagerを継承し、棒グラフ特有の機能を提供
+ * ChartRendererBaseを継承し、棒グラフ特有の機能を提供
  */
-class BarChartRenderer extends BaseManager {
+class BarChartRenderer extends ChartRendererBase {
     constructor(containerId) {
         super(containerId);
         this.svg = null;
@@ -650,57 +650,6 @@ class BarChartRenderer extends BaseManager {
     }
 
     /**
-     * レスポンシブサイズを取得
-     * @param {Object} config - 設定
-     * @returns {Object} {width, height}
-     */
-    getResponsiveSize(config) {
-        // SVGHelperが利用可能な場合は共通ユーティリティを使用
-        if (window.SVGHelper) {
-            return SVGHelper.getResponsiveSize(this.container, {
-                defaultWidth: 800,  // viewBoxの基準幅
-                defaultHeight: 600, // viewBoxの基準高さ
-                width: config.width,
-                height: config.height,
-                minWidth: 300,
-                minHeight: 200,
-                maxWidth: 1200,
-                maxHeight: 800,
-                aspectRatio: config.aspectRatio || ((config.width || 800) / (config.height || 600)),
-                widthPercent: config.widthPercent || null,
-                heightPercent: config.heightPercent || null
-            });
-        }
-
-        // フォールバック（SVGHelperが利用できない場合）
-        let width = config.width || 800;
-        let height = config.height || 600;
-
-        // パーセンテージ指定の場合
-        if (config.widthPercent) {
-            width = window.innerWidth * (config.widthPercent / 100);
-        }
-        if (config.heightPercent) {
-            height = window.innerHeight * (config.heightPercent / 100);
-        }
-
-        // アスペクト比を維持
-        if (config.aspectRatio) {
-            if (config.widthPercent && !config.heightPercent) {
-                height = width / config.aspectRatio;
-            } else if (config.heightPercent && !config.widthPercent) {
-                width = height * config.aspectRatio;
-            }
-        }
-
-        // 最小・最大値の制約
-        width = Math.max(300, Math.min(1200, width));
-        height = Math.max(200, Math.min(800, height));
-
-        return { width, height };
-    }
-
-    /**
      * レジェンドを追加（棒グラフ用）
      * @param {d3.Selection} svg - SVG要素
      * @param {Array} data - データ
@@ -916,27 +865,6 @@ class BarChartRenderer extends BaseManager {
                     break;
             }
         });
-    }
-
-    /**
-     * データソースを表示
-     * @param {d3.Selection} svg - SVG要素
-     * @param {string} dataSource - データソース名
-     * @param {number} width - チャート幅
-     * @param {number} height - チャート高さ
-     */
-    addDataSource(svg, dataSource, width, height) {
-        if (!dataSource) return;
-
-        svg.append('text')
-            .attr('class', 'chart-data-source')
-            .attr('x', 10)
-            .attr('y', height - 10)
-            .attr('text-anchor', 'start')
-            .style('font-size', '12px')
-            .style('fill', '#888')
-            .style('font-style', 'normal')
-            .text(`出典: ${dataSource}`);
     }
 
     /**

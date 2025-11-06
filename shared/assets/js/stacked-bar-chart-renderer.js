@@ -1,7 +1,8 @@
 /**
  * StackedBarChartRenderer - 時系列積み重ね棒グラフの描画と更新を専門的に扱うクラス
+ * ChartRendererBaseを継承し、積み重ね棒グラフ特有の機能を提供
  */
-class StackedBarChartRenderer extends BaseManager {
+class StackedBarChartRenderer extends ChartRendererBase {
     constructor(containerId) {
         super(containerId);
         this.svg = null;

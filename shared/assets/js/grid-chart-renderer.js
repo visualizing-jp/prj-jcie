@@ -1,8 +1,8 @@
 /**
  * GridChartRenderer - グリッドレイアウトでの複数チャート描画を専門的に扱うクラス
- * BaseManagerを継承し、グリッド特有の機能を提供
+ * ChartRendererBaseを継承し、グリッド特有の機能を提供
  */
-class GridChartRenderer extends BaseManager {
+class GridChartRenderer extends ChartRendererBase {
     constructor(containerId) {
         super(containerId);
         this.svg = null;
@@ -391,68 +391,6 @@ class GridChartRenderer extends BaseManager {
     }
 
     /**
-     * レスポンシブなサイズを取得（他のレンダラーと統一）
-     * position設定からwidth/heightを取得し、コンテナサイズを計算
-     * @param {Object} config - 設定オブジェクト
-     * @returns {Object} 計算された幅と高さ
-     */
-    getResponsiveSize(config) {
-        // position設定からコンテナサイズを取得
-        const containerRect = this.container.node().getBoundingClientRect();
-        let containerWidth = containerRect.width;
-        let containerHeight = containerRect.height;
-        
-        // widthPercent/heightPercent が100%の場合は制約を回避
-        const isFullViewport = (config.widthPercent === 100 && config.heightPercent === 100);
-        
-        // position設定でwidth/heightが指定されている場合
-        if (config.position) {
-            const { width: posWidth, height: posHeight } = config.position;
-            
-            // width設定の処理
-            if (posWidth === "100%") {
-                containerWidth = isFullViewport ? window.innerWidth * 0.98 : window.innerWidth * 0.9;
-            } else if (typeof posWidth === "string" && posWidth.endsWith("%")) {
-                const percent = parseFloat(posWidth) / 100;
-                containerWidth = window.innerWidth * percent;
-            } else if (typeof posWidth === "number") {
-                containerWidth = posWidth;
-            }
-            
-            // height設定の処理
-            if (posHeight === "100%") {
-                containerHeight = isFullViewport ? window.innerHeight * 0.95 : window.innerHeight * 0.8;
-            } else if (typeof posHeight === "string" && posHeight.endsWith("%")) {
-                const percent = parseFloat(posHeight) / 100;
-                containerHeight = window.innerHeight * percent;
-            } else if (typeof posHeight === "number") {
-                containerHeight = posHeight;
-            }
-        }
-        
-        // SVGHelperが利用可能な場合は共通ユーティリティを使用
-        if (window.SVGHelper) {
-            return SVGHelper.getResponsiveSize(this.container, {
-                defaultWidth: containerWidth,
-                defaultHeight: containerHeight,
-                width: containerWidth,
-                height: containerHeight,
-                minWidth: 600,
-                minHeight: 400,
-                maxWidth: 1600,
-                maxHeight: 1000,
-                widthPercent: config.widthPercent || null,
-                heightPercent: config.heightPercent || null,
-                isGridChart: true // グリッドチャート専用フラグ
-            });
-        }
-
-        // フォールバック
-        return { 
-            width: containerWidth || 800, 
-            height: containerHeight || 600 
-        };
-    }
     
     /**
      * データ構造を自動分析
@@ -744,27 +682,6 @@ class GridChartRenderer extends BaseManager {
             valid: errors.length === 0,
             errors
         };
-    }
-
-    /**
-     * データソースを表示
-     * @param {d3.Selection} svg - SVG要素
-     * @param {string} dataSource - データソース名
-     * @param {number} width - チャート幅
-     * @param {number} height - チャート高さ
-     */
-    addDataSource(svg, dataSource, width, height) {
-        if (!dataSource) return;
-
-        svg.append('text')
-            .attr('class', 'chart-data-source')
-            .attr('x', 10)
-            .attr('y', height - 10)
-            .attr('text-anchor', 'start')
-            .style('font-size', '12px')
-            .style('fill', '#888')
-            .style('font-style', 'normal')
-            .text(`出典: ${dataSource}`);
     }
 
     /**
