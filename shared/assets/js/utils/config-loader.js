@@ -300,12 +300,17 @@ class ConfigLoader {
         if (dataFile.startsWith('data/')) {
             return dataFile;
         }
-        
+
         // cities-timeline.jsonはconfig/フォルダから読み込む
         if (dataFile === 'cities-timeline.json') {
             return 'config/cities-timeline.json';
         }
-        
+
+        // countries-110m.jsonは共有フォルダから読み込む（Netlify対応）
+        if (dataFile === 'countries-110m.json') {
+            return '../shared/data/countries-110m.json';
+        }
+
         if (this.diseaseDetector) {
             return this.diseaseDetector.resolveDataPath(dataFile);
         }
