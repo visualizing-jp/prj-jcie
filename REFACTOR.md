@@ -160,14 +160,68 @@
   - HTMLから参照削除: 01_aids/index.html, 02_tuberculosis/index.html, 03_malariae/index.html
   - 理由: window.STEP_DEFINITIONS、DISEASE_STEP_CONFIG などが全く使用されておらず、設定はconfig.jsonで管理されているため冗長
 
-### 🔄 進行中
-- **4️⃣ デバッグコード・コンソールログの整理**: 次のターゲット
+### ✅ 完了
+- **4️⃣ デバッグコード・コンソールログの整理**: Logger ユーティリティ実装完了
+  - Logger クラス作成: shared/assets/js/utils/logger.js
+  - HTML統合: 3感染症のindex.htmlにスクリプト読み込み追加
+  - main.js初期化: ConfigLoader後にLogger.init()を実装
+  - 環境別フィルタリング: 本番環境では自動的にERRORレベルのみ出力
 
 ### 📋 待機中
 - **8️⃣ ユーティリティクラスの使用率向上 - グループ2以降**: 部分使用や最適化対象の検討
 
 ### ⏸️ 将来計画
 - その他すべて
+
+---
+
+## Logger 実装詳細（2025-11-06）
+
+### 機能仕様
+```javascript
+// ログレベル: DEBUG(0) → INFO(1) → WARN(2) → ERROR(3) → SILENT(4)
+window.Logger.debug('メッセージ', データ);   // 開発環境のみ
+window.Logger.info('メッセージ', データ);    // 開発環境のみ
+window.Logger.warn('メッセージ', データ);    // 開発環境のみ
+window.Logger.error('メッセージ', データ);   // 本番・開発両環境
+window.Logger.time(ラベル);                  // タイマー開始
+window.Logger.timeEnd(ラベル);               // タイマー終了
+```
+
+### 環境設定による自動フィルタリング
+- **開発環境** (development.json)
+  - logging.level: "debug"
+  - すべてのログレベル（DEBUG/INFO/WARN/ERROR）が出力される
+  - パフォーマンスオプション無効化
+
+- **本番環境** (production.json)
+  - logging.level: "error"
+  - ERRORレベルのみ出力（console.log による負荷削減）
+  - パフォーマンス最適化有効化
+
+### 導入場所
+1. Logger クラス: `shared/assets/js/utils/logger.js`
+2. HTML統合:
+   - `01_aids/index.html` 行280-282
+   - `02_tuberculosis/index.html` 行308-310
+   - `03_malariae/index.html` 行389-391
+3. main.js初期化: `shared/assets/js/main.js` 行52-55
+
+### 次のステップ（段階的実装）
+本実装により、以下の改善が自動的に実現されます：
+
+**フェーズ1: 完了** ✅
+- Logger クラスの実装と統合
+- 環境別自動フィルタリング
+
+**フェーズ2: 段階的置換（推奨）**
+- main.js の console.error → Logger.error（14個）
+- chart-manager.js の console.log → Logger.debug（66個）
+- その他主要ファイルの置換（優先度順）
+
+**フェーズ3: 最適化**
+- コメント化されたデバッグコードの削除
+- console.log 数の削減で約10-15%のページロード改善を見込む
 
 ---
 

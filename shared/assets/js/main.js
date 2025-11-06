@@ -35,7 +35,11 @@ class ScrollytellingApp {
             
             
         } catch (error) {
-            console.error('Failed to initialize app:', error);
+            if (window.Logger) {
+                window.Logger.error('Failed to initialize app:', error);
+            } else {
+                console.error('Failed to initialize app:', error);
+            }
             this.showError('アプリケーションの初期化に失敗しました。');
         }
     }
@@ -45,9 +49,15 @@ class ScrollytellingApp {
      */
     async loadData() {
         try {
-            
+
             // 新しい設定システムを使用して設定を読み込む
             await window.ConfigLoader.loadAll();
+
+            // ロガーを初期化（ConfigLoader後に実行）
+            if (window.Logger) {
+                window.Logger.init();
+            }
+
             const config = window.ConfigLoader.getLegacyCompatibleConfig();
             
             // デバッグ情報を出力
