@@ -336,11 +336,18 @@ class ScrollytellingApp {
      */
     handleStepEnter(response) {
         const { index, direction } = response;
-        
+
         // 論理名ベース: HTMLのdata-step属性から論理名を取得
         const stepLogicalName = response.element.getAttribute('data-step');
+        const scrollamaIndex = response.element.getAttribute('data-scrollama-index');
+
+        // 現在表示されているコンテンツの data-step と data-scrollama-index をログ出力
+        const chartContainer = document.querySelector('#chart-container');
+        const svgCount = chartContainer ? chartContainer.querySelectorAll('svg').length : 0;
+        console.log(`📍 Step Entered - data-step: ${stepLogicalName}, data-scrollama-index: ${scrollamaIndex}, direction: ${direction}, SVG count: ${svgCount}`);
+
         const stepConfig = this.config?.steps?.find(step => step.id === stepLogicalName);
-        
+
         // デバッグ用ログ（開発環境のみ）
         // if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
         //     console.log(`[SCROLLAMA DEBUG] Step detected: index=${index}, stepId=${stepLogicalName}, direction=${direction}`);
