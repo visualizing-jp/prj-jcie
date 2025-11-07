@@ -225,7 +225,11 @@ class BaseLayout {
      * @returns {Object} トランジション設定
      */
     getTransitionConfig(customTransition = {}) {
-        const defaults = LayoutConfig.DEFAULTS.transition;
+        // AppDefaults.animationから統一されたアニメーション設定を使用
+        const defaults = {
+            duration: window.AppDefaults?.animation?.chartTransitionDuration || 1000,
+            easing: window.AppDefaults?.animation?.defaultEasing || 'easeInOut'
+        };
         return { ...defaults, ...customTransition };
     }
 

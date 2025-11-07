@@ -110,49 +110,6 @@ window.AppDefaults = {
         maxWidth: '600px',
         imageMaxWidth: '400px',
         imageMaxHeight: '400px'
-    },
-
-    // ユーティリティ関数
-    utils: {
-        /**
-         * レスポンシブブレークポイントをチェック
-         * @param {string} breakpoint - 'mobile', 'tablet', 'desktop'
-         * @returns {boolean}
-         */
-        isBreakpoint: function(breakpoint) {
-            const width = window.innerWidth;
-            switch(breakpoint) {
-                case 'mobile':
-                    return width < this.breakpoints.mobile;
-                case 'tablet':
-                    return width >= this.breakpoints.mobile && width < this.breakpoints.tablet;
-                case 'desktop':
-                    return width >= this.breakpoints.tablet;
-                default:
-                    return false;
-            }
-        }.bind(window.AppDefaults),
-
-        /**
-         * レスポンシブサイズを取得
-         * @returns {Object} {width, height}
-         */
-        getResponsiveSize: function() {
-            if (this.utils.isBreakpoint('mobile')) {
-                return this.chartSize.small;
-            }
-            return this.chartSize.default;
-        }.bind(window.AppDefaults),
-
-        /**
-         * レスポンシブマージンを取得
-         * @param {string} type - 'default', 'compact', 'minimal', 'none'
-         * @returns {Object} {top, right, bottom, left}
-         */
-        getResponsiveMargin: function(type = 'default') {
-            const marginType = this.utils.isBreakpoint('mobile') ? 'compact' : type;
-            return this.chartMargin[marginType] || this.chartMargin.default;
-        }.bind(window.AppDefaults)
     }
 };
 
