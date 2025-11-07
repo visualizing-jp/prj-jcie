@@ -180,6 +180,16 @@ class DiseaseDetector {
     }
 
     /**
+     * 共有設定ファイルパスを解決
+     * 各感染症フォルダから ../shared/config/ 内のファイルにアクセスするためのメソッド
+     * @param {string} configFile - 設定ファイル名
+     * @returns {string} 解決されたパス
+     */
+    resolveSharedConfigPath(configFile) {
+        return '../shared/config/' + configFile;
+    }
+
+    /**
      * 感染症カラーを取得
      * @param {string} type - カラータイプ (primary, secondary, accent)
      * @returns {string} カラーコード
