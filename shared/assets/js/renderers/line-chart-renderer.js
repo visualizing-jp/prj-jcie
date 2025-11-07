@@ -35,7 +35,8 @@ class LineChartRenderer extends ChartRendererBase {
             this.svg &&
             config.dataFile === this.config?.dataFile) {
 
-            this.updateChartWithTransition(data, config, direction);
+            // LineChartAnimationsに委譲
+            LineChartAnimations.updateChartWithTransition(this, data, config, direction);
             return;
         }
 
@@ -120,437 +121,6 @@ class LineChartRenderer extends ChartRendererBase {
         this.renderLineChart(data, { width, height, margin, ...config });
     }
 
-    /**
-     * チャートをトランジションで更新する（再描画しない）
-     * @param {Array} data - 新しいデータ
-     * @param {Object} config - 新しい設定
-     * @param {string} direction - スクロール方向 ('up' | 'down')
-     */
-    updateChartWithTransition(data, config, direction = 'down') {
-        if (!this.svg || this.currentChart !== 'line') {
-            console.warn('Cannot update chart with transition: no existing line chart');
-            return;
-        }
-
-        this.data = data;
-        this.config = config;
-
-        // 新しいデータを系列別に変換
-        const newSeries = this.transformToSeries(data, config);
-        const allNewValues = newSeries.flatMap(s => s.values);
-        
-        const { width, height } = this.getResponsiveSize(config);
-
-        // マージンを計算（ChartRendererBase のヘルパーメソッドを使用）
-        const margin = this.getChartMargin(data, config, {
-            chartType: 'line',
-            hasLegend: config.showLegend !== false && config.multiSeries
-        });
-
-        // インラインラベル使用時は右マージンを拡大
-        if (config.legendType === 'inline' && config.multiSeries) {
-            margin.right = Math.max(margin.right, 240); // ラベル用の余白をさらに拡大
-        }
-        const innerWidth = width - margin.left - margin.right;
-        const innerHeight = height - margin.top - margin.bottom;
-        
-        const { xField = 'year', yField = 'value' } = config;
-        const isYearData = allNewValues.every(d => !isNaN(d[xField]) && d[xField] > 1900 && d[xField] < 2100);
-        
-        // X軸のドメインを決定（設定で年度範囲が指定されていればそれを使用、なければデータ範囲）
-        let xDomain;
-        if (config.yearRange && config.yearRange.length === 2) {
-            // 設定ファイルで年度範囲が指定されている場合
-            xDomain = config.yearRange;
-        } else if (isYearData) {
-            // 年データの場合はデータの範囲を使用
-            xDomain = d3.extent(allNewValues, d => +d[xField]);
-        } else {
-            // 時間データの場合
-            xDomain = d3.extent(allNewValues, d => new Date(d[xField]));
-        }
-        
-        // 新しいスケールを計算
-        const newXScale = isYearData 
-            ? d3.scaleLinear()
-                .domain(xDomain)
-                .range([0, innerWidth])
-            : d3.scaleTime()
-                .domain(xDomain)
-                .range([0, innerWidth]);
-
-        // Y軸のドメインを決定（設定でY軸範囲が指定されていればそれを使用、なければデータ範囲）
-        let yDomain;
-        if (config.yRange && config.yRange.length === 2) {
-            // 設定ファイルでY軸範囲が指定されている場合
-            yDomain = config.yRange;
-        } else {
-            // データの範囲を使用
-            yDomain = d3.extent(allNewValues, d => +d[yField]);
-        }
-        
-        let newYScale;
-        if (config.yAxis && config.yAxis.type === 'log') {
-            const yMin = yDomain[0] > 0 ? yDomain[0] : 1;
-            newYScale = d3.scaleLog()
-                .domain([yMin, yDomain[1]])
-                .range([innerHeight, 0]);
-        } else {
-            newYScale = d3.scaleLinear()
-                .domain(yDomain)
-                .range([innerHeight, 0]);
-        }
-        
-        // yRangeが明示的に設定されていない場合のみnice()を適用
-        if (!(this.config && this.config.yRange && this.config.yRange.length === 2)) {
-            newYScale.nice();
-        }
-
-        const g = this.svg.select('g');
-
-        // ChartTransitionsを使用して軸を更新
-        const newXAxis = isYearData
-            ? d3.axisBottom(newXScale).tickFormat(d3.format("d"))
-            : d3.axisBottom(newXScale);
-        const newYAxis = d3.axisLeft(newYScale)
-            .tickFormat(d => ChartFormatterHelper.formatYAxisValue(d, config.yAxisFormat));
-
-        if (config.yAxis && config.yAxis.ticks) {
-            newYAxis.ticks(config.yAxis.ticks);
-        }
-
-        // 軸をトランジションで更新（ChartRendererBase のヘルパーメソッドを使用）
-        const transitionDuration = config.transitionDuration || 1000;
-        this.updateChartAxes(g, newXAxis, newYAxis, {
-            chartType: 'line',
-            duration: transitionDuration
-        });
-
-        // 新しいライン生成器
-        const newLine = d3.line()
-            .x(d => isYearData ? newXScale(+d[xField]) : newXScale(new Date(d[xField])))
-            .y(d => newYScale(+d[yField]))
-            .curve(d3.curveMonotoneX);
-
-        // 色スケール - 地域別カラースキームを使用
-        const colorScale = this.createColorScale(newSeries, config);
-
-        // ChartTransitionsを使用してEnter/Update/Exitパターンを適用
-        const seriesUpdateResult = ChartTransitions.applyEnterUpdateExit(
-            g.selectAll('.series-group'),
-            newSeries,
-            d => d.name, // 系列名で一意性を保つ
-            {
-                onEnter: (enterSelection) => {
-                    const enterGroups = enterSelection
-                        .append('g')
-                        .attr('class', 'series-group');
-                    
-                    // 新しい系列にラインを追加（非表示状態で開始）
-                    enterGroups.append('path')
-                        .attr('class', 'chart-line')
-                        .attr('stroke', d => colorScale(d.name))
-                        .attr('stroke-width', window.AppDefaults?.strokeWidth?.thick || 2)
-                        .attr('fill', 'none')
-                        .attr('d', d => newLine(d.values))
-                        .style('opacity', 0);
-                },
-                onExit: (exitSelection) => {
-                    exitSelection
-                        .style('opacity', 0)
-                        .remove();
-                }
-            },
-            {
-                chartType: 'line',
-                exit: { duration: transitionDuration / 2 }
-            }
-        );
-        
-        const allSeriesGroups = seriesUpdateResult.all;
-
-        // ChartTransitionsを使用して統一されたトランジションを作成
-        const mainTransition = ChartTransitions.createTransition('line', 'update', {
-            duration: transitionDuration
-        });
-
-        // 線と点を完全に同期するため、newSeriesから正確なデータを取得
-        const self = this; // thisのコンテキストを保存
-        allSeriesGroups.each(function(seriesData, seriesIndex) {
-            const group = d3.select(this);
-            
-            // ⚠️ 重要: newSeriesから対応する系列データを取得（確実にフィルタリング済み）
-            const currentSeriesData = newSeries.find(s => s.name === seriesData.name) || seriesData;
-            const currentValues = currentSeriesData.values;
-            
-            
-            // Object Constancy: 一意キーで各データポイントを追跡
-            const dataWithKeys = currentValues.map(v => ({
-                ...v,
-                seriesName: currentSeriesData.name,
-                uniqueKey: `${currentSeriesData.name}-${v[xField]}` // 系列名と年度で一意キー生成
-            }));
-            
-            // シンプルな差分ベース更新を開始
-            self.updateSeriesWithDiff(group, currentSeriesData, newXScale, newYScale, newLine, colorScale, transitionDuration);
-        });
-
-    }
-
-    /**
-     * 差分ベースでシリーズを段階的に更新（シンプル実装）
-     */
-    updateSeriesWithDiff(group, newSeriesData, newXScale, newYScale, newLine, colorScale, transitionDuration) {
-        const lineElement = group.selectAll('.chart-line');
-        const currentLineData = lineElement.datum();
-        const oldValues = currentLineData ? currentLineData.values : [];
-        const newValues = newSeriesData.values;
-        
-        // 差分を計算
-        const oldKeys = new Set(oldValues.map(d => d[this.config?.xField || 'year']));
-        const newKeys = new Set(newValues.map(d => d[this.config?.xField || 'year']));
-        
-        const toAdd = newValues.filter(d => !oldKeys.has(d[this.config?.xField || 'year']));
-        const toRemove = oldValues.filter(d => !newKeys.has(d[this.config?.xField || 'year']));
-        
-        
-        // 現在表示中のデータ
-        let currentDisplayData = [...oldValues];
-        
-        // 段階的更新の間隔
-        const totalChanges = toAdd.length + toRemove.length;
-        const intervalTime = totalChanges > 0 ? transitionDuration / totalChanges : 0;
-        
-        let updateIndex = 0;
-        const self = this; // thisコンテキストを保存
-        
-        // 削除処理（右端から）
-        toRemove.reverse().forEach((dataPoint) => {
-            setTimeout(() => {
-                currentDisplayData = currentDisplayData.filter(d => 
-                    d[self.config?.xField || 'year'] !== dataPoint[self.config?.xField || 'year']
-                );
-                // 線のデータを即座に更新
-                lineElement.datum({ ...newSeriesData, values: currentDisplayData });
-                self.updateLineAndAxes(group, currentDisplayData, newXScale, newYScale, newLine, colorScale);
-            }, updateIndex * intervalTime);
-            updateIndex++;
-        });
-        
-        // 追加処理（左端から右端へ）
-        toAdd.forEach((dataPoint) => {
-            setTimeout(() => {
-                currentDisplayData.push(dataPoint);
-                currentDisplayData.sort((a, b) => a[self.config?.xField || 'year'] - b[self.config?.xField || 'year']);
-                // 線のデータを即座に更新
-                lineElement.datum({ ...newSeriesData, values: currentDisplayData });
-                self.updateLineAndAxes(group, currentDisplayData, newXScale, newYScale, newLine, colorScale);
-            }, updateIndex * intervalTime);
-            updateIndex++;
-        });
-        
-        // 最終的にデータを確実に設定
-        setTimeout(() => {
-            lineElement.datum({ ...newSeriesData, values: newValues });
-        }, transitionDuration);
-    }
-    
-    /**
-     * 線と軸を同期更新
-     */
-    updateLineAndAxes(group, currentData, newXScale, newYScale, newLine, colorScale) {
-        const seriesData = group.datum();
-        
-        // 軸はすべての系列の現在データに基づいて更新
-        const xField = this.config?.xField || 'year';
-        const yField = this.config?.yField || 'value';
-        
-        if (currentData.length > 0) {
-            // 全系列の現在データを収集
-            const g = this.svg.select('g');
-            const allCurrentData = [];
-            
-            g.selectAll('.series-group').each(function() {
-                const seriesGroup = d3.select(this);
-                const lineData = seriesGroup.select('.chart-line').datum();
-                if (lineData && lineData.values) {
-                    allCurrentData.push(...lineData.values);
-                }
-            });
-            
-            // データが存在する場合のみ軸を更新
-            if (allCurrentData.length > 0) {
-                const xExtent = d3.extent(allCurrentData, d => +d[xField]);
-                let yExtent = d3.extent(allCurrentData, d => +d[yField]);
-
-                if (newYScale.base) { // scaleLogにはbaseプロパティがある
-                    yExtent[0] = yExtent[0] > 0 ? yExtent[0] : 1;
-                }
-                
-                newXScale.domain(xExtent);
-                newYScale.domain(yExtent);
-                
-                // yRangeが明示的に設定されていない場合のみnice()を適用
-                if (!(this.config && this.config.yRange && this.config.yRange.length === 2)) {
-                    newYScale.nice();
-                }
-                
-                // 軸を更新（ChartLayoutHelperのフォーマッターを使用）
-                const isYearData = allCurrentData.every(d => !isNaN(d[xField]) && d[xField] > 1900 && d[xField] < 2100);
-                let xAxis, yAxis;
-                
-                // カスタムフォーマットが設定されている場合はそれを使用
-                if (this.config && this.config.yAxisFormat) {
-                    xAxis = isYearData ? d3.axisBottom(newXScale).tickFormat(d3.format("d")) : d3.axisBottom(newXScale);
-                    yAxis = d3.axisLeft(newYScale).tickFormat(d => ChartFormatterHelper.formatYAxisValue(d, this.config.yAxisFormat));
-                    
-                    if (this.config.yAxis && this.config.yAxis.type === 'log') {
-                        const tickValues = newYScale.ticks().filter(d => Number.isInteger(Math.log10(d)) || d === 1);
-                        yAxis.tickValues(tickValues);
-                    } else if (this.config.yAxis && this.config.yAxis.tickValues) {
-                        yAxis.tickValues(this.config.yAxis.tickValues);
-                    } else if (this.config.yAxis && this.config.yAxis.ticks) {
-                        yAxis.ticks(this.config.yAxis.ticks);
-                    }
-                } else if (window.ChartLayoutHelper) {
-                    // 単位情報を分析（現在表示中のデータから）
-                    const unitInfo = ChartLayoutHelper.analyzeUnits(allCurrentData, this.config || {});
-                    const yFormatter = (value) => ChartLayoutHelper.formatAxisWithUnits(value, unitInfo.yAxis);
-                    xAxis = isYearData ? d3.axisBottom(newXScale).tickFormat(d3.format("d")) : d3.axisBottom(newXScale);
-                    yAxis = d3.axisLeft(newYScale).tickFormat(yFormatter);
-                    
-                    // yAxisのtickValues設定がある場合は適用
-                    if (this.config && this.config.yAxis && this.config.yAxis.tickValues) {
-                        yAxis.tickValues(this.config.yAxis.tickValues);
-                    } else if (this.config && this.config.yAxis && this.config.yAxis.ticks) {
-                        yAxis.ticks(this.config.yAxis.ticks);
-                    }
-                } else {
-                    xAxis = isYearData ? d3.axisBottom(newXScale).tickFormat(d3.format("d")) : d3.axisBottom(newXScale);
-                    yAxis = d3.axisLeft(newYScale);
-                    
-                    // yAxisのtickValues設定がある場合は適用
-                    if (this.config && this.config.yAxis && this.config.yAxis.tickValues) {
-                        yAxis.tickValues(this.config.yAxis.tickValues);
-                    } else if (this.config && this.config.yAxis && this.config.yAxis.ticks) {
-                        yAxis.ticks(this.config.yAxis.ticks);
-                    }
-                }
-                
-                g.select('.x-axis').transition().duration(200).call(xAxis);
-                g.select('.y-axis').transition().duration(200).call(yAxis);
-            }
-        }
-        
-        // ChartTransitionsを使用して線を更新
-        ChartTransitions.animateLine(
-            group.selectAll('.chart-line'),
-            () => newLine(currentData),
-            {
-                chartType: 'line',
-                phase: 'update',
-                duration: 200
-            }
-        ).attr('stroke', colorScale(seriesData.name));
-        
-        // ChartTransitionsを使用して点を更新
-        const dataWithKeys = ChartTransitions.addObjectKeys(currentData, xField, seriesData.name);
-        
-        const scales = { x: newXScale, y: newYScale };
-        const pointConfig = {
-            chartType: 'line',
-            xField: xField,
-            yField: yField,
-            radius: 3,
-            duration: 200
-        };
-        
-        ChartTransitions.applyEnterUpdateExit(
-            group.selectAll('.chart-circle'),
-            dataWithKeys,
-            d => d._uniqueKey,
-            {
-                onEnter: (enterSelection) => {
-                    ChartTransitions.animatePoints(
-                        enterSelection
-                            .append('circle')
-                            .attr('class', 'chart-circle')
-                            .attr('fill', colorScale(seriesData.name)),
-                        scales,
-                        { ...pointConfig, phase: 'enter' }
-                    );
-                },
-                onUpdate: (allSelection, { allWithTransition }) => {
-                    ChartTransitions.animatePoints(
-                        allSelection,
-                        scales,
-                        { ...pointConfig, phase: 'update' }
-                    );
-                },
-                onExit: (exitSelection) => {
-                    exitSelection
-                        .attr('r', 0)
-                        .remove();
-                }
-            },
-            { chartType: 'line', duration: 200 }
-        );
-    }
-
-    /**
-     * データを系列別に変換
-     * @param {Array} data - 生データ
-     * @param {Object} config - 設定
-     * @returns {Array} 系列別データ
-     */
-    transformToSeries(data, config) {
-        const { xField = 'year', yField = 'value', seriesField = 'series' } = config;
-        
-        
-        // フィルタが設定されている場合は適用
-        let filteredData = data;
-        if (config.filter) {
-            filteredData = this.applyFilter(data, config.filter);
-        }
-        
-        if (config.multiSeries === false) {
-            // 単一系列として強制的に扱う
-            const result = [{
-                name: config.seriesName || 'Data',
-                values: filteredData.map(d => ({
-                    [xField]: d[xField],
-                    [yField]: d[yField]
-                }))
-            }];
-            return result;
-        }
-        
-        // 複数系列の場合
-        const seriesNames = [...new Set(filteredData.map(d => d[seriesField]))];
-        
-        if (seriesNames.length === 1 && seriesNames[0] === undefined) {
-            // seriesFieldが存在しない場合は単一系列として扱う
-            const result = [{
-                name: config.title || 'Data',
-                values: filteredData.map(d => ({
-                    [xField]: d[xField],
-                    [yField]: d[yField]
-                }))
-            }];
-            return result;
-        }
-        
-        const result = seriesNames.map(name => ({
-            name,
-            values: filteredData
-                .filter(d => d[seriesField] === name)
-                .map(d => ({
-                    [xField]: d[xField],
-                    [yField]: d[yField]
-                }))
-        }));
-        return result;
-    }
 
     /**
      * 折れ線グラフを描画する
@@ -589,7 +159,7 @@ class LineChartRenderer extends ChartRendererBase {
         }
 
         // データを系列別に変換
-        const series = this.transformToSeries(data, config);
+        const series = LineChartUtilities.transformToSeries(data, config);
         
         // 全データからドメインを計算
         const allValues = series.flatMap(s => s.values);
@@ -646,7 +216,7 @@ class LineChartRenderer extends ChartRendererBase {
         }
 
         // D3標準のカラースケール：地域名から直接色を取得
-        const colorScale = this.createColorScale(series, config);
+        const colorScale = LineChartUtilities.createColorScale(series, config);
 
         // 単位情報を分析
         let unitInfo = { xAxis: {}, yAxis: {} };
@@ -824,7 +394,7 @@ class LineChartRenderer extends ChartRendererBase {
 
         // 注釈（アノテーション）を描画
         if (config.annotations) {
-            this.renderAnnotations(g, config.annotations, { xScale, yScale, width: innerWidth, height: innerHeight, isYearData, xField, yField });
+            LineChartUtilities.renderAnnotations(g, config.annotations, { xScale, yScale, width: innerWidth, height: innerHeight, isYearData, xField, yField });
         }
 
         // データソースを表示
@@ -840,7 +410,7 @@ class LineChartRenderer extends ChartRendererBase {
         const { width, height, xField = 'year', yField = 'value', colors = d3.schemeCategory10, multiSeries = true, dataSource = '' } = config;
         
         // データを系列別に変換
-        const series = this.transformToSeries(data, config);
+        const series = LineChartUtilities.transformToSeries(data, config);
         
         // 全データからドメインを計算
         const allValues = series.flatMap(s => s.values);
@@ -889,7 +459,7 @@ class LineChartRenderer extends ChartRendererBase {
         }
 
         // D3標準のカラースケール：地域名から直接色を取得
-        const colorScale = this.createColorScale(series, config);
+        const colorScale = LineChartUtilities.createColorScale(series, config);
 
         // 単位情報を分析
         let unitInfo = { xAxis: {}, yAxis: {} };
