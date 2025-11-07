@@ -245,10 +245,10 @@ class MapCityManager {
             })
             .on('end', () => {
                 // アニメーション完了後に訪問国色を適用（lightenNonVisited演出）
-                // MapControllerのupdateCountryHighlights()を使用
-                if (this.mapManager.controller) {
+                // MapRendererのupdateCountryHighlights()を使用
+                if (this.mapManager.renderer) {
                     // 訪問国をハイライト、他の国を明るくする
-                    this.mapManager.controller.updateCountryHighlights(
+                    this.mapManager.renderer.updateCountryHighlights(
                         [targetCity.country], // ハイライト国
                         true,                  // useRegionColors
                         true,                  // lightenNonVisited

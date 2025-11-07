@@ -385,18 +385,21 @@ class MapManager extends BaseManager {
      * @param {string} mode - 地図モード
      */
     animateToView(center, zoom, mode = null) {
-        if (this.controller) {
-            this.controller.animateToView(center, zoom, mode);
+        // MapRenderer に委譲（MapRenderer の animateToView を呼び出し）
+        if (this.renderer) {
+            this.renderer.animateToView(center, zoom, mode);
         }
     }
 
     /**
-     * 特定の国をハイライト
+     * 特定の国をハイライト（非推奨）
+     * @deprecated MapRenderer.updateCountryHighlights() を使用してください
      * @param {Array} countryNames - ハイライトする国名の配列
      */
     highlightCountries(countryNames) {
-        if (this.controller) {
-            this.controller.highlightCountries(countryNames);
+        // MapRenderer に委譲
+        if (this.renderer) {
+            this.renderer.updateCountryHighlights(countryNames, false, false, false, []);
         }
     }
 
@@ -405,8 +408,9 @@ class MapManager extends BaseManager {
      * @param {Array} cities - 都市データの配列
      */
     updateCities(cities) {
-        if (this.controller) {
-            this.controller.updateCities(cities);
+        // MapRenderer に委譲
+        if (this.renderer) {
+            this.renderer.updateCities(cities);
         }
     }
 
