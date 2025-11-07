@@ -179,17 +179,8 @@ class PieChartRenderer extends ChartRendererBase {
                 .innerRadius(0)
                 .outerRadius(radius);
 
-            // 統一された色スケール設定
-            let chartColors;
-            if (window.ColorScheme && config.useUnifiedColors !== false) {
-                chartColors = window.ColorScheme.generateColorsForChart(data, { 
-                    ...config, 
-                    seriesField: labelField 
-                });
-            } else {
-                chartColors = config.colors || d3.schemeCategory10;
-            }
-            
+            // 色を取得（ChartRendererBase のヘルパーメソッドを使用）
+            const chartColors = this.getChartColors(data, config, labelField);
             const colorScale = d3.scaleOrdinal(chartColors)
                 .domain(data.map(d => d[labelField]));
 
@@ -367,23 +358,8 @@ class PieChartRenderer extends ChartRendererBase {
             .innerRadius(0)
             .outerRadius(radius);
 
-        // 統一された色スケール設定
-        let chartColors;
-        if (window.ColorScheme && config.useUnifiedColors !== false) {
-            // 統一カラースキームを使用
-            chartColors = window.ColorScheme.generateColorsForChart(filteredData, { 
-                ...config, 
-                seriesField: labelField 
-            });
-        } else {
-            // フォールバック：設定で指定された色または既定色
-            chartColors = colors;
-        }
-        
-        // 特別なケース：単一系列で色が明示されている場合のみそれを優先
-        if (config.colors && config.colors.length > 0 && config.multiSeries === false) {
-            chartColors = config.colors;
-        }
+        // 色を取得（ChartRendererBase のヘルパーメソッドを使用）
+        const chartColors = this.getChartColors(filteredData, config, labelField);
 
         const arcs = pieGroup.selectAll('.pie-slice')
             .data(pie(filteredData))

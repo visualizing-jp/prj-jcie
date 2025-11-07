@@ -178,6 +178,47 @@ class ChartRendererBase extends BaseManager {
     }
 
     /**
+     * チャート用の色配列を生成（ColorScheme統合版）
+     * 全レンダラーで共通実装
+     *
+     * @param {Array|Object} dataOrSeries - チャートデータまたは系列データ
+     * @param {Object} config - チャート設定
+     * @param {string} [fieldName] - データから色を取得する際のフィールド名（系列名など）
+     * @returns {Array} 色の配列
+     */
+    getChartColors(dataOrSeries, config, fieldName = null) {
+        // 優先度1: 単一色指定（config.color）
+        if (config.color) {
+            return [config.color];
+        }
+
+        // 優先度2: 明示的な色指定（config.colors + config.multiSeries === false）
+        if (config.colors && config.colors.length > 0 && config.multiSeries === false) {
+            return config.colors;
+        }
+
+        // 優先度3: ColorScheme統一カラースキーム
+        if (window.ColorScheme && config.useUnifiedColors !== false) {
+            // 系列データの場合（Array of objects with name/label field）
+            if (Array.isArray(dataOrSeries) && fieldName) {
+                const field = fieldName || 'name';
+                return dataOrSeries.map(item => {
+                    const key = item[field];
+                    return window.ColorScheme.getColorForRegion(key) ||
+                           window.ColorScheme.generateColorsForChart([item], { ...config, seriesField: field })[0] ||
+                           window.AppDefaults?.colors?.accent?.primary || '#3b82f6';
+                });
+            }
+        }
+
+        // 優先度4: フォールバック
+        return config.colors ||
+               window.AppConstants?.APP_COLORS?.PRIMARY_PALETTE ||
+               window.AppDefaults?.colors?.accent?.primary ? [window.AppDefaults.colors.accent.primary] :
+               d3.schemeCategory10;
+    }
+
+    /**
      * チャートデータの基本検証
      * 派生クラスでオーバーライド可能
      *

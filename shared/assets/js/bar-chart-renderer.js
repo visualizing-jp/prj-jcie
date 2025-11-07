@@ -204,28 +204,8 @@ class BarChartRenderer extends ChartRendererBase {
             duration: transitionDuration
         });
 
-        // 統一された色設定
-        let barColors;
-        if (window.ColorScheme && config.useUnifiedColors !== false && config.multiColor) {
-            // 複数色の場合は統一カラースキームを使用
-            barColors = window.ColorScheme.generateColorsForChart(data, { 
-                ...config, 
-                seriesField: xField 
-            });
-        } else if (window.ColorScheme && config.useUnifiedColors !== false && data.length === 1) {
-            // 単一データの場合は地域に応じた色を使用
-            const regionName = data[0][xField];
-            barColors = [window.ColorScheme.getColorForRegion(regionName)];
-        } else {
-            // フォールバック：設定で指定された色
-            const defaultColor = config.color || window.AppDefaults?.colors?.accent?.success || '#10b981';
-            barColors = [defaultColor];
-        }
-        
-        // 特別なケース：単一系列で色が明示されている場合のみそれを優先
-        if (config.colors && config.colors.length > 0 && config.multiSeries === false) {
-            barColors = config.colors;
-        }
+        // 棒の色を取得（ChartRendererBase のヘルパーメソッドを使用）
+        const barColors = this.getChartColors(data, config, xField);
 
         // ChartTransitionsを使用してEnter/Update/Exitパターンを適用
         const scales = { x: newXScale, y: newYScale };
@@ -445,27 +425,8 @@ class BarChartRenderer extends ChartRendererBase {
             ChartLayoutHelper.addAxisLabels(g, filteredData, config, innerWidth, innerHeight);
         }
 
-        // 統一された色設定
-        let barColors;
-        if (window.ColorScheme && config.useUnifiedColors !== false && config.multiColor) {
-            // 複数色の場合は統一カラースキームを使用
-            barColors = window.ColorScheme.generateColorsForChart(filteredData, { 
-                ...config, 
-                seriesField: xField 
-            });
-        } else if (window.ColorScheme && config.useUnifiedColors !== false && filteredData.length === 1) {
-            // 単一データの場合は地域に応じた色を使用
-            const regionName = filteredData[0][xField];
-            barColors = [window.ColorScheme.getColorForRegion(regionName)];
-        } else {
-            // フォールバック：設定で指定された色
-            barColors = [color];
-        }
-        
-        // 特別なケース：単一系列で色が明示されている場合のみそれを優先
-        if (config.colors && config.colors.length > 0 && config.multiSeries === false) {
-            barColors = config.colors;
-        }
+        // 棒の色を取得（ChartRendererBase のヘルパーメソッドを使用）
+        const barColors = this.getChartColors(filteredData, config, xField);
 
         // ChartTransitionsを使用して棒を描画
         const scales = { x: xScale, y: yScale };
