@@ -31,6 +31,11 @@ class StackedBarChartRenderer extends ChartRendererBase {
     updateChart(chartData) {
         const { type, data, config, visible } = chartData;
 
+        // Dual/Triple layout では個別レンダラーは動作しない
+        if (this.shouldSkipDualLayout(chartData)) {
+            return;
+        }
+
         this.data = data;
         this.config = config;
         this.currentChart = type;
