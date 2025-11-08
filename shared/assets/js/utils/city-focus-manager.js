@@ -153,18 +153,18 @@ class CityFocusManager {
             .append('circle')
             .attr('class', markerClass)
             .attr('cx', d => {
-                const coords = MapProjectionHelper.safeProjection(projection, [d.longitude, d.latitude]);
+                const coords = MapHelper.safeProjection(projection, [d.longitude, d.latitude]);
                 return coords[0];
             })
             .attr('cy', d => {
-                const coords = MapProjectionHelper.safeProjection(projection, [d.longitude, d.latitude]);
+                const coords = MapHelper.safeProjection(projection, [d.longitude, d.latitude]);
                 return coords[1];
             })
             .attr('r', 0);
 
         // スタイルを適用
         const styleOptions = { markerType };
-        MapStylingHelper.applyCityMarkerStyles(markers, styleOptions);
+        MapHelper.applyCityMarkerStyles(markers, styleOptions);
 
         // アニメーション
         if (animated) {
@@ -172,12 +172,12 @@ class CityFocusManager {
                 .duration(window.AppDefaults?.animation?.shortDuration || 500)
                 .delay((d, i) => markerType === 'timeline' ? i * 50 : 200)
                 .attr('r', d => {
-                    const style = MapStylingHelper.getCityMarkerStyle(d, styleOptions);
+                    const style = MapHelper.getCityMarkerStyle(d, styleOptions);
                     return style.radius;
                 });
         } else {
             markers.attr('r', d => {
-                const style = MapStylingHelper.getCityMarkerStyle(d, styleOptions);
+                const style = MapHelper.getCityMarkerStyle(d, styleOptions);
                 return style.radius;
             });
         }
@@ -212,11 +212,11 @@ class CityFocusManager {
             .append('text')
             .attr('class', labelClass)
             .attr('x', d => {
-                const coords = MapProjectionHelper.safeProjection(projection, [d.longitude, d.latitude]);
+                const coords = MapHelper.safeProjection(projection, [d.longitude, d.latitude]);
                 return coords[0];
             })
             .attr('y', d => {
-                const coords = MapProjectionHelper.safeProjection(projection, [d.longitude, d.latitude]);
+                const coords = MapHelper.safeProjection(projection, [d.longitude, d.latitude]);
                 const offset = d.style?.size ? d.style.size + 5 : 15;
                 return coords[1] - offset;
             })
@@ -225,7 +225,7 @@ class CityFocusManager {
 
         // スタイルを適用
         const styleOptions = { labelType: markerType };
-        MapStylingHelper.applyCityLabelStyles(labels, styleOptions);
+        MapHelper.applyCityLabelStyles(labels, styleOptions);
 
         // アニメーション
         if (animated) {
@@ -250,24 +250,24 @@ class CityFocusManager {
         // データバインディング
         const cityMarkers = mapGroup.selectAll('.timeline-city')
             .data(targetCities, d => d.id);
-        
+
         // 新しい都市を追加
         const enteringCities = cityMarkers.enter()
             .append('circle')
             .attr('class', 'timeline-city')
             .attr('cx', d => {
-                const coords = MapProjectionHelper.safeProjection(projection, [d.longitude, d.latitude]);
+                const coords = MapHelper.safeProjection(projection, [d.longitude, d.latitude]);
                 return coords[0];
             })
             .attr('cy', d => {
-                const coords = MapProjectionHelper.safeProjection(projection, [d.longitude, d.latitude]);
+                const coords = MapHelper.safeProjection(projection, [d.longitude, d.latitude]);
                 return coords[1];
             })
             .attr('r', 0)
             .style('opacity', 0);
         
         // スタイルを適用
-        MapStylingHelper.applyCityMarkerStyles(enteringCities, { markerType: 'timeline' });
+        MapHelper.applyCityMarkerStyles(enteringCities, { markerType: 'timeline' });
         
         // 都市の表示アニメーション
         AnimationConfig.apply(enteringCities, 'ENTER')
@@ -282,18 +282,18 @@ class CityFocusManager {
             .append('text')
             .attr('class', 'timeline-label')
             .attr('x', d => {
-                const coords = MapProjectionHelper.safeProjection(projection, [d.longitude, d.latitude]);
+                const coords = MapHelper.safeProjection(projection, [d.longitude, d.latitude]);
                 return coords[0];
             })
             .attr('y', d => {
-                const coords = MapProjectionHelper.safeProjection(projection, [d.longitude, d.latitude]);
+                const coords = MapHelper.safeProjection(projection, [d.longitude, d.latitude]);
                 return coords[1] - (d.style?.size || 6) - 5;
             })
             .style('opacity', 0)
             .text(d => d.name);
         
         // ラベルスタイルを適用
-        MapStylingHelper.applyCityLabelStyles(enteringLabels, { labelType: 'timeline' });
+        MapHelper.applyCityLabelStyles(enteringLabels, { labelType: 'timeline' });
         
         AnimationConfig.apply(enteringLabels, 'ENTER')
             .delay(200)
@@ -319,7 +319,7 @@ class CityFocusManager {
      * @param {Function} projection - プロジェクション関数
      */
     showSingleCityMarker(mapGroup, city, projection) {
-        const coords = MapProjectionHelper.safeProjection(projection, [city.longitude, city.latitude]);
+        const coords = MapHelper.safeProjection(projection, [city.longitude, city.latitude]);
         
         if (!coords) {
             console.error('Failed to project city coordinates:', city);
@@ -335,7 +335,7 @@ class CityFocusManager {
             .style('opacity', 0);
         
         // スタイルを適用
-        MapStylingHelper.applyCityMarkerStyles(marker, { markerType: 'single' });
+        MapHelper.applyCityMarkerStyles(marker, { markerType: 'single' });
         
         // アニメーション
         AnimationConfig.apply(marker, 'BOUNCE')
@@ -350,7 +350,7 @@ class CityFocusManager {
             .style('opacity', 0)
             .text(city.name);
         
-        MapStylingHelper.applyCityLabelStyles(label, { labelType: 'single' });
+        MapHelper.applyCityLabelStyles(label, { labelType: 'single' });
         
         AnimationConfig.apply(label, 'ENTER')
             .delay(400)
