@@ -12,13 +12,6 @@ class GridChartRenderer extends ChartRendererBase {
         this.config = null;
         this.isUpdating = false; // 重複呼び出し防止フラグ
 
-        // フィールド設定（validateChartData() で使用）
-        this.fieldConfig = {
-            labelField: 'label',
-            valueField: 'value',
-            numericValue: true
-        };
-
         // Initialize after properties are set
         this.init();
     }
@@ -52,8 +45,8 @@ class GridChartRenderer extends ChartRendererBase {
             return;
         }
 
-        // データとコンフィグの検証
-        const validation = this.validateChartData(data, config, this.fieldConfig);
+        // データとコンフィグの検証（GridChartRenderer は独自データ構造を使用）
+        const validation = this.validateChartData(data, config);
         if (!validation.valid) {
             console.error('GridChartRenderer: Invalid data or config:', validation.errors);
             if (window.ErrorHandler) {
