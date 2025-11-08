@@ -499,14 +499,19 @@ class ChartManager extends BaseManager {
 
     /**
      * SVG内で単一チャートを直接描画（レンダラー非使用）
+     * ChartSVGRenderer のロジックを統合
      * @param {d3.Selection} svgGroup - SVGグループ
      * @param {Object} chartConfig - チャート設定
      * @param {Object} layout - レイアウト情報
      * @param {string} position - 位置 ('left' | 'right')
      */
     drawSingleChartInSVG(svgGroup, chartConfig, layout, position) {
-        // ChartSVGDrawer に委譲（共通化）
-        ChartSVGDrawer.drawSingleChartInSVG(svgGroup, chartConfig, layout, position);
+        // ChartSVGRenderer に委譲（共通化）
+        if (window.ChartSVGRenderer) {
+            ChartSVGRenderer.drawSingleChartInSVGStatic(svgGroup, chartConfig, layout, position);
+        } else {
+            console.error('ChartSVGRenderer not available');
+        }
     }
 
     /**
