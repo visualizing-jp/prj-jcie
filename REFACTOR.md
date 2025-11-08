@@ -294,10 +294,58 @@
 | MapCityManager | - | 新規 | 503 | 都市管理専用 |
 | **合計** | **1588** | **4分割** | **2237** | **複雑度75%削減** |
 
+### ✅ Phase 2 完全完了
+
+| ファイル | 内容 | 削減行 | 状態 |
+|---------|------|--------|------|
+| LineChartRenderer | ラベル・凡例マネージャー化 | 21個メソッド削除 | ✅ 完了 |
+| LineChartLabelManager | 新規作成（ラベル管理） | - | ✅ 作成 |
+| LineChartLegendManager | 新規作成（凡例管理） | - | ✅ 作成 |
+| HTML (3感染症) | スクリプト読み込み追加 | - | ✅ 完了 |
+
+### ✅ Phase 3 完全完了
+
+#### Phase 3 Step 1: ChartRendererBase setupEventListeners 統合
+- ✅ **確認**: ChartRendererBase に setupEventListeners() メソッド既存
+- ✅ **確認**: GridChartRenderer の isMyChart() カスタムオーバーライド確認
+- ⏭️ **次**: Step 2 へ移行
+
+#### Phase 3 Step 2: GridChartRenderer データ変換分離 ✅ **完了**
+- **GridDataTransformer クラス作成** (241行)
+  - analyzeDataStructure(): データ構造分析
+  - transformToGridData(): グリッドデータ変換
+  - transformMultiCategoryData(): マルチカテゴリデータ変換
+  - transformSingleValueData(): シングル値データ変換
+  - calculateOptimalGrid(): グリッド計算
+- **GridChartRenderer 修正**
+  - dataTransformer インスタンス化
+  - 5メソッドを GridDataTransformer に委譲
+  - 行数削減: 820 → 609 行 (26% 削減)
+- **HTML 更新** (3感染症)
+  - GridDataTransformer スクリプト追加
+- **コミット**: `9412fd0`
+
+#### Phase 3 Step 3: LineChartRenderer アニメーション分離 ✅ **完了**
+- **LineChartAnimationManager クラス作成** (189行)
+  - renderProgressiveAnimation(): プログレッシブアニメーション
+  - createColorScale(): 色スケール生成
+  - clearAllAnimationTimers(): タイマー管理
+  - isAnimating(): アニメーション状態確認
+  - destroy(): リソース清理
+- **LineChartRenderer 修正**
+  - animationManager インスタンス化
+  - renderProgressiveAnimation 呼び出しを委譲
+  - clearAllAnimationTimers 呼び出しを委譲
+  - 3メソッドを削除 (144行削減)
+  - 行数削減: 981 → 814 行 (17% 削減)
+- **HTML 更新** (3感染症)
+  - LineChartAnimationManager スクリプト追加
+- **コミット**: `6102240`
+
 ### ⏸️ 将来計画
-- Phase 1 Final: 統合テスト
-- Phase 2: ChartManager の分割（1646行）
-- Phase 3: main.js の分割（1275行）
+- Phase 4: チャートレンダラーの統一化（注釈・凡例・レイアウト分離）
+- Phase 5: ChartManager の責務分離（1316行）
+- Phase 6: main.js の分割（1275行）
 - その他すべて
 
 ---
@@ -643,6 +691,348 @@ MapManager クラスから描画責務を分離し、MapRenderer という新し
 - **Phase 1 Step 3**: CityManager クラスの作成
   - 都市タイムラインデータ管理
   - 都市表示ロジック
+
+---
+
+## 注記
+
+---
+
+## Phase 4 実装計画：チャートレンダラーの統一化と専門化（2025-11-08）
+
+### 概要
+BarChartRenderer、PieChartRenderer、LineChartRenderer、StackedBarChartRenderer の責務を統一し、共通パターンを抽出。
+注釈描画・凡例管理・レイアウト処理を専門クラスに分離。
+
+### 分析サマリー
+
+#### 現在の状態
+| ファイル | 行数 | メソッド | 主要責務 |
+|---------|------|--------|---------|
+| BarChartRenderer | 727行 | 10個 | 棒グラフ、凡例、注釈 |
+| PieChartRenderer | 758行 | 10個 | 円グラフ、凡例、注釈 |
+| LineChartRenderer | 815行 | 8個 | 折れ線グラフ、注釈（マネージャー済み） |
+| StackedBarChartRenderer | 278行 | 5個 | 積み重ね棒グラフ、凡例 |
+| **合計** | **2578行** | **33個** | - |
+
+#### 共通パターンと重複
+1. **注釈描画ロジック**: Bar(100行), Pie(80行), Line(190行) の重複
+2. **凡例管理ロジック**: Bar(100行), Pie(100行), StackedBar(40行) の重複
+3. **軸生成・フォーマット**: すべてで重複
+4. **チャート更新フロー**: すべてで同じパターン
+
+### 実装計画（Priority 順）
+
+#### **Priority 1: 注釈描画統一化**
+
+**新規作成ファイル**: `shared/assets/js/renderers/chart-annotation-renderer.js`
+
+```javascript
+// 基本クラス
+class ChartAnnotationRenderer {
+  constructor(context = {}) {
+    this.context = context; // xScale, yScale, width, height, isYearData等
+  }
+
+  renderAnnotations(g, annotations) { /* 共通ロジック */ }
+  _renderPoint(element, annotation) { /* 共通 */ }
+  _renderText(element, annotation) { /* 共通 */ }
+}
+
+// 専門クラス
+class BarChartAnnotationRenderer extends ChartAnnotationRenderer {
+  renderAnnotations(g, annotations) {
+    // Bar特有の座標変換
+  }
+}
+
+class PieChartAnnotationRenderer extends ChartAnnotationRenderer {
+  renderAnnotations(g, annotations) {
+    // Pie特有の座標変換
+  }
+}
+
+class LineChartAnnotationRenderer extends ChartAnnotationRenderer {
+  renderAnnotations(g, annotations) {
+    // Line特有の座標変換（現在の複雑な実装を統合）
+  }
+}
+```
+
+**対象レンダラー修正**:
+- BarChartRenderer: `renderAnnotations` を BarChartAnnotationRenderer に委譲（100行削減）
+- PieChartRenderer: `renderAnnotations` を PieChartAnnotationRenderer に委譲（80行削減）
+- LineChartRenderer: `renderAnnotations` を LineChartAnnotationRenderer に委譲（190行削減）
+
+**削減行数**: 370行
+**新規作成行数**: 150行
+**差分**: 220行削減
+
+---
+
+#### **Priority 2: 凡例管理統一化**
+
+**新規作成ファイル**: `shared/assets/js/renderers/chart-legend-renderer.js`
+
+```javascript
+// 基本クラス
+class ChartLegendRenderer {
+  constructor(context = {}) {
+    this.context = context;
+  }
+
+  addLegend(svg, data, colors, width, height, config = {}) {
+    // 共通凡例ロジック
+  }
+
+  _calculateLegendLayout(data, width, config) { /* 共通 */ }
+  _renderLegendItem(legendGroup, item, color, config) { /* 共通 */ }
+}
+
+// 専門クラス
+class BarChartLegendRenderer extends ChartLegendRenderer {
+  addLegend(svg, data, colors, width, height, config) {
+    // Bar特有の凡例スタイル
+  }
+}
+
+class PieChartLegendRenderer extends ChartLegendRenderer {
+  addLegend(svg, data, colors, width, height, config) {
+    // Pie特有の凡例スタイル
+  }
+}
+
+class StackedBarChartLegendRenderer extends ChartLegendRenderer {
+  addLegend(svg, data, colors, width, height, config) {
+    // StackedBar特有の凡例スタイル
+  }
+}
+
+class LineChartLegendRenderer extends ChartLegendRenderer {
+  // 既存の LineChartLegendManager を統一インターフェースに
+}
+```
+
+**対象レンダラー修正**:
+- BarChartRenderer: `addLegend` を BarChartLegendRenderer に委譲（100行削減）
+- PieChartRenderer: `addLegend` を PieChartLegendRenderer に委譲（100行削減）
+- StackedBarChartRenderer: `addLegend` を StackedBarChartLegendRenderer に委譲（40行削減）
+- LineChartRenderer: 既存 LineChartLegendManager を統合
+
+**削減行数**: 240行
+**新規作成行数**: 180行
+**差分**: 60行削減
+
+---
+
+#### **Priority 3: 軸生成統一化**
+
+**新規作成ファイル**: `shared/assets/js/utils/chart-scale-builder.js`
+
+```javascript
+class ChartScaleBuilder {
+  static buildXScale(data, config, innerWidth, isYearData) {
+    // X軸スケール生成
+  }
+
+  static buildYScale(data, config, innerHeight) {
+    // Y軸スケール生成
+  }
+
+  static configureAxes(xScale, yScale, config, isYearData) {
+    // 軸設定（フォーマッター、tickValues等）
+  }
+
+  static determineScaleType(data, config, field) {
+    // スケールタイプ判定（linear, log, band等）
+  }
+
+  static applyAxisFormatters(xAxis, yAxis, config, unitInfo) {
+    // ChartLayoutManager連携
+  }
+}
+```
+
+**対象レンダラー修正**:
+- BarChartRenderer: 軸生成ロジック → ChartScaleBuilder（25行削減）
+- PieChartRenderer: 軸生成ロジック → ChartScaleBuilder（5行削減）
+- LineChartRenderer: 軸生成ロジック → ChartScaleBuilder（30行削減）
+- StackedBarChartRenderer: 軸生成ロジック → ChartScaleBuilder（15行削減）
+
+**削減行数**: 75行
+**新規作成行数**: 100行
+**差分**: 25行増（ただしコード重複削減が目的）
+
+---
+
+#### **Priority 4: レイアウト描画分離**
+
+**新規作成ファイル**:
+- `shared/assets/js/renderers/dual-layout-renderer.js`
+- `shared/assets/js/renderers/triple-layout-renderer.js`
+
+**DualLayoutRenderer**:
+```javascript
+class DualLayoutRenderer {
+  renderDualLayout(svg, chartsData, config = {}) {
+    // 2列レイアウト描画
+  }
+
+  createLayoutSVG(totalWidth, totalHeight) { /* 共通 */ }
+  calculateLayoutDimensions(position) { /* 共通 */ }
+  drawChartInLayout(svgGroup, chartConfig, layout) { /* 共通 */ }
+}
+```
+
+**TripleLayoutRenderer**:
+```javascript
+class TripleLayoutRenderer {
+  renderTripleLayout(svg, chartsData, config = {}) {
+    // 3列レイアウト描画
+  }
+
+  createLayoutSVG(totalWidth, totalHeight) { /* 共通 */ }
+  calculateLayoutDimensions(position) { /* 共通 */ }
+  renderChartInLayout(svg, chartConfig, layout) { /* 共通 */ }
+}
+```
+
+**ChartManager 修正**:
+- renderDualLayoutDirect → DualLayoutRenderer に委譲（150行削減）
+- renderTripleLayout → TripleLayoutRenderer に委譲（200行削減）
+- 関連メソッド（drawSingleChartInSVG, createDualLayoutSVG等）を削除
+
+**削減行数**: 350行（ChartManager）
+**新規作成行数**: 300行
+**差分**: 50行削減
+
+---
+
+#### **Priority 5: ChartManager 補助クラス分離**
+
+**新規作成ファイル**:
+- `shared/assets/js/managers/chart-data-loader.js`
+- `shared/assets/js/managers/layout-dimension-calculator.js`
+- `shared/assets/js/managers/chart-validation-helper.js`
+
+**ChartDataLoader**:
+```javascript
+class ChartDataLoader {
+  static loadChartData(chartConfig) {
+    // 単一チャートデータ読み込み
+  }
+
+  static loadChartsData(charts) {
+    // 複数チャートデータ読み込み
+  }
+}
+```
+
+**LayoutDimensionCalculator**:
+```javascript
+class LayoutDimensionCalculator {
+  static calculateDimensionFromPosition(value, containerSize) { }
+  static calculateDualLayoutDimensions(position) { }
+  static calculateTripleLayoutDimensions(position) { }
+}
+```
+
+**ChartValidationHelper**:
+```javascript
+class ChartValidationHelper {
+  static validateChartData(chartData) { }
+  static validateCharts(charts) { }
+}
+```
+
+**ChartManager 削減行数**: 190行
+**新規作成行数**: 210行
+
+---
+
+### 全体削減予測
+
+| 対象 | 現行 | 削減 | 新規 | 最終 | 効率 |
+|------|------|------|------|------|------|
+| BarChartRenderer | 727 | 230 | 20 | 517 | 29% |
+| PieChartRenderer | 758 | 200 | 20 | 578 | 24% |
+| LineChartRenderer | 815 | 220 | 0 | 595 | 27% |
+| StackedBarChartRenderer | 278 | 60 | 10 | 228 | 18% |
+| ChartManager | 1316 | 350 | 50 | 1016 | 23% |
+| **レンダラー合計** | **3578** | **1060** | **100** | **2618** | **27% 削減** |
+
+**新規作成ファイル**:
+- ChartAnnotationRenderer系: 150行
+- ChartLegendRenderer系: 180行
+- ChartScaleBuilder: 100行
+- DualLayoutRenderer: 140行
+- TripleLayoutRenderer: 160行
+- ChartDataLoader: 80行
+- LayoutDimensionCalculator: 70行
+- ChartValidationHelper: 40行
+- **新規合計: 920行**
+
+**最終結果**: 3578 → 2618行（27% 削減、新規920行追加で50行増）
+
+---
+
+### 実装手順
+
+```
+Week 1: Priority 1-2 (注釈・凡例統一化)
+├── ChartAnnotationRenderer.js 作成
+├── BarChartRenderer 修正
+├── PieChartRenderer 修正
+├── LineChartRenderer 修正
+├── ChartLegendRenderer.js 作成
+├── 各レンダラー修正
+└── 統合テスト
+
+Week 2: Priority 3-4 (軸生成・レイアウト)
+├── ChartScaleBuilder.js 作成
+├── 各レンダラー修正
+├── DualLayoutRenderer.js, TripleLayoutRenderer.js 作成
+├── ChartManager 修正
+└── 統合テスト
+
+Week 3: Priority 5 (補助クラス)
+├── ChartDataLoader.js, LayoutDimensionCalculator.js, ChartValidationHelper.js 作成
+├── ChartManager 最終修正
+├── HTML スクリプト順序確認
+└── 全体テスト・ドキュメント更新
+```
+
+---
+
+### 設計原則（継承関係図）
+
+```
+ChartRendererBase (基本クラス)
+├── BarChartRenderer
+│   ├── → BarChartAnnotationRenderer (注釈処理)
+│   ├── → BarChartLegendRenderer (凡例処理)
+│   └── → ChartScaleBuilder (軸生成)
+├── PieChartRenderer
+│   ├── → PieChartAnnotationRenderer
+│   ├── → PieChartLegendRenderer
+│   └── → ChartScaleBuilder
+├── LineChartRenderer
+│   ├── → LineChartAnnotationRenderer
+│   ├── → LineChartLegendRenderer (既存)
+│   ├── → LineChartLabelManager (既存)
+│   ├── → LineChartAnimationManager (既存)
+│   └── → ChartScaleBuilder
+└── StackedBarChartRenderer
+    ├── → StackedBarChartLegendRenderer
+    └── → ChartScaleBuilder
+
+ChartManager
+├── → DualLayoutRenderer (レイアウト描画)
+├── → TripleLayoutRenderer (レイアウト描画)
+├── → ChartDataLoader (データ読み込み)
+├── → LayoutDimensionCalculator (寸法計算)
+└── → ChartValidationHelper (検証)
+```
 
 ---
 
