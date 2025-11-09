@@ -5,14 +5,11 @@
     "content": "content.json",
     "appSettings": "app-settings.json"
   },
-  "environment": {
-    "auto": true,
-    "development": "environment/development.json",
-    "production": "environment/production.json"
-  },
   "loadOrder": [
-    "environment",
-    "appSettings",
+    "app",
+    "theme",
+    "animation",
+    "settings",
     "content"
   ],
   "mergeStrategy": {

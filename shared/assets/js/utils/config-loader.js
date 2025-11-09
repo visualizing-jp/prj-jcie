@@ -69,9 +69,8 @@ class ConfigLoader {
                 return this._loadLegacyConfigs();
             }
 
-            // 環境設定を読み込み
-            const envConfig = await this._loadEnvironmentConfig();
-            this.configs.environment = envConfig;
+            // 環境設定を生成（単一環境運用）
+            this.configs.environment = this._createEnvironmentConfig();
             
             // app-settings.jsonを読み込み（統合設定）
             if (this.mainConfig.configFiles.appSettings) {
@@ -166,37 +165,32 @@ class ConfigLoader {
     }
 
     /**
-     * 環境設定を読み込み
+     * 単一環境設定を生成
      * @private
      */
-    async _loadEnvironmentConfig() {
-        if (!this.mainConfig?.environment) {
-            return this._getDefaultEnvironmentConfig();
+    _createEnvironmentConfig() {
+        const mergeStrategy = this.mainConfig?.mergeStrategy || {
+            deep: true,
+            arrayMerge: 'replace',
+            overwriteOnConflict: true
+        };
+
+        let envConfig = this._getDefaultEnvironmentConfig();
+
+        if (this.mainConfig?.environmentOverrides) {
+            envConfig = this._deepMerge(envConfig, this.mainConfig.environmentOverrides, mergeStrategy);
         }
 
-        let envFile;
-        if (this.mainConfig.environment.auto) {
-            envFile = this.mainConfig.environment[this.environment];
-        } else {
-            envFile = this.mainConfig.environment.development; // デフォルトは開発環境
-        }
-
-        // 環境設定ファイルパスを解決
-        const envConfigPath = this._resolveConfigPath(envFile);
-        const envConfig = await this._loadConfig(envConfigPath);
-        
-        // 感染症別のパス設定を環境設定に統合
-        const finalEnvConfig = envConfig || this._getDefaultEnvironmentConfig();
         if (this.diseaseDetector) {
             const diseaseConfig = this.diseaseDetector.getDiseaseConfig();
-            finalEnvConfig.paths = {
-                ...finalEnvConfig.paths,
+            envConfig.paths = {
+                ...envConfig.paths,
                 ...diseaseConfig.paths
             };
-            finalEnvConfig.disease = diseaseConfig;
+            envConfig.disease = diseaseConfig;
         }
-        
-        return finalEnvConfig;
+
+        return envConfig;
     }
 
     /**
@@ -269,14 +263,8 @@ class ConfigLoader {
      * @private
      */
     _detectEnvironment() {
-        // URLまたはホスト名から環境を判定
-        const hostname = window.location.hostname;
-        const isDev = hostname === 'localhost' || 
-                     hostname === '127.0.0.1' || 
-                     hostname.includes('local') ||
-                     window.location.protocol === 'file:';
-        
-        return isDev ? 'development' : 'production';
+        // 単一環境運用のため常に'unified'を返す
+        return 'unified';
     }
 
     /**
@@ -549,11 +537,22 @@ class ConfigLoader {
             performance: {
                 enableCaching: true,
                 preloadData: true,
-                optimizeRenders: true
+                optimizeRenders: true,
+                disableAnimations: false
             },
             features: {
                 hotReload: false,
                 devTools: false
+            },
+            api: {
+                baseUrl: '.',
+                timeout: 30000,
+                enableCORS: true
+            },
+            logging: {
+                level: 'error',
+                console: true,
+                file: false
             },
             paths: {
                 data: "data/",

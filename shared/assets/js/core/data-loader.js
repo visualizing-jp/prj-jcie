@@ -19,9 +19,6 @@ class DataLoader {
 
             const config = window.ConfigLoader.getLegacyCompatibleConfig();
 
-            // デバッグ情報を出力
-            const env = window.ConfigLoader.getEnvironment();
-
             // content-map.jsonを読み込む（感染症対応パス）
             const citiesDataPath = window.ConfigLoader.resolveDataPath('content-map.json');
             const citiesData = await d3.json(citiesDataPath);
