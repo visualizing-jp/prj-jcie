@@ -1,6 +1,6 @@
-# JCIE Scrollytelling プロジェクト
+# Scrollytelling プロジェクト
 
-グローバルファンド 3 疾患（HIV/エイズ、結核、マラリア）それぞれのストーリーをスクロール操作で展開する静的サイト群です。各感染症ディレクトリ (`01_aids`, `02_tuberculosis`, `03_malariae`) は同じ構成を持ち、共有アセット (`shared/…`) によって共通ロジックとスタイルを切り替えています。
+3 疾患（HIV/エイズ、結核、マラリア）それぞれのストーリーをスクロール操作で展開する静的サイト群です。各感染症ディレクトリ (`01_aids`, `02_tuberculosis`, `03_malariae`) は同じ構成を持ち、共有アセット (`shared/…`) によって共通ロジックとスタイルを切り替えています。
 
 ## 主要ディレクトリ
 - `0x_*` : 感染症ごとのHTML・データ・設定ファイル。
@@ -16,10 +16,7 @@
 | `main.config.json` | ConfigLoader の司令塔。読み込むファイル（`app-settings.json`, `content.json`, `content-map.json` など）とロード順、マージ戦略、フォールバック方針を定義します。`environmentOverrides` を追加すれば単一環境向けの上書きも可能です。 |
 | `app-settings.json` | アプリ全体のUI/UXを統括する統合設定。アプリ情報、レイアウトやスクロール動作、パフォーマンス調整、チャート/マップ既定値、カラーパレット、タイポグラフィ、アニメーションプリセットなどを集約します。ConfigLoader が内部的に `app/theme/animation/settings` として分解します。 |
 | `content.json` | スクロリーテリング本編の脚本。各ステップのID、テキスト、チャート/マップ/画像の表示設定、参照データファイル、トランジションパラメータなどを列挙し、`ScrollytellingApp`・`ChartManager`・`MapManager` がこれに従って表示を切り替えます。 |
-| `content-map.json` | 都市タイムライン用の地理データ。タイトル・説明と、都市ごとの座標/順番/スタイル/スクロール距離を定義し、`CityStepsGenerator` がステップを自動生成する際に参照します。 |
-
-> **環境設定について**  
-> 以前は `config/environment/development.json` と `production.json` で挙動を分けていましたが、現在は単一環境運用です。必要な差分があれば `main.config.json` の `environmentOverrides` で直接指定します。
+| `content-map.json` | 地図タイムライン用のデータ。タイトル・説明と、国ごとの座標/順番/スタイル/スクロール距離を定義し、`CityStepsGenerator` がステップを自動生成する際に参照します。 |
 
 ## 共有ローダーと利用箇所
 - `shared/assets/js/utils/config-loader.js` が `main.config.json` を起点に上記ファイル群を読み込み、CSS変数適用やパス解決を実施。
@@ -29,7 +26,7 @@
 ## 動作確認
 ```bash
 npm install
-npm test        # Jest (jsdom)
+npm test # Jest (jsdom)
 ```
 
 ブラウザ確認時は任意の感染症ディレクトリをローカルサーバーで配信し、`shared/` への相対パスを保持したままアクセスしてください。
