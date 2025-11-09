@@ -34,17 +34,6 @@
   - `ChartManager.updateChart`をレイアウト別に分割
   - `handleStepEnter`をステップ別処理に分割
 
-#### 3️⃣ 設定ファイルの一元化と統一
-- **概要**: `app-settings.json` を共通ベース＋疾患別オーバーライド構成に変更 → ✅ 完了
-- **実施内容**:
-  - `shared/config/app-settings.base.json` を新設し、レイアウト/スクロール/チャート既定値などを一元化
-  - 各感染症の `app-settings.json` をメタ情報・テーマカラーなど最小限の差分ファイルに縮小
-  - ConfigLoader が `appSettingsBase` + `appSettings` をマージするよう改修（直接パスや共有フォルダ参照にも対応）
-- **残課題（今後の検討）**:
-  - JSON Schema を整備し、設定のバリデーションを自動化
-  - `content.json` のスキーマ化/部分テンプレート化による保守性向上
-  - 共通設定に対する自動テストや CI チェックの導入
-
 ---
 
 ### 優先度中
@@ -60,17 +49,6 @@
   - 環境別フィルタリング（development.json, production.json活用）
   - console.*の全削除・Logger置換
   - コメント化されたデバッグ情報の削除
-
-#### 5️⃣ 重複コード（3感染症間）の統一
-- **概要**: `index.html`が99%同じ、GeoJSONが3つ重複
-- **課題**: 修正が3倍の手間、ファイルサイズの無駄（同じGeoJSONが3つ）、テンプレート管理がHTML直書き
-- **改善効果**: Single Source of Truth化、ファイルサイズ削減（38KB×2）、感染症別の本質的な差異に焦点化
-- **作業量**: 中
-- **実装案**:
-  - `shared/data/countries-110m.json`（共通化）
-  - `shared/templates/index.html`から個別ファイルを動的生成
-  - `.gitignore`で個別ファイルを無視してシンボリックリンク化
-  - HTMLのstep0セクションをコンポーネント化
 
 #### 6️⃣ エラーハンドリングの統一化
 - **概要**: エラー処理方法がばらばら、`ErrorHandler`使用率低い
