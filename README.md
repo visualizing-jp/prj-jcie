@@ -14,7 +14,8 @@
 | ファイル | 役割 |
 | --- | --- |
 | `main.config.json` | ConfigLoader の司令塔。読み込むファイル（`app-settings.json`, `content.json`, `content-map.json` など）とロード順、マージ戦略、フォールバック方針を定義します。`environmentOverrides` を追加すれば単一環境向けの上書きも可能です。 |
-| `app-settings.json` | アプリ全体のUI/UXを統括する統合設定。アプリ情報、レイアウトやスクロール動作、パフォーマンス調整、チャート/マップ既定値、カラーパレット、タイポグラフィ、アニメーションプリセットなどを集約します。ConfigLoader が内部的に `app/theme/animation/settings` として分解します。 |
+| `shared/config/app-settings.base.json` | 全感染症共通のUI/UX設定。レイアウト・スクロール・レスポンシブ・チャート/マップ既定値などを一元管理します。 |
+| `app-settings.json` | 各感染症固有の上書き設定。メタ情報（疾患名など）やテーマカラー、チャート配色、`ui.theme` などを base にマージして最終設定を構成します。 |
 | `content.json` | スクロリーテリング本編の脚本。各ステップのID、テキスト、チャート/マップ/画像の表示設定、参照データファイル、トランジションパラメータなどを列挙し、`ScrollytellingApp`・`ChartManager`・`MapManager` がこれに従って表示を切り替えます。 |
 | `content-map.json` | 地図タイムライン用のデータ。タイトル・説明と、国ごとの座標/順番/スタイル/スクロール距離を定義し、`CityStepsGenerator` がステップを自動生成する際に参照します。 |
 

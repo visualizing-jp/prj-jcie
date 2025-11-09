@@ -3,6 +3,7 @@
   "description": "Simplified 3-file configuration system",
   "configFiles": {
     "content": "content.json",
+    "appSettingsBase": "../shared/config/app-settings.base.json",
     "appSettings": "app-settings.json"
   },
   "loadOrder": [

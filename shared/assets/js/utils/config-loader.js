@@ -72,21 +72,43 @@ class ConfigLoader {
             // 環境設定を生成（単一環境運用）
             this.configs.environment = this._createEnvironmentConfig();
             
-            // app-settings.jsonを読み込み（統合設定）
+            // app-settings を読み込み（共通ベース + 疾患別上書き）
+            const mergeStrategy = this.mainConfig?.mergeStrategy || {
+                deep: true,
+                arrayMerge: 'replace',
+                overwriteOnConflict: true
+            };
+
+            let mergedAppSettings = null;
+
+            if (this.mainConfig.configFiles.appSettingsBase) {
+                const basePath = this._resolveConfigPath(this.mainConfig.configFiles.appSettingsBase);
+                const baseSettings = await this._loadConfig(basePath);
+                if (baseSettings) {
+                    mergedAppSettings = baseSettings;
+                }
+            }
+
             if (this.mainConfig.configFiles.appSettings) {
                 const appSettingsPath = this._resolveConfigPath(this.mainConfig.configFiles.appSettings);
                 const appSettings = await this._loadConfig(appSettingsPath);
                 if (appSettings) {
-                    // 統合設定から個別の設定に分解
-                    this.configs.app = appSettings.app || {};
-                    this.configs.theme = appSettings.theme || {};
-                    this.configs.animation = appSettings.animation || {};
-                    this.configs.settings = {
-                        transition: appSettings.transitions || {},
-                        layout: appSettings.app?.layout || {},
-                        responsive: { breakpoints: appSettings.breakpoints || {} }
-                    };
+                    mergedAppSettings = mergedAppSettings
+                        ? this._deepMerge(mergedAppSettings, appSettings, mergeStrategy)
+                        : appSettings;
                 }
+            }
+
+            if (mergedAppSettings) {
+                // 統合設定から個別の設定に分解
+                this.configs.app = mergedAppSettings.app || {};
+                this.configs.theme = mergedAppSettings.theme || {};
+                this.configs.animation = mergedAppSettings.animation || {};
+                this.configs.settings = {
+                    transition: mergedAppSettings.transitions || {},
+                    layout: mergedAppSettings.app?.layout || {},
+                    responsive: { breakpoints: mergedAppSettings.breakpoints || {} }
+                };
             }
             
             // content.jsonを読み込み
@@ -272,6 +294,19 @@ class ConfigLoader {
      * @private
      */
     _resolveConfigPath(configFile) {
+        if (!configFile) return '';
+
+        const isDirectPath =
+            configFile.startsWith('../') ||
+            configFile.startsWith('./') ||
+            configFile.startsWith('/') ||
+            configFile.startsWith('http://') ||
+            configFile.startsWith('https://');
+
+        if (isDirectPath) {
+            return configFile;
+        }
+
         if (this.diseaseDetector) {
             return this.diseaseDetector.resolveConfigPath(configFile);
         }

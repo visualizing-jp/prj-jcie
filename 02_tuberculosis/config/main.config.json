@@ -3,6 +3,7 @@
   "description": "Tuberculosis-specific configuration system",
   "configFiles": {
     "content": "content.json",
+    "appSettingsBase": "../shared/config/app-settings.base.json",
     "appSettings": "app-settings.json"
   },
   "loadOrder": [
