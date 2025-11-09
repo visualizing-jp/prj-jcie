@@ -133,9 +133,17 @@ class StackedBarChartRenderer extends ChartRendererBase {
 
         const xAxis = d3.axisBottom(xScale).tickFormat(d3.format("d"));
         const yAxis = d3.axisLeft(yScale);
-        
+
         if (config.yAxisFormat) {
-             yAxis.tickFormat(d => ChartFormatterHelper.formatYAxisValue(d, config.yAxisFormat));
+            yAxis.tickFormat(d => ChartFormatterHelper.formatYAxisValue(d, config.yAxisFormat));
+        } else {
+            const layoutUtil = window.ChartLayoutManager || window.ChartLayoutHelper;
+            if (layoutUtil && typeof layoutUtil.analyzeUnits === 'function' && typeof layoutUtil.formatAxisWithUnits === 'function') {
+                const unitInfo = layoutUtil.analyzeUnits(data, config);
+                if (unitInfo?.yAxis) {
+                    yAxis.tickFormat(value => layoutUtil.formatAxisWithUnits(value, unitInfo.yAxis));
+                }
+            }
         }
 
         g.append('g')
