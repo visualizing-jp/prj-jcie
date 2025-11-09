@@ -13,6 +13,8 @@ class MapCityManager {
         this.citiesTimelineData = null;
         this.timelineMode = false;
         this.visibleCities = [];
+        this.singleCityMode = false;
+        this.currentCity = null;
     }
 
     /**
@@ -28,6 +30,7 @@ class MapCityManager {
 
             this.timelineMode = true;
             this.visibleCities = [];
+            this.singleCityMode = false;
 
             // 基本地図を描画
             if (this.mapManager.geoData) {
@@ -46,6 +49,84 @@ class MapCityManager {
             } else {
                 console.error('MapCityManager: Failed to load cities timeline data:', error);
             }
+        }
+    }
+
+    /**
+     * タイムライン進行度に応じた都市表示を更新
+     * @param {Object} progressData - 進行度データ
+     */
+    handleTimelineProgress(progressData = {}) {
+        if (!this.timelineMode || !this.citiesTimelineData) {
+            return;
+        }
+
+        const { progress = 0, direction = 'down' } = progressData;
+        const adjustedProgress = Math.pow(progress, 0.7);
+        const totalCities = this.citiesTimelineData.cities.length;
+
+        let targetCityCount = Math.floor(adjustedProgress * totalCities);
+        if (progress < 0.1) {
+            targetCityCount = 0;
+        }
+        targetCityCount = Math.max(0, Math.min(targetCityCount, totalCities));
+
+        const sortedCities = [...this.citiesTimelineData.cities].sort((a, b) => a.order - b.order);
+        const orderedCities = direction === 'up' ? [...sortedCities].reverse() : sortedCities;
+        const targetCities = orderedCities.slice(0, targetCityCount);
+
+        this.updateTimelineCities(targetCities);
+    }
+
+    /**
+     * 単一都市モードを処理
+     * @param {string} citiesFile
+     * @param {string} cityId
+     */
+    async handleSingleCityMode(citiesFile, cityId) {
+        try {
+            if (!cityId) return;
+
+            if (!this.citiesTimelineData) {
+                this.citiesTimelineData = await d3.json(citiesFile);
+            }
+
+            const targetCity = this.citiesTimelineData.cities.find(city => city.id === cityId);
+            if (!targetCity) {
+                const logger = window.Logger || console;
+                logger.error('MapCityManager: City not found:', cityId);
+                return;
+            }
+
+            this.timelineMode = false;
+            this.visibleCities = [];
+            this.singleCityMode = true;
+            this.currentCity = targetCity;
+            this.mapManager.singleCityMode = true;
+            this.mapManager.currentCity = targetCity;
+
+            if (this.mapManager.svg && this.mapManager.projection && this.mapManager.geoData) {
+                this.animateToCity(targetCity);
+                this.mapManager.mapInitialized = true;
+            } else if (this.mapManager.geoData) {
+                const cityCoords = this.getCityCoordinates(targetCity);
+                this.mapManager.renderMap(this.mapManager.geoData, {
+                    center: cityCoords,
+                    zoom: 6,
+                    mode: 'single-city',
+                    widthPercent: 100,
+                    heightPercent: 100,
+                    useRegionColors: true,
+                    lightenNonVisited: true
+                });
+                this.mapManager.mapInitialized = true;
+            } else {
+                const logger = window.Logger || console;
+                logger.error('MapCityManager: Cannot render single city map - no geo data');
+            }
+        } catch (error) {
+            const logger = window.Logger || console;
+            logger.error('MapCityManager: Failed to load single city data:', error);
         }
     }
 
@@ -153,6 +234,23 @@ class MapCityManager {
             // 状態を保存
             this.visibleCities = targetCities;
         }
+    }
+
+    /**
+     * 現在訪問中の国名を取得
+     */
+    getCurrentVisitedCountry() {
+        if (this.mapManager.currentCity?.country) {
+            return this.mapManager.currentCity.country;
+        }
+
+        const currentView = this.mapManager.currentView;
+        if (!currentView || !currentView.cityId || !this.citiesTimelineData) {
+            return null;
+        }
+
+        const city = this.citiesTimelineData.cities.find(c => c.id === currentView.cityId);
+        return city ? city.country : null;
     }
 
     /**
@@ -325,6 +423,12 @@ class MapCityManager {
         this.timelineMode = false;
         this.visibleCities = [];
         this.citiesTimelineData = null;
+        this.singleCityMode = false;
+        this.currentCity = null;
+        if (this.mapManager) {
+            this.mapManager.singleCityMode = false;
+            this.mapManager.currentCity = null;
+        }
     }
 
     /**

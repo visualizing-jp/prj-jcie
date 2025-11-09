@@ -106,9 +106,7 @@ class MapRenderer {
      */
     renderMap(geoData, config = {}) {
         // 再描画時は既存の拡散矢印を即座にクリア
-        if (this.mapManager) {
-            this.mapManager.clearSpreadingArrows();
-        }
+        this.clearSpreadingArrows();
 
         const {
             center = [0, 0],
@@ -322,11 +320,11 @@ class MapRenderer {
         }
 
         // エイズ拡散矢印を描画（step3用）
-        if (showSpreadingArrows && this.mapManager) {
-            this.mapManager.drawSpreadingArrows(mapGroup);
-        } else if (this.mapManager) {
+        if (showSpreadingArrows) {
+            this.drawSpreadingArrows(mapGroup);
+        } else {
             // showSpreadingArrowsがfalseの場合は拡散矢印を即座に削除
-            this.mapManager.clearSpreadingArrows();
+            this.clearSpreadingArrows();
         }
 
         // 滑らかなトランジション（MapRenderer の animateToView を呼び出し）
@@ -493,6 +491,96 @@ class MapRenderer {
             .attr('font-size', '14px')
             .attr('fill', window.AppConstants?.APP_COLORS?.TEXT?.PRIMARY || '#1f2937')
             .text(d => this.mapManager && this.mapManager.getCountryNameJapanese ? this.mapManager.getCountryNameJapanese(d.country) : d.country);
+    }
+
+    /**
+     * 拡散矢印を即座にクリア
+     */
+    clearSpreadingArrows() {
+        if (!this.svg) {
+            return;
+        }
+
+        this.svg.selectAll('.spreading-arrows').interrupt().remove();
+        this.svg.selectAll('.spreading-flow').interrupt().remove();
+        this.svg.selectAll('#spreading-arrow').remove();
+    }
+
+    /**
+     * 拡散矢印を描画（概念的な拡散表現）
+     * @param {d3.Selection} mapGroup
+     */
+    drawSpreadingArrows(mapGroup) {
+        if (!mapGroup || !this.projection) {
+            return;
+        }
+
+        const spreadingFlows = [
+            { id: 'usa-europe', from: { name: 'アメリカ', coords: [-95, 40] }, to: { name: 'ヨーロッパ', coords: [10, 50] }, delay: 0 },
+            { id: 'usa-asia', from: { name: 'アメリカ', coords: [-95, 40] }, to: { name: 'アジア・太平洋', coords: [104, 35] }, delay: 150 },
+            { id: 'usa-east-africa', from: { name: 'アメリカ', coords: [-95, 40] }, to: { name: '東部・南部アフリカ', coords: [35, -10] }, delay: 300 },
+            { id: 'usa-west-africa', from: { name: 'アメリカ', coords: [-95, 40] }, to: { name: '西部・中部アフリカ', coords: [0, 10] }, delay: 450 }
+        ];
+
+        const defs = mapGroup.select('defs').empty()
+            ? mapGroup.append('defs')
+            : mapGroup.select('defs');
+
+        if (defs.select('#spreading-arrow').empty()) {
+            defs.append('marker')
+                .attr('id', 'spreading-arrow')
+                .attr('viewBox', '0 -5 10 10')
+                .attr('refX', 8)
+                .attr('refY', 0)
+                .attr('markerWidth', 6)
+                .attr('markerHeight', 6)
+                .attr('orient', 'auto')
+                .append('path')
+                .attr('d', 'M0,-5L10,0L0,5')
+                .attr('fill', window.AppConstants?.APP_COLORS?.ANNOTATIONS?.LINE || '#999999')
+                .attr('stroke', 'none');
+        }
+
+        const arrowGroup = mapGroup.append('g')
+            .attr('class', 'spreading-arrows');
+
+        spreadingFlows.forEach(flow => {
+            const fromCoords = this.projection(flow.from.coords);
+            const toCoords = this.projection(flow.to.coords);
+
+            if (!fromCoords || !toCoords) {
+                const logger = window.Logger || console;
+                logger.warn('MapRenderer: Invalid coordinates for flow:', flow.id);
+                return;
+            }
+
+            const midX = (fromCoords[0] + toCoords[0]) / 2;
+            const midY = (fromCoords[1] + toCoords[1]) / 2 - 100;
+            const pathData = `M ${fromCoords[0]},${fromCoords[1]} Q ${midX},${midY} ${toCoords[0]},${toCoords[1]}`;
+
+            const path = arrowGroup.append('path')
+                .attr('class', `spreading-flow ${flow.id}`)
+                .attr('d', pathData)
+                .attr('fill', 'none')
+                .attr('stroke', window.AppConstants?.APP_COLORS?.ANNOTATIONS?.LINE || '#999999')
+                .attr('stroke-width', 3)
+                .attr('stroke-dasharray', '5,5')
+                .style('opacity', 0);
+
+            const totalLength = path.node().getTotalLength();
+
+            path.attr('stroke-dasharray', `${totalLength} ${totalLength}`)
+                .attr('stroke-dashoffset', totalLength)
+                .transition()
+                .duration(window.AppConstants?.ANIMATION_CONFIG?.DURATION?.SLOW || 1200)
+                .delay(flow.delay + 100)
+                .ease(d3.easeQuadOut)
+                .attr('stroke-dashoffset', 0)
+                .style('opacity', 1)
+                .on('end', () => {
+                    path.attr('marker-end', 'url(#spreading-arrow)');
+                });
+        });
     }
 
     /**

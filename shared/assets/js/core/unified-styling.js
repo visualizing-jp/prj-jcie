@@ -31,15 +31,28 @@ class UnifiedStylingSys {
      * 初期化
      */
     init() {
-        // DiseaseDetectorから感染症タイプを取得
-        const diseaseType = window.DiseaseDetector?.getDiseaseType() || 'aids';
-        this.applyCSSVariables(diseaseType);
+        const applyTheme = () => {
+            const diseaseType =
+                window.DiseaseDetector?.getDiseaseType?.() ||
+                window.DISEASE_TYPE ||
+                'aids';
+            this.applyCSSVariables(diseaseType);
+        };
 
-        // DOMContentLoadedイベントでも実行（念のため）
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => {
-                this.applyCSSVariables(diseaseType);
-            });
+        const tryApply = () => {
+            if (window.DISEASE_CONFIG && window.DiseaseDetector) {
+                applyTheme();
+                return true;
+            }
+            return false;
+        };
+
+        if (!tryApply()) {
+            const onReady = () => {
+                tryApply();
+            };
+            document.addEventListener('DOMContentLoaded', onReady, { once: true });
+            window.addEventListener('load', onReady, { once: true });
         }
     }
 }

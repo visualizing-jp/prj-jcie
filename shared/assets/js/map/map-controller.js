@@ -23,9 +23,11 @@ class MapController {
             this.mapManager.applyPositionSettings(position);
         }
 
+        const renderer = this.mapManager.renderer;
+
         // 地図更新の最初に拡散矢印の状態をチェック
-        if (!showSpreadingArrows && this.mapManager.clearSpreadingArrows) {
-            this.mapManager.clearSpreadingArrows();
+        if (!showSpreadingArrows && renderer?.clearSpreadingArrows) {
+            renderer.clearSpreadingArrows();
         }
 
         this.mapManager.currentView = { center, zoom, highlightCountries, cities, mode, citiesFile, cityId, useRegionColors, lightenNonVisited, lightenAllCountries, targetRegions };
@@ -131,11 +133,11 @@ class MapController {
         }
 
         // 拡散矢印の表示制御
-        if (showSpreadingArrows && this.mapManager.drawSpreadingArrows) {
+        if (showSpreadingArrows && renderer?.drawSpreadingArrows) {
             const mapGroup = this.mapManager.svg.select('.map-group');
-            this.mapManager.drawSpreadingArrows(mapGroup);
-        } else if (this.mapManager.clearSpreadingArrows) {
-            this.mapManager.clearSpreadingArrows();
+            renderer.drawSpreadingArrows(mapGroup);
+        } else if (renderer?.clearSpreadingArrows) {
+            renderer.clearSpreadingArrows();
         }
 
         // ビューを更新（MapRenderer に委譲）
@@ -165,8 +167,9 @@ class MapController {
             window.Logger.debug('MapController: Map progress event', { progress, step });
         }
 
-        // 進捗に応じた地図更新処理
-        // 例: 特定のステップで特定の表示変更
+        if (this.mapManager?.cityManager?.handleTimelineProgress) {
+            this.mapManager.cityManager.handleTimelineProgress(progressData);
+        }
     }
 
     /**
@@ -200,9 +203,8 @@ class MapController {
      */
     destroy() {
         // リソースの解放
-        if (this.mapManager) {
-            this.mapManager.clearSpreadingArrows?.();
-        }
+        const renderer = this.mapManager?.renderer;
+        renderer?.clearSpreadingArrows?.();
 
         // 参照を削除
         this.mapManager = null;
