@@ -320,11 +320,6 @@ class MapManager extends BaseManager {
             this.cityManager = null;
         }
 
-        // 都市フォーカス管理をリセット
-        if (this.cityFocusManager) {
-            this.cityFocusManager.reset();
-        }
-
         // プロジェクション関連をクリア
         this.projection = null;
         this.path = null;
