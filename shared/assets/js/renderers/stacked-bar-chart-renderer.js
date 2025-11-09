@@ -147,7 +147,25 @@ class StackedBarChartRenderer extends ChartRendererBase {
             .attr('class', 'chart-axis y-axis')
             .call(yAxis);
             
-        if (yAxisLabel) {
+        if (window.ChartLayoutManager && typeof ChartLayoutManager.addAxisLabels === 'function') {
+            ChartLayoutManager.addAxisLabels(
+                g,
+                data,
+                {
+                    ...config,
+                    yAxisLabel,
+                    xAxisLabel: config.xAxisLabel
+                },
+                innerWidth,
+                innerHeight,
+                {
+                    labelFontSize: '12px',
+                    labelColor: window.AppDefaults?.colors?.text?.secondary || '#666',
+                    xAxisLabelOffset: 40,
+                    yAxisLabelOffset: margin.left * -0.6
+                }
+            );
+        } else if (yAxisLabel) {
             g.append('text')
                 .attr('class', 'axis-label')
                 .attr('transform', 'rotate(-90)')

@@ -135,7 +135,7 @@ class ChartRendererBase extends BaseManager {
     }
 
     /**
-     * チャートマージンを計算（ChartLayoutHelper統合版）
+     * チャートマージンを計算（ChartLayoutManager/Helper 統合版）
      * 全レンダラーで共通実装
      *
      * @param {Array} data - チャートデータ
@@ -149,7 +149,8 @@ class ChartRendererBase extends BaseManager {
         const chartType = options.chartType || this.type;
         const hasLegend = options.hasLegend !== undefined ? options.hasLegend : false;
 
-        if (!window.ChartLayoutHelper) {
+        const layoutUtil = window.ChartLayoutManager || window.ChartLayoutHelper;
+        if (!layoutUtil) {
             // フォールバック：従来の固定マージン
             return config.margin || {
                 top: 40,
@@ -159,7 +160,7 @@ class ChartRendererBase extends BaseManager {
             };
         }
 
-        return ChartLayoutHelper.calculateDynamicMargins(data, config, {
+        return layoutUtil.calculateDynamicMargins(data, config, {
             chartType,
             hasLegend,
             screenWidth: window.innerWidth,

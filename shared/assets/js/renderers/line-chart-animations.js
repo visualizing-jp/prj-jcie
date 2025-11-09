@@ -291,9 +291,10 @@ class LineChartAnimations {
                     } else if (renderer.config.yAxis && renderer.config.yAxis.ticks) {
                         yAxis.ticks(renderer.config.yAxis.ticks);
                     }
-                } else if (window.ChartLayoutHelper) {
-                    const unitInfo = ChartLayoutHelper.analyzeUnits(allCurrentData, renderer.config || {});
-                    const yFormatter = (value) => ChartLayoutHelper.formatAxisWithUnits(value, unitInfo.yAxis);
+                } else if (window.ChartLayoutManager || window.ChartLayoutHelper) {
+                    const layoutUtil = window.ChartLayoutManager || window.ChartLayoutHelper;
+                    const unitInfo = layoutUtil.analyzeUnits(allCurrentData, renderer.config || {});
+                    const yFormatter = (value) => layoutUtil.formatAxisWithUnits(value, unitInfo.yAxis);
                     xAxis = isYearData ? d3.axisBottom(newXScale).tickFormat(d3.format("d")) : d3.axisBottom(newXScale);
                     yAxis = d3.axisLeft(newYScale).tickFormat(yFormatter);
 
