@@ -1,0 +1,318 @@
+{
+  "steps": [
+    {
+      "id": "opening",
+      "text": {
+        "content": "<h1 style=\"font-family: 'Shippori Mincho', serif; font-size: 3rem; font-weight: 300;\">HIV/エイズとの闘い</h1><p style=\"font-size: 1.2rem;\">～ダミー表示コンテンツ～</p>",
+        "visible": true,
+        "position": {
+          "horizontal": "center",
+          "vertical": "center",
+          "width": "60%"
+        }
+      },
+      "image": {
+        "visible": true,
+        "src": "/images/photo-1.jpg",
+        "alt": "オープニング背景",
+        "opacity": 0.6,
+        "specialMode": "step0-background"
+      },
+      "chart": {
+        "visible": false
+      },
+      "map": {
+        "visible": false
+      }
+    },
+    {
+      "id": "dummy-intro",
+      "text": {
+        "content": "<h2>現場の第一印象</h2><p>この段落はレイアウト確認用のダミーテキストです。テキストカードの余白、行間、可読性を確認できます。</p>",
+        "visible": true,
+        "position": {
+          "horizontal": "left",
+          "vertical": "center",
+          "width": "35%"
+        }
+      },
+      "chart": {
+        "visible": false
+      },
+      "map": {
+        "visible": false
+      },
+      "image": {
+        "visible": true,
+        "src": "/images/photo-2.jpg",
+        "alt": "ダミー画像1",
+        "opacity": 0.75
+      }
+    },
+    {
+      "id": "dummy-story",
+      "text": {
+        "content": "<h2>ストーリーセクション</h2><p>ここでは画像の上にテキストが重なった際の見え方を確認します。右下配置で視線誘導をチェックできます。</p>",
+        "visible": true,
+        "position": {
+          "horizontal": "right",
+          "vertical": "bottom",
+          "width": "30%"
+        }
+      },
+      "chart": {
+        "visible": false
+      },
+      "map": {
+        "visible": false
+      },
+      "image": {
+        "visible": true,
+        "src": "/images/photo-3.jpg",
+        "alt": "ダミー画像2",
+        "opacity": 0.8
+      }
+    },
+    {
+      "id": "dummy-mid",
+      "text": {
+        "content": "<h2>中間セクション</h2><p>スクロール途中の切り替えを確認するためのダミーです。画像遷移とテキスト位置の安定性を確認できます。</p>",
+        "visible": true,
+        "position": {
+          "horizontal": "right",
+          "vertical": "center",
+          "width": "30%"
+        }
+      },
+      "chart": {
+        "visible": false
+      },
+      "map": {
+        "visible": false
+      },
+      "image": {
+        "visible": true,
+        "src": "/images/placeholder-1.svg",
+        "alt": "ダミー画像3",
+        "opacity": 0.85
+      }
+    },
+    {
+      "id": "dummy-focus",
+      "text": {
+        "content": "<h2>フォーカスセクション</h2><p>中央寄せのテキストカードと背景画像の組み合わせを確認するためのダミーです。</p>",
+        "visible": true,
+        "position": {
+          "horizontal": "center",
+          "vertical": "center",
+          "width": "45%"
+        }
+      },
+      "chart": {
+        "visible": false
+      },
+      "map": {
+        "visible": false
+      },
+      "image": {
+        "visible": true,
+        "src": "/images/placeholder-2.svg",
+        "alt": "ダミー画像4",
+        "opacity": 0.8
+      }
+    },
+    {
+      "id": "dummy-map-asia",
+      "text": {
+        "content": "<h2>地図ダミー1: 東アジア</h2><p>同じ地図レイヤーを使い、中心座標を日本周辺へ移動しています。ハイライト国は日本です。</p>",
+        "visible": true,
+        "position": {
+          "horizontal": "right",
+          "vertical": "center",
+          "width": "34%"
+        }
+      },
+      "chart": {
+        "visible": false
+      },
+      "map": {
+        "visible": true,
+        "mode": "world-overview",
+        "center": [
+          138,
+          36
+        ],
+        "zoom": 2.4,
+        "highlightCountries": [
+          "Japan"
+        ],
+        "lightenNonVisited": true
+      },
+      "image": {
+        "visible": false
+      }
+    },
+    {
+      "id": "dummy-map-africa",
+      "text": {
+        "content": "<h2>地図ダミー2: アフリカ</h2><p>同じ地図を共有したまま視点だけをアフリカへ移動します。ハイライト国はケニア、ナイジェリア、南アフリカです。</p>",
+        "visible": true,
+        "position": {
+          "horizontal": "left",
+          "vertical": "center",
+          "width": "34%"
+        }
+      },
+      "chart": {
+        "visible": false
+      },
+      "map": {
+        "visible": true,
+        "mode": "world-overview",
+        "center": [
+          20,
+          4
+        ],
+        "zoom": 2.1,
+        "highlightCountries": [
+          "Kenya",
+          "Nigeria",
+          "South Africa"
+        ],
+        "lightenNonVisited": true
+      },
+      "image": {
+        "visible": false
+      }
+    },
+    {
+      "id": "dummy-map-americas",
+      "text": {
+        "content": "<h2>地図ダミー3: 南北アメリカ</h2><p>さらに同じ地図を維持したまま、南北アメリカへパンします。ハイライト国はブラジルとアメリカ合衆国です。</p>",
+        "visible": true,
+        "position": {
+          "horizontal": "right",
+          "vertical": "bottom",
+          "width": "35%"
+        }
+      },
+      "chart": {
+        "visible": false
+      },
+      "map": {
+        "visible": true,
+        "mode": "world-overview",
+        "center": [
+          -70,
+          8
+        ],
+        "zoom": 1.8,
+        "highlightCountries": [
+          "Brazil",
+          "United States of America"
+        ],
+        "lightenNonVisited": true
+      },
+      "image": {
+        "visible": false
+      }
+    },
+    {
+      "id": "dummy-image-bridge-1",
+      "text": {
+        "content": "<h2>ブリッジセクション 1</h2><p>地図の連続表示をいったん区切り、次の都市エピソード導入前に余白を作るためのダミーです。</p>",
+        "visible": true,
+        "position": {
+          "horizontal": "left",
+          "vertical": "center",
+          "width": "34%"
+        }
+      },
+      "chart": {
+        "visible": false
+      },
+      "map": {
+        "visible": false
+      },
+      "image": {
+        "visible": true,
+        "src": "/images/photo-2.jpg",
+        "alt": "ブリッジ画像1",
+        "opacity": 0.72
+      }
+    },
+    {
+      "id": "dummy-image-bridge-2",
+      "text": {
+        "content": "<h2>ブリッジセクション 2</h2><p>都市エピソード開始前の見栄え確認用ダミーです。テキストカードと画像レイヤーの重なりを確認できます。</p>",
+        "visible": true,
+        "position": {
+          "horizontal": "right",
+          "vertical": "bottom",
+          "width": "34%"
+        }
+      },
+      "chart": {
+        "visible": false
+      },
+      "map": {
+        "visible": false
+      },
+      "image": {
+        "visible": true,
+        "src": "/images/placeholder-1.svg",
+        "alt": "ブリッジ画像2",
+        "opacity": 0.82
+      }
+    },
+    {
+      "id": "city-episodes-anchor",
+      "text": {
+        "content": "<h2>都市エピソード</h2><p>ここから先の都市エピソードは content-map.json から自動生成されます。</p>",
+        "visible": true,
+        "position": {
+          "horizontal": "left",
+          "vertical": "center",
+          "width": "34%"
+        }
+      },
+      "chart": {
+        "visible": false
+      },
+      "map": {
+        "visible": false
+      },
+      "image": {
+        "visible": false
+      },
+      "cityEpisodes": {
+        "enabled": true,
+        "mapFile": "content-map.json"
+      }
+    },
+    {
+      "id": "closing",
+      "text": {
+        "content": "<h2>クロージング</h2><p>このセクションは最終表示の確認用ダミーです。必要に応じてこのまま本番文言へ置き換えられます。</p>",
+        "visible": true,
+        "position": {
+          "horizontal": "center",
+          "vertical": "center",
+          "width": "50%"
+        }
+      },
+      "chart": {
+        "visible": false
+      },
+      "map": {
+        "visible": false
+      },
+      "image": {
+        "visible": true,
+        "src": "/images/photo-1.jpg",
+        "alt": "クロージング背景",
+        "opacity": 0.65
+      }
+    }
+  ]
+}

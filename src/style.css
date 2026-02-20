@@ -1,0 +1,180 @@
+@import "tailwindcss";
+@import "lenis/dist/lenis.css";
+
+@theme {
+  --font-mincho: "Shippori Mincho", serif;
+  --font-sans: "Noto Sans JP", sans-serif;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden;
+  font-family: var(--font-sans);
+  background: #000;
+  color: #fff;
+}
+
+/* レイヤー共通 */
+.layer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.layer.active {
+  opacity: 1;
+}
+
+/* z-index レイヤー順 */
+#image-layer   { z-index: 10; }
+#webgl-layer   { z-index: 20; }
+#svg-layer     { z-index: 30; }
+#scroll-content { z-index: 40; position: relative; pointer-events: auto; }
+#header-nav    { z-index: 50; position: fixed; top: 0; left: 0; width: 100%; }
+
+#svg-layer svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Step */
+.step {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+/* テキストカード */
+.text-card {
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  border-radius: 0.5rem;
+  padding: 2rem;
+  max-width: 40rem;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.text-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.city-episode-card {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.city-episode-meta {
+  margin: 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #ffffffb3;
+}
+
+.city-episode-thumb {
+  width: 100%;
+  border-radius: 0.45rem;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border: 1px solid #ffffff2e;
+}
+
+.city-episode-title {
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.5;
+}
+
+.city-episode-location {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #c9d1d9;
+}
+
+.city-episode-description {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.8;
+  color: #e5e7eb;
+}
+
+.city-episode-link {
+  justify-self: start;
+  margin-top: 0.25rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--theme-primary, #ff6b6b) 60%, white);
+  color: white;
+  font-size: 0.85rem;
+  text-decoration: none;
+  background: color-mix(in srgb, var(--theme-primary, #ff6b6b) 30%, transparent);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.city-episode-link:hover {
+  background: color-mix(in srgb, var(--theme-primary, #ff6b6b) 55%, transparent);
+  border-color: color-mix(in srgb, var(--theme-primary, #ff6b6b) 80%, white);
+}
+
+/* ヘッダーナビゲーション */
+#header-nav {
+  pointer-events: auto;
+}
+
+.nav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 2rem;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+}
+
+.nav-logo-text {
+  font-family: var(--font-mincho);
+  font-size: 0.9rem;
+  color: #ffffffcc;
+  letter-spacing: 0.1em;
+}
+
+.nav-links {
+  display: flex;
+  gap: 0.25rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-link {
+  display: block;
+  padding: 0.5rem 1rem;
+  color: #ffffff99;
+  text-decoration: none;
+  font-size: 0.85rem;
+  border-bottom: 2px solid transparent;
+  transition: color 0.3s ease, border-bottom-color 0.3s ease;
+}
+
+.nav-link:hover {
+  color: var(--link-color, #ffffffcc);
+  border-bottom-color: color-mix(in srgb, var(--link-color, #fff) 40%, transparent);
+}
+
+.nav-link.active {
+  color: var(--link-color, #ff6b6b);
+  border-bottom-color: var(--link-color, #ff6b6b);
+  font-weight: 500;
+}
