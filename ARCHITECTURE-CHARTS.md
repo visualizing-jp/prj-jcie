@@ -4,272 +4,250 @@
 
 ---
 
-## 1. 対応チャート種別
+## 1. 設計方針
 
-| 種別 | 用途 | 主要設定 |
-|------|------|---------|
-| 折れ線グラフ (`line`) | 時系列データの推移表示 | 単一系列/複数系列、フィルタリング |
-| 棒グラフ (`bar`) | カテゴリ比較 | 横/縦、グループ化 |
-| 円グラフ (`pie`) | 構成比表示 | ラベル、パーセンテージ表示 |
-| グリッドチャート (`grid`) | 複数小チャートの一覧表示 | 行数×列数指定、内部チャート種別指定 |
-| 積み上げ棒グラフ (`stacked-bar`) | 内訳付き比較 | 系列指定 |
+- レイアウト種別とチャート種別を分離し、`content.json` で組み合わせ指定する。
+- 本コンテンツはレスポンシブ前提とする。
+- `dual` と `grid` はモバイルで強制縦積みにする。
+- 設定値のシンプルさを優先する。
 
 ---
 
-## 2. レイアウトパターン
+## 2. 対応チャート種別
+
+| 種別 | 用途 | 主なデータ |
+|------|------|-----------|
+| 折れ線グラフ (`line`) | 時系列の推移 | CSV / JSON |
+| サンキー・ダイアグラム (`sankey`) | フロー可視化 | CSV / JSON |
+| 円グラフ (`pie`) | 構成比 | CSV / JSON |
+| ベン図 (`venn`) | 集合関係 | CSV / JSON |
+
+### 補足
+
+- ベン図は 1ファイル統合を許可する。
+- サンプルデータを `_temp` に置くことは許容するが、本番参照パスは `public/data` を基準とする。
+
+---
+
+## 3. レイアウトパターン
 
 | パターン | 説明 |
 |---------|------|
-| `single` | 1つのチャートを表示（デフォルト） |
-| `dual` | 2つのチャートを横並び表示 |
-| `triple` | 3つのチャートを横並び表示 |
-| `grid` | グリッドレイアウトで複数の小チャートを表示 |
+| `single` | 1つのチャートを表示 |
+| `dual` | 2つのチャートを横並び表示（モバイルは縦積み） |
+| `grid` | 段組（例: 8x2、6x2、4+3） |
+
+### 代表パターン
+
+- `single` + `line`
+- `single` + `sankey`
+- `dual` + `line`
+- `grid(8x2)` + `pie`
+- `grid(6x2)` + `pie`
+- `grid(4+3)` + `venn`
 
 ---
 
-## 3. chart設定スキーマ
+## 4. chart設定スキーマ
 
 ### 基本構造
 
 ```json
 {
-  "type": "line | bar | pie",
-  "dataFile": "data/filename.csv",
-  "visible": true,
-  "updateMode": "replace | transition",
-  "layout": "single | dual | triple | grid",
-  "position": {
-    "horizontal": "left | center | right",
-    "vertical": "center",
-    "width": "70%",
-    "height": "100%"
-  },
-  "config": { ... }
+  "chart": {
+    "visible": true,
+    "layout": "single | dual | grid",
+    "position": {
+      "horizontal": "left | center | right",
+      "vertical": "center",
+      "width": "70%",
+      "height": "100%"
+    },
+    "responsive": {
+      "mobileStack": true
+    },
+    "grid": {
+      "columns": 8,
+      "rows": 2,
+      "rowPattern": [8, 8],
+      "allowEmptyCells": true
+    },
+    "charts": [
+      {
+        "id": "chart-1",
+        "type": "line | sankey | pie | venn",
+        "dataFile": "/data/example.csv",
+        "dataFormat": "auto | csv | json",
+        "config": {}
+      }
+    ],
+    "updateMode": "replace | transition"
+  }
 }
 ```
 
-### config内の設定項目
+### フィールド説明
+
+- `layout`: レイアウト種別。
+- `charts[]`: 描画対象チャート配列。
+- `dataFormat`:
+  - `auto`: 拡張子で自動判定
+  - `csv`: CSVとして読み込む
+  - `json`: JSONとして読み込む
+- `grid.allowEmptyCells`: グリッド不足セルを空白として許可する。
+- `responsive.mobileStack`: `dual` と `grid` では `true` を必須運用とする。
+
+---
+
+## 5. レイアウト別ルール
+
+### 5.1 `single`
+
+- `charts.length = 1` を基本とする。
+- 1チャートを中央表示する。
+
+### 5.2 `dual`
+
+- `charts.length = 2` を基本とする。
+- PC: 2列横並び。
+- モバイル: 強制縦積み（1列）。
+
+### 5.3 `grid`
+
+- `grid.columns` / `grid.rows` / `grid.rowPattern` を使用する。
+- 不均等段（`4+3` など）は `rowPattern` で表現する。
+- データ不足時は空白セルを許容する（`allowEmptyCells: true`）。
+- モバイルは強制縦積み。
+
+---
+
+## 6. 種別ごとの最小config
+
+### `line`
 
 ```json
 {
-  "widthPercent": 70,
-  "heightPercent": 100,
   "xField": "year",
   "yField": "value",
   "seriesField": "series",
-  "multiSeries": true,
-  "title": "チャートタイトル",
-  "dataSource": "データ出典",
-  "legendType": "inline",
-  "yAxisFormat": { ... },
-  "yRange": [0, 4000000],
-  "filter": { ... },
-  "animation": { ... },
-  "annotations": [ ... ]
+  "title": "折れ線タイトル"
 }
 ```
 
-### dualレイアウト時の構造
-
-`layout: "dual"` の場合、`charts` 配列で個別チャートを定義する。
+### `sankey`
 
 ```json
 {
-  "layout": "dual",
-  "visible": true,
-  "position": { ... },
-  "charts": [
-    {
-      "id": "women",
-      "type": "line",
-      "title": "若年女性（15-24歳）",
-      "dataFile": "data/trend_women.csv",
-      "position": "left",
-      "config": { ... }
-    },
-    {
-      "id": "men",
-      "type": "line",
-      "title": "若年男性（15-24歳）",
-      "dataFile": "data/trend_men.csv",
-      "position": "right",
-      "config": { ... }
-    }
-  ]
+  "title": "サンキータイトル",
+  "nodeIdField": "id",
+  "linkSourceField": "source",
+  "linkTargetField": "target",
+  "linkValueField": "value"
 }
 ```
 
-### gridレイアウト時の構造
-
-`layout: "grid"` の場合、config内でグリッドの行列数と内部チャート種別を指定する。
+### `pie`
 
 ```json
 {
-  "layout": "grid",
-  "visible": true,
-  "config": {
-    "dataFile": "data/ratio.csv",
-    "columns": 8,
-    "rows": 2,
-    "chartType": "pie",
-    "rowSpacing": 30,
-    "labelField": "region",
-    "valueField": "percentage",
-    "categoryField": "ageGroup",
-    "rowTitles": ["成人（15歳以上）", "こども（0歳から14歳）"],
-    "showLabels": true,
-    "showPercentages": true,
-    "chartSizeMode": "responsive",
-    "maxChartWidth": 120,
-    "maxChartHeight": 120,
-    "minChartWidth": 80,
-    "minChartHeight": 80
-  }
+  "labelField": "label",
+  "valueField": "value",
+  "showPercentages": true
 }
 ```
 
----
-
-## 4. サイズ指定
-
-- `widthPercent` / `heightPercent`: ビューポートに対するパーセンテージ指定
-- `width` / `height`: 固定ピクセル指定
-- レスポンシブSVG: `viewBox` + `preserveAspectRatio` によるスケーリング
-
----
-
-## 5. トランジション
-
-### replace（再描画）モード
-- SVGを完全に再生成する
-- 異なるデータファイルへの切替時に使用
-
-### transition（インプレース更新）モード
-- 同一データファイルの表示範囲変更時に使用
-- D3.jsのtransitionでスムーズにアニメーション
-- Object Constancy: 各データポイントを一意キー（`${系列名}-${年度}`）で追跡
-- 段階的更新: データポイントを1つずつ追加・削除するアニメーション
-- 双方向対応: 順方向・逆方向スクロールの両方でトランジションが動作
-
----
-
-## 6. データフィルタリング
+### `venn`
 
 ```json
 {
-  "filter": {
-    "type": "range",
-    "field": "year",
-    "range": [1990, 1998]
-  }
-}
-```
-
-- 同一CSVデータの一部を表示（例: 1990-1998年）
-- Step間で表示範囲を変更し、transitionモードでスムーズに切替
-
----
-
-## 7. アノテーション（注釈線）
-
-```json
-{
-  "annotations": [
-    {
-      "type": "verticalLine",
-      "year": 1997,
-      "label": "ピークに達した年",
-      "position": "top-left"
-    },
-    {
-      "type": "horizontalLine",
-      "value": 3300000,
-      "label": "ピーク値",
-      "position": "top-left"
-    }
-  ]
-}
-```
-
-- 垂直線（特定年度を強調）
-- 水平線（特定値を強調）
-- ラベルの表示位置指定
-
----
-
-## 8. アニメーション
-
-```json
-{
-  "animation": {
-    "mode": "progressive",
-    "duration": 3000,
-    "stepDelay": 200
-  }
-}
-```
-
-- `progressive`: データポイントを順次描画するアニメーション
-- `duration`: 全体のアニメーション時間（ms）
-- `stepDelay`: 各データポイント間の遅延（ms）
-
----
-
-## 9. Y軸フォーマット
-
-### 日本語単位表記
-
-```json
-{
-  "yAxisFormat": {
-    "type": "japanese",
-    "decimals": 0,
-    "units": {
-      "億": 100000000,
-      "万": 10000
-    }
-  }
-}
-```
-
-### カスタムフォーマット
-
-```json
-{
-  "yAxisFormat": {
-    "type": "custom",
-    "format": ".0f",
-    "divisor": 100000000,
-    "suffix": "億ドル"
-  }
+  "setField": "set",
+  "valueField": "value",
+  "intersectionField": "intersection",
+  "titleField": "title"
 }
 ```
 
 ---
 
-## 10. 凡例
+## 7. データ形式
 
-- `legendType: "inline"`: チャート内にインライン表示（折れ線の末端にラベル配置）
+### 7.1 CSV例（line/pie）
 
----
-
-## 11. CSVデータ形式
-
-### 基本形式（単一系列）
 ```csv
 year,value
 1990,2100000
 1991,2300000
 ```
 
-### 複数系列形式
 ```csv
-year,series,value
-1990,World,2100000
-1990,東部・南部アフリカ,1200000
+label,value
+成人,60
+こども,40
 ```
 
-### フィールド名の対応
-- `xField`: X軸に使用するフィールド名（通常 `year`）
-- `yField`: Y軸に使用するフィールド名（通常 `value`）
-- `seriesField`: 系列識別フィールド名（通常 `series`）
+### 7.2 CSV例（sankey）
+
+```csv
+source,target,value
+予防,診断,120
+診断,治療,100
+```
+
+### 7.3 JSON例（sankey）
+
+```json
+{
+  "nodes": [{ "id": "予防" }, { "id": "診断" }, { "id": "治療" }],
+  "links": [
+    { "source": "予防", "target": "診断", "value": 120 },
+    { "source": "診断", "target": "治療", "value": 100 }
+  ]
+}
+```
+
+### 7.4 JSON例（venn: 1ファイル統合）
+
+```json
+{
+  "groups": [
+    {
+      "id": "g1",
+      "title": "地域A",
+      "sets": [
+        { "set": "HIV", "value": 40 },
+        { "set": "TB", "value": 35 },
+        { "set": "HIV&TB", "intersection": ["HIV", "TB"], "value": 12 }
+      ]
+    }
+  ]
+}
+```
+
+---
+
+## 8. レスポンシブ仕様
+
+- SVGは `viewBox` + `preserveAspectRatio` を前提とする。
+- `single`: そのまま縮小。
+- `dual`: `mobileStack: true` で縦積みへ切替。
+- `grid`: `mobileStack: true` で縦積みへ切替。
+- 軸ラベルや凡例は狭幅時に省略可。
+
+---
+
+## 9. バリデーション方針
+
+- `layout=single` かつ `charts.length !== 1` は警告。
+- `layout=dual` かつ `charts.length !== 2` は警告。
+- `layout=grid` かつ `grid` 未指定はエラー。
+- `dataFile` 未指定はエラー。
+- `dataFormat=auto` は拡張子が不明な場合エラー。
+
+---
+
+## 10. 実装フェーズ（計画）
+
+1. `content.json` 読み取り時のスキーマ検証を追加。  
+2. `ChartLayer` を「レイアウト制御」と「レンダラー」に分離。  
+3. `single(line)` → `dual(line)` → `grid(pie)` → `single(sankey)` → `grid(venn)` の順で段階導入。  
+4. 逆スクロール時の状態復元とモバイル縦積み挙動を検証。
