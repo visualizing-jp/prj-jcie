@@ -1,14 +1,17 @@
 import { WebGLLayer } from '../layers/webgl-layer.js';
 import { ImageLayer } from '../layers/image-layer.js';
 import { MapLayer } from '../layers/map-layer.js';
+import { ChartLayer } from '../layers/chart-layer.js';
 
 export class LayerOrchestrator {
   constructor(config) {
     this.config = config;
     this.elements = {};
+    this.svgHosts = null;
     this.webglLayer = null;
     this.imageLayer = null;
     this.mapLayer = null;
+    this.chartLayer = null;
     this.activeLayer = null;
   }
 
@@ -35,8 +38,27 @@ export class LayerOrchestrator {
 
     // 地図レイヤー初期化
     if (this.elements.svg) {
-      this.mapLayer = new MapLayer(this.elements.svg);
+      this.svgHosts = this.createSvgHosts(this.elements.svg);
+      this.mapLayer = new MapLayer(this.svgHosts.map);
+      this.chartLayer = new ChartLayer(this.svgHosts.chart);
     }
+  }
+
+  createSvgHosts(svgRoot) {
+    svgRoot.innerHTML = '';
+
+    const mapHost = document.createElement('div');
+    mapHost.className = 'svg-sub-layer';
+    mapHost.dataset.layer = 'map';
+
+    const chartHost = document.createElement('div');
+    chartHost.className = 'svg-sub-layer';
+    chartHost.dataset.layer = 'chart';
+
+    svgRoot.appendChild(mapHost);
+    svgRoot.appendChild(chartHost);
+
+    return { map: mapHost, chart: chartHost };
   }
 
   transition(stepConfig, direction) {
@@ -47,6 +69,10 @@ export class LayerOrchestrator {
       this.elements[this.activeLayer]?.classList.remove('active');
       if (this.activeLayer === 'image') {
         this.imageLayer?.hide();
+      }
+      if (this.activeLayer === 'svg') {
+        this.mapLayer?.clear();
+        this.chartLayer?.clear();
       }
     }
 
@@ -60,12 +86,19 @@ export class LayerOrchestrator {
       this.imageLayer?.show(stepConfig.image);
     }
 
-    // SVGレイヤー（地図）を更新
+    // SVGレイヤー（地図・チャート）を更新
     if (target === 'svg') {
       if (stepConfig.map?.visible) {
+        this.chartLayer?.clear();
         this.mapLayer?.render(stepConfig.map);
+      } else if (stepConfig.chart?.visible) {
+        this.mapLayer?.clear();
+        this.chartLayer?.render(stepConfig.chart).catch((error) => {
+          console.error('Chart render failed:', error);
+        });
       } else {
         this.mapLayer?.clear();
+        this.chartLayer?.clear();
       }
     }
 
@@ -91,6 +124,7 @@ export class LayerOrchestrator {
   }
 
   destroy() {
+    this.chartLayer?.destroy();
     this.webglLayer?.destroy();
   }
 }

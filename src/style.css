@@ -45,6 +45,13 @@ html, body {
   display: block;
 }
 
+.svg-sub-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
 /* Step */
 .step {
   min-height: 100vh;

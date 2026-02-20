@@ -122,6 +122,608 @@
       }
     },
     {
+      "id": "dummy-chart-line-single",
+      "text": {
+        "content": "<h2>チャート: Single + Line</h2><p>1つの折れ線グラフを表示するダミーです。</p>",
+        "visible": true,
+        "position": {
+          "horizontal": "right",
+          "vertical": "center",
+          "width": "32%"
+        }
+      },
+      "chart": {
+        "visible": true,
+        "layout": "single",
+        "responsive": {
+          "mobileStack": true
+        },
+        "charts": [
+          {
+            "id": "line-main",
+            "type": "line",
+            "dataFile": "/data/charts/line-single.csv",
+            "dataFormat": "csv",
+            "config": {
+              "xField": "year",
+              "yField": "value",
+              "title": "新規感染者推移（ダミー）"
+            }
+          }
+        ]
+      },
+      "map": {
+        "visible": false
+      },
+      "image": {
+        "visible": false
+      }
+    },
+    {
+      "id": "dummy-chart-line-dual",
+      "text": {
+        "content": "<h2>チャート: Dual + Line</h2><p>2つの折れ線グラフを横並びで表示するダミーです。モバイルでは縦積みになります。</p>",
+        "visible": true,
+        "position": {
+          "horizontal": "left",
+          "vertical": "center",
+          "width": "34%"
+        }
+      },
+      "chart": {
+        "visible": true,
+        "layout": "dual",
+        "responsive": {
+          "mobileStack": true
+        },
+        "charts": [
+          {
+            "id": "line-a",
+            "type": "line",
+            "dataFile": "/data/charts/line-dual-a.csv",
+            "dataFormat": "csv",
+            "config": {
+              "xField": "year",
+              "yField": "value",
+              "title": "対象A"
+            }
+          },
+          {
+            "id": "line-b",
+            "type": "line",
+            "dataFile": "/data/charts/line-dual-b.csv",
+            "dataFormat": "csv",
+            "config": {
+              "xField": "year",
+              "yField": "value",
+              "title": "対象B"
+            }
+          }
+        ]
+      },
+      "map": {
+        "visible": false
+      },
+      "image": {
+        "visible": false
+      }
+    },
+    {
+      "id": "dummy-chart-sankey-single",
+      "text": {
+        "content": "<h2>チャート: Single + Sankey</h2><p>JSONデータからフロー構造を描画するダミーです。</p>",
+        "visible": true,
+        "position": {
+          "horizontal": "right",
+          "vertical": "bottom",
+          "width": "34%"
+        }
+      },
+      "chart": {
+        "visible": true,
+        "layout": "single",
+        "responsive": {
+          "mobileStack": true
+        },
+        "charts": [
+          {
+            "id": "sankey-main",
+            "type": "sankey",
+            "dataFile": "/data/charts/sankey-data.json",
+            "dataFormat": "json",
+            "config": {
+              "title": "蚊帳配布と利用状況（ダミー）"
+            }
+          }
+        ]
+      },
+      "map": {
+        "visible": false
+      },
+      "image": {
+        "visible": false
+      }
+    },
+    {
+      "id": "dummy-chart-pie-grid-8x2",
+      "text": {
+        "content": "<h2>チャート: Grid 8x2 + Pie</h2><p>8列×2行の段組円グラフダミーです。</p>",
+        "visible": true,
+        "position": {
+          "horizontal": "left",
+          "vertical": "top",
+          "width": "32%"
+        }
+      },
+      "chart": {
+        "visible": true,
+        "layout": "grid",
+        "responsive": {
+          "mobileStack": true
+        },
+        "grid": {
+          "columns": 8,
+          "rows": 2,
+          "rowPattern": [
+            8,
+            8
+          ],
+          "allowEmptyCells": true
+        },
+        "charts": [
+          {
+            "id": "p-1",
+            "type": "pie",
+            "dataFile": "/data/charts/pie-grid-8x2.json",
+            "dataFormat": "json",
+            "config": {
+              "groupId": "p1",
+              "labelField": "label",
+              "valueField": "value"
+            }
+          },
+          {
+            "id": "p-2",
+            "type": "pie",
+            "dataFile": "/data/charts/pie-grid-8x2.json",
+            "dataFormat": "json",
+            "config": {
+              "groupId": "p2",
+              "labelField": "label",
+              "valueField": "value"
+            }
+          },
+          {
+            "id": "p-3",
+            "type": "pie",
+            "dataFile": "/data/charts/pie-grid-8x2.json",
+            "dataFormat": "json",
+            "config": {
+              "groupId": "p3",
+              "labelField": "label",
+              "valueField": "value"
+            }
+          },
+          {
+            "id": "p-4",
+            "type": "pie",
+            "dataFile": "/data/charts/pie-grid-8x2.json",
+            "dataFormat": "json",
+            "config": {
+              "groupId": "p4",
+              "labelField": "label",
+              "valueField": "value"
+            }
+          },
+          {
+            "id": "p-5",
+            "type": "pie",
+            "dataFile": "/data/charts/pie-grid-8x2.json",
+            "dataFormat": "json",
+            "config": {
+              "groupId": "p5",
+              "labelField": "label",
+              "valueField": "value"
+            }
+          },
+          {
+            "id": "p-6",
+            "type": "pie",
+            "dataFile": "/data/charts/pie-grid-8x2.json",
+            "dataFormat": "json",
+            "config": {
+              "groupId": "p6",
+              "labelField": "label",
+              "valueField": "value"
+            }
+          },
+          {
+            "id": "p-7",
+            "type": "pie",
+            "dataFile": "/data/charts/pie-grid-8x2.json",
+            "dataFormat": "json",
+            "config": {
+              "groupId": "p7",
+              "labelField": "label",
+              "valueField": "value"
+            }
+          },
+          {
+            "id": "p-8",
+            "type": "pie",
+            "dataFile": "/data/charts/pie-grid-8x2.json",
+            "dataFormat": "json",
+            "config": {
+              "groupId": "p8",
+              "labelField": "label",
+              "valueField": "value"
+            }
+          },
+          {
+            "id": "p-9",
+            "type": "pie",
+            "dataFile": "/data/charts/pie-grid-8x2.json",
+            "dataFormat": "json",
+            "config": {
+              "groupId": "p9",
+              "labelField": "label",
+              "valueField": "value"
+            }
+          },
+          {
+            "id": "p-10",
+            "type": "pie",
+            "dataFile": "/data/charts/pie-grid-8x2.json",
+            "dataFormat": "json",
+            "config": {
+              "groupId": "p10",
+              "labelField": "label",
+              "valueField": "value"
+            }
+          },
+          {
+            "id": "p-11",
+            "type": "pie",
+            "dataFile": "/data/charts/pie-grid-8x2.json",
+            "dataFormat": "json",
+            "config": {
+              "groupId": "p11",
+              "labelField": "label",
+              "valueField": "value"
+            }
+          },
+          {
+            "id": "p-12",
+            "type": "pie",
+            "dataFile": "/data/charts/pie-grid-8x2.json",
+            "dataFormat": "json",
+            "config": {
+              "groupId": "p12",
+              "labelField": "label",
+              "valueField": "value"
+            }
+          },
+          {
+            "id": "p-13",
+            "type": "pie",
+            "dataFile": "/data/charts/pie-grid-8x2.json",
+            "dataFormat": "json",
+            "config": {
+              "groupId": "p13",
+              "labelField": "label",
+              "valueField": "value"
+            }
+          },
+          {
+            "id": "p-14",
+            "type": "pie",
+            "dataFile": "/data/charts/pie-grid-8x2.json",
+            "dataFormat": "json",
+            "config": {
+              "groupId": "p14",
+              "labelField": "label",
+              "valueField": "value"
+            }
+          },
+          {
+            "id": "p-15",
+            "type": "pie",
+            "dataFile": "/data/charts/pie-grid-8x2.json",
+            "dataFormat": "json",
+            "config": {
+              "groupId": "p15",
+              "labelField": "label",
+              "valueField": "value"
+            }
+          },
+          {
+            "id": "p-16",
+            "type": "pie",
+            "dataFile": "/data/charts/pie-grid-8x2.json",
+            "dataFormat": "json",
+            "config": {
+              "groupId": "p16",
+              "labelField": "label",
+              "valueField": "value"
+            }
+          }
+        ]
+      },
+      "map": {
+        "visible": false
+      },
+      "image": {
+        "visible": false
+      }
+    },
+    {
+      "id": "dummy-chart-pie-grid-6x2",
+      "text": {
+        "content": "<h2>チャート: Grid 6x2 + Pie</h2><p>6列×2行の段組円グラフダミーです。</p>",
+        "visible": true,
+        "position": {
+          "horizontal": "right",
+          "vertical": "top",
+          "width": "32%"
+        }
+      },
+      "chart": {
+        "visible": true,
+        "layout": "grid",
+        "responsive": {
+          "mobileStack": true
+        },
+        "grid": {
+          "columns": 6,
+          "rows": 2,
+          "rowPattern": [
+            6,
+            6
+          ],
+          "allowEmptyCells": true
+        },
+        "charts": [
+          {
+            "id": "q-1",
+            "type": "pie",
+            "dataFile": "/data/charts/pie-grid-6x2.json",
+            "dataFormat": "json",
+            "config": {
+              "groupId": "q1",
+              "labelField": "label",
+              "valueField": "value"
+            }
+          },
+          {
+            "id": "q-2",
+            "type": "pie",
+            "dataFile": "/data/charts/pie-grid-6x2.json",
+            "dataFormat": "json",
+            "config": {
+              "groupId": "q2",
+              "labelField": "label",
+              "valueField": "value"
+            }
+          },
+          {
+            "id": "q-3",
+            "type": "pie",
+            "dataFile": "/data/charts/pie-grid-6x2.json",
+            "dataFormat": "json",
+            "config": {
+              "groupId": "q3",
+              "labelField": "label",
+              "valueField": "value"
+            }
+          },
+          {
+            "id": "q-4",
+            "type": "pie",
+            "dataFile": "/data/charts/pie-grid-6x2.json",
+            "dataFormat": "json",
+            "config": {
+              "groupId": "q4",
+              "labelField": "label",
+              "valueField": "value"
+            }
+          },
+          {
+            "id": "q-5",
+            "type": "pie",
+            "dataFile": "/data/charts/pie-grid-6x2.json",
+            "dataFormat": "json",
+            "config": {
+              "groupId": "q5",
+              "labelField": "label",
+              "valueField": "value"
+            }
+          },
+          {
+            "id": "q-6",
+            "type": "pie",
+            "dataFile": "/data/charts/pie-grid-6x2.json",
+            "dataFormat": "json",
+            "config": {
+              "groupId": "q6",
+              "labelField": "label",
+              "valueField": "value"
+            }
+          },
+          {
+            "id": "q-7",
+            "type": "pie",
+            "dataFile": "/data/charts/pie-grid-6x2.json",
+            "dataFormat": "json",
+            "config": {
+              "groupId": "q7",
+              "labelField": "label",
+              "valueField": "value"
+            }
+          },
+          {
+            "id": "q-8",
+            "type": "pie",
+            "dataFile": "/data/charts/pie-grid-6x2.json",
+            "dataFormat": "json",
+            "config": {
+              "groupId": "q8",
+              "labelField": "label",
+              "valueField": "value"
+            }
+          },
+          {
+            "id": "q-9",
+            "type": "pie",
+            "dataFile": "/data/charts/pie-grid-6x2.json",
+            "dataFormat": "json",
+            "config": {
+              "groupId": "q9",
+              "labelField": "label",
+              "valueField": "value"
+            }
+          },
+          {
+            "id": "q-10",
+            "type": "pie",
+            "dataFile": "/data/charts/pie-grid-6x2.json",
+            "dataFormat": "json",
+            "config": {
+              "groupId": "q10",
+              "labelField": "label",
+              "valueField": "value"
+            }
+          },
+          {
+            "id": "q-11",
+            "type": "pie",
+            "dataFile": "/data/charts/pie-grid-6x2.json",
+            "dataFormat": "json",
+            "config": {
+              "groupId": "q11",
+              "labelField": "label",
+              "valueField": "value"
+            }
+          },
+          {
+            "id": "q-12",
+            "type": "pie",
+            "dataFile": "/data/charts/pie-grid-6x2.json",
+            "dataFormat": "json",
+            "config": {
+              "groupId": "q12",
+              "labelField": "label",
+              "valueField": "value"
+            }
+          }
+        ]
+      },
+      "map": {
+        "visible": false
+      },
+      "image": {
+        "visible": false
+      }
+    },
+    {
+      "id": "dummy-chart-venn-grid-4plus3",
+      "text": {
+        "content": "<h2>チャート: Grid 4+3 + Venn</h2><p>4列1行 + 3列1行のベン図ダミーです（統合JSON）。</p>",
+        "visible": true,
+        "position": {
+          "horizontal": "left",
+          "vertical": "bottom",
+          "width": "34%"
+        }
+      },
+      "chart": {
+        "visible": true,
+        "layout": "grid",
+        "responsive": {
+          "mobileStack": true
+        },
+        "grid": {
+          "columns": 4,
+          "rows": 2,
+          "rowPattern": [
+            4,
+            3
+          ],
+          "allowEmptyCells": true
+        },
+        "charts": [
+          {
+            "id": "venn-world",
+            "type": "venn",
+            "dataFile": "/data/charts/venn-unified.json",
+            "dataFormat": "json",
+            "config": {
+              "groupId": "world"
+            }
+          },
+          {
+            "id": "venn-africa",
+            "type": "venn",
+            "dataFile": "/data/charts/venn-unified.json",
+            "dataFormat": "json",
+            "config": {
+              "groupId": "africa"
+            }
+          },
+          {
+            "id": "venn-america",
+            "type": "venn",
+            "dataFile": "/data/charts/venn-unified.json",
+            "dataFormat": "json",
+            "config": {
+              "groupId": "america"
+            }
+          },
+          {
+            "id": "venn-europe",
+            "type": "venn",
+            "dataFile": "/data/charts/venn-unified.json",
+            "dataFormat": "json",
+            "config": {
+              "groupId": "europe"
+            }
+          },
+          {
+            "id": "venn-easternmediterranean",
+            "type": "venn",
+            "dataFile": "/data/charts/venn-unified.json",
+            "dataFormat": "json",
+            "config": {
+              "groupId": "easternmediterranean"
+            }
+          },
+          {
+            "id": "venn-southeastasia",
+            "type": "venn",
+            "dataFile": "/data/charts/venn-unified.json",
+            "dataFormat": "json",
+            "config": {
+              "groupId": "southeastasia"
+            }
+          },
+          {
+            "id": "venn-westernpacific",
+            "type": "venn",
+            "dataFile": "/data/charts/venn-unified.json",
+            "dataFormat": "json",
+            "config": {
+              "groupId": "westernpacific"
+            }
+          }
+        ]
+      },
+      "map": {
+        "visible": false
+      },
+      "image": {
+        "visible": false
+      }
+    },
+    {
       "id": "dummy-map-asia",
       "text": {
         "content": "<h2>地図ダミー1: 東アジア</h2><p>同じ地図レイヤーを使い、中心座標を日本周辺へ移動しています。ハイライト国は日本です。</p>",

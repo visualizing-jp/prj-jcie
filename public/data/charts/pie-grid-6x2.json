@@ -1,0 +1,220 @@
+{
+  "groups": [
+    {
+      "id": "q1",
+      "title": "カテゴリ1",
+      "values": [
+        {
+          "label": "予防",
+          "value": 40
+        },
+        {
+          "label": "診断",
+          "value": 32
+        },
+        {
+          "label": "治療",
+          "value": 28
+        }
+      ]
+    },
+    {
+      "id": "q2",
+      "title": "カテゴリ2",
+      "values": [
+        {
+          "label": "予防",
+          "value": 43
+        },
+        {
+          "label": "診断",
+          "value": 34
+        },
+        {
+          "label": "治療",
+          "value": 23
+        }
+      ]
+    },
+    {
+      "id": "q3",
+      "title": "カテゴリ3",
+      "values": [
+        {
+          "label": "予防",
+          "value": 46
+        },
+        {
+          "label": "診断",
+          "value": 36
+        },
+        {
+          "label": "治療",
+          "value": 18
+        }
+      ]
+    },
+    {
+      "id": "q4",
+      "title": "カテゴリ4",
+      "values": [
+        {
+          "label": "予防",
+          "value": 49
+        },
+        {
+          "label": "診断",
+          "value": 38
+        },
+        {
+          "label": "治療",
+          "value": 13
+        }
+      ]
+    },
+    {
+      "id": "q5",
+      "title": "カテゴリ5",
+      "values": [
+        {
+          "label": "予防",
+          "value": 52
+        },
+        {
+          "label": "診断",
+          "value": 30
+        },
+        {
+          "label": "治療",
+          "value": 18
+        }
+      ]
+    },
+    {
+      "id": "q6",
+      "title": "カテゴリ6",
+      "values": [
+        {
+          "label": "予防",
+          "value": 55
+        },
+        {
+          "label": "診断",
+          "value": 32
+        },
+        {
+          "label": "治療",
+          "value": 13
+        }
+      ]
+    },
+    {
+      "id": "q7",
+      "title": "カテゴリ7",
+      "values": [
+        {
+          "label": "予防",
+          "value": 58
+        },
+        {
+          "label": "診断",
+          "value": 34
+        },
+        {
+          "label": "治療",
+          "value": 8
+        }
+      ]
+    },
+    {
+      "id": "q8",
+      "title": "カテゴリ8",
+      "values": [
+        {
+          "label": "予防",
+          "value": 40
+        },
+        {
+          "label": "診断",
+          "value": 36
+        },
+        {
+          "label": "治療",
+          "value": 24
+        }
+      ]
+    },
+    {
+      "id": "q9",
+      "title": "カテゴリ9",
+      "values": [
+        {
+          "label": "予防",
+          "value": 43
+        },
+        {
+          "label": "診断",
+          "value": 38
+        },
+        {
+          "label": "治療",
+          "value": 19
+        }
+      ]
+    },
+    {
+      "id": "q10",
+      "title": "カテゴリ10",
+      "values": [
+        {
+          "label": "予防",
+          "value": 46
+        },
+        {
+          "label": "診断",
+          "value": 30
+        },
+        {
+          "label": "治療",
+          "value": 24
+        }
+      ]
+    },
+    {
+      "id": "q11",
+      "title": "カテゴリ11",
+      "values": [
+        {
+          "label": "予防",
+          "value": 49
+        },
+        {
+          "label": "診断",
+          "value": 32
+        },
+        {
+          "label": "治療",
+          "value": 19
+        }
+      ]
+    },
+    {
+      "id": "q12",
+      "title": "カテゴリ12",
+      "values": [
+        {
+          "label": "予防",
+          "value": 52
+        },
+        {
+          "label": "診断",
+          "value": 34
+        },
+        {
+          "label": "治療",
+          "value": 14
+        }
+      ]
+    }
+  ]
+}
