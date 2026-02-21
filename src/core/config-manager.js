@@ -31,7 +31,8 @@ export class ConfigManager {
   }
 
   normalize(config, cityEpisodeData) {
-    const steps = this.expandSteps(config.steps || [], cityEpisodeData);
+    const expandedSteps = this.expandSteps(config.steps || [], cityEpisodeData);
+    const steps = this.appendFixedClosingStep(expandedSteps);
     return {
       steps: steps.map((step, index) => ({
         id: step.id || `step${index}`,
@@ -41,6 +42,7 @@ export class ConfigManager {
         map: step.map || null,
         image: step.image || null,
         scrollHeight: step.scrollHeight || null,
+        fixedClosing: Boolean(step.fixedClosing),
       })),
       settings: config.settings || {},
       raw: config,
@@ -207,5 +209,21 @@ export class ConfigManager {
       .replaceAll('>', '&gt;')
       .replaceAll('"', '&quot;')
       .replaceAll("'", '&#39;');
+  }
+
+  appendFixedClosingStep(steps) {
+    const filtered = steps.filter((step) => step.id !== 'closing' && step.id !== 'fixed-closing');
+
+    filtered.push({
+      id: 'fixed-closing',
+      fixedClosing: true,
+      text: null,
+      chart: { visible: false },
+      map: { visible: false },
+      image: { visible: false },
+      scrollHeight: '100vh',
+    });
+
+    return filtered;
   }
 }

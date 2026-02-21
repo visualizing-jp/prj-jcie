@@ -58,9 +58,14 @@ class App {
 
     this.contentRenderer.activateStep(stepIndex);
     this.layerOrchestrator.transition(stepConfig, direction);
+    document.body.classList.toggle('is-fixed-closing', Boolean(stepConfig.fixedClosing));
   }
 
   handleStepLeave(stepIndex, direction) {
+    const stepConfig = this.config.steps[stepIndex];
+    if (stepConfig?.fixedClosing) {
+      document.body.classList.remove('is-fixed-closing');
+    }
     this.contentRenderer.deactivateStep(stepIndex);
   }
 

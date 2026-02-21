@@ -22,6 +22,12 @@ export class ContentRenderer {
       section.style.minHeight = step.scrollHeight;
     }
 
+    if (step.fixedClosing) {
+      section.classList.add('fixed-closing-step');
+      section.appendChild(this.createFixedClosingElement());
+      return section;
+    }
+
     if (step.text?.content) {
       const card = document.createElement('div');
       card.className = 'text-card';
@@ -77,5 +83,30 @@ export class ContentRenderer {
     if (card) {
       card.classList.remove('visible');
     }
+  }
+
+  createFixedClosingElement() {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'fixed-closing-inner';
+    wrapper.innerHTML = `
+      <div class="fixed-closing-main">
+        <div class="fixed-closing-logo">
+          <img
+            class="fixed-closing-logo-image"
+            src="/images/fgfj-logo-horizontal-white.svg"
+            alt="FGFJ Friends of the Global Fund, Japan"
+          />
+        </div>
+        <div class="fixed-closing-contact">
+          <p>〒107-0052 東京都港区赤坂1-1-12 明産溜池ビル7F (公財)日本国際交流センター 内</p>
+          <p>Emailfgfj&lt;at&gt;jcie.or.jp (&lt;at&gt;を@に変更してお送りください)</p>
+          <p>TEL03-6277-7811 (代)</p>
+          <p>FAX03-6277-6712</p>
+        </div>
+      </div>
+      <hr class="fixed-closing-divider" />
+      <p class="fixed-closing-copy">© Japan Center for International Exchange. All rights reserved.</p>
+    `;
+    return wrapper;
   }
 }
