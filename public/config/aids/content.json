@@ -1,153 +1,97 @@
 {
   "steps": [
     {
-      "id": "opening",
+      "id": "aids-img-01",
       "text": {
-        "content": "<h1 style=\"font-family: 'Shippori Mincho', serif; font-size: 3rem; font-weight: 300;\">HIV/エイズとの闘い</h1><p style=\"font-size: 1.2rem;\">～ダミー表示コンテンツ～</p>",
+        "content": "<p>「HIV/エイズって、昔の病気では」と思っていませんか？「特定の人しかかからない」といったイメージを持つ人もいるかもしれません。</p><p>&nbsp;</p><p>しかし、それは大きな誤解です。HIV/エイズは今もなお私たちの身近に存在し、誰にでも感染する可能性のある病気です。</p>",
         "visible": true,
-        "position": {
-          "horizontal": "center",
-          "vertical": "center",
-          "width": "60%"
-        }
+        "position": { "horizontal": "left", "vertical": "center", "width": "34%" }
       },
+      "chart": { "visible": false },
+      "map": { "visible": false },
       "image": {
         "visible": true,
         "src": "/images/photo-1.jpg",
-        "alt": "オープニング背景",
-        "opacity": 0.6,
-        "specialMode": "step0-background"
-      },
-      "chart": {
-        "visible": false
-      },
-      "map": {
-        "visible": false
+        "alt": "導入画像1",
+        "opacity": 0.78
       }
     },
     {
-      "id": "dummy-intro",
+      "id": "aids-img-02",
       "text": {
-        "content": "<h2>現場の第一印象</h2><p>この段落はレイアウト確認用のダミーテキストです。テキストカードの余白、行間、可読性を確認できます。</p>",
+        "content": "<p>治療薬の開発と進化にともない、HIVに感染しても、検査による早期発見と適切な時期の治療開始と継続によって、エイズの発症を防ぐことができるようになりました。</p><p>&nbsp;</p><p>また近年は、HIV感染が疑わしい場合に、治療薬を予防薬として内服することで感染のリスクを抑えることもできるようになってきました。</p><p>&nbsp;</p><p>これまで治療が進んできたHIV/エイズですが、かつては「死の病」と恐れられていました。歴史を振り返ってみましょう。</p>",
         "visible": true,
-        "position": {
-          "horizontal": "left",
-          "vertical": "center",
-          "width": "35%"
-        }
+        "position": { "horizontal": "right", "vertical": "bottom", "width": "32%" }
       },
-      "chart": {
-        "visible": false
-      },
-      "map": {
-        "visible": false
-      },
+      "chart": { "visible": false },
+      "map": { "visible": false },
       "image": {
         "visible": true,
         "src": "/images/photo-2.jpg",
-        "alt": "ダミー画像1",
-        "opacity": 0.75
-      }
-    },
-    {
-      "id": "dummy-story",
-      "text": {
-        "content": "<h2>ストーリーセクション</h2><p>ここでは画像の上にテキストが重なった際の見え方を確認します。右下配置で視線誘導をチェックできます。</p>",
-        "visible": true,
-        "position": {
-          "horizontal": "right",
-          "vertical": "bottom",
-          "width": "30%"
-        }
-      },
-      "chart": {
-        "visible": false
-      },
-      "map": {
-        "visible": false
-      },
-      "image": {
-        "visible": true,
-        "src": "/images/photo-3.jpg",
-        "alt": "ダミー画像2",
+        "alt": "導入画像2",
         "opacity": 0.8
       }
     },
     {
-      "id": "dummy-mid",
+      "id": "aids-map-01",
       "text": {
-        "content": "<h2>中間セクション</h2><p>スクロール途中の切り替えを確認するためのダミーです。画像遷移とテキスト位置の安定性を確認できます。</p>",
+        "content": "<h2>エイズの歴史的経緯</h2><p>エイズが最初に注目されたのは1979年、アメリカで原因不明の病気が確認されたことに始まります。</p>",
         "visible": true,
-        "position": {
-          "horizontal": "right",
-          "vertical": "center",
-          "width": "30%"
-        }
+        "position": { "horizontal": "right", "vertical": "center", "width": "34%" }
       },
-      "chart": {
-        "visible": false
-      },
+      "chart": { "visible": false },
       "map": {
-        "visible": false
-      },
-      "image": {
         "visible": true,
-        "src": "/images/placeholder-1.svg",
-        "alt": "ダミー画像3",
-        "opacity": 0.85
-      }
+        "mode": "world-overview",
+        "center": [20, 8],
+        "zoom": 1.7,
+        "highlightCountries": ["Kenya", "Nigeria"],
+        "lightenNonVisited": true
+      },
+      "image": { "visible": false }
     },
     {
-      "id": "dummy-focus",
+      "id": "aids-map-02",
       "text": {
-        "content": "<h2>フォーカスセクション</h2><p>中央寄せのテキストカードと背景画像の組み合わせを確認するためのダミーです。</p>",
+        "content": "<p>1997年に世界の年間新規感染者はピークに達し、330万人を数えました。</p>",
         "visible": true,
-        "position": {
-          "horizontal": "center",
-          "vertical": "center",
-          "width": "45%"
-        }
+        "position": { "horizontal": "left", "vertical": "center", "width": "34%" }
       },
-      "chart": {
-        "visible": false
-      },
+      "chart": { "visible": false },
       "map": {
-        "visible": false
-      },
-      "image": {
         "visible": true,
-        "src": "/images/placeholder-2.svg",
-        "alt": "ダミー画像4",
-        "opacity": 0.8
-      }
+        "mode": "world-overview",
+        "center": [110, 10],
+        "zoom": 1.9,
+        "highlightCountries": ["Philippines"],
+        "lightenNonVisited": true
+      },
+      "image": { "visible": false }
     },
     {
-      "id": "dummy-chart-line-single",
+      "id": "aids-line-01",
       "text": {
-        "content": "<h2>チャート: Single + Line</h2><p>1つの折れ線グラフを表示するダミーです。</p>",
+        "content": "<p>1997年に世界の年間新規感染者はピークに達し、330万人を数えました。</p>",
         "visible": true,
-        "position": {
-          "horizontal": "right",
-          "vertical": "center",
-          "width": "32%"
-        }
+        "position": { "horizontal": "right", "vertical": "center", "width": "32%" }
       },
+      "map": { "visible": false },
+      "image": { "visible": false },
       "chart": {
         "visible": true,
         "layout": "single",
-        "responsive": {
-          "mobileStack": true
-        },
+        "responsive": { "mobileStack": true },
         "charts": [
           {
-            "id": "line-main",
+            "id": "line-main-01",
             "type": "line",
             "dataFile": "/data/charts/line-single.csv",
             "dataFormat": "csv",
             "config": {
               "xField": "year",
               "yField": "value",
-              "title": "世界の年間新規感染者の推移（ダミー）",
+              "seriesField": "series",
+              "title": "年間新規感染者推移（ダミー1）",
               "annotations": [
                 {
                   "type": "verticalLine",
@@ -163,769 +107,285 @@
             }
           }
         ]
-      },
-      "map": {
-        "visible": false
-      },
-      "image": {
-        "visible": false
       }
     },
     {
-      "id": "dummy-chart-line-dual",
+      "id": "aids-line-02",
       "text": {
-        "content": "<h2>チャート: Dual + Line</h2><p>2つの折れ線グラフを横並びで表示するダミーです。モバイルでは縦積みになります。</p>",
+        "content": "<p>当初不明だった原因がHIVだと特定されたのは1983年のことです。</p><p>&nbsp;</p><p>その4年後の1987年、最初の抗HIV薬が生まれ、投薬治療が本格的に始まりました。</p><p>&nbsp;</p><p>1990年代後半には、複数の抗HIV薬を用いる「多剤併用療法」（HAART）が導入され、感染者の体内にあるウイルスを劇的に減らすことが可能となりました。その結果、他者への感染リスクも減少し、新規感染者数は1995年をピークに下降しています。</p>",
         "visible": true,
-        "position": {
-          "horizontal": "left",
-          "vertical": "center",
-          "width": "34%"
-        }
+        "position": { "horizontal": "left", "vertical": "center", "width": "32%" }
       },
-      "chart": {
-        "visible": true,
-        "layout": "dual",
-        "responsive": {
-          "mobileStack": true
-        },
-        "charts": [
-          {
-            "id": "line-a",
-            "type": "line",
-            "dataFile": "/data/charts/line-dual-a.csv",
-            "dataFormat": "csv",
-            "config": {
-              "xField": "year",
-              "yField": "value",
-              "title": "対象A"
-            }
-          },
-          {
-            "id": "line-b",
-            "type": "line",
-            "dataFile": "/data/charts/line-dual-b.csv",
-            "dataFormat": "csv",
-            "config": {
-              "xField": "year",
-              "yField": "value",
-              "title": "対象B"
-            }
-          }
-        ]
-      },
-      "map": {
-        "visible": false
-      },
-      "image": {
-        "visible": false
-      }
-    },
-    {
-      "id": "dummy-chart-sankey-single",
-      "text": {
-        "content": "<h2>チャート: Single + Sankey</h2><p>JSONデータからフロー構造を描画するダミーです。</p>",
-        "visible": true,
-        "position": {
-          "horizontal": "right",
-          "vertical": "bottom",
-          "width": "34%"
-        }
-      },
+      "map": { "visible": false },
+      "image": { "visible": false },
       "chart": {
         "visible": true,
         "layout": "single",
-        "responsive": {
-          "mobileStack": true
-        },
+        "responsive": { "mobileStack": true },
         "charts": [
           {
-            "id": "sankey-main",
-            "type": "sankey",
-            "dataFile": "/data/charts/sankey-data.json",
-            "dataFormat": "json",
+            "id": "line-main-02",
+            "type": "line",
+            "dataFile": "/data/charts/line-single.csv",
+            "dataFormat": "csv",
             "config": {
-              "title": "蚊帳配布と利用状況（ダミー）"
+              "xField": "year",
+              "yField": "value",
+              "seriesField": "series",
+              "title": "年間新規感染者推移（ダミー2）"
             }
           }
         ]
-      },
-      "map": {
-        "visible": false
-      },
-      "image": {
-        "visible": false
       }
     },
     {
-      "id": "dummy-chart-pie-grid-8x2",
+      "id": "aids-line-03",
       "text": {
-        "content": "<h2>チャート: Grid 8x2 + Pie</h2><p>8列×2行の段組円グラフダミーです。</p>",
+        "content": "<h2>エイズの死亡者数</h2><p><p>2002年には低・中所得国での三大感染症（HIV・結核・マラリア）対策に資金を提供する機関「グローバルファンド」が創設され、感染予防教育の強化や抗HIV薬の普及、検査体制の整備などが加速しました。</p><p>&nbsp;</p><p>その結果、治療を受ける感染者の数は大幅に増え、死亡者数が大きく減るとともに、新規感染も減少傾向に向かいました。</p><p>&nbsp;</p><p>グローバルファンドの支援による予防教育の強化も、こうした減少に貢献しています。</p>",
         "visible": true,
-        "position": {
-          "horizontal": "left",
-          "vertical": "top",
-          "width": "32%"
-        }
+        "position": { "horizontal": "right", "vertical": "bottom", "width": "32%" }
       },
+      "map": { "visible": false },
+      "image": { "visible": false },
+      "chart": {
+        "visible": true,
+        "layout": "single",
+        "responsive": { "mobileStack": true },
+        "charts": [
+          {
+            "id": "line-main-03",
+            "type": "line",
+            "dataFile": "/data/charts/line-single.csv",
+            "dataFormat": "csv",
+            "config": {
+              "xField": "year",
+              "yField": "value",
+              "seriesField": "series",
+              "title": "年間新規感染者推移（ダミー3）"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "aids-pie-grid",
+      "text": {
+        "content": "<h2>治療機会の地域格差</h2><p>一方、HIV/エイズの治療機会において地域格差の問題が浮き彫りになってきました。</p><p>&nbsp;</p><p>2023年時点で抗HIV薬の治療を受けている感染者は、世界平均では77%に達しているものの、サハラ以南アフリカ地域の一部ではいまだに50%に満たない国もあり、この地域のエイズ関連死亡者数は、世界全体の3分の2を占めています。</p>",
+        "visible": true,
+        "position": { "horizontal": "left", "vertical": "top", "width": "30%" }
+      },
+      "map": { "visible": false },
+      "image": { "visible": false },
       "chart": {
         "visible": true,
         "layout": "grid",
-        "responsive": {
-          "mobileStack": true
-        },
-        "grid": {
-          "columns": 8,
-          "rows": 2,
-          "rowPattern": [
-            8,
-            8
-          ],
-          "allowEmptyCells": true
-        },
+        "responsive": { "mobileStack": true },
+        "grid": { "columns": 8, "rows": 2, "rowPattern": [8, 8], "allowEmptyCells": true },
         "charts": [
-          {
-            "id": "p-1",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-8x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "p1",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "p-2",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-8x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "p2",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "p-3",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-8x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "p3",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "p-4",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-8x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "p4",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "p-5",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-8x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "p5",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "p-6",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-8x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "p6",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "p-7",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-8x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "p7",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "p-8",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-8x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "p8",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "p-9",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-8x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "p9",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "p-10",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-8x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "p10",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "p-11",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-8x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "p11",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "p-12",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-8x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "p12",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "p-13",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-8x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "p13",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "p-14",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-8x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "p14",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "p-15",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-8x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "p15",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "p-16",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-8x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "p16",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          }
+          { "id": "pie-1", "type": "pie", "dataFile": "/data/charts/pie-grid-8x2.json", "dataFormat": "json", "config": { "groupId": "p1" } },
+          { "id": "pie-2", "type": "pie", "dataFile": "/data/charts/pie-grid-8x2.json", "dataFormat": "json", "config": { "groupId": "p2" } },
+          { "id": "pie-3", "type": "pie", "dataFile": "/data/charts/pie-grid-8x2.json", "dataFormat": "json", "config": { "groupId": "p3" } },
+          { "id": "pie-4", "type": "pie", "dataFile": "/data/charts/pie-grid-8x2.json", "dataFormat": "json", "config": { "groupId": "p4" } },
+          { "id": "pie-5", "type": "pie", "dataFile": "/data/charts/pie-grid-8x2.json", "dataFormat": "json", "config": { "groupId": "p5" } },
+          { "id": "pie-6", "type": "pie", "dataFile": "/data/charts/pie-grid-8x2.json", "dataFormat": "json", "config": { "groupId": "p6" } },
+          { "id": "pie-7", "type": "pie", "dataFile": "/data/charts/pie-grid-8x2.json", "dataFormat": "json", "config": { "groupId": "p7" } },
+          { "id": "pie-8", "type": "pie", "dataFile": "/data/charts/pie-grid-8x2.json", "dataFormat": "json", "config": { "groupId": "p8" } },
+          { "id": "pie-9", "type": "pie", "dataFile": "/data/charts/pie-grid-8x2.json", "dataFormat": "json", "config": { "groupId": "p9" } },
+          { "id": "pie-10", "type": "pie", "dataFile": "/data/charts/pie-grid-8x2.json", "dataFormat": "json", "config": { "groupId": "p10" } },
+          { "id": "pie-11", "type": "pie", "dataFile": "/data/charts/pie-grid-8x2.json", "dataFormat": "json", "config": { "groupId": "p11" } },
+          { "id": "pie-12", "type": "pie", "dataFile": "/data/charts/pie-grid-8x2.json", "dataFormat": "json", "config": { "groupId": "p12" } },
+          { "id": "pie-13", "type": "pie", "dataFile": "/data/charts/pie-grid-8x2.json", "dataFormat": "json", "config": { "groupId": "p13" } },
+          { "id": "pie-14", "type": "pie", "dataFile": "/data/charts/pie-grid-8x2.json", "dataFormat": "json", "config": { "groupId": "p14" } },
+          { "id": "pie-15", "type": "pie", "dataFile": "/data/charts/pie-grid-8x2.json", "dataFormat": "json", "config": { "groupId": "p15" } },
+          { "id": "pie-16", "type": "pie", "dataFile": "/data/charts/pie-grid-8x2.json", "dataFormat": "json", "config": { "groupId": "p16" } }
         ]
-      },
-      "map": {
-        "visible": false
-      },
-      "image": {
-        "visible": false
       }
     },
     {
-      "id": "dummy-chart-pie-grid-6x2",
+      "id": "aids-line-04",
       "text": {
-        "content": "<h2>チャート: Grid 6x2 + Pie</h2><p>6列×2行の段組円グラフダミーです。</p>",
+        "content": "<h2>母子感染防止の成果</h2><p>HIV/エイズの母子間感染予防は目覚ましい成果が見られました。妊婦の早期検査と診断、抗HIV薬治療、選択的帝王切開の実施、授乳方法の選択といった対策を取ったことで、母子間感染は大きく減少しました。</p><p>&nbsp;</p><p>地域的にばらつきが見られるものの、最も感染率の高いサハラ以南アフリカ地域でも、1995年の35.2%から2023年には8.7%まで減少しました。</p>",
         "visible": true,
-        "position": {
-          "horizontal": "right",
-          "vertical": "top",
-          "width": "32%"
-        }
+        "position": { "horizontal": "right", "vertical": "center", "width": "32%" }
       },
+      "map": { "visible": false },
+      "image": { "visible": false },
+      "chart": {
+        "visible": true,
+        "layout": "single",
+        "responsive": { "mobileStack": true },
+        "charts": [
+          {
+            "id": "line-main-04",
+            "type": "line",
+            "dataFile": "/data/charts/line-single.csv",
+            "dataFormat": "csv",
+            "config": {
+              "xField": "year",
+              "yField": "value",
+              "seriesField": "series",
+              "title": "年間新規感染者推移（ダミー4）"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "aids-venn-grid",
+      "text": {
+        "content": "<h2>エイズと結核の重複感染</h2><p>エイズ（HIV）と結核（TB）の重複感染は、HIV によって免疫が低下することで結核が発症しやすくなる状態を指します。HIV 陽性者は結核のリスクが非常に高く、結核は世界で最も多いHIV 合併症による死因です。特にアフリカ地域では両者の重複が深刻で、HIV 治療と結核治療を同時に行う統合的アプローチが重要とされています。</p>",
+        "visible": true,
+        "position": { "horizontal": "left", "vertical": "bottom", "width": "32%" }
+      },
+      "map": { "visible": false },
+      "image": { "visible": false },
       "chart": {
         "visible": true,
         "layout": "grid",
-        "responsive": {
-          "mobileStack": true
-        },
-        "grid": {
-          "columns": 6,
-          "rows": 2,
-          "rowPattern": [
-            6,
-            6
-          ],
-          "allowEmptyCells": true
-        },
+        "responsive": { "mobileStack": true },
+        "grid": { "columns": 4, "rows": 2, "rowPattern": [4, 3], "allowEmptyCells": true },
         "charts": [
-          {
-            "id": "q-1",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-6x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "q1",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "q-2",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-6x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "q2",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "q-3",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-6x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "q3",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "q-4",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-6x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "q4",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "q-5",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-6x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "q5",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "q-6",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-6x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "q6",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "q-7",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-6x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "q7",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "q-8",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-6x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "q8",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "q-9",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-6x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "q9",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "q-10",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-6x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "q10",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "q-11",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-6x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "q11",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "q-12",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-6x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "q12",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          }
+          { "id": "venn-world", "type": "venn", "dataFile": "/data/charts/venn-unified.json", "dataFormat": "json", "config": { "groupId": "world" } },
+          { "id": "venn-africa", "type": "venn", "dataFile": "/data/charts/venn-unified.json", "dataFormat": "json", "config": { "groupId": "africa" } },
+          { "id": "venn-america", "type": "venn", "dataFile": "/data/charts/venn-unified.json", "dataFormat": "json", "config": { "groupId": "america" } },
+          { "id": "venn-europe", "type": "venn", "dataFile": "/data/charts/venn-unified.json", "dataFormat": "json", "config": { "groupId": "europe" } },
+          { "id": "venn-easternmediterranean", "type": "venn", "dataFile": "/data/charts/venn-unified.json", "dataFormat": "json", "config": { "groupId": "easternmediterranean" } },
+          { "id": "venn-southeastasia", "type": "venn", "dataFile": "/data/charts/venn-unified.json", "dataFormat": "json", "config": { "groupId": "southeastasia" } },
+          { "id": "venn-westernpacific", "type": "venn", "dataFile": "/data/charts/venn-unified.json", "dataFormat": "json", "config": { "groupId": "westernpacific" } }
         ]
-      },
-      "map": {
-        "visible": false
-      },
-      "image": {
-        "visible": false
-      }
-    },
-    {
-      "id": "dummy-chart-venn-grid-4plus3",
-      "text": {
-        "content": "<h2>チャート: Grid 4+3 + Venn</h2><p>4列1行 + 3列1行のベン図ダミーです（統合JSON）。</p>",
-        "visible": true,
-        "position": {
-          "horizontal": "left",
-          "vertical": "bottom",
-          "width": "34%"
-        }
-      },
-      "chart": {
-        "visible": true,
-        "layout": "grid",
-        "responsive": {
-          "mobileStack": true
-        },
-        "grid": {
-          "columns": 4,
-          "rows": 2,
-          "rowPattern": [
-            4,
-            3
-          ],
-          "allowEmptyCells": true
-        },
-        "charts": [
-          {
-            "id": "venn-world",
-            "type": "venn",
-            "dataFile": "/data/charts/venn-unified.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "world"
-            }
-          },
-          {
-            "id": "venn-africa",
-            "type": "venn",
-            "dataFile": "/data/charts/venn-unified.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "africa"
-            }
-          },
-          {
-            "id": "venn-america",
-            "type": "venn",
-            "dataFile": "/data/charts/venn-unified.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "america"
-            }
-          },
-          {
-            "id": "venn-europe",
-            "type": "venn",
-            "dataFile": "/data/charts/venn-unified.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "europe"
-            }
-          },
-          {
-            "id": "venn-easternmediterranean",
-            "type": "venn",
-            "dataFile": "/data/charts/venn-unified.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "easternmediterranean"
-            }
-          },
-          {
-            "id": "venn-southeastasia",
-            "type": "venn",
-            "dataFile": "/data/charts/venn-unified.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "southeastasia"
-            }
-          },
-          {
-            "id": "venn-westernpacific",
-            "type": "venn",
-            "dataFile": "/data/charts/venn-unified.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "westernpacific"
-            }
-          }
-        ]
-      },
-      "map": {
-        "visible": false
-      },
-      "image": {
-        "visible": false
-      }
-    },
-    {
-      "id": "dummy-map-asia",
-      "text": {
-        "content": "<h2>地図ダミー1: 東アジア</h2><p>同じ地図レイヤーを使い、中心座標を日本周辺へ移動しています。ハイライト国は日本です。</p>",
-        "visible": true,
-        "position": {
-          "horizontal": "right",
-          "vertical": "center",
-          "width": "34%"
-        }
-      },
-      "chart": {
-        "visible": false
-      },
-      "map": {
-        "visible": true,
-        "mode": "world-overview",
-        "center": [
-          138,
-          36
-        ],
-        "zoom": 2.4,
-        "highlightCountries": [
-          "Japan"
-        ],
-        "lightenNonVisited": true
-      },
-      "image": {
-        "visible": false
-      }
-    },
-    {
-      "id": "dummy-map-africa",
-      "text": {
-        "content": "<h2>地図ダミー2: アフリカ</h2><p>同じ地図を共有したまま視点だけをアフリカへ移動します。ハイライト国はケニア、ナイジェリア、南アフリカです。</p>",
-        "visible": true,
-        "position": {
-          "horizontal": "left",
-          "vertical": "center",
-          "width": "34%"
-        }
-      },
-      "chart": {
-        "visible": false
-      },
-      "map": {
-        "visible": true,
-        "mode": "world-overview",
-        "center": [
-          20,
-          4
-        ],
-        "zoom": 2.1,
-        "highlightCountries": [
-          "Kenya",
-          "Nigeria",
-          "South Africa"
-        ],
-        "lightenNonVisited": true
-      },
-      "image": {
-        "visible": false
-      }
-    },
-    {
-      "id": "dummy-map-americas",
-      "text": {
-        "content": "<h2>地図ダミー3: 南北アメリカ</h2><p>さらに同じ地図を維持したまま、南北アメリカへパンします。ハイライト国はブラジルとアメリカ合衆国です。</p>",
-        "visible": true,
-        "position": {
-          "horizontal": "right",
-          "vertical": "bottom",
-          "width": "35%"
-        }
-      },
-      "chart": {
-        "visible": false
-      },
-      "map": {
-        "visible": true,
-        "mode": "world-overview",
-        "center": [
-          -70,
-          8
-        ],
-        "zoom": 1.8,
-        "highlightCountries": [
-          "Brazil",
-          "United States of America"
-        ],
-        "lightenNonVisited": true
-      },
-      "image": {
-        "visible": false
-      }
-    },
-    {
-      "id": "dummy-image-bridge-1",
-      "text": {
-        "content": "<h2>ブリッジセクション 1</h2><p>地図の連続表示をいったん区切り、次の都市エピソード導入前に余白を作るためのダミーです。</p>",
-        "visible": true,
-        "position": {
-          "horizontal": "left",
-          "vertical": "center",
-          "width": "34%"
-        }
-      },
-      "chart": {
-        "visible": false
-      },
-      "map": {
-        "visible": false
-      },
-      "image": {
-        "visible": true,
-        "src": "/images/photo-2.jpg",
-        "alt": "ブリッジ画像1",
-        "opacity": 0.72
-      }
-    },
-    {
-      "id": "dummy-image-bridge-2",
-      "text": {
-        "content": "<h2>ブリッジセクション 2</h2><p>都市エピソード開始前の見栄え確認用ダミーです。テキストカードと画像レイヤーの重なりを確認できます。</p>",
-        "visible": true,
-        "position": {
-          "horizontal": "right",
-          "vertical": "bottom",
-          "width": "34%"
-        }
-      },
-      "chart": {
-        "visible": false
-      },
-      "map": {
-        "visible": false
-      },
-      "image": {
-        "visible": true,
-        "src": "/images/placeholder-1.svg",
-        "alt": "ブリッジ画像2",
-        "opacity": 0.82
       }
     },
     {
       "id": "city-episodes-anchor",
       "text": {
-        "content": "<h2>都市エピソード</h2><p>ここから先の都市エピソードは content-map.json から自動生成されます。</p>",
+        "content": "<h2>ひとりひとりのエピソード</h2><p>感染症の現場で、ひとりひとりの『夢』が希望へとつながり、多くの命が救われてきた実話を紹介します。</p>",
         "visible": true,
-        "position": {
-          "horizontal": "left",
-          "vertical": "center",
-          "width": "34%"
-        }
+        "position": { "horizontal": "left", "vertical": "center", "width": "34%" }
       },
+      "cityEpisodes": { "enabled": true },
+      "chart": { "visible": false },
+      "map": { "visible": false },
+      "image": { "visible": false }
+    },
+    {
+      "id": "aids-line-dual",
+      "text": {
+        "content": "<h2>4.それでもなお存在する課題</h2><p>HIV/エイズ対策において目覚ましい進展が見られる一方で、依然として多くの課題が残されています。</p><p>&nbsp;</p><p><b>HIV感染者に対する差別や偏見</b>は、医療現場や職場、教育現場、地域社会に深く根付いており、医療サービスへのアクセスや治療継続の妨げとなっています。このような社会・心理的障壁は、対策を推進する上で深刻な問題でもあります。</p><p>&nbsp;</p><p><b></b>ジェンダー不平等や有害なジェンダー規範</b>も、HIV感染のリスクを高め、効果的な対策を阻害する要因として認識されています。女性や少女が自身の性的健康に関する情報を得たり、サービスを利用したり、意思決定を行う力を制限します。ジェンダーに基づく暴力もHIV感染のリスクを高めることが指摘されています。</p><p>&nbsp;</p><p>UNAIDSは、差別や犯罪などを背景に、①東部・南部アフリカの若年女性（15歳〜24歳）②男性間性交渉者③セックスワーカー④注射薬物使用者といった特定のグループの感染率が高くなっている、と指摘します。</p>",
+        "visible": true,
+        "position": { "horizontal": "right", "vertical": "center", "width": "34%" }
+      },
+      "map": { "visible": false },
+      "image": { "visible": false },
       "chart": {
-        "visible": false
-      },
-      "map": {
-        "visible": false
-      },
-      "image": {
-        "visible": false
-      },
-      "cityEpisodes": {
-        "enabled": true,
-        "mapFile": "content-map.json"
+        "visible": true,
+        "layout": "dual",
+        "responsive": { "mobileStack": true },
+        "charts": [
+          {
+            "id": "line-dual-a",
+            "type": "line",
+            "dataFile": "/data/charts/line-dual-a.csv",
+            "dataFormat": "csv",
+            "config": { "xField": "year", "yField": "value", "title": "対象A" }
+          },
+          {
+            "id": "line-dual-b",
+            "type": "line",
+            "dataFile": "/data/charts/line-dual-b.csv",
+            "dataFormat": "csv",
+            "config": { "xField": "year", "yField": "value", "title": "対象B" }
+          }
+        ]
       }
     },
     {
-      "id": "closing",
+      "id": "aids-line-05",
       "text": {
-        "content": "<h2>クロージング</h2><p>このセクションは最終表示の確認用ダミーです。必要に応じてこのまま本番文言へ置き換えられます。</p>",
+        "content": "<h2>5.解決に向けて</h2><p><b>有効性の高い予防治療法の普及</b>を推進し、より多くの人々に治療を提供することが望まれます。これは、検査体制の拡充や早期診断の推進、治療へのアクセス改善を含みます。月1回の注射で済む新しい治療法（例：カボテグラビル）が登場し、治療継続のハードルが下がっています。</p><p>&nbsp;</p><p>またHIV予防の切り札として注目されているのが、PrEP（プレップ＝曝露前予防投与）です。抗HIV薬を事前に服用することで感染リスクを大幅に下げるこの方法は、欧米などで普及が進んでいます。日本でも導入が始まっていますが、アクセスには課題があります。</p>",
         "visible": true,
-        "position": {
-          "horizontal": "center",
-          "vertical": "center",
-          "width": "50%"
-        }
+        "position": { "horizontal": "left", "vertical": "center", "width": "32%" }
       },
+      "map": { "visible": false },
+      "image": { "visible": false },
       "chart": {
-        "visible": false
+        "visible": true,
+        "layout": "single",
+        "responsive": { "mobileStack": true },
+        "charts": [
+          {
+            "id": "line-main-05",
+            "type": "line",
+            "dataFile": "/data/charts/line-single.csv",
+            "dataFormat": "csv",
+            "config": {
+              "xField": "year",
+              "yField": "value",
+              "seriesField": "series",
+              "title": "年間新規感染者推移（ダミー5）"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "aids-line-06",
+      "text": {
+        "content": "<p>そしていま最も大きな課題が、エイズ対策の資金不足です。2023年末、低・中所得国のエイズ対策として198億ドルが拠出されました。エイズの終結に向けた軌道に乗せるために必要とされる資金（293億ドル）に大きく届きません。とりわけ2020年から23年にかけては、新型コロナウイルス感染症（COVID-19)対策の資金需要があったことを反映し、8%近く減少しました。</p><p>&nbsp;</p><p>資金不足により、低・中所得国では、治療薬や予防薬の供給が途絶えることがあります。これらの国では、コミュニティ主導の組織がHIV対策において重要な役割を果たしていますが、資金不足により、活動を縮小・停止せざるを得ない状況に陥っています。</p>",
+        "visible": true,
+        "position": { "horizontal": "right", "vertical": "bottom", "width": "32%" }
       },
-      "map": {
-        "visible": false
+      "map": { "visible": false },
+      "image": { "visible": false },
+      "chart": {
+        "visible": true,
+        "layout": "single",
+        "responsive": { "mobileStack": true },
+        "charts": [
+          {
+            "id": "line-main-06",
+            "type": "line",
+            "dataFile": "/data/charts/line-single.csv",
+            "dataFormat": "csv",
+            "config": {
+              "xField": "year",
+              "yField": "value",
+              "seriesField": "series",
+              "title": "年間新規感染者推移（ダミー6）"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "aids-img-03",
+      "text": {
+        "content": "<h2>連帯の力</h2><p><p>2002年のグローバルファンド設立以来、パートナーシップによる支援を通じて6500万人の命が救われ、エイズ関連の死亡数もピーク時から73%減少しました。しかし、依然として多くの人々がエイズで命を落としており、<b>予防、治療へのアクセス、そして治療の継続</b>において課題が存在します。HIV/エイズとの闘いはこれからも続きます。</p><p>&nbsp;</p><p>HIV/エイズとの闘いは、単なる医療の問題ではなく、社会の在り方そのものを問う課題です。いま私たちに求められているのは、すべての人が尊厳を持って生きられる社会の実現に向けた連帯の力です。</p>",
+        "visible": true,
+        "position": { "horizontal": "left", "vertical": "center", "width": "34%" }
       },
+      "chart": { "visible": false },
+      "map": { "visible": false },
       "image": {
         "visible": true,
-        "src": "/images/photo-1.jpg",
-        "alt": "クロージング背景",
-        "opacity": 0.65
+        "src": "/images/photo-3.jpg",
+        "alt": "終盤画像1",
+        "opacity": 0.8
+      }
+    },
+    {
+      "id": "aids-img-04",
+      "text": {
+        "content": "<p>活動を支えるにはまだ多くの資金が必要です。日本政府からグローバルファンドへの拠出を決めるのは、みなさんの代表である国会議員です。みなさんの声をぜひお住まいの地域の国会議員に届けてください。それが連帯の証、力になるのです。</p>",
+        "visible": true,
+        "position": { "horizontal": "right", "vertical": "center", "width": "34%" }
+      },
+      "chart": { "visible": false },
+      "map": { "visible": false },
+      "image": {
+        "visible": true,
+        "src": "/images/placeholder-2.svg",
+        "alt": "終盤画像2",
+        "opacity": 0.82
       }
     }
   ]
