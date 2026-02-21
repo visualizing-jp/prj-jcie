@@ -134,6 +134,32 @@
 }
 ```
 
+`line` では `annotations` により補助線を追加できる。
+
+```json
+{
+  "xField": "year",
+  "yField": "value",
+  "title": "世界の年間新規感染者の推移",
+  "annotations": [
+    {
+      "type": "verticalLine",
+      "year": 1980,
+      "label": "世界の年間新規感染者のピークに達した年"
+    },
+    {
+      "type": "horizontalLine",
+      "value": 3500000,
+      "label": "世界の年間新規感染者のピーク"
+    }
+  ]
+}
+```
+
+- `verticalLine`: 縦の補助線（X軸値）
+- `horizontalLine`: 横の補助線（Y軸値）
+- 補助線は点線、ラベルは小さめ文字（固定値）で描画する
+
 ### `sankey`
 
 ```json
