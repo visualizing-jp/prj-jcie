@@ -147,7 +147,19 @@
             "config": {
               "xField": "year",
               "yField": "value",
-              "title": "新規感染者推移（ダミー）"
+              "title": "世界の年間新規感染者の推移（ダミー）",
+              "annotations": [
+                {
+                  "type": "verticalLine",
+                  "year": 1980,
+                  "label": "世界の年間新規感染者のピークに達した年"
+                },
+                {
+                  "type": "horizontalLine",
+                  "value": 3500000,
+                  "label": "世界の年間新規感染者のピーク"
+                }
+              ]
             }
           }
         ]

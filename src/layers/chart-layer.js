@@ -302,6 +302,7 @@ export class ChartLayer {
       .call((g) => g.selectAll('text').attr('fill', '#d8dee9').attr('font-size', 11))
       .call((g) => g.selectAll('line,path').attr('stroke', '#8ca0b3').attr('opacity', 0.5));
 
+    this.renderLineAnnotations(inner.group, x, y, width, height, config.annotations);
     const line = d3
       .line()
       .x((d) => x(Number(d[xField])))
