@@ -276,37 +276,46 @@ export class ChartLayer {
     const inner = this.createPanelInner(panel, title);
     const width = inner.width;
     const height = inner.height;
+    const grouped = d3.groups(rows, (d) => (d[seriesField] == null ? '__single__' : String(d[seriesField])));
+    const hasMultiSeries = grouped.length > 1 && grouped.some(([key]) => key !== '__single__');
+    const labelGutter = hasMultiSeries ? this.resolveLineLabelGutter(width) : 0;
+    const leftGutter = this.resolveYAxisLabelGutter(rows, yField);
+    const topInset = 6;
+    const bottomInset = 24;
+    const plotWidth = Math.max(80, width - leftGutter - labelGutter);
+    const plotHeight = Math.max(80, height - topInset - bottomInset);
+
+    const plotGroup = inner.group
+      .append('g')
+      .attr('transform', `translate(${leftGutter}, ${topInset})`);
 
     const x = d3
       .scaleLinear()
       .domain(d3.extent(rows, (d) => Number(d[xField])))
-      .range([0, width]);
+      .range([0, plotWidth]);
     const y = d3
       .scaleLinear()
       .domain([0, d3.max(rows, (d) => Number(d[yField])) * 1.1])
       .nice()
-      .range([height, 0]);
+      .range([plotHeight, 0]);
 
     const xAxis = d3.axisBottom(x).ticks(5).tickFormat(d3.format('d'));
     const yAxis = d3.axisLeft(y).ticks(5);
 
-    inner.group
+    plotGroup
       .append('g')
-      .attr('transform', `translate(0, ${height})`)
+      .attr('transform', `translate(0, ${plotHeight})`)
       .call(xAxis)
       .call((g) => g.selectAll('text').attr('fill', '#d8dee9').attr('font-size', 11))
       .call((g) => g.selectAll('line,path').attr('stroke', '#8ca0b3').attr('opacity', 0.5));
 
-    inner.group
+    plotGroup
       .append('g')
       .call(yAxis)
       .call((g) => g.selectAll('text').attr('fill', '#d8dee9').attr('font-size', 11))
       .call((g) => g.selectAll('line,path').attr('stroke', '#8ca0b3').attr('opacity', 0.5));
 
-    this.renderLineAnnotations(inner.group, x, y, width, height, config.annotations);
-
-    const grouped = d3.groups(rows, (d) => (d[seriesField] == null ? '__single__' : String(d[seriesField])));
-    const hasMultiSeries = grouped.length > 1 && grouped.some(([key]) => key !== '__single__');
+    this.renderLineAnnotations(plotGroup, x, y, plotWidth, plotHeight, config.annotations);
 
     const line = d3
       .line()
@@ -315,7 +324,7 @@ export class ChartLayer {
       .curve(d3.curveMonotoneX);
 
     if (!hasMultiSeries) {
-      const path = inner.group
+      const path = plotGroup
         .append('path')
         .datum(rows)
         .attr('fill', 'none')
@@ -332,7 +341,7 @@ export class ChartLayer {
         .ease(d3.easeCubicOut)
         .attr('stroke-dashoffset', 0);
 
-      inner.group
+      plotGroup
         .selectAll('.point')
         .data(rows)
         .enter()
@@ -354,7 +363,7 @@ export class ChartLayer {
     const palette = this.buildPalette(seriesData.length);
     const color = d3.scaleOrdinal().domain(seriesData.map((s) => s.name)).range(palette);
 
-    const seriesGroup = inner.group.append('g').attr('class', 'line-series');
+    const seriesGroup = plotGroup.append('g').attr('class', 'line-series');
     seriesData.forEach((series) => {
       const path = seriesGroup
         .append('path')
@@ -384,33 +393,90 @@ export class ChartLayer {
         .attr('fill', color(series.name));
     });
 
-    this.drawLineLegend(inner.group, seriesData, color, width);
+    this.drawLineEndLabels(plotGroup, seriesData, color, x, y, plotWidth, plotHeight, xField, yField);
   }
 
-  drawLineLegend(group, seriesData, color, width) {
-    const legend = group
-      .append('g')
-      .attr('class', 'line-legend')
-      .attr('transform', `translate(${Math.max(0, width - 140)}, 4)`);
+  drawLineEndLabels(group, seriesData, color, xScale, yScale, plotWidth, plotHeight, xField, yField) {
+    if (!Array.isArray(seriesData) || seriesData.length === 0) return;
 
-    seriesData.slice(0, 6).forEach((series, i) => {
-      const y = i * 16;
-      legend
-        .append('line')
-        .attr('x1', 0)
-        .attr('y1', y + 6)
-        .attr('x2', 14)
-        .attr('y2', y + 6)
-        .attr('stroke', color(series.name))
-        .attr('stroke-width', 2);
-      legend
-        .append('text')
-        .attr('x', 20)
-        .attr('y', y + 9)
-        .attr('fill', '#e7edf6')
-        .attr('font-size', 10)
-        .text(series.name);
+    const labelX = plotWidth + 10;
+    const minGap = 12;
+    const minY = 8;
+    const maxY = Math.max(minY, plotHeight - 8);
+
+    const labelNodes = seriesData
+      .map((series) => {
+        const last = series.values[series.values.length - 1];
+        if (!last) return null;
+        const xValue = Number(last[xField]);
+        const yValue = Number(last[yField]);
+        if (!Number.isFinite(xValue) || !Number.isFinite(yValue)) return null;
+        return {
+          name: series.name,
+          xEnd: xScale(xValue),
+          yTarget: yScale(yValue),
+          y: yScale(yValue),
+        };
+      })
+      .filter(Boolean)
+      .sort((a, b) => a.yTarget - b.yTarget);
+
+    if (labelNodes.length === 0) return;
+
+    // まず理想位置を維持しつつ、上から順に最小間隔を確保する
+    labelNodes.forEach((node, i) => {
+      if (i === 0) {
+        node.y = Math.max(minY, node.yTarget);
+      } else {
+        node.y = Math.max(node.yTarget, labelNodes[i - 1].y + minGap);
+      }
     });
+
+    // 下端超えを解消するため、下から逆方向にも詰める
+    labelNodes[labelNodes.length - 1].y = Math.min(labelNodes[labelNodes.length - 1].y, maxY);
+    for (let i = labelNodes.length - 2; i >= 0; i -= 1) {
+      labelNodes[i].y = Math.min(labelNodes[i].y, labelNodes[i + 1].y - minGap);
+    }
+
+    // 系列数が多く収まらない場合は、均等配置にフォールバック
+    if (labelNodes[0].y < minY) {
+      if (labelNodes.length === 1) {
+        labelNodes[0].y = (minY + maxY) / 2;
+      } else {
+        const step = (maxY - minY) / (labelNodes.length - 1);
+        labelNodes.forEach((node, i) => {
+          node.y = minY + step * i;
+        });
+      }
+    }
+
+    const layer = group.append('g').attr('class', 'line-end-labels');
+
+    layer
+      .selectAll('line')
+      .data(labelNodes)
+      .enter()
+      .append('line')
+      .attr('x1', (d) => d.xEnd + 2)
+      .attr('y1', (d) => d.yTarget)
+      .attr('x2', labelX - 4)
+      .attr('y2', (d) => d.y)
+      .attr('stroke', (d) => color(d.name))
+      .attr('stroke-opacity', 0.8)
+      .attr('stroke-width', 1);
+
+    layer
+      .selectAll('text')
+      .data(labelNodes)
+      .enter()
+      .append('text')
+      .attr('x', labelX)
+      .attr('y', (d) => d.y)
+      .attr('dominant-baseline', 'middle')
+      .attr('fill', (d) => color(d.name))
+      .attr('font-size', 10)
+      .attr('font-weight', 600)
+      .text((d) => d.name);
   }
 
   renderLineAnnotations(group, xScale, yScale, width, height, annotations) {
@@ -993,6 +1059,31 @@ export class ChartLayer {
 
   toSafeCssToken(value) {
     return String(value).replaceAll(/[^a-zA-Z0-9_-]/g, '-');
+  }
+
+  resolveLineLabelGutter(width) {
+    if (width < 280) return 70;
+    if (width < 420) return 96;
+    return 130;
+  }
+
+  resolveYAxisLabelGutter(rows, yField) {
+    const values = rows
+      .map((d) => Number(d[yField]))
+      .filter((v) => Number.isFinite(v));
+
+    if (values.length === 0) {
+      return 56;
+    }
+
+    const maxAbs = d3.max(values.map((v) => Math.abs(v))) || 0;
+    const probe = [0, maxAbs * 0.25, maxAbs * 0.5, maxAbs * 0.75, maxAbs];
+    const maxLabelLength = d3.max(
+      probe.map((v) => d3.format(',')(Math.round(v)).length)
+    ) || 4;
+
+    const estimated = 14 + maxLabelLength * 7;
+    return Math.max(56, Math.min(110, estimated));
   }
 
   clear() {
