@@ -265,6 +265,7 @@ export class ChartLayer {
 
     const xField = config.xField || 'year';
     const yField = config.yField || 'value';
+    const seriesField = config.seriesField || 'series';
     const rows = dataset.filter((d) => Number.isFinite(Number(d[xField])) && Number.isFinite(Number(d[yField])));
     if (rows.length === 0) {
       this.renderUnsupported(panel, 'lineデータが空です');
@@ -303,38 +304,188 @@ export class ChartLayer {
       .call((g) => g.selectAll('line,path').attr('stroke', '#8ca0b3').attr('opacity', 0.5));
 
     this.renderLineAnnotations(inner.group, x, y, width, height, config.annotations);
+
+    const grouped = d3.groups(rows, (d) => (d[seriesField] == null ? '__single__' : String(d[seriesField])));
+    const hasMultiSeries = grouped.length > 1 && grouped.some(([key]) => key !== '__single__');
+
     const line = d3
       .line()
       .x((d) => x(Number(d[xField])))
       .y((d) => y(Number(d[yField])))
       .curve(d3.curveMonotoneX);
 
-    const path = inner.group
-      .append('path')
-      .datum(rows)
-      .attr('fill', 'none')
-      .attr('stroke', this.getThemePrimary())
-      .attr('stroke-width', 2.5)
-      .attr('d', line);
+    if (!hasMultiSeries) {
+      const path = inner.group
+        .append('path')
+        .datum(rows)
+        .attr('fill', 'none')
+        .attr('stroke', this.getThemePrimary())
+        .attr('stroke-width', 2.5)
+        .attr('d', line);
 
-    const len = path.node()?.getTotalLength() || 0;
-    path
-      .attr('stroke-dasharray', `${len} ${len}`)
-      .attr('stroke-dashoffset', len)
-      .transition()
-      .duration(700)
-      .ease(d3.easeCubicOut)
-      .attr('stroke-dashoffset', 0);
+      const len = path.node()?.getTotalLength() || 0;
+      path
+        .attr('stroke-dasharray', `${len} ${len}`)
+        .attr('stroke-dashoffset', len)
+        .transition()
+        .duration(700)
+        .ease(d3.easeCubicOut)
+        .attr('stroke-dashoffset', 0);
 
-    inner.group
-      .selectAll('.point')
-      .data(rows)
-      .enter()
-      .append('circle')
-      .attr('cx', (d) => x(Number(d[xField])))
-      .attr('cy', (d) => y(Number(d[yField])))
-      .attr('r', 2.7)
-      .attr('fill', '#ffffff');
+      inner.group
+        .selectAll('.point')
+        .data(rows)
+        .enter()
+        .append('circle')
+        .attr('cx', (d) => x(Number(d[xField])))
+        .attr('cy', (d) => y(Number(d[yField])))
+        .attr('r', 2.7)
+        .attr('fill', '#ffffff');
+      return;
+    }
+
+    const seriesData = grouped
+      .map(([name, values]) => ({
+        name,
+        values: [...values].sort((a, b) => Number(a[xField]) - Number(b[xField])),
+      }))
+      .filter((s) => s.values.length > 0);
+
+    const palette = this.buildPalette(seriesData.length);
+    const color = d3.scaleOrdinal().domain(seriesData.map((s) => s.name)).range(palette);
+
+    const seriesGroup = inner.group.append('g').attr('class', 'line-series');
+    seriesData.forEach((series) => {
+      const path = seriesGroup
+        .append('path')
+        .datum(series.values)
+        .attr('fill', 'none')
+        .attr('stroke', color(series.name))
+        .attr('stroke-width', 2.2)
+        .attr('d', line);
+
+      const len = path.node()?.getTotalLength() || 0;
+      path
+        .attr('stroke-dasharray', `${len} ${len}`)
+        .attr('stroke-dashoffset', len)
+        .transition()
+        .duration(700)
+        .ease(d3.easeCubicOut)
+        .attr('stroke-dashoffset', 0);
+
+      seriesGroup
+        .selectAll(`.point-${this.toSafeCssToken(series.name)}`)
+        .data(series.values)
+        .enter()
+        .append('circle')
+        .attr('cx', (d) => x(Number(d[xField])))
+        .attr('cy', (d) => y(Number(d[yField])))
+        .attr('r', 2.2)
+        .attr('fill', color(series.name));
+    });
+
+    this.drawLineLegend(inner.group, seriesData, color, width);
+  }
+
+  drawLineLegend(group, seriesData, color, width) {
+    const legend = group
+      .append('g')
+      .attr('class', 'line-legend')
+      .attr('transform', `translate(${Math.max(0, width - 140)}, 4)`);
+
+    seriesData.slice(0, 6).forEach((series, i) => {
+      const y = i * 16;
+      legend
+        .append('line')
+        .attr('x1', 0)
+        .attr('y1', y + 6)
+        .attr('x2', 14)
+        .attr('y2', y + 6)
+        .attr('stroke', color(series.name))
+        .attr('stroke-width', 2);
+      legend
+        .append('text')
+        .attr('x', 20)
+        .attr('y', y + 9)
+        .attr('fill', '#e7edf6')
+        .attr('font-size', 10)
+        .text(series.name);
+    });
+  }
+
+  renderLineAnnotations(group, xScale, yScale, width, height, annotations) {
+    if (!Array.isArray(annotations) || annotations.length === 0) return;
+
+    const layer = group.append('g').attr('class', 'chart-annotations');
+    const xDomain = xScale.domain();
+    const yDomain = yScale.domain();
+
+    annotations.forEach((annotation) => {
+      const type = annotation?.type;
+      const label = String(annotation?.label || '');
+
+      if (type === 'verticalLine') {
+        const raw = annotation.year ?? annotation.x ?? annotation.value;
+        const value = Number(raw);
+        if (!Number.isFinite(value)) return;
+        if (value < Math.min(...xDomain) || value > Math.max(...xDomain)) return;
+
+        const x = xScale(value);
+        layer
+          .append('line')
+          .attr('x1', x)
+          .attr('y1', 0)
+          .attr('x2', x)
+          .attr('y2', height)
+          .attr('stroke', '#e5edf7')
+          .attr('stroke-width', 1)
+          .attr('stroke-opacity', 0.8)
+          .attr('stroke-dasharray', '4 4');
+
+        if (label) {
+          layer
+            .append('text')
+            .attr('x', x + 6)
+            .attr('y', 12)
+            .attr('fill', '#e7eef8')
+            .attr('font-size', 10)
+            .attr('font-weight', 500)
+            .text(label);
+        }
+        return;
+      }
+
+      if (type === 'horizontalLine') {
+        const raw = annotation.y ?? annotation.value;
+        const value = Number(raw);
+        if (!Number.isFinite(value)) return;
+        if (value < Math.min(...yDomain) || value > Math.max(...yDomain)) return;
+
+        const y = yScale(value);
+        layer
+          .append('line')
+          .attr('x1', 0)
+          .attr('y1', y)
+          .attr('x2', width)
+          .attr('y2', y)
+          .attr('stroke', '#e5edf7')
+          .attr('stroke-width', 1)
+          .attr('stroke-opacity', 0.8)
+          .attr('stroke-dasharray', '4 4');
+
+        if (label) {
+          const labelY = Math.max(12, y - 6);
+          layer
+            .append('text')
+            .attr('x', 6)
+            .attr('y', labelY)
+            .attr('fill', '#e7eef8')
+            .attr('font-size', 10)
+            .attr('font-weight', 500)
+            .text(label);
+        }
+      }
+    });
   }
 
   renderPie(panel, dataset, config) {
@@ -838,6 +989,10 @@ export class ChartLayer {
     }
 
     return Array.from({ length: count }, (_, i) => d3.interpolateRainbow(i / count));
+  }
+
+  toSafeCssToken(value) {
+    return String(value).replaceAll(/[^a-zA-Z0-9_-]/g, '-');
   }
 
   clear() {

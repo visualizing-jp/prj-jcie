@@ -1,10 +1,21 @@
-year,value
-2015,220
-2016,250
-2017,280
-2018,320
-2019,350
-2020,330
-2021,360
-2022,390
-2023,420
+year,series,value
+1976,World,1800000
+1977,World,2200000
+1978,World,2700000
+1979,World,3200000
+1980,World,3500000
+1981,World,3400000
+1982,World,3150000
+1983,World,2950000
+1984,World,2700000
+1985,World,2480000
+1976,High-burden Region,1100000
+1977,High-burden Region,1400000
+1978,High-burden Region,1750000
+1979,High-burden Region,2100000
+1980,High-burden Region,2300000
+1981,High-burden Region,2220000
+1982,High-burden Region,2050000
+1983,High-burden Region,1940000
+1984,High-burden Region,1800000
+1985,High-burden Region,1680000
