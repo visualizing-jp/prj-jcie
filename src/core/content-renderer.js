@@ -99,9 +99,8 @@ export class ContentRenderer {
         </div>
         <div class="fixed-closing-contact">
           <p>〒107-0052 東京都港区赤坂1-1-12 明産溜池ビル7F (公財)日本国際交流センター 内</p>
-          <p>Emailfgfj&lt;at&gt;jcie.or.jp (&lt;at&gt;を@に変更してお送りください)</p>
-          <p>TEL03-6277-7811 (代)</p>
-          <p>FAX03-6277-6712</p>
+          <p>Email: fgfj&lt;at&gt;jcie.or.jp (&lt;at&gt;を@に変更してお送りください)</p>
+          <p>TEL: 03-6277-7811(代) FAX: 03-6277-6712</p>
         </div>
       </div>
       <hr class="fixed-closing-divider" />
