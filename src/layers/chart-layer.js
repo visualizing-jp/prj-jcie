@@ -14,16 +14,17 @@ export class ChartLayer {
     this.svg = null;
     this.root = null;
     this.dataCache = new Map();
+    this.lineSpanState = new Map();
     this.onResize = () => {
       // レスポンシブ再計算は次回step enter時に行う。
     };
     window.addEventListener('resize', this.onResize);
   }
 
-  async render(chartConfig) {
+  async render(chartConfig, renderOptions = {}) {
     if (!chartConfig?.visible) return;
 
-    const normalized = this.normalizeChartConfig(chartConfig);
+    const normalized = this.normalizeChartConfig(chartConfig, renderOptions);
     this.ensureSvg();
     if (!this.root) return;
 
@@ -44,11 +45,13 @@ export class ChartLayer {
     await Promise.all(chartJobs);
   }
 
-  normalizeChartConfig(chartConfig) {
+  normalizeChartConfig(chartConfig, renderOptions = {}) {
     const layout = chartConfig.layout || (Array.isArray(chartConfig.charts) && chartConfig.charts.length === 2 ? 'dual' : 'single');
+    const span = chartConfig.span || (renderOptions.spanId ? { id: renderOptions.spanId } : null);
+    const transitionFromPrevious = Boolean(renderOptions.transitionFromPrevious);
 
     const charts = Array.isArray(chartConfig.charts) && chartConfig.charts.length > 0
-      ? chartConfig.charts
+      ? chartConfig.charts.map((chart) => ({ ...chart, span, transitionFromPrevious }))
       : [
           {
             id: chartConfig.id || 'chart-1',
@@ -56,6 +59,8 @@ export class ChartLayer {
             dataFile: chartConfig.dataFile,
             dataFormat: chartConfig.dataFormat || 'auto',
             config: chartConfig.config || {},
+            span,
+            transitionFromPrevious,
           },
         ];
 
@@ -242,7 +247,7 @@ export class ChartLayer {
 
     try {
       if (chartType === 'line') {
-        this.renderLine(panel, dataset, panel.chart.config || {});
+        this.renderLine(panel, dataset, panel.chart.config || {}, panel.chart);
       } else if (chartType === 'pie') {
         this.renderPie(panel, dataset, panel.chart.config || {});
       } else if (chartType === 'sankey') {
@@ -258,7 +263,7 @@ export class ChartLayer {
     }
   }
 
-  renderLine(panel, dataset, config) {
+  renderLine(panel, dataset, config, chartMeta = {}) {
     if (!Array.isArray(dataset)) {
       this.renderUnsupported(panel, 'lineデータ形式が不正です');
       return;
@@ -267,11 +272,43 @@ export class ChartLayer {
     const xField = config.xField || 'year';
     const yField = config.yField || 'value';
     const seriesField = config.seriesField || 'series';
-    const rows = dataset.filter((d) => Number.isFinite(Number(d[xField])) && Number.isFinite(Number(d[yField])));
+    const baseRows = dataset.filter((d) => Number.isFinite(Number(d[xField])) && Number.isFinite(Number(d[yField])));
+    if (baseRows.length === 0) {
+      this.renderUnsupported(panel, 'lineデータが空です');
+      return;
+    }
+
+    const defaultXDomain = d3.extent(baseRows, (d) => Number(d[xField]));
+    const configuredXDomain = Array.isArray(config.xDomain) && config.xDomain.length === 2
+      ? [Number(config.xDomain[0]), Number(config.xDomain[1])]
+      : null;
+    const targetXDomain = configuredXDomain && configuredXDomain.every(Number.isFinite)
+      ? [Math.min(configuredXDomain[0], configuredXDomain[1]), Math.max(configuredXDomain[0], configuredXDomain[1])]
+      : [Number(defaultXDomain[0]), Number(defaultXDomain[1])];
+    if (!targetXDomain.every(Number.isFinite) || targetXDomain[0] === targetXDomain[1]) {
+      this.renderUnsupported(panel, 'lineのx軸設定が不正です');
+      return;
+    }
+
+    const rows = baseRows.filter((d) => {
+      const xValue = Number(d[xField]);
+      return xValue >= targetXDomain[0] && xValue <= targetXDomain[1];
+    });
     if (rows.length === 0) {
       this.renderUnsupported(panel, 'lineデータが空です');
       return;
     }
+
+    const yMax = d3.max(rows, (d) => Number(d[yField])) || 0;
+    const targetYScale = d3.scaleLinear().domain([0, yMax * 1.1]).nice();
+    const targetYDomain = targetYScale.domain();
+
+    const spanIdRaw = chartMeta?.span?.id;
+    const spanId = spanIdRaw == null ? null : String(spanIdRaw).trim();
+    const shouldAnimateSpan = Boolean(chartMeta?.transitionFromPrevious && spanId);
+    const previousSpanState = shouldAnimateSpan ? this.lineSpanState.get(spanId) : null;
+    const startXDomain = previousSpanState?.xDomain || targetXDomain;
+    const startYDomain = previousSpanState?.yDomain || targetYDomain;
 
     const title = config.title || '折れ線グラフ';
     const inner = this.createPanelInner(panel, title);
@@ -292,31 +329,30 @@ export class ChartLayer {
 
     const x = d3
       .scaleLinear()
-      .domain(d3.extent(rows, (d) => Number(d[xField])))
+      .domain(startXDomain)
       .range([0, plotWidth]);
     const y = d3
       .scaleLinear()
-      .domain([0, d3.max(rows, (d) => Number(d[yField])) * 1.1])
-      .nice()
+      .domain(startYDomain)
       .range([plotHeight, 0]);
 
     const xAxis = d3.axisBottom(x).ticks(5).tickFormat(d3.format('d'));
     const yAxis = d3.axisLeft(y).ticks(5);
+    const styleAxisText = (g) => g.selectAll('text').attr('fill', '#d8dee9').attr('font-size', 11);
+    const styleAxisLines = (g) => g.selectAll('line,path').attr('stroke', '#8ca0b3').attr('opacity', 0.5);
 
-    plotGroup
+    const xAxisGroup = plotGroup
       .append('g')
       .attr('transform', `translate(0, ${plotHeight})`)
       .call(xAxis)
-      .call((g) => g.selectAll('text').attr('fill', '#d8dee9').attr('font-size', 11))
-      .call((g) => g.selectAll('line,path').attr('stroke', '#8ca0b3').attr('opacity', 0.5));
+      .call(styleAxisText)
+      .call(styleAxisLines);
 
-    plotGroup
+    const yAxisGroup = plotGroup
       .append('g')
       .call(yAxis)
-      .call((g) => g.selectAll('text').attr('fill', '#d8dee9').attr('font-size', 11))
-      .call((g) => g.selectAll('line,path').attr('stroke', '#8ca0b3').attr('opacity', 0.5));
-
-    this.renderLineAnnotations(plotGroup, x, y, plotWidth, plotHeight, config.annotations);
+      .call(styleAxisText)
+      .call(styleAxisLines);
 
     const line = d3
       .line()
@@ -333,16 +369,7 @@ export class ChartLayer {
         .attr('stroke-width', 2.5)
         .attr('d', line);
 
-      const len = path.node()?.getTotalLength() || 0;
-      path
-        .attr('stroke-dasharray', `${len} ${len}`)
-        .attr('stroke-dashoffset', len)
-        .transition()
-        .duration(700)
-        .ease(d3.easeCubicOut)
-        .attr('stroke-dashoffset', 0);
-
-      plotGroup
+      const points = plotGroup
         .selectAll('.point')
         .data(rows)
         .enter()
@@ -351,6 +378,44 @@ export class ChartLayer {
         .attr('cy', (d) => y(Number(d[yField])))
         .attr('r', 2.7)
         .attr('fill', '#ffffff');
+
+      if (shouldAnimateSpan && previousSpanState) {
+        x.domain(targetXDomain);
+        y.domain(targetYDomain);
+        const transition = d3.transition().duration(850).ease(d3.easeCubicInOut);
+
+        xAxisGroup
+          .transition(transition)
+          .call(xAxis)
+          .call(styleAxisText)
+          .call(styleAxisLines);
+        yAxisGroup
+          .transition(transition)
+          .call(yAxis)
+          .call(styleAxisText)
+          .call(styleAxisLines);
+        path.transition(transition).attr('d', line).on('end', () => {
+          this.renderLineAnnotations(plotGroup, x, y, plotWidth, plotHeight, config.annotations);
+        });
+        points
+          .transition(transition)
+          .attr('cx', (d) => x(Number(d[xField])))
+          .attr('cy', (d) => y(Number(d[yField])));
+      } else {
+        this.renderLineAnnotations(plotGroup, x, y, plotWidth, plotHeight, config.annotations);
+        const len = path.node()?.getTotalLength() || 0;
+        path
+          .attr('stroke-dasharray', `${len} ${len}`)
+          .attr('stroke-dashoffset', len)
+          .transition()
+          .duration(700)
+          .ease(d3.easeCubicOut)
+          .attr('stroke-dashoffset', 0);
+      }
+
+      if (spanId) {
+        this.lineSpanState.set(spanId, { xDomain: [...targetXDomain], yDomain: [...targetYDomain] });
+      }
       return;
     }
 
@@ -365,6 +430,9 @@ export class ChartLayer {
     const color = d3.scaleOrdinal().domain(seriesData.map((s) => s.name)).range(palette);
 
     const seriesGroup = plotGroup.append('g').attr('class', 'line-series');
+    const pathNodes = [];
+    const pointNodes = [];
+
     seriesData.forEach((series) => {
       const path = seriesGroup
         .append('path')
@@ -374,16 +442,9 @@ export class ChartLayer {
         .attr('stroke-width', 2.2)
         .attr('d', line);
 
-      const len = path.node()?.getTotalLength() || 0;
-      path
-        .attr('stroke-dasharray', `${len} ${len}`)
-        .attr('stroke-dashoffset', len)
-        .transition()
-        .duration(700)
-        .ease(d3.easeCubicOut)
-        .attr('stroke-dashoffset', 0);
+      pathNodes.push(path);
 
-      seriesGroup
+      const points = seriesGroup
         .selectAll(`.point-${this.toSafeCssToken(series.name)}`)
         .data(series.values)
         .enter()
@@ -392,9 +453,58 @@ export class ChartLayer {
         .attr('cy', (d) => y(Number(d[yField])))
         .attr('r', 2.2)
         .attr('fill', color(series.name));
+
+      pointNodes.push(points);
     });
 
-    this.drawLineEndLabels(plotGroup, seriesData, color, x, y, plotWidth, plotHeight, xField, yField);
+    if (shouldAnimateSpan && previousSpanState) {
+      x.domain(targetXDomain);
+      y.domain(targetYDomain);
+      const transition = d3.transition().duration(850).ease(d3.easeCubicInOut);
+
+      xAxisGroup
+        .transition(transition)
+        .call(xAxis)
+        .call(styleAxisText)
+        .call(styleAxisLines);
+      yAxisGroup
+        .transition(transition)
+        .call(yAxis)
+        .call(styleAxisText)
+        .call(styleAxisLines);
+
+      pathNodes.forEach((path, index) => {
+        path.transition(transition).attr('d', line).on('end', () => {
+          if (index === 0) {
+            this.renderLineAnnotations(plotGroup, x, y, plotWidth, plotHeight, config.annotations);
+            this.drawLineEndLabels(plotGroup, seriesData, color, x, y, plotWidth, plotHeight, xField, yField);
+          }
+        });
+      });
+      pointNodes.forEach((points) => {
+        points
+          .transition(transition)
+          .attr('cx', (d) => x(Number(d[xField])))
+          .attr('cy', (d) => y(Number(d[yField])));
+      });
+    } else {
+      this.renderLineAnnotations(plotGroup, x, y, plotWidth, plotHeight, config.annotations);
+      pathNodes.forEach((path) => {
+        const len = path.node()?.getTotalLength() || 0;
+        path
+          .attr('stroke-dasharray', `${len} ${len}`)
+          .attr('stroke-dashoffset', len)
+          .transition()
+          .duration(700)
+          .ease(d3.easeCubicOut)
+          .attr('stroke-dashoffset', 0);
+      });
+      this.drawLineEndLabels(plotGroup, seriesData, color, x, y, plotWidth, plotHeight, xField, yField);
+    }
+
+    if (spanId) {
+      this.lineSpanState.set(spanId, { xDomain: [...targetXDomain], yDomain: [...targetYDomain] });
+    }
   }
 
   drawLineEndLabels(group, seriesData, color, xScale, yScale, plotWidth, plotHeight, xField, yField) {

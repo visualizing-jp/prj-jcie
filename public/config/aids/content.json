@@ -81,16 +81,18 @@
         "visible": true,
         "layout": "single",
         "responsive": { "mobileStack": true },
+        "span": { "id": "aids-new-infections", "continueFromPrevious": true },
         "charts": [
           {
             "id": "line-main-01",
             "type": "line",
-            "dataFile": "/data/charts/aids/trend_new_infections_mother-child.csv",
+            "dataFile": "/data/charts/aids/trend_new_infections_normalized.csv",
             "dataFormat": "csv",
             "config": {
               "xField": "year",
               "yField": "value",
               "seriesField": "series",
+              "xDomain": [1990, 1998],
               "title": "年間新規感染者推移（ダミー1）",
               "annotations": [
                 {
@@ -122,16 +124,18 @@
         "visible": true,
         "layout": "single",
         "responsive": { "mobileStack": true },
+        "span": { "id": "aids-new-infections", "continueFromPrevious": true },
         "charts": [
           {
             "id": "line-main-02",
             "type": "line",
-            "dataFile": "/data/charts/line-single.csv",
+            "dataFile": "/data/charts/aids/trend_new_infections_normalized.csv",
             "dataFormat": "csv",
             "config": {
               "xField": "year",
               "yField": "value",
               "seriesField": "series",
+              "xDomain": [1980, 2025],
               "title": "年間新規感染者推移（ダミー2）"
             }
           }

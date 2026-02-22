@@ -13,6 +13,7 @@ export class LayerOrchestrator {
     this.mapLayer = null;
     this.chartLayer = null;
     this.activeLayer = null;
+    this.activeChartSpanId = null;
   }
 
   async init() {
@@ -73,6 +74,7 @@ export class LayerOrchestrator {
       if (this.activeLayer === 'svg') {
         this.mapLayer?.clear();
         this.chartLayer?.clear();
+        this.activeChartSpanId = null;
       }
     }
 
@@ -90,15 +92,25 @@ export class LayerOrchestrator {
     if (target === 'svg') {
       if (stepConfig.map?.visible) {
         this.chartLayer?.clear();
+        this.activeChartSpanId = null;
         this.mapLayer?.render(stepConfig.map);
       } else if (stepConfig.chart?.visible) {
         this.mapLayer?.clear();
-        this.chartLayer?.render(stepConfig.chart).catch((error) => {
+        const spanId = this.resolveChartSpanId(stepConfig.chart);
+        const continueFromPrevious = this.shouldContinueChartFromPrevious(stepConfig.chart);
+        const shouldReuse = continueFromPrevious && spanId && this.activeChartSpanId === spanId;
+
+        this.chartLayer?.render(stepConfig.chart, {
+          transitionFromPrevious: Boolean(shouldReuse),
+          spanId,
+        }).catch((error) => {
           console.error('Chart render failed:', error);
         });
+        this.activeChartSpanId = spanId;
       } else {
         this.mapLayer?.clear();
         this.chartLayer?.clear();
+        this.activeChartSpanId = null;
       }
     }
 
@@ -113,6 +125,17 @@ export class LayerOrchestrator {
       return 'image';
     }
     return 'webgl';
+  }
+
+  resolveChartSpanId(chartConfig) {
+    const id = chartConfig?.span?.id;
+    if (id == null) return null;
+    const normalized = String(id).trim();
+    return normalized.length > 0 ? normalized : null;
+  }
+
+  shouldContinueChartFromPrevious(chartConfig) {
+    return Boolean(chartConfig?.span?.continueFromPrevious);
   }
 
   updateProgress(progress) {
