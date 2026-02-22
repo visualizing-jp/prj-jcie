@@ -1,4 +1,5 @@
 import * as d3 from 'd3';
+import * as vennjs from '@upsetjs/venn.js';
 
 const VIEWBOX_WIDTH = 1440;
 const VIEWBOX_HEIGHT = 900;
@@ -812,90 +813,130 @@ export class ChartLayer {
   }
 
   renderVenn(panel, dataset, config) {
-    const venn = this.resolveVennDataset(dataset, config);
-    if (!venn || !Array.isArray(venn.sets) || venn.sets.length === 0) {
+    const vennData = this.resolveVennDataset(dataset, config);
+    if (!vennData || !Array.isArray(vennData.sets) || vennData.sets.length === 0) {
       this.renderUnsupported(panel, 'vennデータが不正です');
       return;
     }
 
-    const title = config.title || venn.title || 'ベン図';
+    const title = config.title || vennData.title || 'ベン図';
     const inner = this.createPanelInner(panel, title, { compact: true });
 
-    const setNames = [...new Set(venn.sets.filter((d) => d.sets?.length === 1).map((d) => d.sets[0]))];
+    const areas = vennData.sets
+      .filter((d) => Array.isArray(d?.sets) && d.sets.length >= 1 && Number.isFinite(Number(d.size)))
+      .map((d) => ({ sets: d.sets.map((s) => String(s)), size: Math.max(0, Number(d.size)) }));
+
+    const setNames = [...new Set(areas.filter((d) => d.sets.length === 1).map((d) => d.sets[0]))];
     if (setNames.length < 2 || setNames.length > 3) {
       this.renderUnsupported(panel, 'ベン図は2〜3集合を想定しています');
       return;
     }
+    if (areas.length === 0) {
+      this.renderUnsupported(panel, 'vennデータが不正です');
+      return;
+    }
 
-    const singleton = new Map(
-      venn.sets
-        .filter((d) => d.sets?.length === 1)
-        .map((d) => [d.sets[0], Number(d.size) || 0])
-    );
-
-    const interMap = new Map(
-      venn.sets
-        .filter((d) => d.sets?.length > 1)
-        .map((d) => [d.sets.join('&'), Number(d.size) || 0])
-    );
-
-    const cx = inner.width / 2;
-    const cy = inner.height / 2;
-    const baseR = Math.max(26, Math.min(inner.width, inner.height) * 0.22);
-
-    const positions = this.resolveVennPositions(setNames.length, cx, cy, baseR);
     const palette = this.buildPalette(setNames.length);
+    const colorBySet = new Map(setNames.map((name, idx) => [name, palette[idx]]));
+    const areaKey = (sets) => sets.slice().sort().join('&');
+    const areaMap = new Map(areas.map((d) => [areaKey(d.sets), d]));
+
+    let layout;
+    try {
+      layout = vennjs.layout(areas, {
+        width: inner.width,
+        height: inner.height,
+        padding: 6,
+        round: 2,
+      });
+    } catch (error) {
+      console.warn('venn layout failed', error);
+      this.renderUnsupported(panel, 'vennレイアウトの計算に失敗しました');
+      return;
+    }
+    if (!Array.isArray(layout) || layout.length === 0) {
+      this.renderUnsupported(panel, 'vennレイアウト結果が空です');
+      return;
+    }
 
     const g = inner.group.append('g');
+    const drawOrder = [...layout].sort((a, b) => a.data.sets.length - b.data.sets.length);
 
-    setNames.forEach((name, idx) => {
-      const p = positions[idx];
-      const scale = Math.max(0.75, Math.min(1.3, Math.sqrt((singleton.get(name) || 1) / (d3.max([...singleton.values()]) || 1))));
-      const r = baseR * scale;
+    g.selectAll('path.venn-area')
+      .data(drawOrder)
+      .enter()
+      .append('path')
+      .attr('class', (d) => `venn-area venn-${d.data.sets.length === 1 ? 'circle' : 'intersection'}`)
+      .attr('d', (d) => d.path)
+      .attr('fill-rule', (d) => (d.data.sets.length > 1 ? 'evenodd' : null))
+      .attr('fill', (d) => {
+        if (d.data.sets.length === 1) return colorBySet.get(d.data.sets[0]) || '#5fb3ff';
+        return '#dbe6f2';
+      })
+      .attr('fill-opacity', (d) => (d.data.sets.length === 1 ? 0.30 : 0.16))
+      .attr('stroke', (d) => {
+        if (d.data.sets.length === 1) return colorBySet.get(d.data.sets[0]) || '#5fb3ff';
+        return '#dbe6f2';
+      })
+      .attr('stroke-opacity', (d) => (d.data.sets.length === 1 ? 0.95 : 0.45))
+      .attr('stroke-width', (d) => (d.data.sets.length === 1 ? 1.2 : 0.9));
 
-      g.append('circle')
-        .attr('cx', p.x)
-        .attr('cy', p.y)
-        .attr('r', r)
-        .attr('fill', palette[idx])
-        .attr('fill-opacity', 0.35)
-        .attr('stroke', palette[idx])
-        .attr('stroke-width', 1.2);
+    const singletonLayout = layout.filter((d) => d.data.sets.length === 1);
+    singletonLayout.forEach((entry) => {
+      const setName = entry.data.sets[0];
+      const circle = entry.circles.find((c) => c.set === setName) || entry.circles[0];
+      if (!circle) return;
 
       g.append('text')
-        .attr('x', p.x)
-        .attr('y', p.y - r - 8)
+        .attr('x', circle.x)
+        .attr('y', Math.max(10, circle.y - circle.radius - 8))
         .attr('text-anchor', 'middle')
         .attr('fill', '#e6edf5')
         .attr('font-size', 10)
-        .text(name);
+        .text(setName);
     });
 
     if (setNames.length === 2) {
-      const key = `${setNames[0]}&${setNames[1]}`;
-      const inter = interMap.get(key) ?? interMap.get(`${setNames[1]}&${setNames[0]}`);
-      if (inter != null) {
-        g.append('text')
-          .attr('x', cx)
-          .attr('y', cy + 3)
-          .attr('text-anchor', 'middle')
-          .attr('fill', '#ffffff')
-          .attr('font-size', 10)
-          .text(d3.format(',')(inter));
-      }
+      const leftName = setNames[0];
+      const rightName = setNames[1];
+      const inter = areaMap.get(areaKey([leftName, rightName]))?.size ?? 0;
+      const leftTotal = areaMap.get(areaKey([leftName]))?.size ?? 0;
+      const rightTotal = areaMap.get(areaKey([rightName]))?.size ?? 0;
+      const valueByArea = new Map([
+        [areaKey([leftName]), Math.max(0, leftTotal - inter)],
+        [areaKey([rightName]), Math.max(0, rightTotal - inter)],
+        [areaKey([leftName, rightName]), Math.max(0, inter)],
+      ]);
+
+      layout
+        .filter((d) => valueByArea.has(areaKey(d.data.sets)))
+        .forEach((d) => {
+          const value = valueByArea.get(areaKey(d.data.sets));
+          if (!Number.isFinite(value)) return;
+          g.append('text')
+            .attr('x', d.text.x)
+            .attr('y', d.text.y + 3)
+            .attr('text-anchor', 'middle')
+            .attr('fill', '#ffffff')
+            .attr('font-size', 10)
+            .text(d3.format(',')(value));
+        });
     }
 
     if (setNames.length === 3) {
-      const inter3 = interMap.get(`${setNames[0]}&${setNames[1]}&${setNames[2]}`) ?? interMap.get(`${setNames[0]}&${setNames[2]}&${setNames[1]}`);
-      if (inter3 != null) {
-        g.append('text')
-          .attr('x', cx)
-          .attr('y', cy + 4)
-          .attr('text-anchor', 'middle')
-          .attr('fill', '#ffffff')
-          .attr('font-size', 10)
-          .text(d3.format(',')(inter3));
-      }
+      layout
+        .filter((d) => d.data.sets.length >= 2)
+        .forEach((d) => {
+          const area = areaMap.get(areaKey(d.data.sets));
+          if (!area) return;
+          g.append('text')
+            .attr('x', d.text.x)
+            .attr('y', d.text.y + 3)
+            .attr('text-anchor', 'middle')
+            .attr('fill', '#ffffff')
+            .attr('font-size', 10)
+            .text(d3.format(',')(area.size));
+        });
     }
   }
 
@@ -912,21 +953,6 @@ export class ChartLayer {
     }
 
     return null;
-  }
-
-  resolveVennPositions(setCount, cx, cy, r) {
-    if (setCount === 2) {
-      return [
-        { x: cx - r * 0.55, y: cy },
-        { x: cx + r * 0.55, y: cy },
-      ];
-    }
-
-    return [
-      { x: cx, y: cy - r * 0.55 },
-      { x: cx - r * 0.7, y: cy + r * 0.45 },
-      { x: cx + r * 0.7, y: cy + r * 0.45 },
-    ];
   }
 
   renderUnsupported(panel, message) {
