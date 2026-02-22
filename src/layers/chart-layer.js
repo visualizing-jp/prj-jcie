@@ -564,7 +564,12 @@ export class ChartLayer {
 
     const labelField = config.labelField || 'label';
     const valueField = config.valueField || 'value';
-    const rows = pieData.filter((d) => d[labelField] != null && Number.isFinite(Number(d[valueField])));
+    const rows = pieData
+      .map((d) => ({
+        ...d,
+        __pieValue: this.parsePieNumericValue(d[valueField]),
+      }))
+      .filter((d) => d[labelField] != null && Number.isFinite(d.__pieValue));
     if (rows.length === 0) {
       this.renderUnsupported(panel, 'pieデータが不正です');
       return;
@@ -574,7 +579,7 @@ export class ChartLayer {
     const inner = this.createPanelInner(panel, title, { compact: true });
     const radius = Math.max(24, Math.min(inner.width, inner.height) * 0.33);
 
-    const pie = d3.pie().value((d) => Number(d[valueField])).sort(null);
+    const pie = d3.pie().value((d) => d.__pieValue).sort(null);
     const arc = d3.arc().innerRadius(0).outerRadius(radius);
 
     const palette = this.buildPalette(rows.length);
@@ -620,7 +625,40 @@ export class ChartLayer {
   }
 
   resolvePieDataset(dataset, config) {
-    if (Array.isArray(dataset)) return dataset;
+    if (Array.isArray(dataset)) {
+      const rowField = config.rowField;
+      const rowValue = config.rowValue;
+      if (rowField && rowValue != null) {
+        const row = dataset.find((d) => String(d?.[rowField] ?? '').trim() === String(rowValue).trim());
+        if (!row) return [];
+
+        const categoryColumns = Array.isArray(config.categoryColumns) && config.categoryColumns.length > 0
+          ? config.categoryColumns
+          : Object.keys(row).filter((key) => key !== rowField);
+
+        const selected = categoryColumns
+          .map((label) => ({ label, value: this.parsePieNumericValue(row[label]) }))
+          .filter((d) => Number.isFinite(d.value));
+
+        if (selected.length === 0) return [];
+
+        if (selected.length === 1 && config.primaryLabel) {
+          selected[0].label = String(config.primaryLabel);
+        }
+
+        if (selected.length === 1 && Number.isFinite(Number(config.normalizeTo))) {
+          const total = Number(config.normalizeTo);
+          const remainder = Math.max(0, total - selected[0].value);
+          selected.push({
+            label: config.remainderLabel || '未治療',
+            value: remainder,
+          });
+        }
+
+        return selected;
+      }
+      return dataset;
+    }
     if (Array.isArray(dataset?.groups)) {
       const groupId = config.groupId;
       const group = groupId
@@ -630,6 +668,16 @@ export class ChartLayer {
       return group.values || [];
     }
     return [];
+  }
+
+  parsePieNumericValue(value) {
+    if (Number.isFinite(value)) return Number(value);
+    if (typeof value === 'string') {
+      const normalized = value.replace(/,/g, '').replace(/%/g, '').trim();
+      const numeric = Number(normalized);
+      if (Number.isFinite(numeric)) return numeric;
+    }
+    return NaN;
   }
 
   renderSankey(panel, dataset, config) {

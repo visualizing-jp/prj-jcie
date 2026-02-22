@@ -85,7 +85,7 @@
           {
             "id": "line-main-01",
             "type": "line",
-            "dataFile": "/data/charts/line-single.csv",
+            "dataFile": "/data/charts/aids/trend_new_infections_mother-child.csv",
             "dataFormat": "csv",
             "config": {
               "xField": "year",
@@ -155,13 +155,13 @@
           {
             "id": "line-main-03",
             "type": "line",
-            "dataFile": "/data/charts/line-single.csv",
+            "dataFile": "/data/charts/aids/trend_new_deaths_normalized.csv",
             "dataFormat": "csv",
             "config": {
               "xField": "year",
               "yField": "value",
               "seriesField": "series",
-              "title": "年間新規感染者推移（ダミー3）"
+              "title": "エイズ関連死亡者数の推移"
             }
           }
         ]
@@ -182,22 +182,22 @@
         "responsive": { "mobileStack": true },
         "grid": { "columns": 8, "rows": 2, "rowPattern": [8, 8], "allowEmptyCells": true },
         "charts": [
-          { "id": "pie-1", "type": "pie", "dataFile": "/data/charts/pie-grid-8x2.json", "dataFormat": "json", "config": { "groupId": "p1" } },
-          { "id": "pie-2", "type": "pie", "dataFile": "/data/charts/pie-grid-8x2.json", "dataFormat": "json", "config": { "groupId": "p2" } },
-          { "id": "pie-3", "type": "pie", "dataFile": "/data/charts/pie-grid-8x2.json", "dataFormat": "json", "config": { "groupId": "p3" } },
-          { "id": "pie-4", "type": "pie", "dataFile": "/data/charts/pie-grid-8x2.json", "dataFormat": "json", "config": { "groupId": "p4" } },
-          { "id": "pie-5", "type": "pie", "dataFile": "/data/charts/pie-grid-8x2.json", "dataFormat": "json", "config": { "groupId": "p5" } },
-          { "id": "pie-6", "type": "pie", "dataFile": "/data/charts/pie-grid-8x2.json", "dataFormat": "json", "config": { "groupId": "p6" } },
-          { "id": "pie-7", "type": "pie", "dataFile": "/data/charts/pie-grid-8x2.json", "dataFormat": "json", "config": { "groupId": "p7" } },
-          { "id": "pie-8", "type": "pie", "dataFile": "/data/charts/pie-grid-8x2.json", "dataFormat": "json", "config": { "groupId": "p8" } },
-          { "id": "pie-9", "type": "pie", "dataFile": "/data/charts/pie-grid-8x2.json", "dataFormat": "json", "config": { "groupId": "p9" } },
-          { "id": "pie-10", "type": "pie", "dataFile": "/data/charts/pie-grid-8x2.json", "dataFormat": "json", "config": { "groupId": "p10" } },
-          { "id": "pie-11", "type": "pie", "dataFile": "/data/charts/pie-grid-8x2.json", "dataFormat": "json", "config": { "groupId": "p11" } },
-          { "id": "pie-12", "type": "pie", "dataFile": "/data/charts/pie-grid-8x2.json", "dataFormat": "json", "config": { "groupId": "p12" } },
-          { "id": "pie-13", "type": "pie", "dataFile": "/data/charts/pie-grid-8x2.json", "dataFormat": "json", "config": { "groupId": "p13" } },
-          { "id": "pie-14", "type": "pie", "dataFile": "/data/charts/pie-grid-8x2.json", "dataFormat": "json", "config": { "groupId": "p14" } },
-          { "id": "pie-15", "type": "pie", "dataFile": "/data/charts/pie-grid-8x2.json", "dataFormat": "json", "config": { "groupId": "p15" } },
-          { "id": "pie-16", "type": "pie", "dataFile": "/data/charts/pie-grid-8x2.json", "dataFormat": "json", "config": { "groupId": "p16" } }
+          { "id": "pie-adult-world", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "全世界（成人）", "rowField": "地域", "rowValue": "全世界", "categoryColumns": ["成人（15歳以上）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療" } },
+          { "id": "pie-adult-asia-pacific", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "アジア・太平洋地域（成人）", "rowField": "地域", "rowValue": "アジア・太平洋地域", "categoryColumns": ["成人（15歳以上）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療" } },
+          { "id": "pie-adult-caribbean", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "カリブ海地域（成人）", "rowField": "地域", "rowValue": "カリブ海地域", "categoryColumns": ["成人（15歳以上）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療" } },
+          { "id": "pie-adult-eastern-southern-africa", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "東部・南部アフリカ（成人）", "rowField": "地域", "rowValue": "東部・南部アフリカ", "categoryColumns": ["成人（15歳以上）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療" } },
+          { "id": "pie-adult-eastern-europe-central-asia", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "東ヨーロッパ・中央アジア（成人）", "rowField": "地域", "rowValue": "東ヨーロッパ・中央アジア", "categoryColumns": ["成人（15歳以上）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療" } },
+          { "id": "pie-adult-latin-america", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "中南米（ラテンアメリカ）（成人）", "rowField": "地域", "rowValue": "中南米（ラテンアメリカ）", "categoryColumns": ["成人（15歳以上）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療" } },
+          { "id": "pie-adult-middle-east-north-africa", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "中東・北アフリカ（成人）", "rowField": "地域", "rowValue": "中東・北アフリカ", "categoryColumns": ["成人（15歳以上）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療" } },
+          { "id": "pie-adult-western-central-africa", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "西部・中部アフリカ（成人）", "rowField": "地域", "rowValue": "西部・中部アフリカ", "categoryColumns": ["成人（15歳以上）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療" } },
+          { "id": "pie-child-world", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "全世界（こども）", "rowField": "地域", "rowValue": "全世界", "categoryColumns": ["こども（0歳から14歳）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療" } },
+          { "id": "pie-child-asia-pacific", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "アジア・太平洋地域（こども）", "rowField": "地域", "rowValue": "アジア・太平洋地域", "categoryColumns": ["こども（0歳から14歳）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療" } },
+          { "id": "pie-child-caribbean", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "カリブ海地域（こども）", "rowField": "地域", "rowValue": "カリブ海地域", "categoryColumns": ["こども（0歳から14歳）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療" } },
+          { "id": "pie-child-eastern-southern-africa", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "東部・南部アフリカ（こども）", "rowField": "地域", "rowValue": "東部・南部アフリカ", "categoryColumns": ["こども（0歳から14歳）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療" } },
+          { "id": "pie-child-eastern-europe-central-asia", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "東ヨーロッパ・中央アジア（こども）", "rowField": "地域", "rowValue": "東ヨーロッパ・中央アジア", "categoryColumns": ["こども（0歳から14歳）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療" } },
+          { "id": "pie-child-latin-america", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "中南米（ラテンアメリカ）（こども）", "rowField": "地域", "rowValue": "中南米（ラテンアメリカ）", "categoryColumns": ["こども（0歳から14歳）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療" } },
+          { "id": "pie-child-middle-east-north-africa", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "中東・北アフリカ（こども）", "rowField": "地域", "rowValue": "中東・北アフリカ", "categoryColumns": ["こども（0歳から14歳）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療" } },
+          { "id": "pie-child-western-central-africa", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "西部・中部アフリカ（こども）", "rowField": "地域", "rowValue": "西部・中部アフリカ", "categoryColumns": ["こども（0歳から14歳）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療" } }
         ]
       }
     },
@@ -218,13 +218,13 @@
           {
             "id": "line-main-04",
             "type": "line",
-            "dataFile": "/data/charts/line-single.csv",
+            "dataFile": "/data/charts/aids/trend_new_infections_mother-child.csv",
             "dataFormat": "csv",
             "config": {
               "xField": "year",
               "yField": "value",
               "seriesField": "series",
-              "title": "年間新規感染者推移（ダミー4）"
+              "title": "HIV母子感染率の推移（%）"
             }
           }
         ]
@@ -315,13 +315,13 @@
           {
             "id": "line-main-05",
             "type": "line",
-            "dataFile": "/data/charts/line-single.csv",
+            "dataFile": "/data/charts/aids/trend_prep_normalized.csv",
             "dataFormat": "csv",
             "config": {
               "xField": "year",
               "yField": "value",
               "seriesField": "series",
-              "title": "年間新規感染者推移（ダミー5）"
+              "title": "PrEP（曝露前予防投与）利用者数の推移"
             }
           }
         ]
@@ -344,13 +344,13 @@
           {
             "id": "line-main-06",
             "type": "line",
-            "dataFile": "/data/charts/line-single.csv",
+            "dataFile": "/data/charts/aids/trend_money.csv",
             "dataFormat": "csv",
             "config": {
               "xField": "year",
               "yField": "value",
               "seriesField": "series",
-              "title": "年間新規感染者推移（ダミー6）"
+              "title": "エイズ対策資金の推移（資金源別）"
             }
           }
         ]
