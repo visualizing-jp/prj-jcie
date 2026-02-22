@@ -284,16 +284,16 @@
           {
             "id": "line-dual-a",
             "type": "line",
-            "dataFile": "/data/charts/line-dual-a.csv",
+            "dataFile": "/data/charts/aids/trend_africa_young_man_normalized.csv",
             "dataFormat": "csv",
-            "config": { "xField": "year", "yField": "value", "title": "対象A" }
+            "config": { "xField": "year", "yField": "value", "title": "若年男性（15-24歳）" }
           },
           {
             "id": "line-dual-b",
             "type": "line",
-            "dataFile": "/data/charts/line-dual-b.csv",
+            "dataFile": "/data/charts/aids/trend_africa_young_woman_normalized.csv",
             "dataFormat": "csv",
-            "config": { "xField": "year", "yField": "value", "title": "対象B" }
+            "config": { "xField": "year", "yField": "value", "title": "若年女性（15-24歳）" }
           }
         ]
       }
