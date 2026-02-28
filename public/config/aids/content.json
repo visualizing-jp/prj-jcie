@@ -184,7 +184,7 @@
         "visible": true,
         "layout": "grid",
         "responsive": { "mobileStack": true },
-        "grid": { "columns": 8, "rows": 2, "rowPattern": [8, 8], "allowEmptyCells": true },
+        "grid": { "columns": 8, "rows": 2, "rowPattern": [8, 8], "allowEmptyCells": true, "rowTitles": ["成人（15歳以上）", "こども（0歳から14歳）"] },
         "charts": [
           { "id": "pie-adult-world", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "全世界（成人）", "rowField": "地域", "rowValue": "全世界", "categoryColumns": ["成人（15歳以上）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療" } },
           { "id": "pie-adult-asia-pacific", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "アジア・太平洋地域（成人）", "rowField": "地域", "rowValue": "アジア・太平洋地域", "categoryColumns": ["成人（15歳以上）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療" } },

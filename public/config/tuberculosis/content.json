@@ -1,931 +1,340 @@
 {
   "steps": [
     {
-      "id": "opening",
+      "id": "tb-img-01",
       "text": {
-        "content": "<h1 style=\"font-family: 'Shippori Mincho', serif; font-size: 3rem; font-weight: 300;\">結核との闘い</h1><p style=\"font-size: 1.2rem;\">～ダミー表示コンテンツ～</p>",
+        "content": "<p>結核は、昔から人類とともにあった古い病気で、主に肺に感染して重い症状を引き起こす感染症です。結核菌という細菌が原因です。</p>",
         "visible": true,
-        "position": {
-          "horizontal": "center",
-          "vertical": "center",
-          "width": "60%"
-        }
+        "position": { "horizontal": "left", "vertical": "center", "width": "34%" }
       },
+      "chart": { "visible": false },
+      "map": { "visible": false },
       "image": {
         "visible": true,
         "src": "/images/photo-1.jpg",
-        "alt": "オープニング背景",
-        "opacity": 0.6,
-        "specialMode": "step0-background"
-      },
-      "chart": {
-        "visible": false
-      },
-      "map": {
-        "visible": false
+        "alt": "ダミー画像",
+        "opacity": 0.78
       }
     },
     {
-      "id": "dummy-intro",
+      "id": "tb-img-02",
       "text": {
-        "content": "<h2>現場の第一印象</h2><p>この段落はレイアウト確認用のダミーテキストです。テキストカードの余白、行間、可読性を確認できます。</p>",
+        "content": "<p>今もなお、結核はマラリアやHIV/エイズと並んで「世界三大感染症」と呼ばれており、特に医療体制が整っていない途上国では深刻な問題となっています。 </p>",
         "visible": true,
-        "position": {
-          "horizontal": "left",
-          "vertical": "center",
-          "width": "35%"
-        }
+        "position": { "horizontal": "right", "vertical": "center", "width": "34%" }
       },
-      "chart": {
-        "visible": false
-      },
-      "map": {
-        "visible": false
-      },
+      "chart": { "visible": false },
+      "map": { "visible": false },
       "image": {
         "visible": true,
         "src": "/images/photo-2.jpg",
-        "alt": "ダミー画像1",
-        "opacity": 0.75
+        "alt": "ダミー画像",
+        "opacity": 0.80
       }
     },
     {
-      "id": "dummy-story",
+      "id": "tb-img-03",
       "text": {
-        "content": "<h2>ストーリーセクション</h2><p>ここでは画像の上にテキストが重なった際の見え方を確認します。右下配置で視線誘導をチェックできます。</p>",
+        "content": "<h2>感染はどのように起こる？</h2><p>結核を発病していて菌を出している人が咳やくしゃみをすると、空気中に結核菌を含んだ小さなしぶき（飛沫）が飛び散ります。このしぶきが乾いて、空気中にふわふわと浮かぶ結核菌を周りの人が吸い込むことで感染します。</p>",
         "visible": true,
-        "position": {
-          "horizontal": "right",
-          "vertical": "bottom",
-          "width": "30%"
-        }
+        "position": { "horizontal": "left", "vertical": "center", "width": "34%" }
       },
-      "chart": {
-        "visible": false
-      },
-      "map": {
-        "visible": false
-      },
+      "chart": { "visible": false },
+      "map": { "visible": false },
       "image": {
         "visible": true,
         "src": "/images/photo-3.jpg",
-        "alt": "ダミー画像2",
-        "opacity": 0.8
+        "alt": "ダミー画像",
+        "opacity": 0.80
       }
     },
     {
-      "id": "dummy-mid",
+      "id": "tb-img-04",
       "text": {
-        "content": "<h2>中間セクション</h2><p>スクロール途中の切り替えを確認するためのダミーです。画像遷移とテキスト位置の安定性を確認できます。</p>",
+        "content": "<h2>「感染」と「発病」の違い</h2><p>「感染」とは、体の中に結核菌が入り込んでも、まだ病気の症状が出ていない状態のことです。この段階では他の人にうつす心配はありません。</p><p>一方、「発病」とは、体の中で結核菌が増えて、咳や熱などの症状が出る状態のことです。病気が進行すると、咳や痰に菌が混じるようになり、他の人に感染させる可能性が出てきます。</p>",
         "visible": true,
-        "position": {
-          "horizontal": "right",
-          "vertical": "center",
-          "width": "30%"
-        }
+        "position": { "horizontal": "right", "vertical": "center", "width": "34%" }
       },
-      "chart": {
-        "visible": false
-      },
-      "map": {
-        "visible": false
-      },
+      "chart": { "visible": false },
+      "map": { "visible": false },
       "image": {
         "visible": true,
         "src": "/images/placeholder-1.svg",
-        "alt": "ダミー画像3",
+        "alt": "ダミー画像",
         "opacity": 0.85
       }
     },
     {
-      "id": "dummy-focus",
+      "id": "tb-img-05",
       "text": {
-        "content": "<h2>フォーカスセクション</h2><p>中央寄せのテキストカードと背景画像の組み合わせを確認するためのダミーです。</p>",
+        "content": "<h2>治療と予防ワクチンの歴史</h2><p>結核は、かつて「国民病」や「白死病」などと呼ばれ、多くの人の命を奪った恐ろしい病気でした。特に産業革命のあと、都市に人が集中し、生活環境が悪化したことや貧困の広がりによって、結核が急速に広がったと考えられています。</p>",
         "visible": true,
-        "position": {
-          "horizontal": "center",
-          "vertical": "center",
-          "width": "45%"
-        }
+        "position": { "horizontal": "left", "vertical": "center", "width": "34%" }
       },
-      "chart": {
-        "visible": false
-      },
-      "map": {
-        "visible": false
-      },
+      "chart": { "visible": false },
+      "map": { "visible": false },
       "image": {
         "visible": true,
         "src": "/images/placeholder-2.svg",
-        "alt": "ダミー画像4",
-        "opacity": 0.8
+        "alt": "ダミー画像",
+        "opacity": 0.85
       }
     },
     {
-      "id": "dummy-chart-line-single",
+      "id": "tb-img-06",
       "text": {
-        "content": "<h2>チャート: Single + Line</h2><p>1つの折れ線グラフを表示するダミーです。</p>",
+        "content": "<p>1882年、ドイツの細菌学者ロベルト・コッホが結核菌を発見し、1921年にはフランスでBCGワクチンが開発され、結核予防に大きな進展がありました。また、1943年には最初の薬であるストレプトマイシンが、1950年代にはイソニアジド等より効果的な薬が開発されたことで、治療法が確立されていきました。</p>",
         "visible": true,
-        "position": {
-          "horizontal": "right",
-          "vertical": "center",
-          "width": "32%"
-        }
+        "position": { "horizontal": "right", "vertical": "center", "width": "34%" }
       },
-      "chart": {
-        "visible": true,
-        "layout": "single",
-        "responsive": {
-          "mobileStack": true
-        },
-        "charts": [
-          {
-            "id": "line-main",
-            "type": "line",
-            "dataFile": "/data/charts/line-single.csv",
-            "dataFormat": "csv",
-            "config": {
-              "xField": "year",
-              "yField": "value",
-              "title": "世界の年間新規感染者の推移（ダミー）",
-              "annotations": [
-                {
-                  "type": "verticalLine",
-                  "year": 1980,
-                  "label": "世界の年間新規感染者のピークに達した年"
-                },
-                {
-                  "type": "horizontalLine",
-                  "value": 3500000,
-                  "label": "世界の年間新規感染者のピーク"
-                }
-              ]
-            }
-          }
-        ]
-      },
-      "map": {
-        "visible": false
-      },
+      "chart": { "visible": false },
+      "map": { "visible": false },
       "image": {
-        "visible": false
+        "visible": true,
+        "src": "/images/photo-1.jpg",
+        "alt": "ダミー画像",
+        "opacity": 0.78
       }
     },
     {
-      "id": "dummy-chart-line-dual",
+      "id": "tb-img-07",
       "text": {
-        "content": "<h2>チャート: Dual + Line</h2><p>2つの折れ線グラフを横並びで表示するダミーです。モバイルでは縦積みになります。</p>",
+        "content": "<h2>日本における結核との闘い</h2><p>日本では1935年から1950年までの15年間、結核が死因の第1位でした。</p>",
         "visible": true,
-        "position": {
-          "horizontal": "left",
-          "vertical": "center",
-          "width": "34%"
-        }
+        "position": { "horizontal": "left", "vertical": "center", "width": "34%" }
       },
-      "chart": {
-        "visible": true,
-        "layout": "dual",
-        "responsive": {
-          "mobileStack": true
-        },
-        "charts": [
-          {
-            "id": "line-a",
-            "type": "line",
-            "dataFile": "/data/charts/line-dual-a.csv",
-            "dataFormat": "csv",
-            "config": {
-              "xField": "year",
-              "yField": "value",
-              "title": "対象A"
-            }
-          },
-          {
-            "id": "line-b",
-            "type": "line",
-            "dataFile": "/data/charts/line-dual-b.csv",
-            "dataFormat": "csv",
-            "config": {
-              "xField": "year",
-              "yField": "value",
-              "title": "対象B"
-            }
-          }
-        ]
-      },
-      "map": {
-        "visible": false
-      },
-      "image": {
-        "visible": false
-      }
-    },
-    {
-      "id": "dummy-chart-sankey-single",
-      "text": {
-        "content": "<h2>チャート: Single + Sankey</h2><p>JSONデータからフロー構造を描画するダミーです。</p>",
-        "visible": true,
-        "position": {
-          "horizontal": "right",
-          "vertical": "bottom",
-          "width": "34%"
-        }
-      },
-      "chart": {
-        "visible": true,
-        "layout": "single",
-        "responsive": {
-          "mobileStack": true
-        },
-        "charts": [
-          {
-            "id": "sankey-main",
-            "type": "sankey",
-            "dataFile": "/data/charts/sankey-data.json",
-            "dataFormat": "json",
-            "config": {
-              "title": "蚊帳配布と利用状況（ダミー）"
-            }
-          }
-        ]
-      },
-      "map": {
-        "visible": false
-      },
-      "image": {
-        "visible": false
-      }
-    },
-    {
-      "id": "dummy-chart-pie-grid-8x2",
-      "text": {
-        "content": "<h2>チャート: Grid 8x2 + Pie</h2><p>8列×2行の段組円グラフダミーです。</p>",
-        "visible": true,
-        "position": {
-          "horizontal": "left",
-          "vertical": "top",
-          "width": "32%"
-        }
-      },
-      "chart": {
-        "visible": true,
-        "layout": "grid",
-        "responsive": {
-          "mobileStack": true
-        },
-        "grid": {
-          "columns": 8,
-          "rows": 2,
-          "rowPattern": [
-            8,
-            8
-          ],
-          "allowEmptyCells": true
-        },
-        "charts": [
-          {
-            "id": "p-1",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-8x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "p1",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "p-2",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-8x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "p2",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "p-3",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-8x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "p3",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "p-4",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-8x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "p4",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "p-5",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-8x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "p5",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "p-6",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-8x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "p6",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "p-7",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-8x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "p7",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "p-8",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-8x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "p8",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "p-9",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-8x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "p9",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "p-10",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-8x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "p10",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "p-11",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-8x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "p11",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "p-12",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-8x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "p12",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "p-13",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-8x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "p13",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "p-14",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-8x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "p14",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "p-15",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-8x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "p15",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "p-16",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-8x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "p16",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          }
-        ]
-      },
-      "map": {
-        "visible": false
-      },
-      "image": {
-        "visible": false
-      }
-    },
-    {
-      "id": "dummy-chart-pie-grid-6x2",
-      "text": {
-        "content": "<h2>チャート: Grid 6x2 + Pie</h2><p>6列×2行の段組円グラフダミーです。</p>",
-        "visible": true,
-        "position": {
-          "horizontal": "right",
-          "vertical": "top",
-          "width": "32%"
-        }
-      },
-      "chart": {
-        "visible": true,
-        "layout": "grid",
-        "responsive": {
-          "mobileStack": true
-        },
-        "grid": {
-          "columns": 6,
-          "rows": 2,
-          "rowPattern": [
-            6,
-            6
-          ],
-          "allowEmptyCells": true
-        },
-        "charts": [
-          {
-            "id": "q-1",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-6x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "q1",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "q-2",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-6x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "q2",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "q-3",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-6x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "q3",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "q-4",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-6x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "q4",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "q-5",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-6x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "q5",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "q-6",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-6x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "q6",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "q-7",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-6x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "q7",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "q-8",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-6x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "q8",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "q-9",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-6x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "q9",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "q-10",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-6x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "q10",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "q-11",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-6x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "q11",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          },
-          {
-            "id": "q-12",
-            "type": "pie",
-            "dataFile": "/data/charts/pie-grid-6x2.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "q12",
-              "labelField": "label",
-              "valueField": "value"
-            }
-          }
-        ]
-      },
-      "map": {
-        "visible": false
-      },
-      "image": {
-        "visible": false
-      }
-    },
-    {
-      "id": "dummy-chart-venn-grid-4plus3",
-      "text": {
-        "content": "<h2>チャート: Grid 4+3 + Venn</h2><p>4列1行 + 3列1行のベン図ダミーです（統合JSON）。</p>",
-        "visible": true,
-        "position": {
-          "horizontal": "left",
-          "vertical": "bottom",
-          "width": "34%"
-        }
-      },
-      "chart": {
-        "visible": true,
-        "layout": "grid",
-        "responsive": {
-          "mobileStack": true
-        },
-        "grid": {
-          "columns": 4,
-          "rows": 2,
-          "rowPattern": [
-            4,
-            3
-          ],
-          "allowEmptyCells": true
-        },
-        "charts": [
-          {
-            "id": "venn-world",
-            "type": "venn",
-            "dataFile": "/data/charts/venn-unified.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "world"
-            }
-          },
-          {
-            "id": "venn-africa",
-            "type": "venn",
-            "dataFile": "/data/charts/venn-unified.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "africa"
-            }
-          },
-          {
-            "id": "venn-america",
-            "type": "venn",
-            "dataFile": "/data/charts/venn-unified.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "america"
-            }
-          },
-          {
-            "id": "venn-europe",
-            "type": "venn",
-            "dataFile": "/data/charts/venn-unified.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "europe"
-            }
-          },
-          {
-            "id": "venn-easternmediterranean",
-            "type": "venn",
-            "dataFile": "/data/charts/venn-unified.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "easternmediterranean"
-            }
-          },
-          {
-            "id": "venn-southeastasia",
-            "type": "venn",
-            "dataFile": "/data/charts/venn-unified.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "southeastasia"
-            }
-          },
-          {
-            "id": "venn-westernpacific",
-            "type": "venn",
-            "dataFile": "/data/charts/venn-unified.json",
-            "dataFormat": "json",
-            "config": {
-              "groupId": "westernpacific"
-            }
-          }
-        ]
-      },
-      "map": {
-        "visible": false
-      },
-      "image": {
-        "visible": false
-      }
-    },
-    {
-      "id": "dummy-map-asia",
-      "text": {
-        "content": "<h2>地図ダミー1: 東アジア</h2><p>同じ地図レイヤーを使い、中心座標を日本周辺へ移動しています。ハイライト国は日本です。</p>",
-        "visible": true,
-        "position": {
-          "horizontal": "right",
-          "vertical": "center",
-          "width": "34%"
-        }
-      },
-      "chart": {
-        "visible": false
-      },
-      "map": {
-        "visible": true,
-        "mode": "world-overview",
-        "center": [
-          138,
-          36
-        ],
-        "zoom": 2.4,
-        "highlightCountries": [
-          "Japan"
-        ],
-        "lightenNonVisited": true
-      },
-      "image": {
-        "visible": false
-      }
-    },
-    {
-      "id": "dummy-map-africa",
-      "text": {
-        "content": "<h2>地図ダミー2: アフリカ</h2><p>同じ地図を共有したまま視点だけをアフリカへ移動します。ハイライト国はケニア、ナイジェリア、南アフリカです。</p>",
-        "visible": true,
-        "position": {
-          "horizontal": "left",
-          "vertical": "center",
-          "width": "34%"
-        }
-      },
-      "chart": {
-        "visible": false
-      },
-      "map": {
-        "visible": true,
-        "mode": "world-overview",
-        "center": [
-          20,
-          4
-        ],
-        "zoom": 2.1,
-        "highlightCountries": [
-          "Kenya",
-          "Nigeria",
-          "South Africa"
-        ],
-        "lightenNonVisited": true
-      },
-      "image": {
-        "visible": false
-      }
-    },
-    {
-      "id": "dummy-map-americas",
-      "text": {
-        "content": "<h2>地図ダミー3: 南北アメリカ</h2><p>さらに同じ地図を維持したまま、南北アメリカへパンします。ハイライト国はブラジルとアメリカ合衆国です。</p>",
-        "visible": true,
-        "position": {
-          "horizontal": "right",
-          "vertical": "bottom",
-          "width": "35%"
-        }
-      },
-      "chart": {
-        "visible": false
-      },
-      "map": {
-        "visible": true,
-        "mode": "world-overview",
-        "center": [
-          -70,
-          8
-        ],
-        "zoom": 1.8,
-        "highlightCountries": [
-          "Brazil",
-          "United States of America"
-        ],
-        "lightenNonVisited": true
-      },
-      "image": {
-        "visible": false
-      }
-    },
-    {
-      "id": "dummy-image-bridge-1",
-      "text": {
-        "content": "<h2>ブリッジセクション 1</h2><p>地図の連続表示をいったん区切り、次の都市エピソード導入前に余白を作るためのダミーです。</p>",
-        "visible": true,
-        "position": {
-          "horizontal": "left",
-          "vertical": "center",
-          "width": "34%"
-        }
-      },
-      "chart": {
-        "visible": false
-      },
-      "map": {
-        "visible": false
-      },
+      "chart": { "visible": false },
+      "map": { "visible": false },
       "image": {
         "visible": true,
         "src": "/images/photo-2.jpg",
-        "alt": "ブリッジ画像1",
-        "opacity": 0.72
+        "alt": "ダミー画像",
+        "opacity": 0.80
       }
     },
     {
-      "id": "dummy-image-bridge-2",
+      "id": "tb-img-08",
       "text": {
-        "content": "<h2>ブリッジセクション 2</h2><p>都市エピソード開始前の見栄え確認用ダミーです。テキストカードと画像レイヤーの重なりを確認できます。</p>",
+        "content": "<p>1924年には志賀潔（しがきよし）博士がBCGワクチンをフランスから日本に持ち帰り、その後、1949年には予防接種が法律で定められました。</p>",
         "visible": true,
-        "position": {
-          "horizontal": "right",
-          "vertical": "bottom",
-          "width": "34%"
-        }
+        "position": { "horizontal": "right", "vertical": "center", "width": "34%" }
       },
-      "chart": {
-        "visible": false
+      "chart": { "visible": false },
+      "map": { "visible": false },
+      "image": {
+        "visible": true,
+        "src": "/images/photo-3.jpg",
+        "alt": "ダミー画像",
+        "opacity": 0.80
+      }
+    },
+    {
+      "id": "tb-img-09",
+      "text": {
+        "content": "<p>さらに、戦後の生活環境の改善や、新しい薬の広まりにより、1948年ごろから結核による死亡者は減、1951年には「新結核予防法」（現在は感染症法に統合）が制定され、結核の治療費を国が負担する仕組みが整えられました。</p>",
+        "visible": true,
+        "position": { "horizontal": "left", "vertical": "center", "width": "34%" }
       },
-      "map": {
-        "visible": false
-      },
+      "chart": { "visible": false },
+      "map": { "visible": false },
       "image": {
         "visible": true,
         "src": "/images/placeholder-1.svg",
-        "alt": "ブリッジ画像2",
-        "opacity": 0.82
+        "alt": "ダミー画像",
+        "opacity": 0.85
+      }
+    },
+    {
+      "id": "tb-img-10",
+      "text": {
+        "content": "<p>このような努力の積み重ねで、日本では結核を減らすことに成功してきましたが、今でも毎年1万人ほどの人が新たに結核を発症しているのが現状です。 </p><p>また日本では近年、外国生まれの結核患者の数が増えており、その対策として「入国前結核スクリーニング」という制度が始まっています。</p>",
+        "visible": true,
+        "position": { "horizontal": "right", "vertical": "center", "width": "34%" }
+      },
+      "chart": { "visible": false },
+      "map": { "visible": false },
+      "image": {
+        "visible": true,
+        "src": "/images/placeholder-2.svg",
+        "alt": "ダミー画像",
+        "opacity": 0.85
+      }
+    },
+    {
+      "id": "tb-img-11",
+      "text": {
+        "content": "<h2>世界の結核対策と現状</h2><p>結核をなくすための世界的な取り組みも、科学の進歩や国際的な協力によって少しずつ前に進んできました。世界保健機関（WHO）は2014年に「結核終息戦略（End TB Strategy）」を発表し、2035年までに世界から結核を終わらせることを目標としています。</p><p>この戦略では、主に「1.早期発見と、すべての患者に適切な治療を届けること」「2.患者や地域社会へのサポート」「3.新しい検査法や薬、ワクチンの開発を進めること」を重視しています。こうした取り組みによって、新規感染者数は緩やかな下降傾向にありました。</p>",
+        "visible": true,
+        "position": { "horizontal": "left", "vertical": "center", "width": "34%" }
+      },
+      "chart": { "visible": false },
+      "map": { "visible": false },
+      "image": {
+        "visible": true,
+        "src": "/images/photo-1.jpg",
+        "alt": "ダミー画像",
+        "opacity": 0.78
+      }
+    },
+    {
+      "id": "tb-img-12",
+      "text": {
+        "content": "<p>しかし、新型コロナウイルス感染症（COVID-19）の世界的な流行は、結核対策にも大きな影響を与えました。その結果、2020年には結核による死亡率が上がり、2021年には感染者数（罹患率）も増えてしまいました。</p><p>世界保健機関（WHO）の発表によると、増加傾向は続き、2023年には世界で約1080万人が新たに結核にかかり、そのうち約125万人が亡くなっています。</p>",
+        "visible": true,
+        "position": { "horizontal": "right", "vertical": "center", "width": "34%" }
+      },
+      "chart": { "visible": false },
+      "map": { "visible": false },
+      "image": {
+        "visible": true,
+        "src": "/images/photo-2.jpg",
+        "alt": "ダミー画像",
+        "opacity": 0.80
+      }
+    },
+    {
+      "id": "tb-img-13",
+      "text": {
+        "content": "<p>特に、HIVに感染している人は免疫力が落ちているため、結核にかかりやすく、重症化しやすい傾向があります。そのため、結核はエイズによる死亡の大きな原因の一つとなっており、2023年の結核による死亡者の中で、HIV感染者は約16万人を占めています。</p>",
+        "visible": true,
+        "position": { "horizontal": "left", "vertical": "center", "width": "34%" }
+      },
+      "chart": { "visible": false },
+      "map": { "visible": false },
+      "image": {
+        "visible": true,
+        "src": "/images/photo-3.jpg",
+        "alt": "ダミー画像",
+        "opacity": 0.80
       }
     },
     {
       "id": "city-episodes-anchor",
       "text": {
-        "content": "<h2>都市エピソード</h2><p>ここから先の都市エピソードは content-map.json から自動生成されます。</p>",
-        "visible": true,
-        "position": {
-          "horizontal": "left",
-          "vertical": "center",
-          "width": "34%"
-        }
-      },
-      "chart": {
         "visible": false
       },
-      "map": {
-        "visible": false
-      },
-      "image": {
-        "visible": false
-      },
+      "chart": { "visible": false },
+      "map": { "visible": false },
+      "image": { "visible": false },
       "cityEpisodes": {
         "enabled": true,
         "mapFile": "content-map.json"
       }
     },
     {
-      "id": "closing",
+      "id": "tb-line-dual",
       "text": {
-        "content": "<h2>クロージング</h2><p>このセクションは最終表示の確認用ダミーです。必要に応じてこのまま本番文言へ置き換えられます。</p>",
+        "content": "<h2>今後の課題</h2><p>結核対策は進んでいる一方で、今も多くの課題が残されています。その一つが「多剤耐性結核（MDR-TB）」です。これは、ふつうの抗結核薬が効かないタイプの結核で、インドネシアやベトナムなどの結核が多い国では特に大きな問題になっています。2022年には、世界で約41万人がこのタイプの結核を発症しましたが、適切な治療を受けられた人は全体の約4割にとどまっています。</p>",
         "visible": true,
-        "position": {
-          "horizontal": "center",
-          "vertical": "center",
-          "width": "50%"
-        }
+        "position": { "horizontal": "left", "vertical": "center", "width": "34%" }
       },
       "chart": {
-        "visible": false
+        "visible": true,
+        "layout": "dual",
+        "responsive": { "mobileStack": true },
+        "charts": [
+          {
+            "id": "line-a",
+            "type": "line",
+            "dataFile": "/data/charts/tuberculosis/trend_indonesia.csv",
+            "dataFormat": "csv",
+            "config": {
+              "xField": "year",
+              "yField": "value",
+              "title": "インドネシアの結核患者数の推移"
+            }
+          },
+          {
+            "id": "line-b",
+            "type": "line",
+            "dataFile": "/data/charts/tuberculosis/trend_vietnam.csv",
+            "dataFormat": "csv",
+            "config": {
+              "xField": "year",
+              "yField": "value",
+              "title": "ベトナムの結核患者数の推移"
+            }
+          }
+        ]
       },
-      "map": {
-        "visible": false
+      "map": { "visible": false },
+      "image": { "visible": false }
+    },
+    {
+      "id": "tb-line-single",
+      "text": {
+        "content": "<p>また、結核対策に必要なお金も不足しています。たとえば2023年、低・中所得国で必要とされた結核予防や治療のための資金は、必要額のわずか26％、約57億ドルにとどまりました。このような資金不足が、対策の遅れにつながっています。</p>",
+        "visible": true,
+        "position": { "horizontal": "right", "vertical": "center", "width": "32%" }
       },
+      "chart": {
+        "visible": true,
+        "layout": "single",
+        "responsive": { "mobileStack": true },
+        "charts": [
+          {
+            "id": "line-main",
+            "type": "line",
+            "dataFile": "/data/charts/tuberculosis/trend_budget.csv",
+            "dataFormat": "csv",
+            "config": {
+              "xField": "year",
+              "yField": "value",
+              "seriesField": "series",
+              "title": "結核対策予算の推移（億ドル）"
+            }
+          }
+        ]
+      },
+      "map": { "visible": false },
+      "image": { "visible": false }
+    },
+    {
+      "id": "tb-img-15",
+      "text": {
+        "content": "<p>さらに、新型コロナウイルス（COVID-19）の世界的な流行も、結核対策に大きな影響を与えました。医療の人手や資源がコロナ対応に取られたり、外出制限によって病院に行けなくなったりして、結核の診断や治療が遅れるケースが増えました。</p>",
+        "visible": true,
+        "position": { "horizontal": "left", "vertical": "center", "width": "34%" }
+      },
+      "chart": { "visible": false },
+      "map": { "visible": false },
       "image": {
         "visible": true,
         "src": "/images/photo-1.jpg",
-        "alt": "クロージング背景",
-        "opacity": 0.65
+        "alt": "ダミー画像",
+        "opacity": 0.78
+      }
+    },
+    {
+      "id": "tb-img-16",
+      "text": {
+        "content": "<p>そしてもう一つの大きな課題は、結核の新しい診断法・治療薬・ワクチンの開発がなかなか進んでいないことです。コロナのワクチンが短期間で開発・普及したのとは対照的に、結核は開発のスピードが遅いと指摘されています。</p>",
+        "visible": true,
+        "position": { "horizontal": "right", "vertical": "center", "width": "34%" }
+      },
+      "chart": { "visible": false },
+      "map": { "visible": false },
+      "image": {
+        "visible": true,
+        "src": "/images/photo-2.jpg",
+        "alt": "ダミー画像",
+        "opacity": 0.80
+      }
+    },
+    {
+      "id": "tb-img-17",
+      "text": {
+        "content": "<p>結核を本当に撲滅するためには、医療の力だけでなく、貧困を減らすことや教育を広げることなど、さまざまな分野の取り組みが必要です。世界中が力を合わせて、こうした課題に取り組んでいくことが求められています。 </p>",
+        "visible": true,
+        "position": { "horizontal": "left", "vertical": "center", "width": "34%" }
+      },
+      "chart": { "visible": false },
+      "map": { "visible": false },
+      "image": {
+        "visible": true,
+        "src": "/images/photo-3.jpg",
+        "alt": "ダミー画像",
+        "opacity": 0.80
       }
     }
   ]

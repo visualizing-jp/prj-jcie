@@ -150,6 +150,7 @@ export class ChartLayer {
     const rowPattern = Array.isArray(grid.rowPattern) && grid.rowPattern.length > 0
       ? grid.rowPattern
       : this.makeDefaultRowPattern(grid, charts.length);
+    const rowTitles = Array.isArray(grid.rowTitles) ? grid.rowTitles : [];
 
     const maxColumns = Math.max(...rowPattern);
     const rowGap = 18;
@@ -157,13 +158,29 @@ export class ChartLayer {
     const totalRows = rowPattern.length;
     const areaWidth = bounds.right - bounds.left;
     const areaHeight = bounds.bottom - bounds.top;
-    const rowHeight = (areaHeight - rowGap * (totalRows - 1)) / totalRows;
+    const rowTitleH = rowTitles.length > 0 ? 22 : 0;
+    const rowHeight = (areaHeight - rowTitleH * totalRows - rowGap * (totalRows - 1)) / totalRows;
     const colWidth = (areaWidth - colGap * (maxColumns - 1)) / maxColumns;
 
     const panels = [];
     let chartIndex = 0;
 
     rowPattern.forEach((colsInRow, rowIndex) => {
+      const rowY = bounds.top + rowIndex * (rowHeight + rowTitleH + rowGap);
+
+      if (rowTitles[rowIndex] && this.root) {
+        this.root
+          .append('text')
+          .attr('x', bounds.left + areaWidth / 2)
+          .attr('y', rowY + 15)
+          .attr('text-anchor', 'middle')
+          .attr('fill', '#d8dee9')
+          .attr('font-size', 14)
+          .attr('font-weight', 600)
+          .text(rowTitles[rowIndex]);
+      }
+
+      const panelStartY = rowY + rowTitleH;
       const rowContentWidth = colsInRow * colWidth + (colsInRow - 1) * colGap;
       const rowStartX = bounds.left + (areaWidth - rowContentWidth) / 2;
 
@@ -174,7 +191,7 @@ export class ChartLayer {
         panels.push({
           chart,
           x: rowStartX + col * (colWidth + colGap),
-          y: bounds.top + rowIndex * (rowHeight + rowGap),
+          y: panelStartY,
           width: colWidth,
           height: rowHeight,
         });
