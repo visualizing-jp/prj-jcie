@@ -226,7 +226,9 @@ export class ChartLayer {
       return null;
     }
 
-    const resolvedPath = dataFile.startsWith('/') ? dataFile : `/${dataFile}`;
+    const base = import.meta.env.BASE_URL;
+    const stripped = dataFile.startsWith('/') ? dataFile.slice(1) : dataFile;
+    const resolvedPath = `${base}${stripped}`;
     const dataFormat = (chart.dataFormat || 'auto').toLowerCase();
     const format = dataFormat === 'auto' ? this.detectFormatFromPath(resolvedPath) : dataFormat;
 

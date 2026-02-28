@@ -12,7 +12,8 @@ export class ConfigManager {
   }
 
   async loadContentConfig() {
-    const response = await fetch(`/config/${this.diseaseId}/content.json`);
+    const base = import.meta.env.BASE_URL;
+    const response = await fetch(`${base}config/${this.diseaseId}/content.json`);
     if (!response.ok) {
       throw new Error(`Failed to load config: ${response.status}`);
     }
@@ -20,7 +21,8 @@ export class ConfigManager {
   }
 
   async loadCityEpisodeConfig() {
-    const response = await fetch(`/config/${this.diseaseId}/content-map.json`);
+    const base = import.meta.env.BASE_URL;
+    const response = await fetch(`${base}config/${this.diseaseId}/content-map.json`);
     if (!response.ok) {
       if (response.status === 404) {
         return null;
@@ -171,8 +173,9 @@ export class ConfigManager {
     const name = this.escapeHtml(city?.name || city?.nameEn || '');
     const nameEn = this.escapeHtml(city?.nameEn || '');
     const url = this.escapeHtml(city?.data?.url || '#');
+    const base = import.meta.env.BASE_URL;
     const thumbnail = city?.data?.thumbnail
-      ? `/config/${this.diseaseId}/thumb/${encodeURIComponent(city.data.thumbnail)}`
+      ? `${base}config/${this.diseaseId}/thumb/${encodeURIComponent(city.data.thumbnail)}`
       : '';
     const thumbnailTag = thumbnail
       ? `<img class="city-episode-thumb" src="${thumbnail}" alt="${title}" loading="lazy" />`

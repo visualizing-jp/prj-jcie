@@ -10,7 +10,9 @@ export class ImageLayer {
     this.clear();
 
     const img = document.createElement('img');
-    img.src = imageConfig.src;
+    const base = import.meta.env.BASE_URL;
+    const src = imageConfig.src.startsWith('/') ? `${base}${imageConfig.src.slice(1)}` : imageConfig.src;
+    img.src = src;
     img.alt = imageConfig.alt || '';
     img.style.cssText = `
       width: 100%;

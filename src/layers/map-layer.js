@@ -4,7 +4,7 @@ import { feature } from 'topojson-client';
 const VIEWBOX_WIDTH = 1440;
 const VIEWBOX_HEIGHT = 900;
 const BASE_SCALE = 230;
-const WORLD_MAP_URL = '/data/countries-110m.json';
+const WORLD_MAP_URL = `${import.meta.env.BASE_URL}data/countries-110m.json`;
 
 export class MapLayer {
   constructor(container) {

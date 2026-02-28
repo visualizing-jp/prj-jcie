@@ -93,7 +93,7 @@ export class ContentRenderer {
         <div class="fixed-closing-logo">
           <img
             class="fixed-closing-logo-image"
-            src="/images/fgfj-logo-horizontal-white.svg"
+            src="${import.meta.env.BASE_URL}images/fgfj-logo-horizontal-white.svg"
             alt="FGFJ Friends of the Global Fund, Japan"
           />
         </div>
