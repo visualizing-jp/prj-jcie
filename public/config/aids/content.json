@@ -93,16 +93,16 @@
               "yField": "value",
               "seriesField": "series",
               "xDomain": [1990, 1998],
-              "title": "年間新規感染者推移（ダミー1）",
+              "title": "新規HIV感染者数の推移（1990-1998年）",
               "annotations": [
                 {
                   "type": "verticalLine",
-                  "year": 1980,
+                  "year": 1997,
                   "label": "世界の年間新規感染者のピークに達した年"
                 },
                 {
                   "type": "horizontalLine",
-                  "value": 3500000,
+                  "value": 3300000,
                   "label": "世界の年間新規感染者のピーク"
                 }
               ]
@@ -136,7 +136,19 @@
               "yField": "value",
               "seriesField": "series",
               "xDomain": [1980, 2025],
-              "title": "年間新規感染者推移（ダミー2）"
+              "title": "新規HIV感染者数の推移（全期間）",
+              "annotations": [
+                {
+                  "type": "verticalLine",
+                  "year": 1987,
+                  "label": "1987年：最初の抗HIV薬が誕生"
+                },
+                {
+                  "type": "verticalLine",
+                  "year": 1995,
+                  "label": "1990年代後半：「多剤併用療法」（HAART）が導入"
+                }
+              ]
             }
           }
         ]
@@ -165,7 +177,15 @@
               "xField": "year",
               "yField": "value",
               "seriesField": "series",
-              "title": "エイズ関連死亡者数の推移"
+              "xDomain": [2000, 2023],
+              "title": "エイズ関連死亡者数の推移",
+              "annotations": [
+                {
+                  "type": "verticalLine",
+                  "year": 2002,
+                  "label": "グローバルファンドが創設"
+                }
+              ]
             }
           }
         ]
@@ -184,7 +204,7 @@
         "visible": true,
         "layout": "grid",
         "responsive": { "mobileStack": true },
-        "grid": { "columns": 8, "rows": 2, "rowPattern": [8, 8], "allowEmptyCells": true, "rowTitles": ["成人（15歳以上）", "こども（0歳から14歳）"] },
+        "grid": { "columns": 8, "rows": 2, "rowPattern": [8, 8], "allowEmptyCells": true, "title": "地域別HIV-TB重複感染", "rowTitles": ["成人（15歳以上）", "こども（0歳から14歳）"] },
         "charts": [
           { "id": "pie-adult-world", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "全世界（成人）", "rowField": "地域", "rowValue": "全世界", "categoryColumns": ["成人（15歳以上）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療" } },
           { "id": "pie-adult-asia-pacific", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "アジア・太平洋地域（成人）", "rowField": "地域", "rowValue": "アジア・太平洋地域", "categoryColumns": ["成人（15歳以上）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療" } },
@@ -228,7 +248,25 @@
               "xField": "year",
               "yField": "value",
               "seriesField": "series",
-              "title": "HIV母子感染率の推移（%）"
+              "title": "HIV母子感染率の推移（%）",
+              "yDomain": [0, 40],
+              "annotations": [
+                {
+                  "type": "horizontalLine",
+                  "value": 8.7,
+                  "label": "2023年には8.7%まで減少した"
+                },
+                {
+                  "type": "horizontalLine",
+                  "value": 35.2,
+                  "label": "最も感染率の高いサハラ以南アフリカ地域での母子間感染率"
+                },
+                {
+                  "type": "verticalLine",
+                  "year": 1995,
+                  "label": "1995年"
+                }
+              ]
             }
           }
         ]
@@ -354,7 +392,14 @@
               "xField": "year",
               "yField": "value",
               "seriesField": "series",
-              "title": "エイズ対策資金の推移（資金源別）"
+              "title": "エイズ対策資金の推移（資金源別）",
+              "annotations": [
+                {
+                  "type": "horizontalLine",
+                  "value": 29300000000,
+                  "label": "エイズの終結に向けた軌道に乗せるために必要とされる資金"
+                }
+              ]
             }
           }
         ]

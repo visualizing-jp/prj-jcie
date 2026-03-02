@@ -69,7 +69,7 @@
               "xField": "year",
               "yField": "value",
               "seriesField": "series",
-              "title": "2023年の全世界の感染者数は2億6300万人と想定され、そのうち死亡者数は59万7千人。"
+              "title": "世界のマラリア感染者数・死亡者数の推移"
             }
           }
         ]
@@ -93,6 +93,7 @@
           "rows": 2,
           "rowPattern": [6, 6],
           "allowEmptyCells": false,
+          "title": "地域別マラリア感染者・死亡者分布",
           "rowTitles": ["感染者数", "死亡者数"]
         },
         "charts": [
@@ -243,7 +244,7 @@
             "dataFile": "/data/charts/malariae/sankey-data.json",
             "dataFormat": "json",
             "config": {
-              "title": "フロー構造（ダミー）"
+              "title": "蚊帳の配布・使用状況"
             }
           }
         ]
@@ -304,7 +305,19 @@
               "xField": "year",
               "yField": "value",
               "seriesField": "series",
-              "title": "エルサルバドルのマラリア感染者数・死亡者数の推移"
+              "title": "エルサルバドルのマラリア感染者数・死亡者数の推移",
+              "annotations": [
+                {
+                  "type": "verticalLine",
+                  "year": 2017,
+                  "label": "2017年 新たな感染者がゼロとなった"
+                },
+                {
+                  "type": "verticalLine",
+                  "year": 2021,
+                  "label": "2021年 WHOがエルサルバドルのマラリア撲滅を正式認定"
+                }
+              ]
             }
           }
         ]
@@ -333,7 +346,19 @@
               "xField": "year",
               "yField": "value",
               "seriesField": "series",
-              "title": "エルサルバドルのマラリア感染者数・死亡者数の推移"
+              "title": "エルサルバドルのマラリア感染者数・死亡者数の推移",
+              "annotations": [
+                {
+                  "type": "verticalLine",
+                  "year": 2017,
+                  "label": "2017年 新たな感染者がゼロとなった"
+                },
+                {
+                  "type": "verticalLine",
+                  "year": 2021,
+                  "label": "2021年 WHOがエルサルバドルのマラリア撲滅を正式認定"
+                }
+              ]
             }
           }
         ]
@@ -398,7 +423,14 @@
               "xField": "year",
               "yField": "value",
               "seriesField": "series",
-              "title": "ニジェールのマラリア感染者数・死亡者数の推移"
+              "title": "ニジェールのマラリア感染者数・死亡者数の推移",
+              "annotations": [
+                {
+                  "type": "verticalLine",
+                  "year": 2010,
+                  "label": "2010年までにマラリアによる死亡を半分に減らすという目標"
+                }
+              ]
             }
           }
         ]
@@ -489,7 +521,14 @@
             "config": {
               "xField": "year",
               "yField": "value",
-              "title": "マラリア対策関連ODA予算の推移"
+              "title": "マラリア対策関連ODA予算の推移",
+              "annotations": [
+                {
+                  "type": "verticalLine",
+                  "year": 2010,
+                  "label": "2010年"
+                }
+              ]
             }
           }
         ]
