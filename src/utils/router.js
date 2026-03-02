@@ -7,8 +7,10 @@ const DEFAULT_DISEASE_ID = 'aids';
  * URLパスから現在のdisease IDを判別する
  */
 export function getDiseaseIdFromUrl() {
+  const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   const pathname = window.location.pathname;
-  const segments = pathname.split('/').filter(Boolean);
+  const stripped = pathname.startsWith(base) ? pathname.slice(base.length) : pathname;
+  const segments = stripped.split('/').filter(Boolean);
   const first = segments[0];
 
   if (first && VALID_DISEASE_IDS.includes(first)) {

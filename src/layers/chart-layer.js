@@ -152,12 +152,25 @@ export class ChartLayer {
       : this.makeDefaultRowPattern(grid, charts.length);
     const rowTitles = Array.isArray(grid.rowTitles) ? grid.rowTitles : [];
 
+    const gridTitleH = grid.title ? 32 : 0;
+    if (grid.title && this.root) {
+      this.root
+        .append('text')
+        .attr('x', bounds.left + (bounds.right - bounds.left) / 2)
+        .attr('y', bounds.top + 20)
+        .attr('text-anchor', 'middle')
+        .attr('fill', '#eceff4')
+        .attr('font-size', 16)
+        .attr('font-weight', 700)
+        .text(grid.title);
+    }
+
     const maxColumns = Math.max(...rowPattern);
     const rowGap = 18;
     const colGap = 18;
     const totalRows = rowPattern.length;
     const areaWidth = bounds.right - bounds.left;
-    const areaHeight = bounds.bottom - bounds.top;
+    const areaHeight = bounds.bottom - bounds.top - gridTitleH;
     const rowTitleH = rowTitles.length > 0 ? 22 : 0;
     const rowHeight = (areaHeight - rowTitleH * totalRows - rowGap * (totalRows - 1)) / totalRows;
     const colWidth = (areaWidth - colGap * (maxColumns - 1)) / maxColumns;
@@ -166,7 +179,7 @@ export class ChartLayer {
     let chartIndex = 0;
 
     rowPattern.forEach((colsInRow, rowIndex) => {
-      const rowY = bounds.top + rowIndex * (rowHeight + rowTitleH + rowGap);
+      const rowY = bounds.top + gridTitleH + rowIndex * (rowHeight + rowTitleH + rowGap);
 
       if (rowTitles[rowIndex] && this.root) {
         this.root

@@ -20,7 +20,7 @@ export class HeaderNav {
               const isActive = d.id === this.currentDiseaseId;
               return `
               <li>
-                <a href="/${d.id}/"
+                <a href="${import.meta.env.BASE_URL}${d.id}/"
                    class="nav-link${isActive ? ' active' : ''}"
                    style="--link-color: ${d.primary}"
                    data-disease="${d.id}">
