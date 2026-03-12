@@ -273,3 +273,55 @@ body.is-fixed-closing #header-nav {
     line-height: 1.8;
   }
 }
+
+/* トップページ */
+.top-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem;
+  text-align: center;
+}
+
+.top-title {
+  font-family: var(--font-mincho);
+  font-size: clamp(2.5rem, 2rem + 3vw, 4.5rem);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin: 0 0 1rem;
+}
+
+.top-subtitle {
+  font-size: clamp(1rem, 0.9rem + 0.5vw, 1.25rem);
+  color: #ffffffaa;
+  margin: 0 0 3rem;
+}
+
+.top-disease-grid {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.top-disease-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem 2.5rem;
+  border: 1px solid color-mix(in srgb, var(--card-color) 50%, transparent);
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--card-color) 12%, transparent);
+  color: #fff;
+  text-decoration: none;
+  font-family: var(--font-mincho);
+  font-size: 1.1rem;
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.top-disease-card:hover {
+  background: color-mix(in srgb, var(--card-color) 30%, transparent);
+  border-color: var(--card-color);
+}

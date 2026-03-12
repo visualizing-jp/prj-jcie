@@ -4,6 +4,7 @@ import { ScrollController } from './core/scroll-controller.js';
 import { LayerOrchestrator } from './core/layer-orchestrator.js';
 import { ContentRenderer } from './core/content-renderer.js';
 import { HeaderNav } from './core/header-nav.js';
+import { TopPage } from './core/top-page.js';
 import { getDiseaseIdFromUrl } from './utils/router.js';
 
 class App {
@@ -18,6 +19,13 @@ class App {
     try {
       // 0. URLからdisease IDを判別
       const diseaseId = getDiseaseIdFromUrl();
+
+      // トップページ表示
+      if (!diseaseId) {
+        const topPage = new TopPage(document.getElementById('scroll-content'));
+        topPage.render();
+        return;
+      }
 
       // 1. ヘッダーナビゲーション
       const headerNav = new HeaderNav(
