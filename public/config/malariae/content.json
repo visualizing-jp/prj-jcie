@@ -97,18 +97,18 @@
           "rowTitles": ["感染者数", "死亡者数"]
         },
         "charts": [
-          { "id": "pie-cases-africa", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "アフリカ", "rowField": "地域", "rowValue": "アフリカ", "categoryColumns": ["感染者の割合"], "primaryLabel": "感染者", "normalizeTo": 100, "remainderLabel": "非感染者" } },
-          { "id": "pie-cases-americas", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "アメリカ", "rowField": "地域", "rowValue": "アメリカ", "categoryColumns": ["感染者の割合"], "primaryLabel": "感染者", "normalizeTo": 100, "remainderLabel": "非感染者" } },
-          { "id": "pie-cases-emr", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "東地中海", "rowField": "地域", "rowValue": "東地中海", "categoryColumns": ["感染者の割合"], "primaryLabel": "感染者", "normalizeTo": 100, "remainderLabel": "非感染者" } },
-          { "id": "pie-cases-europe", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "欧州", "rowField": "地域", "rowValue": "欧州", "categoryColumns": ["感染者の割合"], "primaryLabel": "感染者", "normalizeTo": 100, "remainderLabel": "非感染者" } },
-          { "id": "pie-cases-sear", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "東南アジア", "rowField": "地域", "rowValue": "東南アジア", "categoryColumns": ["感染者の割合"], "primaryLabel": "感染者", "normalizeTo": 100, "remainderLabel": "非感染者" } },
-          { "id": "pie-cases-wpr", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "西太平洋", "rowField": "地域", "rowValue": "西太平洋", "categoryColumns": ["感染者の割合"], "primaryLabel": "感染者", "normalizeTo": 100, "remainderLabel": "非感染者" } },
-          { "id": "pie-deaths-africa", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "アフリカ", "rowField": "地域", "rowValue": "アフリカ", "categoryColumns": ["死亡者の割合"], "primaryLabel": "死亡者", "normalizeTo": 100, "remainderLabel": "非死亡者" } },
-          { "id": "pie-deaths-americas", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "アメリカ", "rowField": "地域", "rowValue": "アメリカ", "categoryColumns": ["死亡者の割合"], "primaryLabel": "死亡者", "normalizeTo": 100, "remainderLabel": "非死亡者" } },
-          { "id": "pie-deaths-emr", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "東地中海", "rowField": "地域", "rowValue": "東地中海", "categoryColumns": ["死亡者の割合"], "primaryLabel": "死亡者", "normalizeTo": 100, "remainderLabel": "非死亡者" } },
-          { "id": "pie-deaths-europe", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "欧州", "rowField": "地域", "rowValue": "欧州", "categoryColumns": ["死亡者の割合"], "primaryLabel": "死亡者", "normalizeTo": 100, "remainderLabel": "非死亡者" } },
-          { "id": "pie-deaths-sear", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "東南アジア", "rowField": "地域", "rowValue": "東南アジア", "categoryColumns": ["死亡者の割合"], "primaryLabel": "死亡者", "normalizeTo": 100, "remainderLabel": "非死亡者" } },
-          { "id": "pie-deaths-wpr", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "西太平洋", "rowField": "地域", "rowValue": "西太平洋", "categoryColumns": ["死亡者の割合"], "primaryLabel": "死亡者", "normalizeTo": 100, "remainderLabel": "非死亡者" } }
+          { "id": "pie-cases-africa", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "アフリカ", "rowField": "地域", "rowValue": "アフリカ", "categoryColumns": ["感染者の割合"], "primaryLabel": "感染者", "normalizeTo": 100, "remainderLabel": "非感染者", "remainderColor": "#555555" } },
+          { "id": "pie-cases-americas", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "アメリカ", "rowField": "地域", "rowValue": "アメリカ", "categoryColumns": ["感染者の割合"], "primaryLabel": "感染者", "normalizeTo": 100, "remainderLabel": "非感染者", "remainderColor": "#555555" } },
+          { "id": "pie-cases-emr", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "東地中海", "rowField": "地域", "rowValue": "東地中海", "categoryColumns": ["感染者の割合"], "primaryLabel": "感染者", "normalizeTo": 100, "remainderLabel": "非感染者", "remainderColor": "#555555" } },
+          { "id": "pie-cases-europe", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "欧州", "rowField": "地域", "rowValue": "欧州", "categoryColumns": ["感染者の割合"], "primaryLabel": "感染者", "normalizeTo": 100, "remainderLabel": "非感染者", "remainderColor": "#555555" } },
+          { "id": "pie-cases-sear", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "東南アジア", "rowField": "地域", "rowValue": "東南アジア", "categoryColumns": ["感染者の割合"], "primaryLabel": "感染者", "normalizeTo": 100, "remainderLabel": "非感染者", "remainderColor": "#555555" } },
+          { "id": "pie-cases-wpr", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "西太平洋", "rowField": "地域", "rowValue": "西太平洋", "categoryColumns": ["感染者の割合"], "primaryLabel": "感染者", "normalizeTo": 100, "remainderLabel": "非感染者", "remainderColor": "#555555" } },
+          { "id": "pie-deaths-africa", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "アフリカ", "rowField": "地域", "rowValue": "アフリカ", "categoryColumns": ["死亡者の割合"], "primaryLabel": "死亡者", "normalizeTo": 100, "remainderLabel": "非死亡者", "remainderColor": "#555555" } },
+          { "id": "pie-deaths-americas", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "アメリカ", "rowField": "地域", "rowValue": "アメリカ", "categoryColumns": ["死亡者の割合"], "primaryLabel": "死亡者", "normalizeTo": 100, "remainderLabel": "非死亡者", "remainderColor": "#555555" } },
+          { "id": "pie-deaths-emr", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "東地中海", "rowField": "地域", "rowValue": "東地中海", "categoryColumns": ["死亡者の割合"], "primaryLabel": "死亡者", "normalizeTo": 100, "remainderLabel": "非死亡者", "remainderColor": "#555555" } },
+          { "id": "pie-deaths-europe", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "欧州", "rowField": "地域", "rowValue": "欧州", "categoryColumns": ["死亡者の割合"], "primaryLabel": "死亡者", "normalizeTo": 100, "remainderLabel": "非死亡者", "remainderColor": "#555555" } },
+          { "id": "pie-deaths-sear", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "東南アジア", "rowField": "地域", "rowValue": "東南アジア", "categoryColumns": ["死亡者の割合"], "primaryLabel": "死亡者", "normalizeTo": 100, "remainderLabel": "非死亡者", "remainderColor": "#555555" } },
+          { "id": "pie-deaths-wpr", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "西太平洋", "rowField": "地域", "rowValue": "西太平洋", "categoryColumns": ["死亡者の割合"], "primaryLabel": "死亡者", "normalizeTo": 100, "remainderLabel": "非死亡者", "remainderColor": "#555555" } }
         ]
       },
       "map": { "visible": false },
@@ -377,9 +377,9 @@
       "map": {
         "visible": true,
         "mode": "world-overview",
-        "center": [20, 4],
-        "zoom": 2.1,
-        "highlightCountries": ["Kenya", "Nigeria", "South Africa"],
+        "center": [65, 25],
+        "zoom": 1.5,
+        "highlightCountries": ["China", "Egypt"],
         "lightenNonVisited": true
       },
       "image": { "visible": false }
@@ -395,9 +395,9 @@
       "map": {
         "visible": true,
         "mode": "world-overview",
-        "center": [100, 15],
-        "zoom": 2.2,
-        "highlightCountries": ["Myanmar", "India", "Indonesia"],
+        "center": [10, 15],
+        "zoom": 2.5,
+        "highlightCountries": ["Niger"],
         "lightenNonVisited": true
       },
       "image": { "visible": false }
