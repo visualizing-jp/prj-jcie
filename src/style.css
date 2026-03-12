@@ -78,6 +78,10 @@ html, body {
   transform: translateY(0);
 }
 
+.text-card.text-center {
+  text-align: center;
+}
+
 .step .text-card h2 {
   margin: 0 0 0.75rem;
   font-family: var(--font-mincho);

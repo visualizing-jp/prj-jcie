@@ -1,6 +1,22 @@
 {
   "steps": [
     {
+      "id": "aids-hero",
+      "text": {
+        "content": "<h2 style=\"text-align:center\">HIV/エイズとの闘い</h2><p style=\"text-align:center\">～データで見る希望と課題～</p>",
+        "visible": true,
+        "position": { "horizontal": "center", "vertical": "center", "width": "60%" }
+      },
+      "chart": { "visible": false },
+      "map": { "visible": false },
+      "image": {
+        "visible": true,
+        "src": "/images/photo-1.jpg",
+        "alt": "HIV/エイズとの闘い",
+        "opacity": 0.78
+      }
+    },
+    {
       "id": "aids-img-01",
       "text": {
         "content": "<p>「HIV/エイズって、昔の病気では」と思っていませんか？「特定の人しかかからない」といったイメージを持つ人もいるかもしれません。</p><p>&nbsp;</p><p>しかし、それは大きな誤解です。HIV/エイズは今もなお私たちの身近に存在し、誰にでも感染する可能性のある病気です。</p>",

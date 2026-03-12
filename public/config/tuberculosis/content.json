@@ -1,6 +1,22 @@
 {
   "steps": [
     {
+      "id": "tb-hero",
+      "text": {
+        "content": "<h2 style=\"text-align:center\">結核との闘い</h2><p style=\"text-align:center\">～データで見る希望と課題～</p>",
+        "visible": true,
+        "position": { "horizontal": "center", "vertical": "center", "width": "60%" }
+      },
+      "chart": { "visible": false },
+      "map": { "visible": false },
+      "image": {
+        "visible": true,
+        "src": "/images/photo-1.jpg",
+        "alt": "結核との闘い",
+        "opacity": 0.78
+      }
+    },
+    {
       "id": "tb-img-01",
       "text": {
         "content": "<p>結核は、昔から人類とともにあった古い病気で、主に肺に感染して重い症状を引き起こす感染症です。結核菌という細菌が原因です。</p>",

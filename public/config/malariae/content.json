@@ -1,6 +1,22 @@
 {
   "steps": [
     {
+      "id": "ml-hero",
+      "text": {
+        "content": "<h2 style=\"text-align:center\">マラリアとの闘い</h2><p style=\"text-align:center\">～データで見る希望と課題～</p>",
+        "visible": true,
+        "position": { "horizontal": "center", "vertical": "center", "width": "60%" }
+      },
+      "chart": { "visible": false },
+      "map": { "visible": false },
+      "image": {
+        "visible": true,
+        "src": "/images/photo-1.jpg",
+        "alt": "マラリアとの闘い",
+        "opacity": 0.78
+      }
+    },
+    {
       "id": "ml-img-01",
       "text": {
         "content": "<h2>マラリアとは</h2><p>マラリアはHIV／エイズ、結核と並んで世界の3大感染症とされ、特に発展途上国において深刻な健康問題となっています。マラリアに感染すると高熱、寒気、頭痛、嘔吐などの症状に苦しみ、重症化すると脳症や腎不全などの合併症を引き起こし、高い確率で死に至ります。</p>",
