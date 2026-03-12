@@ -179,6 +179,11 @@ body.is-fixed-closing #header-nav {
   font-size: 0.9rem;
   color: #ffffffcc;
   letter-spacing: 0.1em;
+  text-decoration: none;
+}
+
+.nav-logo-text:hover {
+  color: #fff;
 }
 
 .nav-links {
@@ -283,6 +288,13 @@ body.is-fixed-closing #header-nav {
   min-height: 100vh;
   padding: 2rem;
   text-align: center;
+}
+
+.top-lead {
+  font-size: clamp(0.85rem, 0.8rem + 0.3vw, 1rem);
+  color: #ffffff99;
+  letter-spacing: 0.15em;
+  margin: 0 0 0.75rem;
 }
 
 .top-title {

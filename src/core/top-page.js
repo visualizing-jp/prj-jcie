@@ -10,8 +10,9 @@ export class TopPage {
 
     this.container.innerHTML = `
       <div class="top-page">
-        <h1 class="top-title">感染症との闘い</h1>
-        <p class="top-subtitle">データで読み解く、三大感染症の現在地</p>
+        <p class="top-lead">JCIEスペシャルコンテンツ</p>
+        <h1 class="top-title">「感染症との闘い」</h1>
+        <p class="top-subtitle">エイズ、結核、マラリア。人類を脅かす感染症の現状と課題をデータで紐解く。</p>
         <div class="top-disease-grid">
           ${diseases
             .map(

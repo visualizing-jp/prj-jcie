@@ -4,6 +4,52 @@ import { feature } from 'topojson-client';
 const VIEWBOX_WIDTH = 1440;
 const VIEWBOX_HEIGHT = 900;
 const BASE_SCALE = 230;
+
+const REGION_COUNTRIES = {
+  europe: [
+    'Albania', 'Austria', 'Belarus', 'Belgium', 'Bosnia and Herz.', 'Bulgaria',
+    'Croatia', 'Cyprus', 'Czechia', 'Denmark', 'Estonia', 'Finland', 'France',
+    'Germany', 'Greece', 'Hungary', 'Iceland', 'Ireland', 'Italy', 'Kosovo',
+    'Latvia', 'Lithuania', 'Luxembourg', 'Macedonia', 'Moldova', 'Montenegro',
+    'Netherlands', 'Norway', 'Poland', 'Portugal', 'Romania', 'Russia',
+    'Serbia', 'Slovakia', 'Slovenia', 'Spain', 'Sweden', 'Switzerland',
+    'Ukraine', 'United Kingdom', 'N. Cyprus',
+  ],
+  asia: [
+    'Afghanistan', 'Armenia', 'Azerbaijan', 'Bangladesh', 'Bhutan', 'Brunei',
+    'Cambodia', 'China', 'Georgia', 'India', 'Indonesia', 'Iran', 'Iraq',
+    'Israel', 'Japan', 'Jordan', 'Kazakhstan', 'Kuwait', 'Kyrgyzstan', 'Laos',
+    'Lebanon', 'Malaysia', 'Mongolia', 'Myanmar', 'Nepal', 'North Korea',
+    'Oman', 'Pakistan', 'Palestine', 'Philippines', 'Qatar', 'Saudi Arabia',
+    'South Korea', 'Sri Lanka', 'Syria', 'Taiwan', 'Tajikistan', 'Thailand',
+    'Timor-Leste', 'Turkey', 'Turkmenistan', 'United Arab Emirates',
+    'Uzbekistan', 'Vietnam', 'Yemen',
+  ],
+  africa: [
+    'Algeria', 'Angola', 'Benin', 'Botswana', 'Burkina Faso', 'Burundi',
+    'Cameroon', 'Central African Rep.', 'Chad', 'Congo', 'Côte d\'Ivoire',
+    'Dem. Rep. Congo', 'Djibouti', 'Egypt', 'Eq. Guinea', 'Eritrea',
+    'Ethiopia', 'Gabon', 'Gambia', 'Ghana', 'Guinea', 'Guinea-Bissau',
+    'Kenya', 'Lesotho', 'Liberia', 'Libya', 'Madagascar', 'Malawi', 'Mali',
+    'Mauritania', 'Morocco', 'Mozambique', 'Namibia', 'Niger', 'Nigeria',
+    'Rwanda', 'S. Sudan', 'Senegal', 'Sierra Leone', 'Somalia', 'Somaliland',
+    'South Africa', 'Sudan', 'Tanzania', 'Togo', 'Tunisia', 'Uganda',
+    'W. Sahara', 'Zambia', 'Zimbabwe', 'eSwatini',
+  ],
+};
+
+function resolveHighlightCountries(mapConfig) {
+  const set = new Set(mapConfig.highlightCountries || []);
+  if (mapConfig.highlightRegions) {
+    for (const region of mapConfig.highlightRegions) {
+      const countries = REGION_COUNTRIES[region.toLowerCase()];
+      if (countries) {
+        for (const c of countries) set.add(c);
+      }
+    }
+  }
+  return set;
+}
 const WORLD_MAP_URL = `${import.meta.env.BASE_URL}data/countries-110m.json`;
 
 export class MapLayer {
@@ -94,7 +140,7 @@ export class MapLayer {
 
     const center = this.resolveCenter(mapConfig.center);
     const zoom = Number.isFinite(mapConfig.zoom) ? mapConfig.zoom : 1.2;
-    const highlightCountries = new Set(mapConfig.highlightCountries || []);
+    const highlightCountries = resolveHighlightCountries(mapConfig);
     const lightenNonVisited = Boolean(mapConfig.lightenNonVisited || mapConfig.lightenAllCountries);
     const themePrimary = getComputedStyle(document.documentElement)
       .getPropertyValue('--theme-primary')

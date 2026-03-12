@@ -186,7 +186,7 @@ export class ConfigManager {
         <p class="city-episode-meta">都市エピソード ${index}/${total}</p>
         ${thumbnailTag}
         <h3 class="city-episode-title">${title}</h3>
-        <p class="city-episode-location">${name}${nameEn ? ` / ${nameEn}` : ''}</p>
+        <p class="city-episode-location">${name}${nameEn && nameEn !== name ? `（${nameEn}）` : ''}</p>
         <p class="city-episode-description">${description}</p>
         <a class="city-episode-link" href="${url}" target="_blank" rel="noopener noreferrer">外部コンテンツを見る</a>
       </article>

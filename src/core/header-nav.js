@@ -12,7 +12,7 @@ export class HeaderNav {
     this.container.innerHTML = `
       <div class="nav-inner">
         <div class="nav-logo">
-          <span class="nav-logo-text">データで見る感染症との闘い</span>
+          <a href="${import.meta.env.BASE_URL}" class="nav-logo-text">データで見る感染症との闘い</a>
         </div>
         <ul class="nav-links">
           ${Object.values(DISEASE_THEMES)

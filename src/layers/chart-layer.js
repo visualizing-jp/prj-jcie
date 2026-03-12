@@ -87,7 +87,23 @@ export class ChartLayer {
     }
 
     if (config.layout === 'dual') {
-      return this.buildDualPanels(charts, bounds);
+      const dualTitle = config.dualTitle || null;
+      const dualTitleH = dualTitle ? 32 : 0;
+      if (dualTitle && this.root) {
+        this.root
+          .append('text')
+          .attr('x', bounds.left + (bounds.right - bounds.left) / 2)
+          .attr('y', bounds.top + 20)
+          .attr('text-anchor', 'middle')
+          .attr('fill', '#eceff4')
+          .attr('font-size', 16)
+          .attr('font-weight', 700)
+          .text(dualTitle);
+      }
+      const adjustedBounds = dualTitleH
+        ? { ...bounds, top: bounds.top + dualTitleH }
+        : bounds;
+      return this.buildDualPanels(charts, adjustedBounds);
     }
 
     if (config.layout === 'grid') {
@@ -332,8 +348,11 @@ export class ChartLayer {
     }
 
     const yMax = d3.max(rows, (d) => Number(d[yField])) || 0;
-    const targetYScale = d3.scaleLinear().domain([0, yMax * 1.1]).nice();
-    const targetYDomain = targetYScale.domain();
+    const configYDomain = Array.isArray(config.yDomain) && config.yDomain.length === 2
+      ? config.yDomain.map(Number)
+      : null;
+    const targetYScale = d3.scaleLinear().domain(configYDomain || [0, yMax * 1.1]).nice();
+    const targetYDomain = configYDomain || targetYScale.domain();
 
     const spanIdRaw = chartMeta?.span?.id;
     const spanId = spanIdRaw == null ? null : String(spanIdRaw).trim();
@@ -725,6 +744,9 @@ export class ChartLayer {
     const arc = d3.arc().innerRadius(0).outerRadius(radius);
 
     const palette = this.buildPalette(rows.length);
+    if (config.remainderColor && rows.length === 2) {
+      palette[1] = config.remainderColor;
+    }
     const root = inner.group
       .append('g')
       .attr('transform', `translate(${inner.width / 2}, ${inner.height / 2 - 8})`);

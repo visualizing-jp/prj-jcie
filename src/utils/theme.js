@@ -1,7 +1,7 @@
 export const DISEASE_THEMES = {
   aids: {
     id: 'aids',
-    name: 'HIV/エイズとの闘い',
+    name: 'エイズとの闘い',
     primary: '#ff6b6b',
     secondary: '#ff8e8e',
     accent: '#e85555',

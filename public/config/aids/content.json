@@ -43,9 +43,9 @@
       "map": {
         "visible": true,
         "mode": "world-overview",
-        "center": [20, 8],
-        "zoom": 1.7,
-        "highlightCountries": ["Kenya", "Nigeria"],
+        "center": [-100, 40],
+        "zoom": 2,
+        "highlightCountries": ["United States of America"],
         "lightenNonVisited": true
       },
       "image": { "visible": false }
@@ -53,7 +53,7 @@
     {
       "id": "aids-map-02",
       "text": {
-        "content": "<p>1997年に世界の年間新規感染者はピークに達し、330万人を数えました。</p>",
+        "content": "<p>1990年代に入ると、感染はヨーロッパやアジア、アフリカなどに急速に拡大していきました。</p>",
         "visible": true,
         "position": { "horizontal": "left", "vertical": "center", "width": "34%" }
       },
@@ -61,9 +61,9 @@
       "map": {
         "visible": true,
         "mode": "world-overview",
-        "center": [110, 10],
-        "zoom": 1.9,
-        "highlightCountries": ["Philippines"],
+        "center": [40, 20],
+        "zoom": 1.2,
+        "highlightRegions": ["europe", "asia", "africa"],
         "lightenNonVisited": true
       },
       "image": { "visible": false }
@@ -116,7 +116,7 @@
       "text": {
         "content": "<p>当初不明だった原因がHIVだと特定されたのは1983年のことです。</p><p>&nbsp;</p><p>その4年後の1987年、最初の抗HIV薬が生まれ、投薬治療が本格的に始まりました。</p><p>&nbsp;</p><p>1990年代後半には、複数の抗HIV薬を用いる「多剤併用療法」（HAART）が導入され、感染者の体内にあるウイルスを劇的に減らすことが可能となりました。その結果、他者への感染リスクも減少し、新規感染者数は1995年をピークに下降しています。</p>",
         "visible": true,
-        "position": { "horizontal": "left", "vertical": "center", "width": "32%" }
+        "position": { "horizontal": "right", "vertical": "center", "width": "32%" }
       },
       "map": { "visible": false },
       "image": { "visible": false },
@@ -204,24 +204,24 @@
         "visible": true,
         "layout": "grid",
         "responsive": { "mobileStack": true },
-        "grid": { "columns": 8, "rows": 2, "rowPattern": [8, 8], "allowEmptyCells": true, "title": "地域別HIV-TB重複感染", "rowTitles": ["成人（15歳以上）", "こども（0歳から14歳）"] },
+        "grid": { "columns": 8, "rows": 2, "rowPattern": [8, 8], "allowEmptyCells": true, "title": "地域別HIV治療カバレッジ", "rowTitles": ["成人（15歳以上）", "こども（0歳から14歳）"] },
         "charts": [
-          { "id": "pie-adult-world", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "全世界（成人）", "rowField": "地域", "rowValue": "全世界", "categoryColumns": ["成人（15歳以上）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療" } },
-          { "id": "pie-adult-asia-pacific", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "アジア・太平洋地域（成人）", "rowField": "地域", "rowValue": "アジア・太平洋地域", "categoryColumns": ["成人（15歳以上）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療" } },
-          { "id": "pie-adult-caribbean", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "カリブ海地域（成人）", "rowField": "地域", "rowValue": "カリブ海地域", "categoryColumns": ["成人（15歳以上）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療" } },
-          { "id": "pie-adult-eastern-southern-africa", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "東部・南部アフリカ（成人）", "rowField": "地域", "rowValue": "東部・南部アフリカ", "categoryColumns": ["成人（15歳以上）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療" } },
-          { "id": "pie-adult-eastern-europe-central-asia", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "東ヨーロッパ・中央アジア（成人）", "rowField": "地域", "rowValue": "東ヨーロッパ・中央アジア", "categoryColumns": ["成人（15歳以上）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療" } },
-          { "id": "pie-adult-latin-america", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "中南米（ラテンアメリカ）（成人）", "rowField": "地域", "rowValue": "中南米（ラテンアメリカ）", "categoryColumns": ["成人（15歳以上）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療" } },
-          { "id": "pie-adult-middle-east-north-africa", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "中東・北アフリカ（成人）", "rowField": "地域", "rowValue": "中東・北アフリカ", "categoryColumns": ["成人（15歳以上）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療" } },
-          { "id": "pie-adult-western-central-africa", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "西部・中部アフリカ（成人）", "rowField": "地域", "rowValue": "西部・中部アフリカ", "categoryColumns": ["成人（15歳以上）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療" } },
-          { "id": "pie-child-world", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "全世界（こども）", "rowField": "地域", "rowValue": "全世界", "categoryColumns": ["こども（0歳から14歳）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療" } },
-          { "id": "pie-child-asia-pacific", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "アジア・太平洋地域（こども）", "rowField": "地域", "rowValue": "アジア・太平洋地域", "categoryColumns": ["こども（0歳から14歳）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療" } },
-          { "id": "pie-child-caribbean", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "カリブ海地域（こども）", "rowField": "地域", "rowValue": "カリブ海地域", "categoryColumns": ["こども（0歳から14歳）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療" } },
-          { "id": "pie-child-eastern-southern-africa", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "東部・南部アフリカ（こども）", "rowField": "地域", "rowValue": "東部・南部アフリカ", "categoryColumns": ["こども（0歳から14歳）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療" } },
-          { "id": "pie-child-eastern-europe-central-asia", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "東ヨーロッパ・中央アジア（こども）", "rowField": "地域", "rowValue": "東ヨーロッパ・中央アジア", "categoryColumns": ["こども（0歳から14歳）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療" } },
-          { "id": "pie-child-latin-america", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "中南米（ラテンアメリカ）（こども）", "rowField": "地域", "rowValue": "中南米（ラテンアメリカ）", "categoryColumns": ["こども（0歳から14歳）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療" } },
-          { "id": "pie-child-middle-east-north-africa", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "中東・北アフリカ（こども）", "rowField": "地域", "rowValue": "中東・北アフリカ", "categoryColumns": ["こども（0歳から14歳）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療" } },
-          { "id": "pie-child-western-central-africa", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "西部・中部アフリカ（こども）", "rowField": "地域", "rowValue": "西部・中部アフリカ", "categoryColumns": ["こども（0歳から14歳）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療" } }
+          { "id": "pie-adult-world", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "全世界", "rowField": "地域", "rowValue": "全世界", "categoryColumns": ["成人（15歳以上）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療", "remainderColor": "#555555" } },
+          { "id": "pie-adult-asia-pacific", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "アジア・太平洋地域", "rowField": "地域", "rowValue": "アジア・太平洋地域", "categoryColumns": ["成人（15歳以上）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療", "remainderColor": "#555555" } },
+          { "id": "pie-adult-caribbean", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "カリブ海地域", "rowField": "地域", "rowValue": "カリブ海地域", "categoryColumns": ["成人（15歳以上）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療", "remainderColor": "#555555" } },
+          { "id": "pie-adult-eastern-southern-africa", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "東部・南部アフリカ", "rowField": "地域", "rowValue": "東部・南部アフリカ", "categoryColumns": ["成人（15歳以上）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療", "remainderColor": "#555555" } },
+          { "id": "pie-adult-eastern-europe-central-asia", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "東ヨーロッパ・中央アジア", "rowField": "地域", "rowValue": "東ヨーロッパ・中央アジア", "categoryColumns": ["成人（15歳以上）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療", "remainderColor": "#555555" } },
+          { "id": "pie-adult-latin-america", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "中南米（ラテンアメリカ）", "rowField": "地域", "rowValue": "中南米（ラテンアメリカ）", "categoryColumns": ["成人（15歳以上）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療", "remainderColor": "#555555" } },
+          { "id": "pie-adult-middle-east-north-africa", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "中東・北アフリカ", "rowField": "地域", "rowValue": "中東・北アフリカ", "categoryColumns": ["成人（15歳以上）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療", "remainderColor": "#555555" } },
+          { "id": "pie-adult-western-central-africa", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "西部・中部アフリカ", "rowField": "地域", "rowValue": "西部・中部アフリカ", "categoryColumns": ["成人（15歳以上）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療", "remainderColor": "#555555" } },
+          { "id": "pie-child-world", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "全世界", "rowField": "地域", "rowValue": "全世界", "categoryColumns": ["こども（0歳から14歳）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療", "remainderColor": "#555555" } },
+          { "id": "pie-child-asia-pacific", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "アジア・太平洋地域", "rowField": "地域", "rowValue": "アジア・太平洋地域", "categoryColumns": ["こども（0歳から14歳）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療", "remainderColor": "#555555" } },
+          { "id": "pie-child-caribbean", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "カリブ海地域", "rowField": "地域", "rowValue": "カリブ海地域", "categoryColumns": ["こども（0歳から14歳）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療", "remainderColor": "#555555" } },
+          { "id": "pie-child-eastern-southern-africa", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "東部・南部アフリカ", "rowField": "地域", "rowValue": "東部・南部アフリカ", "categoryColumns": ["こども（0歳から14歳）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療", "remainderColor": "#555555" } },
+          { "id": "pie-child-eastern-europe-central-asia", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "東ヨーロッパ・中央アジア", "rowField": "地域", "rowValue": "東ヨーロッパ・中央アジア", "categoryColumns": ["こども（0歳から14歳）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療", "remainderColor": "#555555" } },
+          { "id": "pie-child-latin-america", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "中南米（ラテンアメリカ）", "rowField": "地域", "rowValue": "中南米（ラテンアメリカ）", "categoryColumns": ["こども（0歳から14歳）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療", "remainderColor": "#555555" } },
+          { "id": "pie-child-middle-east-north-africa", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "中東・北アフリカ", "rowField": "地域", "rowValue": "中東・北アフリカ", "categoryColumns": ["こども（0歳から14歳）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療", "remainderColor": "#555555" } },
+          { "id": "pie-child-western-central-africa", "type": "pie", "dataFile": "/data/charts/aids/regional_hiv_coverage.csv", "dataFormat": "csv", "config": { "title": "西部・中部アフリカ", "rowField": "地域", "rowValue": "西部・中部アフリカ", "categoryColumns": ["こども（0歳から14歳）"], "primaryLabel": "治療中", "normalizeTo": 100, "remainderLabel": "未治療", "remainderColor": "#555555" } }
         ]
       }
     },
@@ -259,7 +259,7 @@
                 {
                   "type": "horizontalLine",
                   "value": 35.2,
-                  "label": "最も感染率の高いサハラ以南アフリカ地域での母子間感染率"
+                  "label": "最も感染率の高いサハラ以南アフリカ地域での母子間感染率 35.2%"
                 },
                 {
                   "type": "verticalLine",
@@ -285,7 +285,7 @@
         "visible": true,
         "layout": "grid",
         "responsive": { "mobileStack": true },
-        "grid": { "columns": 4, "rows": 2, "rowPattern": [4, 3], "allowEmptyCells": true },
+        "grid": { "columns": 4, "rows": 2, "rowPattern": [4, 3], "allowEmptyCells": true, "title": "地域別HIV-TB重複感染" },
         "charts": [
           { "id": "venn-world", "type": "venn", "dataFile": "/data/charts/venn-unified.json", "dataFormat": "json", "config": { "groupId": "world" } },
           { "id": "venn-africa", "type": "venn", "dataFile": "/data/charts/venn-unified.json", "dataFormat": "json", "config": { "groupId": "africa" } },
@@ -321,6 +321,7 @@
       "chart": {
         "visible": true,
         "layout": "dual",
+        "dualTitle": "アフリカにおけるエイズの新規感染者数の推移",
         "responsive": { "mobileStack": true },
         "charts": [
           {
@@ -393,6 +394,7 @@
               "yField": "value",
               "seriesField": "series",
               "title": "エイズ対策資金の推移（資金源別）",
+              "yDomain": [0, 35000000000],
               "annotations": [
                 {
                   "type": "horizontalLine",
