@@ -54,7 +54,6 @@ class App {
       });
       this.scrollController.init();
 
-      console.log(`App initialized with ${this.config.steps.length} steps`);
     } catch (error) {
       console.error('App initialization failed:', error);
     }

@@ -407,7 +407,7 @@ export class MapLayer {
       .attr('r', (d) => (d.isCurrent ? d.size + 3 : d.size))
       .attr('fill', (d) => d.color)
       .attr('fill-opacity', (d) => (d.isCurrent ? 0.95 : 0.72))
-      .attr('stroke', '#ffffff')
+      .attr('stroke', '#f5f0ec')
       .attr('stroke-width', (d) => (d.isCurrent ? 2 : 1))
       .attr('stroke-opacity', 0.95);
 
@@ -428,11 +428,11 @@ export class MapLayer {
       .append('text')
       .attr('x', (d) => d.x + 10)
       .attr('y', (d) => d.y - 12)
-      .attr('fill', '#ffffff')
+      .attr('fill', '#f5f0ec')
       .attr('font-size', 14)
       .attr('font-weight', 600)
       .attr('paint-order', 'stroke')
-      .attr('stroke', 'rgba(6,17,30,0.9)')
+      .attr('stroke', 'rgba(10,14,22,0.9)')
       .attr('stroke-width', 3)
       .attr('stroke-linejoin', 'round')
       .attr('opacity', 0)

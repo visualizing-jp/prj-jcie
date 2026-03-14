@@ -62,8 +62,8 @@ export class GlobeAnimation {
       .attr('cx', width / 2)
       .attr('cy', height / 2)
       .attr('r', radius)
-      .attr('fill', '#0a1628')
-      .attr('stroke', '#1a3050')
+      .attr('fill', '#0c1420')
+      .attr('stroke', '#1c2e48')
       .attr('stroke-width', 1.5);
 
     // グラティキュール（緯度経度線）
