@@ -259,8 +259,8 @@ export class MapLayer {
       if (highlightCountries.has(name)) return 0.3;
       return lightenNonVisited ? 0.22 : 0.5;
     };
-    const strokeFn = (d) => (highlightCountries.has(d.properties?.name) ? '#ffffff' : hasHillshade ? '#ffffff' : '#a5b4c7');
-    const strokeOpacityFn = (d) => (highlightCountries.has(d.properties?.name) ? 0.9 : hasHillshade ? 0.2 : 0.35);
+    const strokeFn = (d) => (highlightCountries.has(d.properties?.name) ? '#000000' : hasHillshade ? '#ffffff' : '#a5b4c7');
+    const strokeOpacityFn = (d) => (highlightCountries.has(d.properties?.name) ? 0.6 : hasHillshade ? 0.2 : 0.35);
     const strokeWidthFn = (d) => (highlightCountries.has(d.properties?.name) ? 1.2 : 0.6);
 
     // 初回表示（pathにd属性がない）かどうかで分岐
