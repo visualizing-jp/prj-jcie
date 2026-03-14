@@ -1,13 +1,13 @@
 {
   "timeline": {
-    "title": "グローバルファンド エイズ対策の物語",
-    "description": "世界各地で活動する人々の物語をたどる旅"
+    "title": "ひとりひとりのエピソード",
+    "description": "感染症の現場で、ひとりひとりの『夢』が希望へとつながり、多くの命が救われてきた実話を紹介します。"
   },
   "cities": [
     {
       "id": "lagos",
-      "name": "ラゴス",
-      "nameEn": "Lagos",
+      "name": "ナイジェリア",
+      "nameEn": "Nigeria",
       "country": "Nigeria",
       "latitude": 6.5244,
       "longitude": 3.3792,
@@ -30,8 +30,8 @@
     },
     {
       "id": "lilongwe",
-      "name": "リロングウェ",
-      "nameEn": "Lilongwe",
+      "name": "マラウイ",
+      "nameEn": "Malawi",
       "country": "Malawi",
       "latitude": -13.9626,
       "longitude": 33.7741,
@@ -55,8 +55,8 @@
     },
     {
       "id": "nairobi",
-      "name": "ナイロビ",
-      "nameEn": "Nairobi",
+      "name": "ケニア",
+      "nameEn": "Kenya",
       "country": "Kenya",
       "latitude": -1.2921,
       "longitude": 36.8219,
@@ -80,8 +80,8 @@
     },
     {
       "id": "belmopan",
-      "name": "ベルモパン",
-      "nameEn": "Belmopan",
+      "name": "ベリーズ",
+      "nameEn": "Belize",
       "country": "Belize",
       "latitude": 17.2514,
       "longitude": -88.7590,
@@ -105,8 +105,8 @@
     },
     {
       "id": "washington",
-      "name": "ワシントンD.C.",
-      "nameEn": "Washington D.C.",
+      "name": "アメリカ",
+      "nameEn": "United States of America",
       "country": "United States of America",
       "latitude": 38.9072,
       "longitude": -77.0369,
@@ -130,8 +130,8 @@
     },
     {
       "id": "nairobi2",
-      "name": "ナイロビ",
-      "nameEn": "Nairobi",
+      "name": "ケニア",
+      "nameEn": "Kenya",
       "country": "Kenya",
       "latitude": -1.2921,
       "longitude": 36.8219,
@@ -155,8 +155,8 @@
     },
     {
       "id": "manila",
-      "name": "マニラ",
-      "nameEn": "Manila",
+      "name": "フィリピン",
+      "nameEn": "Philippines",
       "country": "Philippines",
       "latitude": 14.5995,
       "longitude": 120.9842,

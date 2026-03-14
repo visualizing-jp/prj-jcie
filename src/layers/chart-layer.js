@@ -223,6 +223,7 @@ export class ChartLayer {
           y: panelStartY,
           width: colWidth,
           height: rowHeight,
+          _gridIndex: panels.length,
         });
 
         if (chart) chartIndex += 1;
@@ -392,6 +393,25 @@ export class ChartLayer {
     const styleAxisText = (g) => g.selectAll('text').attr('fill', '#d8dee9').attr('font-size', 11);
     const styleAxisLines = (g) => g.selectAll('line,path').attr('stroke', '#8ca0b3').attr('opacity', 0.5);
 
+    // グリッドライン（水平）
+    let gridGroup = null;
+    if (config.gridLines !== false) {
+      gridGroup = plotGroup.append('g').attr('class', 'grid-lines');
+      const gridTicks = y.ticks(5);
+      gridGroup
+        .selectAll('line')
+        .data(gridTicks)
+        .enter()
+        .append('line')
+        .attr('x1', 0)
+        .attr('y1', (d) => y(d))
+        .attr('x2', plotWidth)
+        .attr('y2', (d) => y(d))
+        .attr('stroke', '#8ca0b3')
+        .attr('stroke-opacity', 0.12)
+        .attr('stroke-dasharray', '2 4');
+    }
+
     const xAxisGroup = plotGroup
       .append('g')
       .attr('transform', `translate(0, ${plotHeight})`)
@@ -411,12 +431,51 @@ export class ChartLayer {
       .y((d) => y(Number(d[yField])))
       .curve(d3.curveMonotoneX);
 
+    // Area fill ジェネレータ
+    const areaGen = config.areaFill !== false
+      ? d3.area()
+          .x((d) => x(Number(d[xField])))
+          .y0(plotHeight)
+          .y1((d) => y(Number(d[yField])))
+          .curve(d3.curveMonotoneX)
+      : null;
+
     if (!hasMultiSeries) {
+      const themeColor = this.getThemePrimary();
+
+      // Area fill
+      let areaPath = null;
+      if (areaGen) {
+        const gradId = `area-grad-single-${panel.x}-${panel.y}`;
+        this.defs
+          .append('linearGradient')
+          .attr('id', gradId)
+          .attr('x1', '0%').attr('y1', '0%')
+          .attr('x2', '0%').attr('y2', '100%')
+          .selectAll('stop')
+          .data([
+            { offset: '0%', color: themeColor, opacity: 0.25 },
+            { offset: '100%', color: themeColor, opacity: 0 },
+          ])
+          .enter()
+          .append('stop')
+          .attr('offset', (d) => d.offset)
+          .attr('stop-color', (d) => d.color)
+          .attr('stop-opacity', (d) => d.opacity);
+
+        areaPath = plotGroup
+          .append('path')
+          .datum(rows)
+          .attr('fill', `url(#${gradId})`)
+          .attr('opacity', 0)
+          .attr('d', areaGen);
+      }
+
       const path = plotGroup
         .append('path')
         .datum(rows)
         .attr('fill', 'none')
-        .attr('stroke', this.getThemePrimary())
+        .attr('stroke', themeColor)
         .attr('stroke-width', 2.5)
         .attr('d', line);
 
@@ -435,6 +494,15 @@ export class ChartLayer {
         y.domain(targetYDomain);
         const transition = d3.transition().duration(850).ease(d3.easeCubicInOut);
 
+        // グリッドライン更新
+        if (gridGroup) {
+          gridGroup.selectAll('line').remove();
+          const newTicks = y.ticks(5);
+          gridGroup.selectAll('line').data(newTicks).enter().append('line')
+            .attr('x1', 0).attr('y1', (d) => y(d)).attr('x2', plotWidth).attr('y2', (d) => y(d))
+            .attr('stroke', '#8ca0b3').attr('stroke-opacity', 0.12).attr('stroke-dasharray', '2 4');
+        }
+
         xAxisGroup
           .transition(transition)
           .call(xAxis)
@@ -448,6 +516,7 @@ export class ChartLayer {
         path.transition(transition).attr('d', line).on('end', () => {
           this.renderLineAnnotations(plotGroup, x, y, plotWidth, plotHeight, config.annotations);
         });
+        if (areaPath) areaPath.transition(transition).attr('d', areaGen).attr('opacity', 1);
         points
           .transition(transition)
           .attr('cx', (d) => x(Number(d[xField])))
@@ -462,7 +531,11 @@ export class ChartLayer {
           .duration(700)
           .ease(d3.easeCubicOut)
           .attr('stroke-dashoffset', 0);
+        if (areaPath) areaPath.transition().duration(700).ease(d3.easeCubicOut).attr('opacity', 1);
       }
+
+      // ツールチップ（単一系列）
+      this.attachLineTooltip(plotGroup, [{ name: '__single__', values: rows }], x, y, plotWidth, plotHeight, xField, yField, () => themeColor);
 
       if (spanId) {
         this.lineSpanState.set(spanId, { xDomain: [...targetXDomain], yDomain: [...targetYDomain] });
@@ -483,8 +556,39 @@ export class ChartLayer {
     const seriesGroup = plotGroup.append('g').attr('class', 'line-series');
     const pathNodes = [];
     const pointNodes = [];
+    const areaNodes = [];
 
-    seriesData.forEach((series) => {
+    seriesData.forEach((series, si) => {
+      // Area fill (multi-series)
+      let seriesArea = null;
+      if (areaGen) {
+        const gradId = `area-grad-${si}-${panel.x}-${panel.y}`;
+        const seriesColor = color(series.name);
+        this.defs
+          .append('linearGradient')
+          .attr('id', gradId)
+          .attr('x1', '0%').attr('y1', '0%')
+          .attr('x2', '0%').attr('y2', '100%')
+          .selectAll('stop')
+          .data([
+            { offset: '0%', color: seriesColor, opacity: 0.18 },
+            { offset: '100%', color: seriesColor, opacity: 0 },
+          ])
+          .enter()
+          .append('stop')
+          .attr('offset', (d) => d.offset)
+          .attr('stop-color', (d) => d.color)
+          .attr('stop-opacity', (d) => d.opacity);
+
+        seriesArea = seriesGroup
+          .append('path')
+          .datum(series.values)
+          .attr('fill', `url(#${gradId})`)
+          .attr('opacity', 0)
+          .attr('d', areaGen);
+      }
+      areaNodes.push(seriesArea);
+
       const path = seriesGroup
         .append('path')
         .datum(series.values)
@@ -513,6 +617,15 @@ export class ChartLayer {
       y.domain(targetYDomain);
       const transition = d3.transition().duration(850).ease(d3.easeCubicInOut);
 
+      // グリッドライン更新
+      if (gridGroup) {
+        gridGroup.selectAll('line').remove();
+        const newTicks = y.ticks(5);
+        gridGroup.selectAll('line').data(newTicks).enter().append('line')
+          .attr('x1', 0).attr('y1', (d) => y(d)).attr('x2', plotWidth).attr('y2', (d) => y(d))
+          .attr('stroke', '#8ca0b3').attr('stroke-opacity', 0.12).attr('stroke-dasharray', '2 4');
+      }
+
       xAxisGroup
         .transition(transition)
         .call(xAxis)
@@ -532,6 +645,9 @@ export class ChartLayer {
           }
         });
       });
+      areaNodes.forEach((ap) => {
+        if (ap) ap.transition(transition).attr('d', areaGen).attr('opacity', 1);
+      });
       pointNodes.forEach((points) => {
         points
           .transition(transition)
@@ -550,12 +666,95 @@ export class ChartLayer {
           .ease(d3.easeCubicOut)
           .attr('stroke-dashoffset', 0);
       });
+      areaNodes.forEach((ap) => {
+        if (ap) ap.transition().duration(700).ease(d3.easeCubicOut).attr('opacity', 1);
+      });
       this.drawLineEndLabels(plotGroup, seriesData, color, x, y, plotWidth, plotHeight, xField, yField);
     }
+
+    // ツールチップ（複数系列）
+    this.attachLineTooltip(plotGroup, seriesData, x, y, plotWidth, plotHeight, xField, yField, (name) => color(name));
 
     if (spanId) {
       this.lineSpanState.set(spanId, { xDomain: [...targetXDomain], yDomain: [...targetYDomain] });
     }
+  }
+
+  attachLineTooltip(plotGroup, seriesData, xScale, yScale, plotWidth, plotHeight, xField, yField, colorFn) {
+    const overlay = plotGroup
+      .append('rect')
+      .attr('width', plotWidth)
+      .attr('height', plotHeight)
+      .attr('fill', 'none')
+      .style('pointer-events', 'all')
+      .style('cursor', 'crosshair');
+
+    const guideLine = plotGroup.append('line')
+      .attr('y1', 0).attr('y2', plotHeight)
+      .attr('stroke', '#ffffff').attr('stroke-opacity', 0)
+      .attr('stroke-width', 0.8).attr('stroke-dasharray', '3 3');
+
+    const tooltipGroup = plotGroup.append('g').attr('class', 'line-tooltip').attr('opacity', 0);
+
+    // 全系列の全データポイントからユニークなx値を収集
+    const allXValues = [...new Set(
+      seriesData.flatMap((s) => s.values.map((d) => Number(d[xField])))
+    )].sort((a, b) => a - b);
+
+    const bisect = d3.bisector((d) => d).left;
+
+    overlay.on('mousemove', (event) => {
+      const [mx] = d3.pointer(event);
+      const xVal = xScale.invert(mx);
+      const idx = bisect(allXValues, xVal);
+      const x0 = allXValues[idx - 1];
+      const x1 = allXValues[idx];
+      const nearest = x0 == null ? x1 : x1 == null ? x0 : (xVal - x0 < x1 - xVal ? x0 : x1);
+      if (nearest == null) return;
+
+      const px = xScale(nearest);
+      guideLine.attr('x1', px).attr('x2', px).attr('stroke-opacity', 0.3);
+
+      tooltipGroup.selectAll('*').remove();
+      tooltipGroup.attr('opacity', 1);
+
+      let ty = 0;
+      seriesData.forEach((series) => {
+        const point = series.values.find((d) => Number(d[xField]) === nearest);
+        if (!point) return;
+        const py = yScale(Number(point[yField]));
+        const c = colorFn(series.name);
+
+        // ハイライト円
+        tooltipGroup.append('circle')
+          .attr('cx', px).attr('cy', py).attr('r', 4)
+          .attr('fill', c).attr('stroke', '#fff').attr('stroke-width', 1.5);
+
+        // 値ラベル
+        const labelX = px + 8;
+        const labelY = 12 + ty * 16;
+        tooltipGroup.append('rect')
+          .attr('x', labelX - 2).attr('y', labelY - 10)
+          .attr('width', 70).attr('height', 14)
+          .attr('rx', 3).attr('fill', 'rgba(9,21,35,0.85)');
+        tooltipGroup.append('text')
+          .attr('x', labelX).attr('y', labelY)
+          .attr('fill', c).attr('font-size', 10).attr('font-weight', 500)
+          .text(d3.format(',')(Number(point[yField])));
+        ty += 1;
+      });
+
+      // 年ラベル
+      tooltipGroup.append('text')
+        .attr('x', px).attr('y', plotHeight + 16)
+        .attr('text-anchor', 'middle').attr('fill', '#d8dee9').attr('font-size', 10)
+        .text(d3.format('d')(nearest));
+    });
+
+    overlay.on('mouseleave', () => {
+      guideLine.attr('stroke-opacity', 0);
+      tooltipGroup.attr('opacity', 0);
+    });
   }
 
   drawLineEndLabels(group, seriesData, color, xScale, yScale, plotWidth, plotHeight, xField, yField) {
@@ -751,19 +950,26 @@ export class ChartLayer {
       .append('g')
       .attr('transform', `translate(${inner.width / 2}, ${inner.height / 2 - 8})`);
 
+    const staggerDelay = panel._gridIndex != null ? panel._gridIndex * 80 : 0;
+
     root
       .selectAll('path')
       .data(pie(rows))
       .enter()
       .append('path')
-      .attr('d', arc)
       .attr('fill', (_, i) => palette[i])
       .attr('stroke', '#0b1726')
       .attr('stroke-width', 1)
-      .attr('opacity', 0)
+      .attr('opacity', 0.95)
+      .attr('d', (d) => arc({ ...d, endAngle: d.startAngle }))
       .transition()
-      .duration(500)
-      .attr('opacity', 0.95);
+      .duration(600)
+      .delay(staggerDelay)
+      .ease(d3.easeCubicOut)
+      .attrTween('d', (d) => {
+        const interp = d3.interpolate({ startAngle: d.startAngle, endAngle: d.startAngle }, d);
+        return (t) => arc(interp(t));
+      });
 
     const legend = inner.group
       .append('g')
@@ -905,9 +1111,17 @@ export class ChartLayer {
       });
     });
 
-    const linkLayer = inner.group.append('g').attr('fill', 'none');
+    // ノードにレベルベースの色を割り当て
+    const nodePalette = this.buildPalette(Math.max(levelKeys.length, 2));
+    const nodes = [...nodeById.values()];
+    nodes.forEach((node) => {
+      node.color = nodePalette[Math.min(node.level, nodePalette.length - 1)];
+    });
 
-    links.forEach((link) => {
+    const linkLayer = inner.group.append('g').attr('fill', 'none');
+    const linkPaths = [];
+
+    links.forEach((link, li) => {
       const thickness = Math.max(1.5, link.value * unit);
       const x1 = link.source.x + link.source.w;
       const y1 = link.source.y + link.source.outOffset + thickness / 2;
@@ -918,20 +1132,39 @@ export class ChartLayer {
 
       const c1 = x1 + (x2 - x1) * 0.45;
       const c2 = x1 + (x2 - x1) * 0.55;
-      const path = `M${x1},${y1} C${c1},${y1} ${c2},${y2} ${x2},${y2}`;
+      const pathD = `M${x1},${y1} C${c1},${y1} ${c2},${y2} ${x2},${y2}`;
 
-      linkLayer
+      // リンクグラデーション
+      const gradId = `sankey-link-grad-${li}-${panel.x}-${panel.y}`;
+      this.defs
+        .append('linearGradient')
+        .attr('id', gradId)
+        .attr('gradientUnits', 'userSpaceOnUse')
+        .attr('x1', x1).attr('y1', y1)
+        .attr('x2', x2).attr('y2', y2)
+        .selectAll('stop')
+        .data([
+          { offset: '0%', color: link.source.color },
+          { offset: '100%', color: link.target.color },
+        ])
+        .enter()
+        .append('stop')
+        .attr('offset', (d) => d.offset)
+        .attr('stop-color', (d) => d.color);
+
+      const pathEl = linkLayer
         .append('path')
-        .attr('d', path)
-        .attr('stroke', this.getThemePrimary())
+        .attr('d', pathD)
+        .attr('stroke', `url(#${gradId})`)
         .attr('stroke-width', thickness)
-        .attr('stroke-opacity', 0.28);
+        .attr('stroke-opacity', 0.35);
+
+      linkPaths.push({ el: pathEl, link });
     });
 
     const nodeLayer = inner.group.append('g');
-    const nodes = [...nodeById.values()];
 
-    nodeLayer
+    const nodeRects = nodeLayer
       .selectAll('rect')
       .data(nodes)
       .enter()
@@ -940,10 +1173,26 @@ export class ChartLayer {
       .attr('y', (d) => d.y)
       .attr('width', (d) => d.w)
       .attr('height', (d) => d.h)
-      .attr('fill', '#dbe7f3')
+      .attr('fill', (d) => d.color)
       .attr('fill-opacity', 0.88)
       .attr('stroke', '#ffffff')
-      .attr('stroke-width', 0.6);
+      .attr('stroke-width', 0.6)
+      .style('pointer-events', 'all')
+      .style('cursor', 'pointer');
+
+    // ホバー強調
+    nodeRects
+      .on('mouseenter', (_event, hoveredNode) => {
+        linkPaths.forEach(({ el, link }) => {
+          const isRelated = link.source.id === hoveredNode.id || link.target.id === hoveredNode.id;
+          el.transition().duration(200).attr('stroke-opacity', isRelated ? 0.7 : 0.08);
+        });
+      })
+      .on('mouseleave', () => {
+        linkPaths.forEach(({ el }) => {
+          el.transition().duration(200).attr('stroke-opacity', 0.35);
+        });
+      });
 
     nodeLayer
       .selectAll('text')
@@ -954,7 +1203,7 @@ export class ChartLayer {
       .attr('y', (d) => d.y + d.h / 2 + 3)
       .attr('text-anchor', (d) => (d.level === 0 ? 'start' : 'end'))
       .attr('fill', '#e6edf5')
-      .attr('font-size', 10)
+      .attr('font-size', 11)
       .text((d) => d.label);
   }
 
@@ -1074,6 +1323,10 @@ export class ChartLayer {
     const g = inner.group.append('g');
     const drawOrder = [...layout].sort((a, b) => a.data.sets.length - b.data.sets.length);
 
+    // ベン図のスケール＋フェードアニメーション
+    const cx = inner.width / 2;
+    const cy = inner.height / 2;
+
     g.selectAll('path.venn-area')
       .data(drawOrder)
       .enter()
@@ -1085,13 +1338,21 @@ export class ChartLayer {
         if (d.data.sets.length === 1) return colorBySet.get(d.data.sets[0]) || '#5fb3ff';
         return '#dbe6f2';
       })
-      .attr('fill-opacity', (d) => (d.data.sets.length === 1 ? 0.30 : 0.16))
+      .attr('fill-opacity', 0)
       .attr('stroke', (d) => {
         if (d.data.sets.length === 1) return colorBySet.get(d.data.sets[0]) || '#5fb3ff';
         return '#dbe6f2';
       })
+      .attr('stroke-opacity', 0)
+      .attr('stroke-width', (d) => (d.data.sets.length === 1 ? 1.2 : 0.9))
+      .attr('transform', (d) => (d.data.sets.length === 1 ? `translate(${cx},${cy}) scale(0.3) translate(${-cx},${-cy})` : null))
+      .transition()
+      .duration(500)
+      .delay((d) => (d.data.sets.length === 1 ? 0 : 300))
+      .ease(d3.easeCubicOut)
+      .attr('fill-opacity', (d) => (d.data.sets.length === 1 ? 0.30 : 0.16))
       .attr('stroke-opacity', (d) => (d.data.sets.length === 1 ? 0.95 : 0.45))
-      .attr('stroke-width', (d) => (d.data.sets.length === 1 ? 1.2 : 0.9));
+      .attr('transform', null);
 
     const singletonLayout = layout.filter((d) => d.data.sets.length === 1);
     singletonLayout.forEach((entry) => {
@@ -1105,6 +1366,11 @@ export class ChartLayer {
         .attr('text-anchor', 'middle')
         .attr('fill', '#e6edf5')
         .attr('font-size', 10)
+        .attr('opacity', 0)
+        .transition()
+        .duration(400)
+        .delay(200)
+        .attr('opacity', 1)
         .text(setName);
     });
 
@@ -1131,7 +1397,12 @@ export class ChartLayer {
             .attr('text-anchor', 'middle')
             .attr('fill', '#ffffff')
             .attr('font-size', 10)
-            .text(d3.format(',')(value));
+            .attr('opacity', 0)
+            .text(d3.format(',')(value))
+            .transition()
+            .duration(400)
+            .delay(350)
+            .attr('opacity', 1);
         });
     }
 
@@ -1147,7 +1418,12 @@ export class ChartLayer {
             .attr('text-anchor', 'middle')
             .attr('fill', '#ffffff')
             .attr('font-size', 10)
-            .text(d3.format(',')(area.size));
+            .attr('opacity', 0)
+            .text(d3.format(',')(area.size))
+            .transition()
+            .duration(400)
+            .delay(350)
+            .attr('opacity', 1);
         });
     }
   }
@@ -1215,6 +1491,18 @@ export class ChartLayer {
       .append('g')
       .attr('transform', `translate(${panel.x}, ${panel.y})`);
 
+    // Glow枠（背面）
+    group
+      .append('rect')
+      .attr('width', panel.width)
+      .attr('height', panel.height)
+      .attr('rx', 10)
+      .attr('fill', 'none')
+      .attr('stroke', this.getThemePrimary())
+      .attr('stroke-width', 1.5)
+      .attr('stroke-opacity', 0.15)
+      .attr('filter', 'url(#panel-glow)');
+
     group
       .append('rect')
       .attr('width', panel.width)
@@ -1268,6 +1556,21 @@ export class ChartLayer {
       .attr('aria-label', 'chart layer');
 
     this.root = this.svg.append('g');
+    this.defs = this.svg.append('defs');
+
+    // パネルGlowフィルター
+    const glowFilter = this.defs
+      .append('filter')
+      .attr('id', 'panel-glow')
+      .attr('x', '-20%').attr('y', '-20%')
+      .attr('width', '140%').attr('height', '140%');
+    glowFilter.append('feGaussianBlur').attr('in', 'SourceGraphic').attr('stdDeviation', 3).attr('result', 'blur');
+    glowFilter.append('feMerge')
+      .selectAll('feMergeNode')
+      .data(['blur', 'SourceGraphic'])
+      .enter()
+      .append('feMergeNode')
+      .attr('in', (d) => d);
   }
 
   getThemePrimary() {
@@ -1330,6 +1633,7 @@ export class ChartLayer {
     }
     this.svg = null;
     this.root = null;
+    this.defs = null;
   }
 
   destroy() {

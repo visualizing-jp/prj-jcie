@@ -1,6 +1,22 @@
 {
   "steps": [
     {
+      "id": "ml-hero",
+      "text": {
+        "content": "<h2 style=\"text-align:center\">マラリアとの闘い</h2><p style=\"text-align:center\">～データで見る希望と課題～</p>",
+        "visible": true,
+        "position": { "horizontal": "center", "vertical": "center", "width": "60%" }
+      },
+      "chart": { "visible": false },
+      "map": { "visible": false },
+      "image": {
+        "visible": true,
+        "src": "/images/photo-1.jpg",
+        "alt": "マラリアとの闘い",
+        "opacity": 0.78
+      }
+    },
+    {
       "id": "ml-img-01",
       "text": {
         "content": "<h2>マラリアとは</h2><p>マラリアはHIV／エイズ、結核と並んで世界の3大感染症とされ、特に発展途上国において深刻な健康問題となっています。マラリアに感染すると高熱、寒気、頭痛、嘔吐などの症状に苦しみ、重症化すると脳症や腎不全などの合併症を引き起こし、高い確率で死に至ります。</p>",
@@ -69,7 +85,7 @@
               "xField": "year",
               "yField": "value",
               "seriesField": "series",
-              "title": "2023年の全世界の感染者数は2億6300万人と想定され、そのうち死亡者数は59万7千人。"
+              "title": "世界のマラリア感染者数・死亡者数の推移"
             }
           }
         ]
@@ -93,21 +109,22 @@
           "rows": 2,
           "rowPattern": [6, 6],
           "allowEmptyCells": false,
+          "title": "地域別マラリア感染者・死亡者分布",
           "rowTitles": ["感染者数", "死亡者数"]
         },
         "charts": [
-          { "id": "pie-cases-africa", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "アフリカ", "rowField": "地域", "rowValue": "アフリカ", "categoryColumns": ["感染者の割合"], "primaryLabel": "感染者", "normalizeTo": 100, "remainderLabel": "非感染者" } },
-          { "id": "pie-cases-americas", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "アメリカ", "rowField": "地域", "rowValue": "アメリカ", "categoryColumns": ["感染者の割合"], "primaryLabel": "感染者", "normalizeTo": 100, "remainderLabel": "非感染者" } },
-          { "id": "pie-cases-emr", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "東地中海", "rowField": "地域", "rowValue": "東地中海", "categoryColumns": ["感染者の割合"], "primaryLabel": "感染者", "normalizeTo": 100, "remainderLabel": "非感染者" } },
-          { "id": "pie-cases-europe", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "欧州", "rowField": "地域", "rowValue": "欧州", "categoryColumns": ["感染者の割合"], "primaryLabel": "感染者", "normalizeTo": 100, "remainderLabel": "非感染者" } },
-          { "id": "pie-cases-sear", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "東南アジア", "rowField": "地域", "rowValue": "東南アジア", "categoryColumns": ["感染者の割合"], "primaryLabel": "感染者", "normalizeTo": 100, "remainderLabel": "非感染者" } },
-          { "id": "pie-cases-wpr", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "西太平洋", "rowField": "地域", "rowValue": "西太平洋", "categoryColumns": ["感染者の割合"], "primaryLabel": "感染者", "normalizeTo": 100, "remainderLabel": "非感染者" } },
-          { "id": "pie-deaths-africa", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "アフリカ", "rowField": "地域", "rowValue": "アフリカ", "categoryColumns": ["死亡者の割合"], "primaryLabel": "死亡者", "normalizeTo": 100, "remainderLabel": "非死亡者" } },
-          { "id": "pie-deaths-americas", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "アメリカ", "rowField": "地域", "rowValue": "アメリカ", "categoryColumns": ["死亡者の割合"], "primaryLabel": "死亡者", "normalizeTo": 100, "remainderLabel": "非死亡者" } },
-          { "id": "pie-deaths-emr", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "東地中海", "rowField": "地域", "rowValue": "東地中海", "categoryColumns": ["死亡者の割合"], "primaryLabel": "死亡者", "normalizeTo": 100, "remainderLabel": "非死亡者" } },
-          { "id": "pie-deaths-europe", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "欧州", "rowField": "地域", "rowValue": "欧州", "categoryColumns": ["死亡者の割合"], "primaryLabel": "死亡者", "normalizeTo": 100, "remainderLabel": "非死亡者" } },
-          { "id": "pie-deaths-sear", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "東南アジア", "rowField": "地域", "rowValue": "東南アジア", "categoryColumns": ["死亡者の割合"], "primaryLabel": "死亡者", "normalizeTo": 100, "remainderLabel": "非死亡者" } },
-          { "id": "pie-deaths-wpr", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "西太平洋", "rowField": "地域", "rowValue": "西太平洋", "categoryColumns": ["死亡者の割合"], "primaryLabel": "死亡者", "normalizeTo": 100, "remainderLabel": "非死亡者" } }
+          { "id": "pie-cases-africa", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "アフリカ", "rowField": "地域", "rowValue": "アフリカ", "categoryColumns": ["感染者の割合"], "primaryLabel": "感染者", "normalizeTo": 100, "remainderLabel": "非感染者", "remainderColor": "#555555" } },
+          { "id": "pie-cases-americas", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "アメリカ", "rowField": "地域", "rowValue": "アメリカ", "categoryColumns": ["感染者の割合"], "primaryLabel": "感染者", "normalizeTo": 100, "remainderLabel": "非感染者", "remainderColor": "#555555" } },
+          { "id": "pie-cases-emr", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "東地中海", "rowField": "地域", "rowValue": "東地中海", "categoryColumns": ["感染者の割合"], "primaryLabel": "感染者", "normalizeTo": 100, "remainderLabel": "非感染者", "remainderColor": "#555555" } },
+          { "id": "pie-cases-europe", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "欧州", "rowField": "地域", "rowValue": "欧州", "categoryColumns": ["感染者の割合"], "primaryLabel": "感染者", "normalizeTo": 100, "remainderLabel": "非感染者", "remainderColor": "#555555" } },
+          { "id": "pie-cases-sear", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "東南アジア", "rowField": "地域", "rowValue": "東南アジア", "categoryColumns": ["感染者の割合"], "primaryLabel": "感染者", "normalizeTo": 100, "remainderLabel": "非感染者", "remainderColor": "#555555" } },
+          { "id": "pie-cases-wpr", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "西太平洋", "rowField": "地域", "rowValue": "西太平洋", "categoryColumns": ["感染者の割合"], "primaryLabel": "感染者", "normalizeTo": 100, "remainderLabel": "非感染者", "remainderColor": "#555555" } },
+          { "id": "pie-deaths-africa", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "アフリカ", "rowField": "地域", "rowValue": "アフリカ", "categoryColumns": ["死亡者の割合"], "primaryLabel": "死亡者", "normalizeTo": 100, "remainderLabel": "非死亡者", "remainderColor": "#555555" } },
+          { "id": "pie-deaths-americas", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "アメリカ", "rowField": "地域", "rowValue": "アメリカ", "categoryColumns": ["死亡者の割合"], "primaryLabel": "死亡者", "normalizeTo": 100, "remainderLabel": "非死亡者", "remainderColor": "#555555" } },
+          { "id": "pie-deaths-emr", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "東地中海", "rowField": "地域", "rowValue": "東地中海", "categoryColumns": ["死亡者の割合"], "primaryLabel": "死亡者", "normalizeTo": 100, "remainderLabel": "非死亡者", "remainderColor": "#555555" } },
+          { "id": "pie-deaths-europe", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "欧州", "rowField": "地域", "rowValue": "欧州", "categoryColumns": ["死亡者の割合"], "primaryLabel": "死亡者", "normalizeTo": 100, "remainderLabel": "非死亡者", "remainderColor": "#555555" } },
+          { "id": "pie-deaths-sear", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "東南アジア", "rowField": "地域", "rowValue": "東南アジア", "categoryColumns": ["死亡者の割合"], "primaryLabel": "死亡者", "normalizeTo": 100, "remainderLabel": "非死亡者", "remainderColor": "#555555" } },
+          { "id": "pie-deaths-wpr", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "西太平洋", "rowField": "地域", "rowValue": "西太平洋", "categoryColumns": ["死亡者の割合"], "primaryLabel": "死亡者", "normalizeTo": 100, "remainderLabel": "非死亡者", "remainderColor": "#555555" } }
         ]
       },
       "map": { "visible": false },
@@ -243,7 +260,7 @@
             "dataFile": "/data/charts/malariae/sankey-data.json",
             "dataFormat": "json",
             "config": {
-              "title": "フロー構造（ダミー）"
+              "title": "蚊帳の配布・使用状況"
             }
           }
         ]
@@ -304,7 +321,19 @@
               "xField": "year",
               "yField": "value",
               "seriesField": "series",
-              "title": "エルサルバドルのマラリア感染者数・死亡者数の推移"
+              "title": "エルサルバドルのマラリア感染者数・死亡者数の推移",
+              "annotations": [
+                {
+                  "type": "verticalLine",
+                  "year": 2017,
+                  "label": "2017年 新たな感染者がゼロとなった"
+                },
+                {
+                  "type": "verticalLine",
+                  "year": 2021,
+                  "label": "2021年 WHOがエルサルバドルのマラリア撲滅を正式認定"
+                }
+              ]
             }
           }
         ]
@@ -333,7 +362,19 @@
               "xField": "year",
               "yField": "value",
               "seriesField": "series",
-              "title": "エルサルバドルのマラリア感染者数・死亡者数の推移"
+              "title": "エルサルバドルのマラリア感染者数・死亡者数の推移",
+              "annotations": [
+                {
+                  "type": "verticalLine",
+                  "year": 2017,
+                  "label": "2017年 新たな感染者がゼロとなった"
+                },
+                {
+                  "type": "verticalLine",
+                  "year": 2021,
+                  "label": "2021年 WHOがエルサルバドルのマラリア撲滅を正式認定"
+                }
+              ]
             }
           }
         ]
@@ -352,9 +393,9 @@
       "map": {
         "visible": true,
         "mode": "world-overview",
-        "center": [20, 4],
-        "zoom": 2.1,
-        "highlightCountries": ["Kenya", "Nigeria", "South Africa"],
+        "center": [65, 25],
+        "zoom": 1.5,
+        "highlightCountries": ["China", "Egypt"],
         "lightenNonVisited": true
       },
       "image": { "visible": false }
@@ -370,9 +411,9 @@
       "map": {
         "visible": true,
         "mode": "world-overview",
-        "center": [100, 15],
-        "zoom": 2.2,
-        "highlightCountries": ["Myanmar", "India", "Indonesia"],
+        "center": [10, 15],
+        "zoom": 2.5,
+        "highlightCountries": ["Niger"],
         "lightenNonVisited": true
       },
       "image": { "visible": false }
@@ -398,7 +439,14 @@
               "xField": "year",
               "yField": "value",
               "seriesField": "series",
-              "title": "ニジェールのマラリア感染者数・死亡者数の推移"
+              "title": "ニジェールのマラリア感染者数・死亡者数の推移",
+              "annotations": [
+                {
+                  "type": "verticalLine",
+                  "year": 2010,
+                  "label": "2010年までにマラリアによる死亡を半分に減らすという目標"
+                }
+              ]
             }
           }
         ]
@@ -489,7 +537,14 @@
             "config": {
               "xField": "year",
               "yField": "value",
-              "title": "マラリア対策関連ODA予算の推移"
+              "title": "マラリア対策関連ODA予算の推移",
+              "annotations": [
+                {
+                  "type": "verticalLine",
+                  "year": 2010,
+                  "label": "2010年"
+                }
+              ]
             }
           }
         ]

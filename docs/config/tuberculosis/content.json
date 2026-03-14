@@ -1,6 +1,22 @@
 {
   "steps": [
     {
+      "id": "tb-hero",
+      "text": {
+        "content": "<h2 style=\"text-align:center\">結核との闘い</h2><p style=\"text-align:center\">～データで見る希望と課題～</p>",
+        "visible": true,
+        "position": { "horizontal": "center", "vertical": "center", "width": "60%" }
+      },
+      "chart": { "visible": false },
+      "map": { "visible": false },
+      "image": {
+        "visible": true,
+        "src": "/images/photo-1.jpg",
+        "alt": "結核との闘い",
+        "opacity": 0.78
+      }
+    },
+    {
       "id": "tb-img-01",
       "text": {
         "content": "<p>結核は、昔から人類とともにあった古い病気で、主に肺に感染して重い症状を引き起こす感染症です。結核菌という細菌が原因です。</p>",
@@ -183,14 +199,38 @@
         "visible": true,
         "position": { "horizontal": "right", "vertical": "center", "width": "34%" }
       },
-      "chart": { "visible": false },
-      "map": { "visible": false },
-      "image": {
+      "chart": {
         "visible": true,
-        "src": "/images/photo-2.jpg",
-        "alt": "ダミー画像",
-        "opacity": 0.80
-      }
+        "layout": "single",
+        "responsive": { "mobileStack": true },
+        "charts": [
+          {
+            "id": "line-tb-infections",
+            "type": "line",
+            "dataFile": "/data/charts/tuberculosis/tb_infections_trend.csv",
+            "dataFormat": "csv",
+            "config": {
+              "xField": "year",
+              "yField": "value",
+              "title": "結核感染者数の推移",
+              "annotations": [
+                {
+                  "type": "verticalLine",
+                  "year": 2020,
+                  "label": "2020年"
+                },
+                {
+                  "type": "verticalLine",
+                  "year": 2023,
+                  "label": "2023年"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "map": { "visible": false },
+      "image": { "visible": false }
     },
     {
       "id": "tb-img-13",
@@ -199,14 +239,33 @@
         "visible": true,
         "position": { "horizontal": "left", "vertical": "center", "width": "34%" }
       },
-      "chart": { "visible": false },
-      "map": { "visible": false },
-      "image": {
+      "chart": {
         "visible": true,
-        "src": "/images/photo-3.jpg",
-        "alt": "ダミー画像",
-        "opacity": 0.80
-      }
+        "layout": "single",
+        "responsive": { "mobileStack": true },
+        "charts": [
+          {
+            "id": "line-tb-deaths",
+            "type": "line",
+            "dataFile": "/data/charts/tuberculosis/tb_deaths_trend.csv",
+            "dataFormat": "csv",
+            "config": {
+              "xField": "year",
+              "yField": "value",
+              "title": "結核による推定死亡者数の推移",
+              "annotations": [
+                {
+                  "type": "verticalLine",
+                  "year": 2023,
+                  "label": "2023年"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "map": { "visible": false },
+      "image": { "visible": false }
     },
     {
       "id": "city-episodes-anchor",
@@ -281,7 +340,7 @@
               "xField": "year",
               "yField": "value",
               "seriesField": "series",
-              "title": "結核対策予算の推移（億ドル）"
+              "title": "結核対策予算の推移（単位不明）"
             }
           }
         ]

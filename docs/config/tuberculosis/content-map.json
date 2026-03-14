@@ -1,13 +1,13 @@
 {
   "timeline": {
-    "title": "グローバルファンド 結核対策の物語",
-    "description": "世界各地で結核と闘う人々の取り組みをたどる旅"
+    "title": "ひとりひとりのエピソード",
+    "description": "感染症の現場で、ひとりひとりの『夢』が希望へとつながり、多くの命が救われてきた実話を紹介します。"
   },
   "cities": [
     {
       "id": "indonesia1",
-      "name": "ジャカルタ",
-      "nameEn": "Jakarta",
+      "name": "インドネシア",
+      "nameEn": "Indonesia",
       "country": "Indonesia",
       "latitude": -6.2088,
       "longitude": 106.8456,
@@ -30,8 +30,8 @@
     },
     {
       "id": "indonesia2",
-      "name": "ジャカルタ",
-      "nameEn": "Jakarta",
+      "name": "インドネシア",
+      "nameEn": "Indonesia",
       "country": "Indonesia",
       "latitude": -6.2088,
       "longitude": 106.8456,
@@ -54,8 +54,8 @@
     },
     {
       "id": "vietnam",
-      "name": "ハノイ",
-      "nameEn": "Hanoi",
+      "name": "ベトナム",
+      "nameEn": "Vietnam",
       "country": "Vietnam",
       "latitude": 21.0285,
       "longitude": 105.8542,
@@ -78,8 +78,8 @@
     },
     {
       "id": "southafrica",
-      "name": "ヨハネスブルグ",
-      "nameEn": "Johannesburg",
+      "name": "南アフリカ",
+      "nameEn": "South Africa",
       "country": "South Africa",
       "latitude": -26.2041,
       "longitude": 28.0473,
