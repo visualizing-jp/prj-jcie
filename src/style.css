@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "lenis/dist/lenis.css";
+@import "maplibre-gl/dist/maplibre-gl.css";
 
 @theme {
   --font-mincho: "Shippori Mincho", serif;
@@ -83,6 +84,28 @@ body::-webkit-scrollbar {
 
 .svg-sub-layer[data-layer="chart"] {
   pointer-events: auto;
+}
+
+/* MapLibre タイル背景 */
+.map-tile-container {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.map-tile-container .maplibregl-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.map-svg-overlay {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 /* Step */

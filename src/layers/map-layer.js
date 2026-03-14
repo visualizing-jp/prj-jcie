@@ -62,10 +62,23 @@ export class MapLayer {
     this.countryFeatures = [];
     this.readyPromise = null;
     this.pendingConfig = null;
+    this.glMap = null;
+    this.tileContainer = null;
+    this.currentCenter = [0, 15];
+    this.currentZoom = 1.2;
   }
 
   render(mapConfig) {
     if (!mapConfig?.visible) return;
+
+    // タイルコンテナを再表示
+    if (this.tileContainer) {
+      this.tileContainer.style.display = '';
+      // display:none から復帰時にMapLibreキャンバスをリサイズ
+      if (this.glMap) {
+        try { this.glMap.resize(); } catch (_e) { /* ignore */ }
+      }
+    }
 
     this.pendingConfig = mapConfig;
     this.ensureReady()
@@ -84,7 +97,11 @@ export class MapLayer {
       return this.readyPromise;
     }
 
-    this.readyPromise = d3.json(WORLD_MAP_URL).then((topology) => {
+    // TopoJSON読み込みとタイル背景初期化を並行実行
+    const jsonPromise = d3.json(WORLD_MAP_URL);
+    const tilePromise = this.initTileBackground().catch(() => null);
+
+    this.readyPromise = Promise.all([jsonPromise, tilePromise]).then(([topology]) => {
       const countryObject = topology?.objects?.countries;
       if (!countryObject) {
         throw new Error('countries object not found in TopoJSON');
@@ -98,17 +115,87 @@ export class MapLayer {
     return this.readyPromise;
   }
 
+  async initTileBackground() {
+    if (this.glMap || !this.container) return;
+
+    try {
+      const [maplibregl, { Protocol }] = await Promise.all([
+        import('maplibre-gl'),
+        import('pmtiles'),
+      ]);
+
+      const maplibre = maplibregl.default || maplibregl;
+
+      const protocol = new Protocol();
+      maplibre.addProtocol('pmtiles', protocol.tile);
+
+      // MapLibreキャンバス用コンテナ
+      this.tileContainer = document.createElement('div');
+      this.tileContainer.className = 'map-tile-container';
+      this.container.appendChild(this.tileContainer);
+
+      this.glMap = new maplibre.Map({
+        container: this.tileContainer,
+        style: {
+          version: 8,
+          sources: {
+            terrain: {
+              type: 'raster-dem',
+              url: 'https://tiles.mapterhorn.com/tilejson.json',
+              tileSize: 512,
+              encoding: 'terrarium',
+            },
+          },
+          layers: [
+            {
+              id: 'background',
+              type: 'background',
+              paint: { 'background-color': '#2a5080' },
+            },
+            {
+              id: 'hillshade',
+              type: 'hillshade',
+              source: 'terrain',
+              paint: {
+                'hillshade-shadow-color': '#4a4a4a',
+                'hillshade-highlight-color': '#f0f0f0',
+                'hillshade-accent-color': '#c0c0c0',
+                'hillshade-exaggeration': 0.5,
+                'hillshade-illumination-direction': 315,
+              },
+            },
+          ],
+        },
+        center: [0, 15],
+        zoom: 1.5,
+        interactive: false,
+        attributionControl: false,
+        fadeDuration: 0,
+        preserveDrawingBuffer: false,
+      });
+
+      await new Promise((resolve) => {
+        this.glMap.on('load', resolve);
+      });
+    } catch (error) {
+      console.warn('MapLibre tile background init failed (falling back to flat map):', error);
+      this.glMap = null;
+    }
+  }
+
   createSvg() {
     if (!this.container || this.svg) return;
 
-    this.container.innerHTML = '';
+    // SVGはtileContainerの後に追加（重なり順）
     this.svg = d3
       .select(this.container)
       .append('svg')
+      .attr('class', 'map-svg-overlay')
       .attr('viewBox', `0 0 ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT}`)
       .attr('preserveAspectRatio', 'xMidYMid meet')
       .attr('aria-label', 'world map');
 
+    // hillshadeがある場合は背景を半透明に
     this.svg
       .append('rect')
       .attr('x', 0)
@@ -116,7 +203,7 @@ export class MapLayer {
       .attr('width', VIEWBOX_WIDTH)
       .attr('height', VIEWBOX_HEIGHT)
       .attr('fill', '#06111e')
-      .attr('fill-opacity', 0.7);
+      .attr('fill-opacity', this.glMap ? 0.05 : 0.7);
   }
 
   drawBaseMap() {
@@ -142,10 +229,6 @@ export class MapLayer {
     const zoom = Number.isFinite(mapConfig.zoom) ? mapConfig.zoom : 1.2;
     const highlightCountries = resolveHighlightCountries(mapConfig);
     const lightenNonVisited = Boolean(mapConfig.lightenNonVisited || mapConfig.lightenAllCountries);
-    const themePrimary = getComputedStyle(document.documentElement)
-      .getPropertyValue('--theme-primary')
-      .trim() || '#ff6b6b';
-
     const projection = d3
       .geoMercator()
       .center(center)
@@ -153,30 +236,112 @@ export class MapLayer {
       .translate([VIEWBOX_WIDTH / 2, VIEWBOX_HEIGHT / 2]);
     const path = d3.geoPath(projection);
 
-    this.countryPaths
-      .transition()
-      .duration(650)
-      .ease(d3.easeCubicOut)
-      .attr('d', path)
-      .attr('fill', (d) => {
-        const name = d.properties?.name;
-        return highlightCountries.has(name) ? themePrimary : '#3f4f63';
-      })
-      .attr('fill-opacity', (d) => {
-        const name = d.properties?.name;
-        if (highlightCountries.size === 0) {
-          return mapConfig.lightenAllCountries ? 0.35 : 0.68;
-        }
-        if (highlightCountries.has(name)) {
-          return 0.96;
-        }
-        return lightenNonVisited ? 0.22 : 0.5;
-      })
-      .attr('stroke', (d) => (highlightCountries.has(d.properties?.name) ? '#ffffff' : '#a5b4c7'))
-      .attr('stroke-opacity', (d) => (highlightCountries.has(d.properties?.name) ? 0.9 : 0.35))
-      .attr('stroke-width', (d) => (highlightCountries.has(d.properties?.name) ? 1.2 : 0.6));
+    // hillshadeがある場合はfill-opacityを下げて地形を透過させる
+    const hasHillshade = Boolean(this.glMap);
 
-    this.updateMarkers(mapConfig.markers || [], projection, themePrimary);
+    const fillFn = (d) => {
+      const name = d.properties?.name;
+      if (highlightCountries.has(name)) return '#000000';
+      return hasHillshade ? '#e8e8e8' : '#3f4f63';
+    };
+    const fillOpacityFn = (d) => {
+      const name = d.properties?.name;
+      if (hasHillshade) {
+        if (highlightCountries.has(name)) return 0.3;
+        if (highlightCountries.size === 0) {
+          return mapConfig.lightenAllCountries ? 0.15 : 0.25;
+        }
+        return lightenNonVisited ? 0.1 : 0.2;
+      }
+      if (highlightCountries.size === 0) {
+        return mapConfig.lightenAllCountries ? 0.35 : 0.68;
+      }
+      if (highlightCountries.has(name)) return 0.3;
+      return lightenNonVisited ? 0.22 : 0.5;
+    };
+    const strokeFn = (d) => (highlightCountries.has(d.properties?.name) ? '#ffffff' : hasHillshade ? '#ffffff' : '#a5b4c7');
+    const strokeOpacityFn = (d) => (highlightCountries.has(d.properties?.name) ? 0.9 : hasHillshade ? 0.2 : 0.35);
+    const strokeWidthFn = (d) => (highlightCountries.has(d.properties?.name) ? 1.2 : 0.6);
+
+    // 初回表示（pathにd属性がない）かどうかで分岐
+    const isFirstRender = !this.countryPaths.node()?.getAttribute('d');
+
+    if (isFirstRender) {
+      // 初回: トランジションなしで即座に配置（SVGとhillshadeのズレを防止）
+      this.countryPaths
+        .attr('d', path)
+        .attr('fill', fillFn)
+        .attr('fill-opacity', fillOpacityFn)
+        .attr('stroke', strokeFn)
+        .attr('stroke-opacity', strokeOpacityFn)
+        .attr('stroke-width', strokeWidthFn);
+
+      // MapLibreカメラも即座にジャンプ
+      if (this.glMap) {
+        if (this._cameraTimer) this._cameraTimer.stop();
+        this._cameraTimer = null;
+        try { this.jumpTileCamera(center, zoom); } catch (_e) { /* ignore */ }
+      }
+    } else {
+      // 2回目以降: トランジション付きでスムーズに移動
+      this.countryPaths
+        .transition()
+        .duration(650)
+        .ease(d3.easeCubicOut)
+        .attr('d', path)
+        .attr('fill', fillFn)
+        .attr('fill-opacity', fillOpacityFn)
+        .attr('stroke', strokeFn)
+        .attr('stroke-opacity', strokeOpacityFn)
+        .attr('stroke-width', strokeWidthFn);
+
+      // MapLibre カメラをD3トランジションとは独立して同期（d3.timerで分離）
+      if (this.glMap) {
+        const prevCenter = [...this.currentCenter];
+        const prevZoom = this.currentZoom;
+        const interpLng = d3.interpolate(prevCenter[0], center[0]);
+        const interpLat = d3.interpolate(prevCenter[1], center[1]);
+        const interpZoom = d3.interpolate(prevZoom, zoom);
+        const ease = d3.easeCubicOut;
+        const duration = 650;
+        const startTime = performance.now();
+
+        if (this._cameraTimer) this._cameraTimer.stop();
+
+        this._cameraTimer = d3.timer(() => {
+          const t = Math.min(1, (performance.now() - startTime) / duration);
+          const et = ease(t);
+          try {
+            this.jumpTileCamera([interpLng(et), interpLat(et)], interpZoom(et));
+          } catch (_e) { /* ignore */ }
+          if (t >= 1) {
+            this._cameraTimer.stop();
+            this._cameraTimer = null;
+          }
+        });
+      }
+    }
+
+    this.updateMarkers(mapConfig.markers || [], projection);
+
+    this.currentCenter = center;
+    this.currentZoom = zoom;
+  }
+
+  jumpTileCamera(center, d3Zoom) {
+    if (!this.glMap || !this.container) return;
+
+    const d3Scale = BASE_SCALE * d3Zoom;
+    const containerWidth = this.container.clientWidth;
+    const containerHeight = this.container.clientHeight;
+    const viewBoxScale = Math.min(containerWidth / VIEWBOX_WIDTH, containerHeight / VIEWBOX_HEIGHT);
+    const effectiveScale = d3Scale * viewBoxScale;
+    const maplibreZoom = Math.log2(effectiveScale * 2 * Math.PI / 512);
+
+    this.glMap.jumpTo({
+      center: [center[0], center[1]],
+      zoom: Math.max(0, maplibreZoom),
+    });
   }
 
   resolveCenter(center) {
@@ -190,7 +355,7 @@ export class MapLayer {
     return [lng, lat];
   }
 
-  updateMarkers(markers, projection, fallbackColor) {
+  updateMarkers(markers, projection) {
     if (!this.markerCircles || !this.markerLabels) return;
 
     const normalized = markers
@@ -209,7 +374,7 @@ export class MapLayer {
           name: marker.name || '',
           country: marker.country || '',
           isCurrent: Boolean(marker.isCurrent),
-          color: marker.color || fallbackColor,
+          color: marker.color || '#ff6b6b',
           size: Number(marker.size) || 7,
         };
       })
@@ -283,8 +448,17 @@ export class MapLayer {
   }
 
   clear() {
+    if (this._cameraTimer) {
+      this._cameraTimer.stop();
+      this._cameraTimer = null;
+    }
+    // MapLibreインスタンスは破棄せず保持（再利用のため）、非表示にする
+    if (this.tileContainer) {
+      this.tileContainer.style.display = 'none';
+    }
     if (this.container) {
-      this.container.innerHTML = '';
+      const svg = this.container.querySelector('.map-svg-overlay');
+      if (svg) svg.remove();
     }
     this.svg = null;
     this.countryPaths = null;
@@ -293,5 +467,17 @@ export class MapLayer {
     this.countryFeatures = [];
     this.readyPromise = null;
     this.pendingConfig = null;
+  }
+
+  destroy() {
+    this.clear();
+    if (this.glMap) {
+      this.glMap.remove();
+      this.glMap = null;
+    }
+    if (this.tileContainer) {
+      this.tileContainer.remove();
+      this.tileContainer = null;
+    }
   }
 }

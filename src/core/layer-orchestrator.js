@@ -161,6 +161,7 @@ export class LayerOrchestrator {
 
   destroy() {
     this.chartLayer?.destroy();
+    this.mapLayer?.destroy();
     this.webglLayer?.destroy();
   }
 }
