@@ -421,8 +421,37 @@ body.is-fixed-closing #header-nav {
   }
 }
 
+/* ──── 地球アニメーション ──── */
+#globe-container {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.globe-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+#globe-country-name {
+  font-family: var(--font-mincho);
+  font-size: clamp(1rem, 0.9rem + 0.5vw, 1.3rem);
+  color: #ffffffaa;
+  letter-spacing: 0.1em;
+  opacity: 0;
+  margin: 0 0 2rem;
+  min-height: 1.5em;
+}
+
 /* トップページ */
 .top-page {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
