@@ -6,6 +6,16 @@
   --font-sans: "Noto Sans JP", sans-serif;
 }
 
+:root {
+  /* モーション統一変数 */
+  --duration-fast: 0.35s;
+  --duration-default: 0.6s;
+  --duration-slow: 0.85s;
+  --ease-default: cubic-bezier(0.65, 0.05, 0, 1);
+  --ease-out: cubic-bezier(0.33, 1, 0.68, 1);
+  --ease-in-out: cubic-bezier(0.76, 0, 0.24, 1);
+}
+
 html, body {
   margin: 0;
   padding: 0;
@@ -14,6 +24,13 @@ html, body {
   font-family: var(--font-sans);
   background: #000;
   color: #fff;
+  /* スクロールバー非表示 */
+  scrollbar-width: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
 }
 
 /* レイヤー共通 */
@@ -25,11 +42,22 @@ html, body {
   height: 100%;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.6s ease;
+  transition: opacity var(--duration-default) var(--ease-default);
+  clip-path: inset(0 0 0 0);
 }
 
 .layer.active {
   opacity: 1;
+}
+
+/* clip-path レイヤー遷移 */
+.layer.clip-enter {
+  clip-path: inset(0 0 100% 0);
+  animation: layerReveal var(--duration-slow) var(--ease-in-out) forwards;
+}
+
+@keyframes layerReveal {
+  to { clip-path: inset(0 0 0 0); }
 }
 
 /* z-index レイヤー順 */
@@ -75,12 +103,75 @@ html, body {
   max-width: 40rem;
   opacity: 0;
   transform: translateY(20px);
-  transition: opacity 0.6s ease, transform 0.6s ease;
+  transition: opacity var(--duration-default) var(--ease-default),
+              transform var(--duration-default) var(--ease-default);
 }
 
 .text-card.visible {
   opacity: 1;
   transform: translateY(0);
+}
+
+/* ──── ヒーロー画面演出 ──── */
+.step.hero-step {
+  position: relative;
+}
+
+.step.hero-step .text-card {
+  background: transparent;
+  backdrop-filter: none;
+  max-width: 70%;
+}
+
+.step.hero-step .text-card h2 {
+  font-size: clamp(2.2rem, 2rem + 2.5vw, 3.8rem);
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-shadow:
+    0 2px 20px rgba(0, 0, 0, 0.7),
+    0 0 60px rgba(0, 0, 0, 0.4);
+}
+
+.step.hero-step .text-card p {
+  font-size: clamp(1.1rem, 1rem + 0.5vw, 1.4rem);
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.6);
+  color: #ffffffcc;
+}
+
+/* ──── Split Text アニメーション ──── */
+.split-line {
+  display: block;
+  overflow: hidden;
+}
+
+.split-line-inner {
+  display: block;
+  transform: translateY(105%);
+  transition: transform var(--duration-default) var(--ease-out);
+}
+
+.text-card.visible .split-line-inner {
+  transform: translateY(0);
+}
+
+/* ──── プログレスバー ──── */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  z-index: 60;
+  pointer-events: none;
+  background: transparent;
+}
+
+.scroll-progress-bar {
+  height: 100%;
+  width: 0%;
+  background: var(--theme-primary, #ff6b6b);
+  transition: width 0.05s linear;
+  box-shadow: 0 0 8px color-mix(in srgb, var(--theme-primary, #ff6b6b) 60%, transparent);
 }
 
 .text-card.text-center {
@@ -156,12 +247,31 @@ html, body {
   font-size: 0.85rem;
   text-decoration: none;
   background: color-mix(in srgb, var(--theme-primary, #ff6b6b) 30%, transparent);
-  transition: background-color 0.2s ease, border-color 0.2s ease;
+  transition: background-color var(--duration-fast) var(--ease-default),
+              border-color var(--duration-fast) var(--ease-default);
 }
 
 .city-episode-link:hover {
   background: color-mix(in srgb, var(--theme-primary, #ff6b6b) 55%, transparent);
   border-color: color-mix(in srgb, var(--theme-primary, #ff6b6b) 80%, white);
+}
+
+/* ──── エピソードカード ホバー強化 ──── */
+.city-episode-card {
+  transition: transform var(--duration-fast) var(--ease-out),
+              box-shadow var(--duration-fast) var(--ease-out);
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+}
+
+.text-card:has(.city-episode-card):hover {
+  border: 1px solid color-mix(in srgb, var(--theme-primary, #ff6b6b) 40%, transparent);
+  box-shadow: 0 0 20px color-mix(in srgb, var(--theme-primary, #ff6b6b) 15%, transparent);
+}
+
+.text-card:has(.city-episode-card):hover .city-episode-thumb {
+  transform: scale(1.02);
+  transition: transform var(--duration-fast) var(--ease-out);
 }
 
 /* ヘッダーナビゲーション */
@@ -210,7 +320,7 @@ body.is-fixed-closing #header-nav {
   text-decoration: none;
   font-size: 0.85rem;
   border-bottom: 2px solid transparent;
-  transition: color 0.3s ease, border-bottom-color 0.3s ease;
+  transition: color var(--duration-fast) var(--ease-default), border-bottom-color var(--duration-fast) var(--ease-default);
 }
 
 .nav-link:hover {
@@ -339,7 +449,7 @@ body.is-fixed-closing #header-nav {
   text-decoration: none;
   font-family: var(--font-mincho);
   font-size: 1.1rem;
-  transition: background 0.3s ease, border-color 0.3s ease;
+  transition: background var(--duration-fast) var(--ease-default), border-color var(--duration-fast) var(--ease-default);
 }
 
 .top-disease-card:hover {

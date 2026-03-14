@@ -67,7 +67,11 @@ export class LayerOrchestrator {
 
     // 前のアクティブレイヤーを非表示
     if (this.activeLayer && this.activeLayer !== target) {
-      this.elements[this.activeLayer]?.classList.remove('active');
+      const prevEl = this.elements[this.activeLayer];
+      if (prevEl) {
+        prevEl.classList.remove('active');
+        prevEl.classList.remove('clip-enter');
+      }
       if (this.activeLayer === 'image') {
         this.imageLayer?.hide();
       }
@@ -78,9 +82,18 @@ export class LayerOrchestrator {
       }
     }
 
-    // 新しいレイヤーを表示
+    // 新しいレイヤーを表示（clip-pathアニメーション付き）
     if (target && this.elements[target]) {
-      this.elements[target].classList.add('active');
+      const el = this.elements[target];
+      el.classList.add('active');
+
+      // レイヤー切り替え時のみclip-path遷移
+      if (this.activeLayer && this.activeLayer !== target) {
+        el.classList.remove('clip-enter');
+        // reflow強制でアニメーション再トリガー
+        void el.offsetWidth;
+        el.classList.add('clip-enter');
+      }
     }
 
     // 画像レイヤーの場合、画像をセット

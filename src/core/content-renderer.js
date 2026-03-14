@@ -22,6 +22,12 @@ export class ContentRenderer {
       section.style.minHeight = step.scrollHeight;
     }
 
+    // ヒーロー画面判定
+    const isHero = step.id && step.id.endsWith('-hero');
+    if (isHero) {
+      section.classList.add('hero-step');
+    }
+
     if (step.fixedClosing) {
       section.classList.add('fixed-closing-step');
       section.appendChild(this.createFixedClosingElement());
@@ -32,6 +38,10 @@ export class ContentRenderer {
       const card = document.createElement('div');
       card.className = 'text-card';
       card.innerHTML = step.text.content;
+
+      // Split Text: h2要素を行単位で分割
+      this.applySplitText(card);
+
       this.applyPosition(card, step.text.position);
       section.appendChild(card);
     }
@@ -39,20 +49,64 @@ export class ContentRenderer {
     return section;
   }
 
+  /**
+   * h2テキストを行（文字列）単位で分割し、clip-pathスライドイン用にラップ
+   */
+  applySplitText(card) {
+    const headings = card.querySelectorAll('h2');
+    headings.forEach((h2) => {
+      const text = h2.textContent;
+      if (!text.trim()) return;
+
+      // インラインスタイルを保持
+      const style = h2.getAttribute('style') || '';
+
+      // テキストを句読点・改行で自然に分割、短い場合はそのまま1行
+      const segments = text.length > 12
+        ? this.splitIntoLines(text)
+        : [text];
+
+      h2.innerHTML = '';
+      if (style) h2.setAttribute('style', style);
+
+      segments.forEach((seg, i) => {
+        const line = document.createElement('span');
+        line.className = 'split-line';
+
+        const inner = document.createElement('span');
+        inner.className = 'split-line-inner';
+        inner.textContent = seg;
+        // staggerディレイ
+        inner.style.transitionDelay = `${i * 0.08}s`;
+
+        line.appendChild(inner);
+        h2.appendChild(line);
+      });
+    });
+  }
+
+  /**
+   * テキストを自然な区切り（句読点、助詞）で分割
+   */
+  splitIntoLines(text) {
+    // まず句読点で分割を試みる
+    const parts = text.split(/(?<=[。、！？〜～ ―])/);
+    if (parts.length >= 2) {
+      return parts.filter((p) => p.trim().length > 0);
+    }
+    // 区切りがない場合は半分に分ける
+    const mid = Math.ceil(text.length / 2);
+    return [text.slice(0, mid), text.slice(mid)];
+  }
+
   applyPosition(card, position) {
     if (!position) return;
-
-    const parent = card.parentElement || card.closest('.step');
 
     if (position.width) {
       card.style.maxWidth = position.width;
     }
 
     // horizontal / vertical はstepのflexboxで制御
-    const hMap = { left: 'flex-start', center: 'center', right: 'flex-end' };
-    const vMap = { top: 'flex-start', center: 'center', bottom: 'flex-end' };
-
-    // 親step要素にスタイルを適用するため、dataset経由で情報を渡す
     card.dataset.hAlign = position.horizontal || 'center';
     card.dataset.vAlign = position.vertical || 'center';
   }

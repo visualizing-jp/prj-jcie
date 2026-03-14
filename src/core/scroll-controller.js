@@ -11,10 +11,12 @@ export class ScrollController {
     this.onProgress = onProgress;
     this.lenis = null;
     this.triggers = [];
+    this.progressBar = null;
   }
 
   init() {
     this.initLenis();
+    this.initProgressBar();
     this.initStepTriggers();
   }
 
@@ -28,6 +30,16 @@ export class ScrollController {
     this.lenis.on('scroll', ScrollTrigger.update);
     gsap.ticker.add((time) => this.lenis.raf(time * 1000));
     gsap.ticker.lagSmoothing(0);
+  }
+
+  initProgressBar() {
+    const container = document.createElement('div');
+    container.className = 'scroll-progress';
+    const bar = document.createElement('div');
+    bar.className = 'scroll-progress-bar';
+    container.appendChild(bar);
+    document.body.appendChild(container);
+    this.progressBar = bar;
   }
 
   initStepTriggers() {
@@ -53,8 +65,17 @@ export class ScrollController {
       start: 'top top',
       end: 'bottom bottom',
       scrub: true,
-      onUpdate: (self) => this.onProgress(self.progress),
+      onUpdate: (self) => {
+        this.onProgress(self.progress);
+        this.updateProgressBar(self.progress);
+      },
     });
+  }
+
+  updateProgressBar(progress) {
+    if (this.progressBar) {
+      this.progressBar.style.width = `${progress * 100}%`;
+    }
   }
 
   destroy() {
@@ -62,5 +83,9 @@ export class ScrollController {
     this.triggers = [];
     this.lenis?.destroy();
     ScrollTrigger.getAll().forEach((t) => t.kill());
+    if (this.progressBar) {
+      this.progressBar.parentElement?.remove();
+      this.progressBar = null;
+    }
   }
 }
