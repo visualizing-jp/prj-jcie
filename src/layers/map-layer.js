@@ -150,17 +150,17 @@ export class MapLayer {
             {
               id: 'background',
               type: 'background',
-              paint: { 'background-color': '#2a5080' },
+              paint: { 'background-color': '#b8cee0' },
             },
             {
               id: 'hillshade',
               type: 'hillshade',
               source: 'terrain',
               paint: {
-                'hillshade-shadow-color': '#4a4a4a',
-                'hillshade-highlight-color': '#f0f0f0',
-                'hillshade-accent-color': '#c0c0c0',
-                'hillshade-exaggeration': 0.5,
+                'hillshade-shadow-color': '#8a8a8a',
+                'hillshade-highlight-color': '#ffffff',
+                'hillshade-accent-color': '#d0d0d0',
+                'hillshade-exaggeration': 0.35,
                 'hillshade-illumination-direction': 315,
               },
             },
@@ -202,8 +202,8 @@ export class MapLayer {
       .attr('y', 0)
       .attr('width', VIEWBOX_WIDTH)
       .attr('height', VIEWBOX_HEIGHT)
-      .attr('fill', '#06111e')
-      .attr('fill-opacity', this.glMap ? 0.05 : 0.7);
+      .attr('fill', this.glMap ? '#8ab4d0' : '#06111e')
+      .attr('fill-opacity', this.glMap ? 0.35 : 0.7);
   }
 
   drawBaseMap() {
@@ -242,16 +242,16 @@ export class MapLayer {
     const fillFn = (d) => {
       const name = d.properties?.name;
       if (highlightCountries.has(name)) return '#000000';
-      return hasHillshade ? '#e8e8e8' : '#3f4f63';
+      return hasHillshade ? '#f0ece4' : '#3f4f63';
     };
     const fillOpacityFn = (d) => {
       const name = d.properties?.name;
       if (hasHillshade) {
         if (highlightCountries.has(name)) return 0.3;
         if (highlightCountries.size === 0) {
-          return mapConfig.lightenAllCountries ? 0.15 : 0.25;
+          return mapConfig.lightenAllCountries ? 0.3 : 0.45;
         }
-        return lightenNonVisited ? 0.1 : 0.2;
+        return lightenNonVisited ? 0.2 : 0.4;
       }
       if (highlightCountries.size === 0) {
         return mapConfig.lightenAllCountries ? 0.35 : 0.68;
@@ -259,9 +259,9 @@ export class MapLayer {
       if (highlightCountries.has(name)) return 0.3;
       return lightenNonVisited ? 0.22 : 0.5;
     };
-    const strokeFn = (d) => (highlightCountries.has(d.properties?.name) ? '#000000' : hasHillshade ? '#ffffff' : '#a5b4c7');
-    const strokeOpacityFn = (d) => (highlightCountries.has(d.properties?.name) ? 0.6 : hasHillshade ? 0.2 : 0.35);
-    const strokeWidthFn = (d) => (highlightCountries.has(d.properties?.name) ? 1.2 : 0.6);
+    const strokeFn = (d) => (highlightCountries.has(d.properties?.name) ? '#000000' : hasHillshade ? '#9a9a9a' : '#a5b4c7');
+    const strokeOpacityFn = (d) => (highlightCountries.has(d.properties?.name) ? 0.5 : hasHillshade ? 0.35 : 0.35);
+    const strokeWidthFn = (d) => (highlightCountries.has(d.properties?.name) ? 1.0 : 0.4);
 
     // 初回表示（pathにd属性がない）かどうかで分岐
     const isFirstRender = !this.countryPaths.node()?.getAttribute('d');
