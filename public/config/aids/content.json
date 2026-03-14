@@ -3,7 +3,7 @@
     {
       "id": "aids-hero",
       "text": {
-        "content": "<h2 style=\"text-align:center\">HIV/エイズとの闘い</h2><p style=\"text-align:center\">～データで見る希望と課題～</p>",
+        "content": "<h2 style=\"text-align:center\">エイズとの闘い</h2><p style=\"text-align:center\">～データで見る希望と課題～</p>",
         "visible": true,
         "position": { "horizontal": "center", "vertical": "center", "width": "60%" }
       },
@@ -12,7 +12,7 @@
       "image": {
         "visible": true,
         "src": "/images/photo-1.jpg",
-        "alt": "HIV/エイズとの闘い",
+        "alt": "エイズとの闘い",
         "opacity": 0.78
       }
     },
