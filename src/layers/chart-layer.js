@@ -952,9 +952,12 @@ export class ChartLayer {
 
     const staggerDelay = panel._gridIndex != null ? panel._gridIndex * 80 : 0;
 
+    const arcsData = pie(rows);
+    const totalEndAngle = arcsData[arcsData.length - 1].endAngle;
+
     root
       .selectAll('path')
-      .data(pie(rows))
+      .data(arcsData)
       .enter()
       .append('path')
       .attr('fill', (_, i) => palette[i])
@@ -963,12 +966,17 @@ export class ChartLayer {
       .attr('opacity', 0.95)
       .attr('d', (d) => arc({ ...d, endAngle: d.startAngle }))
       .transition()
-      .duration(600)
+      .duration(800)
       .delay(staggerDelay)
       .ease(d3.easeCubicOut)
       .attrTween('d', (d) => {
-        const interp = d3.interpolate({ startAngle: d.startAngle, endAngle: d.startAngle }, d);
-        return (t) => arc(interp(t));
+        return (t) => {
+          const sweep = t * totalEndAngle;
+          if (sweep <= d.startAngle) {
+            return arc({ ...d, endAngle: d.startAngle });
+          }
+          return arc({ ...d, endAngle: Math.min(d.endAngle, sweep) });
+        };
       });
 
     const legend = inner.group
