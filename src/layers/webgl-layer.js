@@ -10,7 +10,7 @@ export class WebGLLayer {
     this.uniforms = {};
     this.animationId = null;
     this.progress = 0;
-    this.themeColor = new THREE.Color('#ff6b6b');
+    this.themeColor = new THREE.Color('#66c2a5');
   }
 
   init() {

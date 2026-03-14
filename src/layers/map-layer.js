@@ -374,7 +374,7 @@ export class MapLayer {
           name: marker.name || '',
           country: marker.country || '',
           isCurrent: Boolean(marker.isCurrent),
-          color: marker.color || '#ff6b6b',
+          color: this.getThemePrimary(),
           size: Number(marker.size) || 7,
         };
       })
@@ -467,6 +467,10 @@ export class MapLayer {
     this.countryFeatures = [];
     this.readyPromise = null;
     this.pendingConfig = null;
+  }
+
+  getThemePrimary() {
+    return getComputedStyle(document.documentElement).getPropertyValue('--theme-primary').trim() || '#66c2a5';
   }
 
   destroy() {

@@ -1582,7 +1582,7 @@ export class ChartLayer {
   }
 
   getThemePrimary() {
-    return getComputedStyle(document.documentElement).getPropertyValue('--theme-primary').trim() || '#ff6b6b';
+    return getComputedStyle(document.documentElement).getPropertyValue('--theme-primary').trim() || '#66c2a5';
   }
 
   buildPalette(count) {
