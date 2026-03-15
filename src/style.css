@@ -23,8 +23,8 @@ html, body {
   width: 100%;
   overflow-x: hidden;
   font-family: var(--font-sans);
-  background: #0a0a0f;
-  color: #f5f5f0;
+  background: #ffffff;
+  color: #1a1a2e;
   /* スクロールバー非表示 */
   scrollbar-width: none;
 }
@@ -130,7 +130,7 @@ button:focus:not(:focus-visible) {
 
 /* テキストカード */
 .text-card {
-  background: rgba(10, 10, 15, 0.75);
+  background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(4px);
   border-radius: 0.5rem;
   padding: 2rem;
@@ -241,7 +241,7 @@ button:focus:not(:focus-visible) {
   font-size: 0.75rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #f5f0ecb3;
+  color: rgba(26, 26, 46, 0.7);
 }
 
 .city-episode-thumb {
@@ -249,7 +249,7 @@ button:focus:not(:focus-visible) {
   border-radius: 0.45rem;
   aspect-ratio: 16 / 9;
   object-fit: cover;
-  border: 1px solid #f5f0ec2e;
+  border: 1px solid rgba(0, 0, 0, 0.12);
 }
 
 .city-episode-title {
@@ -261,14 +261,14 @@ button:focus:not(:focus-visible) {
 .city-episode-location {
   margin: 0;
   font-size: 0.85rem;
-  color: #c9d1d9;
+  color: #4b5563;
 }
 
 .city-episode-description {
   margin: 0;
   font-size: 0.95rem;
   line-height: 1.8;
-  color: #e5e7eb;
+  color: #374151;
 }
 
 .city-episode-link {
@@ -277,7 +277,7 @@ button:focus:not(:focus-visible) {
   padding: 0.45rem 0.9rem;
   border-radius: 999px;
   border: 1px solid color-mix(in srgb, var(--theme-primary, #66c2a5) 60%, white);
-  color: #f5f0ec;
+  color: #1a1a2e;
   font-size: 0.85rem;
   text-decoration: none;
   background: color-mix(in srgb, var(--theme-primary, #66c2a5) 30%, transparent);
@@ -484,6 +484,7 @@ body.is-fixed-closing #header-nav {
   font-size: clamp(2.5rem, 2rem + 3vw, 4.5rem);
   font-weight: 700;
   letter-spacing: 0.08em;
+  color: #f5f0ec;
   margin: 0 0 1rem;
 }
 
@@ -522,7 +523,7 @@ body.is-fixed-closing #header-nav {
 
 /* d3-svg-annotation: ダークテーマスタイル */
 .chart-annotations .annotation path {
-  stroke: #e5edf7;
+  stroke: #374151;
   fill: none;
 }
 .chart-annotations .annotation path.connector {
@@ -530,7 +531,7 @@ body.is-fixed-closing #header-nav {
   stroke-opacity: 0.6;
 }
 .chart-annotations .annotation text {
-  fill: #e7eef8;
+  fill: #1f2937;
   font-size: 11px;
   font-weight: 500;
 }

@@ -10,7 +10,7 @@ const MIN_HEADER_SAFE = 56;
 const MAX_HEADER_SAFE = 130;
 
 const ANNOTATION_DEFAULTS = {
-  color: '#e5edf7',
+  color: '#374151',
   fontSize: 11,
   fontWeight: 500,
   lineOpacity: 0.8,
@@ -108,7 +108,7 @@ export class ChartLayer {
           .attr('x', bounds.left + (bounds.right - bounds.left) / 2)
           .attr('y', bounds.top + 20)
           .attr('text-anchor', 'middle')
-          .attr('fill', '#eceff4')
+          .attr('fill', '#1f2937')
           .attr('font-size', 16)
           .attr('font-weight', 700)
           .text(dualTitle);
@@ -188,7 +188,7 @@ export class ChartLayer {
         .attr('x', bounds.left + (bounds.right - bounds.left) / 2)
         .attr('y', bounds.top + 20)
         .attr('text-anchor', 'middle')
-        .attr('fill', '#eceff4')
+        .attr('fill', '#1f2937')
         .attr('font-size', 16)
         .attr('font-weight', 700)
         .text(grid.title);
@@ -216,7 +216,7 @@ export class ChartLayer {
           .attr('x', bounds.left + areaWidth / 2)
           .attr('y', rowY + 15)
           .attr('text-anchor', 'middle')
-          .attr('fill', '#d8dee9')
+          .attr('fill', '#4b5563')
           .attr('font-size', 14)
           .attr('font-weight', 600)
           .text(rowTitles[rowIndex]);
@@ -403,8 +403,8 @@ export class ChartLayer {
 
     const xAxis = d3.axisBottom(x).ticks(5).tickFormat(d3.format('d'));
     const yAxis = d3.axisLeft(y).ticks(5);
-    const styleAxisText = (g) => g.selectAll('text').attr('fill', '#d8dee9').attr('font-size', 11);
-    const styleAxisLines = (g) => g.selectAll('line,path').attr('stroke', '#8ca0b3').attr('opacity', 0.5);
+    const styleAxisText = (g) => g.selectAll('text').attr('fill', '#4b5563').attr('font-size', 11);
+    const styleAxisLines = (g) => g.selectAll('line,path').attr('stroke', '#d1d5db').attr('opacity', 0.5);
 
     // グリッドライン（水平）
     let gridGroup = null;
@@ -420,7 +420,7 @@ export class ChartLayer {
         .attr('y1', (d) => y(d))
         .attr('x2', plotWidth)
         .attr('y2', (d) => y(d))
-        .attr('stroke', '#8ca0b3')
+        .attr('stroke', '#d1d5db')
         .attr('stroke-opacity', 0.12)
         .attr('stroke-dasharray', '2 4');
     }
@@ -513,7 +513,7 @@ export class ChartLayer {
           const newTicks = y.ticks(5);
           gridGroup.selectAll('line').data(newTicks).enter().append('line')
             .attr('x1', 0).attr('y1', (d) => y(d)).attr('x2', plotWidth).attr('y2', (d) => y(d))
-            .attr('stroke', '#8ca0b3').attr('stroke-opacity', 0.12).attr('stroke-dasharray', '2 4');
+            .attr('stroke', '#d1d5db').attr('stroke-opacity', 0.12).attr('stroke-dasharray', '2 4');
         }
 
         xAxisGroup
@@ -636,7 +636,7 @@ export class ChartLayer {
         const newTicks = y.ticks(5);
         gridGroup.selectAll('line').data(newTicks).enter().append('line')
           .attr('x1', 0).attr('y1', (d) => y(d)).attr('x2', plotWidth).attr('y2', (d) => y(d))
-          .attr('stroke', '#8ca0b3').attr('stroke-opacity', 0.12).attr('stroke-dasharray', '2 4');
+          .attr('stroke', '#d1d5db').attr('stroke-opacity', 0.12).attr('stroke-dasharray', '2 4');
       }
 
       xAxisGroup
@@ -749,7 +749,7 @@ export class ChartLayer {
         tooltipGroup.append('rect')
           .attr('x', labelX - 2).attr('y', labelY - 10)
           .attr('width', 70).attr('height', 14)
-          .attr('rx', 3).attr('fill', 'rgba(9,21,35,0.85)');
+          .attr('rx', 3).attr('fill', 'rgba(255,255,255,0.92)');
         tooltipGroup.append('text')
           .attr('x', labelX).attr('y', labelY)
           .attr('fill', c).attr('font-size', 10).attr('font-weight', 500)
@@ -760,7 +760,7 @@ export class ChartLayer {
       // 年ラベル
       tooltipGroup.append('text')
         .attr('x', px).attr('y', plotHeight + 16)
-        .attr('text-anchor', 'middle').attr('fill', '#d8dee9').attr('font-size', 10)
+        .attr('text-anchor', 'middle').attr('fill', '#4b5563').attr('font-size', 10)
         .text(d3.format('d')(nearest));
     });
 
@@ -979,7 +979,7 @@ export class ChartLayer {
       .enter()
       .append('path')
       .attr('fill', (_, i) => palette[i])
-      .attr('stroke', '#0b1726')
+      .attr('stroke', '#ffffff')
       .attr('stroke-width', 1)
       .attr('opacity', 0.95)
       .attr('d', (d) => arc({ ...d, endAngle: d.startAngle }))
@@ -1014,7 +1014,7 @@ export class ChartLayer {
         .append('text')
         .attr('x', 14)
         .attr('y', y)
-        .attr('fill', '#d8dee9')
+        .attr('fill', '#4b5563')
         .attr('font-size', 10)
         .text(`${row[labelField]}: ${row[valueField]}`);
     });
@@ -1146,6 +1146,7 @@ export class ChartLayer {
 
     const linkLayer = inner.group.append('g').attr('fill', 'none');
     const linkPaths = [];
+    const levelDelay = 600; // レベルごとの遅延ms
 
     links.forEach((link, li) => {
       const thickness = Math.max(1.5, link.value * unit);
@@ -1228,7 +1229,7 @@ export class ChartLayer {
       .attr('x', (d) => (d.level === 0 ? d.x + d.w + 6 : d.x - 6))
       .attr('y', (d) => d.y + d.h / 2 + 3)
       .attr('text-anchor', (d) => (d.level === 0 ? 'start' : 'end'))
-      .attr('fill', '#e6edf5')
+      .attr('fill', '#1f2937')
       .attr('font-size', 11)
       .text((d) => d.label);
   }
@@ -1400,7 +1401,7 @@ export class ChartLayer {
         .attr('x', circleData2.x)
         .attr('y', Math.max(10, circleData2.y - circleData2.radius - 8))
         .attr('text-anchor', 'middle')
-        .attr('fill', '#e6edf5')
+        .attr('fill', '#1f2937')
         .attr('font-size', 10)
         .attr('opacity', 0)
         .transition()
@@ -1489,7 +1490,7 @@ export class ChartLayer {
         .attr('x', l.finalX)
         .attr('y', l.finalY)
         .attr('text-anchor', 'middle')
-        .attr('fill', '#ffffff')
+        .attr('fill', '#1f2937')
         .attr('font-size', fontSize)
         .attr('opacity', 0)
         .text(l.text)
@@ -1524,16 +1525,16 @@ export class ChartLayer {
       .attr('width', panel.width)
       .attr('height', panel.height)
       .attr('rx', 10)
-      .attr('fill', '#0f1b2a')
+      .attr('fill', '#f3f4f6')
       .attr('fill-opacity', 0.7)
-      .attr('stroke', '#42536a')
+      .attr('stroke', '#d1d5db')
       .attr('stroke-opacity', 0.5);
 
     g.append('text')
       .attr('x', panel.width / 2)
       .attr('y', panel.height / 2)
       .attr('text-anchor', 'middle')
-      .attr('fill', '#e7edf6')
+      .attr('fill', '#374151')
       .attr('font-size', 12)
       .text(message);
   }
@@ -1547,9 +1548,9 @@ export class ChartLayer {
       .attr('width', panel.width)
       .attr('height', panel.height)
       .attr('rx', 8)
-      .attr('fill', '#0e1a28')
+      .attr('fill', '#f3f4f6')
       .attr('fill-opacity', 0.2)
-      .attr('stroke', '#42536a')
+      .attr('stroke', '#d1d5db')
       .attr('stroke-dasharray', '4 4')
       .attr('stroke-opacity', 0.35);
   }
@@ -1580,9 +1581,9 @@ export class ChartLayer {
       .attr('width', panel.width)
       .attr('height', panel.height)
       .attr('rx', 10)
-      .attr('fill', '#091523')
+      .attr('fill', '#f3f4f6')
       .attr('fill-opacity', 0.63)
-      .attr('stroke', '#5f738a')
+      .attr('stroke', '#d1d5db')
       .attr('stroke-opacity', 0.35);
 
     if (title) {
@@ -1591,7 +1592,7 @@ export class ChartLayer {
         .attr('x', innerPad)
         .attr('y', innerPad + 3)
         .attr('dominant-baseline', 'hanging')
-        .attr('fill', '#ffffff')
+        .attr('fill', '#111827')
         .attr('font-size', compact ? 12 : 14)
         .attr('font-weight', 600)
         .text(title);
@@ -1611,7 +1612,7 @@ export class ChartLayer {
       .attr('y', 0)
       .attr('width', VIEWBOX_WIDTH)
       .attr('height', VIEWBOX_HEIGHT)
-      .attr('fill', '#06111e')
+      .attr('fill', '#ffffff')
       .attr('fill-opacity', 0.64);
   }
 

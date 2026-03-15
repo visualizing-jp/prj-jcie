@@ -211,7 +211,7 @@ export class MapLayer {
       .attr('y', 0)
       .attr('width', VIEWBOX_WIDTH)
       .attr('height', VIEWBOX_HEIGHT)
-      .attr('fill', this.glMap ? (bgHs.fill || '#8ab4d0') : (bgFlat.fill || '#06111e'))
+      .attr('fill', this.glMap ? (bgHs.fill || '#8ab4d0') : (bgFlat.fill || '#e8f0f8'))
       .attr('fill-opacity', this.glMap ? (bgHs.fillOpacity ?? 0.35) : (bgFlat.fillOpacity ?? 0.7));
   }
 

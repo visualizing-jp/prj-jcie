@@ -1,7 +1,7 @@
 {
   "background": {
     "hillshade": { "fill": "#8ab4d0", "fillOpacity": 0.35 },
-    "flat": { "fill": "#06111e", "fillOpacity": 0.7 }
+    "flat": { "fill": "#e8f0f8", "fillOpacity": 0.7 }
   },
   "tile": {
     "backgroundColor": "#b8cee0",
@@ -55,10 +55,10 @@
     "defaultSize": 7
   },
   "label": {
-    "fill": "#f5f0ec",
+    "fill": "#1a1a2e",
     "fontSize": 14,
     "fontWeight": 600,
-    "stroke": "rgba(10,14,22,0.9)",
+    "stroke": "rgba(255,255,255,0.85)",
     "strokeWidth": 3,
     "offsetX": 10,
     "offsetY": -12
