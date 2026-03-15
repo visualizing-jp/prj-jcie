@@ -1184,7 +1184,24 @@ export class ChartLayer {
         .attr('d', pathD)
         .attr('stroke', `url(#${gradId})`)
         .attr('stroke-width', thickness)
-        .attr('stroke-opacity', 0.35);
+        .attr('stroke-opacity', 0);
+
+      // リンクのパス長を取得してstroke-dashで流れるアニメーション
+      const pathNode = pathEl.node();
+      const pathLength = pathNode.getTotalLength();
+      pathEl
+        .attr('stroke-dasharray', pathLength)
+        .attr('stroke-dashoffset', pathLength);
+
+      // リンクはソースノードの次のレベルタイミングで描画（ノード登場後に流れ出す）
+      const linkDelay = link.source.level * levelDelay + 300;
+      pathEl
+        .transition()
+        .delay(linkDelay)
+        .duration(500)
+        .ease(d3.easeCubicOut)
+        .attr('stroke-opacity', 0.35)
+        .attr('stroke-dashoffset', 0);
 
       linkPaths.push({ el: pathEl, link });
     });
@@ -1199,13 +1216,22 @@ export class ChartLayer {
       .attr('x', (d) => d.x)
       .attr('y', (d) => d.y)
       .attr('width', (d) => d.w)
-      .attr('height', (d) => d.h)
+      .attr('height', 0)
       .attr('fill', (d) => d.color)
-      .attr('fill-opacity', 0.88)
+      .attr('fill-opacity', 0)
       .attr('stroke', '#ffffff')
       .attr('stroke-width', 0.6)
       .style('pointer-events', 'all')
       .style('cursor', 'pointer');
+
+    // レベルごとに段階的にフェードイン
+    nodeRects
+      .transition()
+      .delay((d) => d.level * levelDelay)
+      .duration(400)
+      .ease(d3.easeCubicOut)
+      .attr('height', (d) => d.h)
+      .attr('fill-opacity', 0.88);
 
     // ホバー強調
     nodeRects
@@ -1221,17 +1247,24 @@ export class ChartLayer {
         });
       });
 
+    // ラベルもレベルごとにフェードイン
     nodeLayer
-      .selectAll('text')
+      .selectAll('text.sankey-label')
       .data(nodes)
       .enter()
       .append('text')
+      .attr('class', 'sankey-label')
       .attr('x', (d) => (d.level === 0 ? d.x + d.w + 6 : d.x - 6))
       .attr('y', (d) => d.y + d.h / 2 + 3)
       .attr('text-anchor', (d) => (d.level === 0 ? 'start' : 'end'))
       .attr('fill', '#1f2937')
       .attr('font-size', 11)
-      .text((d) => d.label);
+      .attr('opacity', 0)
+      .text((d) => d.label)
+      .transition()
+      .delay((d) => d.level * levelDelay + 200)
+      .duration(300)
+      .attr('opacity', 1);
   }
 
   normalizeSankeyData(dataset) {
