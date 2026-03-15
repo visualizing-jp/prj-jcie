@@ -1346,49 +1346,59 @@ export class ChartLayer {
       return;
     }
 
+    // Gooey SVGフィルター定義（円の重なりを有機的に融合）
+    const filterId = `gooey-${Math.random().toString(36).slice(2, 8)}`;
+    let defs = inner.group.select('defs');
+    if (defs.empty()) defs = inner.group.append('defs');
+    const filter = defs.append('filter').attr('id', filterId);
+    filter.append('feGaussianBlur')
+      .attr('in', 'SourceGraphic')
+      .attr('stdDeviation', 5)
+      .attr('result', 'blur');
+    filter.append('feColorMatrix')
+      .attr('in', 'blur')
+      .attr('mode', 'matrix')
+      .attr('values', '1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7')
+      .attr('result', 'gooey');
+
+    const gooeyGroup = inner.group.append('g')
+      .style('filter', `url(#${filterId})`);
     const g = inner.group.append('g');
-    const drawOrder = [...layout].sort((a, b) => a.data.sets.length - b.data.sets.length);
 
     // ベン図のスケール＋フェードアニメーション
     const cx = inner.width / 2;
     const cy = inner.height / 2;
 
-    g.selectAll('path.venn-area')
-      .data(drawOrder)
-      .enter()
-      .append('path')
-      .attr('class', (d) => `venn-area venn-${d.data.sets.length === 1 ? 'circle' : 'intersection'}`)
-      .attr('d', (d) => d.path)
-      .attr('fill-rule', (d) => (d.data.sets.length > 1 ? 'evenodd' : null))
-      .attr('fill', (d) => {
-        if (d.data.sets.length === 1) return colorBySet.get(d.data.sets[0]) || '#5fb3ff';
-        return '#dbe6f2';
-      })
-      .attr('fill-opacity', 0)
-      .attr('stroke', (d) => {
-        if (d.data.sets.length === 1) return colorBySet.get(d.data.sets[0]) || '#5fb3ff';
-        return '#dbe6f2';
-      })
-      .attr('stroke-opacity', 0)
-      .attr('stroke-width', (d) => (d.data.sets.length === 1 ? 1.2 : 0.9))
-      .attr('transform', (d) => (d.data.sets.length === 1 ? `translate(${cx},${cy}) scale(0.3) translate(${-cx},${-cy})` : null))
-      .transition()
-      .duration(500)
-      .delay((d) => (d.data.sets.length === 1 ? 0 : 300))
-      .ease(d3.easeCubicOut)
-      .attr('fill-opacity', (d) => (d.data.sets.length === 1 ? 0.30 : 0.16))
-      .attr('stroke-opacity', (d) => (d.data.sets.length === 1 ? 0.95 : 0.45))
-      .attr('transform', null);
-
+    // layoutから実際の円データ（x, y, radius）を抽出して<circle>で描画
     const singletonLayout = layout.filter((d) => d.data.sets.length === 1);
     singletonLayout.forEach((entry) => {
       const setName = entry.data.sets[0];
-      const circle = entry.circles.find((c) => c.set === setName) || entry.circles[0];
-      if (!circle) return;
+      const circleData = entry.circles.find((c) => c.set === setName) || entry.circles[0];
+      if (!circleData) return;
+
+      gooeyGroup.append('circle')
+        .attr('cx', circleData.x)
+        .attr('cy', circleData.y)
+        .attr('r', circleData.radius)
+        .attr('fill', colorBySet.get(setName) || '#5fb3ff')
+        .attr('fill-opacity', 0)
+        .attr('stroke', 'none')
+        .attr('transform', `translate(${cx - circleData.x * 0.7},${cy - circleData.y * 0.7}) scale(0.3)`)
+        .transition()
+        .duration(600)
+        .ease(d3.easeCubicOut)
+        .attr('fill-opacity', 0.55)
+        .attr('transform', 'translate(0,0) scale(1)');
+    });
+
+    singletonLayout.forEach((entry) => {
+      const setName = entry.data.sets[0];
+      const circleData2 = entry.circles.find((c) => c.set === setName) || entry.circles[0];
+      if (!circleData2) return;
 
       g.append('text')
-        .attr('x', circle.x)
-        .attr('y', Math.max(10, circle.y - circle.radius - 8))
+        .attr('x', circleData2.x)
+        .attr('y', Math.max(10, circleData2.y - circleData2.radius - 8))
         .attr('text-anchor', 'middle')
         .attr('fill', '#e6edf5')
         .attr('font-size', 10)
@@ -1399,6 +1409,9 @@ export class ChartLayer {
         .attr('opacity', 1)
         .text(setName);
     });
+
+    // 数値ラベルの配置データを収集
+    const labelEntries = [];
 
     if (setNames.length === 2) {
       const leftName = setNames[0];
@@ -1417,18 +1430,7 @@ export class ChartLayer {
         .forEach((d) => {
           const value = valueByArea.get(areaKey(d.data.sets));
           if (!Number.isFinite(value)) return;
-          g.append('text')
-            .attr('x', d.text.x)
-            .attr('y', d.text.y + 3)
-            .attr('text-anchor', 'middle')
-            .attr('fill', '#ffffff')
-            .attr('font-size', 10)
-            .attr('opacity', 0)
-            .text(d3.format(',')(value))
-            .transition()
-            .duration(400)
-            .delay(350)
-            .attr('opacity', 1);
+          labelEntries.push({ x: d.text.x, y: d.text.y + 3, text: d3.format(',')(value), sets: d.data.sets });
         });
     }
 
@@ -1438,20 +1440,64 @@ export class ChartLayer {
         .forEach((d) => {
           const area = areaMap.get(areaKey(d.data.sets));
           if (!area) return;
-          g.append('text')
-            .attr('x', d.text.x)
-            .attr('y', d.text.y + 3)
-            .attr('text-anchor', 'middle')
-            .attr('fill', '#ffffff')
-            .attr('font-size', 10)
-            .attr('opacity', 0)
-            .text(d3.format(',')(area.size))
-            .transition()
-            .duration(400)
-            .delay(350)
-            .attr('opacity', 1);
+          labelEntries.push({ x: d.text.x, y: d.text.y + 3, text: d3.format(',')(area.size), sets: d.data.sets });
         });
     }
+
+    // ラベル衝突検出＋自動オフセット
+    const fontSize = 10;
+    const charWidth = 5.5;
+    const labelHeight = fontSize + 2;
+    const padding = 4;
+
+    const resolvedLabels = labelEntries.map((l) => ({
+      ...l,
+      width: l.text.length * charWidth,
+      height: labelHeight,
+      finalX: l.x,
+      finalY: l.y,
+    }));
+
+    // 重なり検出：全ペアでバウンディングボックスの衝突をチェックし、Y方向にオフセット
+    for (let i = 0; i < resolvedLabels.length; i++) {
+      for (let j = i + 1; j < resolvedLabels.length; j++) {
+        const a = resolvedLabels[i];
+        const b = resolvedLabels[j];
+        const overlapX = Math.abs(a.finalX - b.finalX) < (a.width + b.width) / 2 + padding;
+        const overlapY = Math.abs(a.finalY - b.finalY) < (a.height + b.height) / 2 + padding;
+        if (overlapX && overlapY) {
+          // 交差領域（sets.length > 1）のラベルを上に移動、それ以外は下に
+          if (a.sets.length > 1) {
+            a.finalY -= labelHeight + padding;
+          } else if (b.sets.length > 1) {
+            b.finalY -= labelHeight + padding;
+          } else {
+            // 両方とも単一セット：右側を下にオフセット
+            if (a.finalX < b.finalX) {
+              b.finalY += labelHeight + padding;
+            } else {
+              a.finalY += labelHeight + padding;
+            }
+          }
+        }
+      }
+    }
+
+    // ラベル描画
+    resolvedLabels.forEach((l) => {
+      g.append('text')
+        .attr('x', l.finalX)
+        .attr('y', l.finalY)
+        .attr('text-anchor', 'middle')
+        .attr('fill', '#ffffff')
+        .attr('font-size', fontSize)
+        .attr('opacity', 0)
+        .text(l.text)
+        .transition()
+        .duration(400)
+        .delay(350)
+        .attr('opacity', 1);
+    });
   }
 
   resolveVennDataset(dataset, config) {
