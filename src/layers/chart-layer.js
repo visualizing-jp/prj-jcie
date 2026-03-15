@@ -500,7 +500,7 @@ export class ChartLayer {
         .attr('cx', (d) => x(Number(d[xField])))
         .attr('cy', (d) => y(Number(d[yField])))
         .attr('r', 2.7)
-        .attr('fill', '#ffffff');
+        .attr('fill', themeColor);
 
       if (shouldAnimateSpan && previousSpanState) {
         x.domain(targetXDomain);
