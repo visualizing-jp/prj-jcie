@@ -441,6 +441,7 @@ body.is-fixed-closing #header-nav {
   display: flex;
   align-items: center;
   justify-content: center;
+  background: #0a0a0f;
 }
 
 .globe-svg {
@@ -470,6 +471,7 @@ body.is-fixed-closing #header-nav {
   min-height: 100vh;
   padding: 2rem;
   text-align: center;
+  color: #f5f0ec;
 }
 
 .top-lead {
