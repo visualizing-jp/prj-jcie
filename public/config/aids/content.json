@@ -301,7 +301,7 @@
         "visible": true,
         "layout": "grid",
         "responsive": { "mobileStack": true },
-        "grid": { "columns": 4, "rows": 2, "rowPattern": [4, 3], "allowEmptyCells": true, "title": "地域別HIV-TB重複感染" },
+        "grid": { "columns": 4, "rows": 2, "rowPattern": [4, 3], "allowEmptyCells": true, "title": "地域別エイズと結核の重複感染" },
         "charts": [
           { "id": "venn-world", "type": "venn", "dataFile": "/data/charts/venn-unified.json", "dataFormat": "json", "config": { "groupId": "world" } },
           { "id": "venn-africa", "type": "venn", "dataFile": "/data/charts/venn-unified.json", "dataFormat": "json", "config": { "groupId": "africa" } },
