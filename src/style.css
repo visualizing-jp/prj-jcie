@@ -519,3 +519,25 @@ body.is-fixed-closing #header-nav {
   background: color-mix(in srgb, var(--card-color) 30%, transparent);
   border-color: var(--card-color);
 }
+
+/* d3-svg-annotation: ダークテーマスタイル */
+.chart-annotations .annotation path {
+  stroke: #e5edf7;
+  fill: none;
+}
+.chart-annotations .annotation path.connector {
+  stroke-dasharray: none;
+  stroke-opacity: 0.6;
+}
+.chart-annotations .annotation text {
+  fill: #e7eef8;
+  font-size: 11px;
+  font-weight: 500;
+}
+.chart-annotations .annotation .annotation-subject path {
+  stroke-dasharray: 4 4;
+  stroke-opacity: 0.8;
+}
+.chart-annotations .annotation .annotation-note-bg {
+  fill: none;
+}

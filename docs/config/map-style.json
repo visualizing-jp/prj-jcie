@@ -1,0 +1,66 @@
+{
+  "background": {
+    "hillshade": { "fill": "#8ab4d0", "fillOpacity": 0.35 },
+    "flat": { "fill": "#06111e", "fillOpacity": 0.7 }
+  },
+  "tile": {
+    "backgroundColor": "#b8cee0",
+    "hillshade": {
+      "shadowColor": "#8a8a8a",
+      "highlightColor": "#ffffff",
+      "accentColor": "#d0d0d0",
+      "exaggeration": 0.35,
+      "illuminationDirection": 315
+    }
+  },
+  "country": {
+    "hillshade": {
+      "fill": "#f8f8f8",
+      "opacity": {
+        "highlight": 0.45,
+        "normal": 0.6,
+        "lightenAll": 0.45,
+        "lightenNonVisited": 0.35,
+        "nonHighlight": 0.55
+      },
+      "stroke": "#9a9a9a",
+      "strokeOpacity": 0.35
+    },
+    "flat": {
+      "fill": "#3f4f63",
+      "opacity": {
+        "highlight": 0.3,
+        "normal": 0.68,
+        "lightenAll": 0.35,
+        "lightenNonVisited": 0.22,
+        "nonHighlight": 0.5
+      },
+      "stroke": "#a5b4c7",
+      "strokeOpacity": 0.35
+    },
+    "highlight": {
+      "fill": "#000000",
+      "stroke": "#000000",
+      "strokeOpacity": 0.5,
+      "strokeWidth": 1.0
+    },
+    "defaultStrokeWidth": 0.4
+  },
+  "marker": {
+    "stroke": "#f5f0ec",
+    "strokeOpacity": 0.95,
+    "fillOpacity": { "current": 0.95, "default": 0.72 },
+    "strokeWidth": { "current": 2, "default": 1 },
+    "sizeBonus": 3,
+    "defaultSize": 7
+  },
+  "label": {
+    "fill": "#f5f0ec",
+    "fontSize": 14,
+    "fontWeight": 600,
+    "stroke": "rgba(10,14,22,0.9)",
+    "strokeWidth": 3,
+    "offsetX": 10,
+    "offsetY": -12
+  }
+}

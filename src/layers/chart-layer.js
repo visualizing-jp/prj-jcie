@@ -1,5 +1,6 @@
 import * as d3 from 'd3';
 import * as vennjs from '@upsetjs/venn.js';
+import { annotation, annotationXYThreshold, annotationCalloutElbow, annotationCalloutCurve } from 'd3-svg-annotation';
 
 const VIEWBOX_WIDTH = 1440;
 const VIEWBOX_HEIGHT = 900;
@@ -7,6 +8,18 @@ const PANEL_PADDING = 24;
 const MIN_MOBILE_WIDTH = 768;
 const MIN_HEADER_SAFE = 56;
 const MAX_HEADER_SAFE = 130;
+
+const ANNOTATION_DEFAULTS = {
+  color: '#e5edf7',
+  fontSize: 11,
+  fontWeight: 500,
+  lineOpacity: 0.8,
+  lineDash: '4 4',
+  wrapWidth: 140,
+  verticalLine: { dx: 30, dy: -40 },
+  horizontalLine: { dx: 40, dy: -20 },
+  callout: { dx: 50, dy: -30 },
+};
 
 export class ChartLayer {
   constructor(container) {
@@ -843,76 +856,81 @@ export class ChartLayer {
   renderLineAnnotations(group, xScale, yScale, width, height, annotations) {
     if (!Array.isArray(annotations) || annotations.length === 0) return;
 
-    const layer = group.append('g').attr('class', 'chart-annotations');
     const xDomain = xScale.domain();
     const yDomain = yScale.domain();
+    const descriptors = [];
 
-    annotations.forEach((annotation) => {
-      const type = annotation?.type;
-      const label = String(annotation?.label || '');
+    for (const ann of annotations) {
+      const type = ann?.type;
+      const label = String(ann?.label || '');
+      const color = ann?.color || ANNOTATION_DEFAULTS.color;
+      const wrap = ann?.wrap || ANNOTATION_DEFAULTS.wrapWidth;
 
       if (type === 'verticalLine') {
-        const raw = annotation.year ?? annotation.x ?? annotation.value;
+        const raw = ann.year ?? ann.x ?? ann.value;
         const value = Number(raw);
-        if (!Number.isFinite(value)) return;
-        if (value < Math.min(...xDomain) || value > Math.max(...xDomain)) return;
+        if (!Number.isFinite(value)) continue;
+        if (value < Math.min(...xDomain) || value > Math.max(...xDomain)) continue;
 
         const x = xScale(value);
-        layer
-          .append('line')
-          .attr('x1', x)
-          .attr('y1', 0)
-          .attr('x2', x)
-          .attr('y2', height)
-          .attr('stroke', '#e5edf7')
-          .attr('stroke-width', 1)
-          .attr('stroke-opacity', 0.8)
-          .attr('stroke-dasharray', '4 4');
-
-        if (label) {
-          layer
-            .append('text')
-            .attr('x', x + 6)
-            .attr('y', 12)
-            .attr('fill', '#e7eef8')
-            .attr('font-size', 10)
-            .attr('font-weight', 500)
-            .text(label);
-        }
-        return;
-      }
-
-      if (type === 'horizontalLine') {
-        const raw = annotation.y ?? annotation.value;
+        descriptors.push({
+          type: annotationXYThreshold,
+          note: { label, wrap },
+          color,
+          x,
+          y: 0,
+          dx: ann.dx ?? ANNOTATION_DEFAULTS.verticalLine.dx,
+          dy: ann.dy ?? ANNOTATION_DEFAULTS.verticalLine.dy,
+          subject: { y1: 0, y2: height },
+        });
+      } else if (type === 'horizontalLine') {
+        const raw = ann.y ?? ann.value;
         const value = Number(raw);
-        if (!Number.isFinite(value)) return;
-        if (value < Math.min(...yDomain) || value > Math.max(...yDomain)) return;
+        if (!Number.isFinite(value)) continue;
+        if (value < Math.min(...yDomain) || value > Math.max(...yDomain)) continue;
 
         const y = yScale(value);
-        layer
-          .append('line')
-          .attr('x1', 0)
-          .attr('y1', y)
-          .attr('x2', width)
-          .attr('y2', y)
-          .attr('stroke', '#e5edf7')
-          .attr('stroke-width', 1)
-          .attr('stroke-opacity', 0.8)
-          .attr('stroke-dasharray', '4 4');
+        descriptors.push({
+          type: annotationXYThreshold,
+          note: { label, wrap },
+          color,
+          x: 0,
+          y,
+          dx: ann.dx ?? ANNOTATION_DEFAULTS.horizontalLine.dx,
+          dy: ann.dy ?? ANNOTATION_DEFAULTS.horizontalLine.dy,
+          subject: { x1: 0, x2: width },
+        });
+      } else if (type === 'callout') {
+        const xVal = Number(ann.x);
+        const yVal = Number(ann.y);
+        if (!Number.isFinite(xVal) || !Number.isFinite(yVal)) continue;
 
-        if (label) {
-          const labelY = Math.max(12, y - 6);
-          layer
-            .append('text')
-            .attr('x', 6)
-            .attr('y', labelY)
-            .attr('fill', '#e7eef8')
-            .attr('font-size', 10)
-            .attr('font-weight', 500)
-            .text(label);
-        }
+        const connectorType = ann.connector === 'curve' ? annotationCalloutCurve : annotationCalloutElbow;
+        descriptors.push({
+          type: connectorType,
+          note: { label, wrap },
+          color,
+          x: xScale(xVal),
+          y: yScale(yVal),
+          dx: ann.dx ?? ANNOTATION_DEFAULTS.callout.dx,
+          dy: ann.dy ?? ANNOTATION_DEFAULTS.callout.dy,
+        });
       }
-    });
+    }
+
+    if (descriptors.length === 0) return;
+
+    const makeAnnotations = annotation()
+      .annotations(descriptors);
+
+    const layer = group.append('g')
+      .attr('class', 'chart-annotations')
+      .call(makeAnnotations);
+
+    // subject線（閾値線）を破線スタイルに
+    layer.selectAll('.annotation .subject path, .annotation .subject line')
+      .attr('stroke-dasharray', ANNOTATION_DEFAULTS.lineDash)
+      .attr('stroke-opacity', ANNOTATION_DEFAULTS.lineOpacity);
   }
 
   renderPie(panel, dataset, config) {
