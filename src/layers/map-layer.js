@@ -51,6 +51,7 @@ function resolveHighlightCountries(mapConfig) {
   return set;
 }
 const WORLD_MAP_URL = `${import.meta.env.BASE_URL}data/countries-110m.json`;
+const MAP_STYLE_URL = `${import.meta.env.BASE_URL}config/map-style.json`;
 
 export class MapLayer {
   constructor(container) {
@@ -66,6 +67,7 @@ export class MapLayer {
     this.tileContainer = null;
     this.currentCenter = [0, 15];
     this.currentZoom = 1.2;
+    this.style = null;
   }
 
   render(mapConfig) {
@@ -97,11 +99,13 @@ export class MapLayer {
       return this.readyPromise;
     }
 
-    // TopoJSON読み込みとタイル背景初期化を並行実行
+    // TopoJSON・スタイル設定読み込みを並行実行し、その後タイル背景初期化
     const jsonPromise = d3.json(WORLD_MAP_URL);
-    const tilePromise = this.initTileBackground().catch(() => null);
+    const stylePromise = d3.json(MAP_STYLE_URL);
 
-    this.readyPromise = Promise.all([jsonPromise, tilePromise]).then(([topology]) => {
+    this.readyPromise = Promise.all([jsonPromise, stylePromise]).then(async ([topology, style]) => {
+      this.style = style;
+      await this.initTileBackground().catch(() => null);
       const countryObject = topology?.objects?.countries;
       if (!countryObject) {
         throw new Error('countries object not found in TopoJSON');
@@ -134,6 +138,8 @@ export class MapLayer {
       this.tileContainer.className = 'map-tile-container';
       this.container.appendChild(this.tileContainer);
 
+      const t = this.style?.tile || {};
+      const hs = t.hillshade || {};
       this.glMap = new maplibre.Map({
         container: this.tileContainer,
         style: {
@@ -150,18 +156,18 @@ export class MapLayer {
             {
               id: 'background',
               type: 'background',
-              paint: { 'background-color': '#b8cee0' },
+              paint: { 'background-color': t.backgroundColor || '#b8cee0' },
             },
             {
               id: 'hillshade',
               type: 'hillshade',
               source: 'terrain',
               paint: {
-                'hillshade-shadow-color': '#8a8a8a',
-                'hillshade-highlight-color': '#ffffff',
-                'hillshade-accent-color': '#d0d0d0',
-                'hillshade-exaggeration': 0.35,
-                'hillshade-illumination-direction': 315,
+                'hillshade-shadow-color': hs.shadowColor || '#8a8a8a',
+                'hillshade-highlight-color': hs.highlightColor || '#ffffff',
+                'hillshade-accent-color': hs.accentColor || '#d0d0d0',
+                'hillshade-exaggeration': hs.exaggeration ?? 0.35,
+                'hillshade-illumination-direction': hs.illuminationDirection ?? 315,
               },
             },
           ],
@@ -196,14 +202,17 @@ export class MapLayer {
       .attr('aria-label', 'world map');
 
     // hillshadeがある場合は背景を半透明に
+    const bg = this.style?.background || {};
+    const bgHs = bg.hillshade || {};
+    const bgFlat = bg.flat || {};
     this.svg
       .append('rect')
       .attr('x', 0)
       .attr('y', 0)
       .attr('width', VIEWBOX_WIDTH)
       .attr('height', VIEWBOX_HEIGHT)
-      .attr('fill', this.glMap ? '#8ab4d0' : '#06111e')
-      .attr('fill-opacity', this.glMap ? 0.35 : 0.7);
+      .attr('fill', this.glMap ? (bgHs.fill || '#8ab4d0') : (bgFlat.fill || '#06111e'))
+      .attr('fill-opacity', this.glMap ? (bgHs.fillOpacity ?? 0.35) : (bgFlat.fillOpacity ?? 0.7));
   }
 
   drawBaseMap() {
@@ -238,30 +247,27 @@ export class MapLayer {
 
     // hillshadeがある場合はfill-opacityを下げて地形を透過させる
     const hasHillshade = Boolean(this.glMap);
+    const cs = this.style?.country || {};
+    const csMode = hasHillshade ? (cs.hillshade || {}) : (cs.flat || {});
+    const csOp = csMode.opacity || {};
+    const csHl = cs.highlight || {};
 
     const fillFn = (d) => {
       const name = d.properties?.name;
-      if (highlightCountries.has(name)) return '#000000';
-      return hasHillshade ? '#f0ece4' : '#3f4f63';
+      if (highlightCountries.has(name)) return csHl.fill || '#000000';
+      return csMode.fill || (hasHillshade ? '#f8f8f8' : '#3f4f63');
     };
     const fillOpacityFn = (d) => {
       const name = d.properties?.name;
-      if (hasHillshade) {
-        if (highlightCountries.has(name)) return 0.3;
-        if (highlightCountries.size === 0) {
-          return mapConfig.lightenAllCountries ? 0.3 : 0.45;
-        }
-        return lightenNonVisited ? 0.2 : 0.4;
-      }
+      if (highlightCountries.has(name)) return csOp.highlight ?? 0.45;
       if (highlightCountries.size === 0) {
-        return mapConfig.lightenAllCountries ? 0.35 : 0.68;
+        return mapConfig.lightenAllCountries ? (csOp.lightenAll ?? 0.45) : (csOp.normal ?? 0.6);
       }
-      if (highlightCountries.has(name)) return 0.3;
-      return lightenNonVisited ? 0.22 : 0.5;
+      return lightenNonVisited ? (csOp.lightenNonVisited ?? 0.35) : (csOp.nonHighlight ?? 0.55);
     };
-    const strokeFn = (d) => (highlightCountries.has(d.properties?.name) ? '#000000' : hasHillshade ? '#9a9a9a' : '#a5b4c7');
-    const strokeOpacityFn = (d) => (highlightCountries.has(d.properties?.name) ? 0.5 : hasHillshade ? 0.35 : 0.35);
-    const strokeWidthFn = (d) => (highlightCountries.has(d.properties?.name) ? 1.0 : 0.4);
+    const strokeFn = (d) => (highlightCountries.has(d.properties?.name) ? (csHl.stroke || '#000000') : (csMode.stroke || '#9a9a9a'));
+    const strokeOpacityFn = (d) => (highlightCountries.has(d.properties?.name) ? (csHl.strokeOpacity ?? 0.5) : (csMode.strokeOpacity ?? 0.35));
+    const strokeWidthFn = (d) => (highlightCountries.has(d.properties?.name) ? (csHl.strokeWidth ?? 1.0) : (cs.defaultStrokeWidth ?? 0.4));
 
     // 初回表示（pathにd属性がない）かどうかで分岐
     const isFirstRender = !this.countryPaths.node()?.getAttribute('d');
@@ -358,6 +364,15 @@ export class MapLayer {
   updateMarkers(markers, projection) {
     if (!this.markerCircles || !this.markerLabels) return;
 
+    const ms = this.style?.marker || {};
+    const msOp = ms.fillOpacity || {};
+    const msSw = ms.strokeWidth || {};
+    const ls = this.style?.label || {};
+    const defaultSize = ms.defaultSize ?? 7;
+    const sizeBonus = ms.sizeBonus ?? 3;
+    const labelOffsetX = ls.offsetX ?? 10;
+    const labelOffsetY = ls.offsetY ?? -12;
+
     const normalized = markers
       .map((marker) => {
         const longitude = Number(marker.longitude);
@@ -375,7 +390,7 @@ export class MapLayer {
           country: marker.country || '',
           isCurrent: Boolean(marker.isCurrent),
           color: this.getThemePrimary(),
-          size: Number(marker.size) || 7,
+          size: Number(marker.size) || defaultSize,
         };
       })
       .filter(Boolean);
@@ -404,12 +419,12 @@ export class MapLayer {
       .ease(d3.easeCubicOut)
       .attr('cx', (d) => d.x)
       .attr('cy', (d) => d.y)
-      .attr('r', (d) => (d.isCurrent ? d.size + 3 : d.size))
+      .attr('r', (d) => (d.isCurrent ? d.size + sizeBonus : d.size))
       .attr('fill', (d) => d.color)
-      .attr('fill-opacity', (d) => (d.isCurrent ? 0.95 : 0.72))
-      .attr('stroke', '#f5f0ec')
-      .attr('stroke-width', (d) => (d.isCurrent ? 2 : 1))
-      .attr('stroke-opacity', 0.95);
+      .attr('fill-opacity', (d) => (d.isCurrent ? (msOp.current ?? 0.95) : (msOp.default ?? 0.72)))
+      .attr('stroke', ms.stroke || '#f5f0ec')
+      .attr('stroke-width', (d) => (d.isCurrent ? (msSw.current ?? 2) : (msSw.default ?? 1)))
+      .attr('stroke-opacity', ms.strokeOpacity ?? 0.95);
 
     const currentCities = normalized.filter((d) => d.isCurrent);
     const labels = this.markerLabels
@@ -426,14 +441,14 @@ export class MapLayer {
     labels
       .enter()
       .append('text')
-      .attr('x', (d) => d.x + 10)
-      .attr('y', (d) => d.y - 12)
-      .attr('fill', '#f5f0ec')
-      .attr('font-size', 14)
-      .attr('font-weight', 600)
+      .attr('x', (d) => d.x + labelOffsetX)
+      .attr('y', (d) => d.y + labelOffsetY)
+      .attr('fill', ls.fill || '#f5f0ec')
+      .attr('font-size', ls.fontSize ?? 14)
+      .attr('font-weight', ls.fontWeight ?? 600)
       .attr('paint-order', 'stroke')
-      .attr('stroke', 'rgba(10,14,22,0.9)')
-      .attr('stroke-width', 3)
+      .attr('stroke', ls.stroke || 'rgba(10,14,22,0.9)')
+      .attr('stroke-width', ls.strokeWidth ?? 3)
       .attr('stroke-linejoin', 'round')
       .attr('opacity', 0)
       .text((d) => d.name)
@@ -441,8 +456,8 @@ export class MapLayer {
       .transition()
       .duration(650)
       .ease(d3.easeCubicOut)
-      .attr('x', (d) => d.x + 10)
-      .attr('y', (d) => d.y - 12)
+      .attr('x', (d) => d.x + labelOffsetX)
+      .attr('y', (d) => d.y + labelOffsetY)
       .attr('opacity', 1)
       .text((d) => d.name);
   }
