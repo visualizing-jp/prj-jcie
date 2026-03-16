@@ -1439,13 +1439,12 @@ export class ChartLayer {
 
     singletonLayout.forEach((entry) => {
       const setName = entry.data.sets[0];
-      const circleData2 = entry.circles.find((c) => c.set === setName) || entry.circles[0];
-      if (!circleData2) return;
-
+      // text.x/text.y は非重複部分の中心座標（vennjs が計算）
       g.append('text')
-        .attr('x', circleData2.x)
-        .attr('y', Math.max(10, circleData2.y - circleData2.radius - 8))
+        .attr('x', entry.text.x)
+        .attr('y', entry.text.y)
         .attr('text-anchor', 'middle')
+        .attr('dominant-baseline', 'central')
         .attr('fill', '#1f2937')
         .attr('font-size', 10)
         .attr('opacity', 0)
@@ -1456,7 +1455,32 @@ export class ChartLayer {
         .text(setName);
     });
 
+    // 和集合ラベル（intersectionLabel）— hideValues に関係なく表示
+    if (config.intersectionLabel && setNames.length >= 2) {
+      const interKey = areaKey(setNames.slice(0, 2));
+      const interLayout = layout.find((d) => areaKey(d.data.sets) === interKey);
+      if (interLayout) {
+        const yOffset = config.hideValues ? 3 : -8;
+        g.append('text')
+          .attr('x', interLayout.text.x)
+          .attr('y', interLayout.text.y + yOffset)
+          .attr('text-anchor', 'middle')
+          .attr('fill', '#1f2937')
+          .attr('font-size', 11)
+          .attr('font-weight', 600)
+          .attr('opacity', 0)
+          .text(config.intersectionLabel)
+          .transition()
+          .duration(400)
+          .delay(350)
+          .attr('opacity', 1);
+      }
+    }
+
     // 数値ラベルの配置データを収集
+    if (config.hideValues) {
+      return;
+    }
     const labelEntries = [];
 
     if (setNames.length === 2) {

@@ -2,23 +2,23 @@ export const DISEASE_THEMES = {
   aids: {
     id: 'aids',
     name: 'エイズとの闘い',
-    primary: '#66c2a5',
-    secondary: '#8dd3b8',
-    accent: '#4dab8e',
+    primary: '#da3244',
+    secondary: '#e45a6a',
+    accent: '#c22a3b',
   },
   tuberculosis: {
     id: 'tuberculosis',
     name: '結核との闘い',
-    primary: '#fc8d62',
-    secondary: '#fda882',
-    accent: '#e87a4f',
+    primary: '#354cf0',
+    secondary: '#5a6ef4',
+    accent: '#2a3ed0',
   },
   malariae: {
     id: 'malariae',
     name: 'マラリアとの闘い',
-    primary: '#8da0cb',
-    secondary: '#a8b7d8',
-    accent: '#7589b8',
+    primary: '#f2df4a',
+    secondary: '#f5e76e',
+    accent: '#d9c83e',
   },
 };
 

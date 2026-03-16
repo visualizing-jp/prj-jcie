@@ -27,15 +27,15 @@
       "map": { "visible": false },
       "image": {
         "visible": true,
-        "src": "/images/photo-1.jpg",
-        "alt": "ダミー画像",
+        "src": "/images/malariae/about-malaria.jpg",
+        "alt": "マラリアとは",
         "opacity": 0.78
       }
     },
     {
       "id": "ml-img-02",
       "text": {
-        "content": "<p>また経済的に脆弱な地域、特にアフリカ、アジア、中南米に感染者の9割が集中していることから「貧困の病」という別名で知られています。この偏りは、医療インフラ不足や予防対策の実施困難さ、気候条件が複雑に絡み合って生じています。</p>",
+        "content": "<p>また経済的に脆弱な地域、特にアフリカ、アジア、中南米に感染者の9割が集中していることから「貧困の病」という別名で知られています。この偏りは、医療インフラ不足や予防対策の実施困難さ、気候条件が複雑に絡み合って生じています。</p><p>特に重症化しやすく死亡率も高い熱帯熱マラリアは、アフリカやアジア・太平洋の熱帯地域が流行の中心です。</p>",
         "visible": true,
         "position": { "horizontal": "right", "vertical": "center", "width": "34%" }
       },
@@ -49,22 +49,6 @@
         "lightenNonVisited": true
       },
       "image": { "visible": false }
-    },
-    {
-      "id": "ml-img-03",
-      "text": {
-        "content": "<p>特に重症化しやすく死亡率も高い熱帯熱マラリアは、アフリカやアジア・太平洋の熱帯地域が流行の中心です。</p>",
-        "visible": true,
-        "position": { "horizontal": "left", "vertical": "center", "width": "34%" }
-      },
-      "chart": { "visible": false },
-      "map": { "visible": false },
-      "image": {
-        "visible": true,
-        "src": "/images/photo-3.jpg",
-        "alt": "ダミー画像",
-        "opacity": 0.80
-      }
     },
     {
       "id": "ml-line-01",
@@ -143,8 +127,8 @@
       "map": { "visible": false },
       "image": {
         "visible": true,
-        "src": "/images/placeholder-1.svg",
-        "alt": "ダミー画像",
+        "src": "/images/malariae/malaria-story-03.jpg",
+        "alt": "世界マラリア撲滅キャンペーン",
         "opacity": 0.85
       }
     },
@@ -155,12 +139,16 @@
         "visible": true,
         "position": { "horizontal": "right", "vertical": "center", "width": "34%" }
       },
+      "source": {
+        "name": "マラリアについて：野口英世アフリカ賞 - 内閣府",
+        "url": "https://www.cao.go.jp/noguchisho/award/maraliafact.html"
+      },
       "chart": { "visible": false },
       "map": { "visible": false },
       "image": {
         "visible": true,
-        "src": "/images/placeholder-2.svg",
-        "alt": "ダミー画像",
+        "src": "/images/malariae/arutemisin.png",
+        "alt": "アルテミシニン",
         "opacity": 0.85
       }
     },
@@ -197,14 +185,26 @@
         "visible": true,
         "position": { "horizontal": "left", "vertical": "center", "width": "34%" }
       },
-      "chart": { "visible": false },
-      "map": { "visible": false },
-      "image": {
+      "chart": {
         "visible": true,
-        "src": "/images/photo-1.jpg",
-        "alt": "ダミー画像",
-        "opacity": 0.78
-      }
+        "layout": "single",
+        "responsive": { "mobileStack": true },
+        "charts": [
+          {
+            "id": "venn-act",
+            "type": "venn",
+            "dataFile": "/data/charts/malariae/venn-act.json",
+            "dataFormat": "json",
+            "config": {
+              "title": "アルテミシニン併用療法（ACT）",
+              "hideValues": true,
+              "intersectionLabel": "ACT（併用療法）"
+            }
+          }
+        ]
+      },
+      "map": { "visible": false },
+      "image": { "visible": false }
     },
     {
       "id": "ml-img-12",
@@ -389,18 +389,38 @@
     {
       "id": "ml-img-13",
       "text": {
-        "content": "<h2>課題</h2><p>現在のマラリア治療には、いくつかの大きな課題があります。2000年代後半から、東南アジアの一部の地域で、主な治療薬であるアルテミシニンが効きにくい「耐性」のあるマラリア原虫が見つかるようになりました。そして2018年には、アフリカでも同じような耐性を持つ原虫が発見され、世界的に懸念が高まっています。</p>",
+        "content": "<h2>課題</h2><p>現在のマラリア治療には、いくつかの大きな課題があります。2000年代後半から、東南アジアの一部の地域で、主な治療薬であるアルテミシニンが効きにくい「耐性」のあるマラリア原虫が見つかるようになりました。</p>",
         "visible": true,
         "position": { "horizontal": "left", "vertical": "center", "width": "34%" }
       },
       "chart": { "visible": false },
-      "map": { "visible": false },
-      "image": {
+      "map": {
         "visible": true,
-        "src": "/images/photo-3.jpg",
-        "alt": "ダミー画像",
-        "opacity": 0.80
-      }
+        "mode": "world-overview",
+        "center": [105, 15],
+        "zoom": 3,
+        "highlightCountries": ["Cambodia", "Thailand", "Vietnam", "Myanmar", "Laos"],
+        "lightenNonVisited": true
+      },
+      "image": { "visible": false }
+    },
+    {
+      "id": "ml-img-13b",
+      "text": {
+        "content": "<p>そして2018年には、アフリカでも同じような耐性を持つ原虫が発見され、世界的に懸念が高まっています。</p>",
+        "visible": true,
+        "position": { "horizontal": "right", "vertical": "center", "width": "34%" }
+      },
+      "chart": { "visible": false },
+      "map": {
+        "visible": true,
+        "mode": "world-overview",
+        "center": [20, 5],
+        "zoom": 2,
+        "highlightCountries": ["Nigeria", "Democratic Republic of the Congo", "Uganda", "Mozambique", "Niger", "Burkina Faso", "Angola", "Tanzania", "Mali", "Ghana", "Cameroon", "Rwanda", "Ethiopia", "Kenya"],
+        "lightenNonVisited": true
+      },
+      "image": { "visible": false }
     },
     {
       "id": "ml-img-14",
@@ -476,16 +496,40 @@
       "text": {
         "content": "<p>さらに、マラリア感染の増加には気候変動の影響も関係していると考えられています。気温や湿度、雨の量が変わることで、マラリアを媒介するハマダラカという蚊が暮らしやすい地域が広がっているのです。日本のように、平均気温が年々上がっている国でも、マラリアは決して「他人事」ではなくなっています。</p>",
         "visible": true,
-        "position": { "horizontal": "right", "vertical": "center", "width": "34%" }
+        "position": { "horizontal": "right", "vertical": "center", "width": "32%" }
       },
-      "chart": { "visible": false },
-      "map": { "visible": false },
-      "image": {
+      "source": {
+        "name": "気象庁 | 日本の年平均気温偏差（℃）",
+        "url": "https://www.data.jma.go.jp/cpdinfo/temp/list/an_jpn.html"
+      },
+      "chart": {
         "visible": true,
-        "src": "/images/photo-1.jpg",
-        "alt": "ダミー画像",
-        "opacity": 0.78
-      }
+        "layout": "single",
+        "responsive": { "mobileStack": true },
+        "charts": [
+          {
+            "id": "line-temp",
+            "type": "line",
+            "dataFile": "/data/charts/malariae/an_jpn.csv",
+            "dataFormat": "csv",
+            "config": {
+              "xField": "年",
+              "yField": "偏差",
+              "yDomain": [-2.0, 2.0],
+              "title": "日本の年平均気温偏差（℃）",
+              "annotations": [
+                {
+                  "type": "horizontalLine",
+                  "y": 0,
+                  "label": "基準値（0℃）"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "map": { "visible": false },
+      "image": { "visible": false }
     },
     {
       "id": "ml-img-17",
@@ -498,8 +542,8 @@
       "map": { "visible": false },
       "image": {
         "visible": true,
-        "src": "/images/photo-2.jpg",
-        "alt": "ダミー画像",
+        "src": "/images/malariae/malaria-story-01.jpg",
+        "alt": "マラリアとの闘い",
         "opacity": 0.80
       }
     }
