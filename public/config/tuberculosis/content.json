@@ -65,22 +65,6 @@
       }
     },
     {
-      "id": "tb-img-04",
-      "text": {
-        "content": "<h2>「感染」と「発病」の違い</h2><p>「感染」とは、体の中に結核菌が入り込んでも、まだ病気の症状が出ていない状態のことです。この段階では他の人にうつす心配はありません。</p><p>一方、「発病」とは、体の中で結核菌が増えて、咳や熱などの症状が出る状態のことです。病気が進行すると、咳や痰に菌が混じるようになり、他の人に感染させる可能性が出てきます。</p>",
-        "visible": true,
-        "position": { "horizontal": "right", "vertical": "center", "width": "34%" }
-      },
-      "chart": { "visible": false },
-      "map": { "visible": false },
-      "image": {
-        "visible": true,
-        "src": "/images/placeholder-1.svg",
-        "alt": "ダミー画像",
-        "opacity": 0.85
-      }
-    },
-    {
       "id": "tb-img-07",
       "text": {
         "content": "<h2>日本における結核との闘い</h2><p>日本では1935年から1950年までの15年間、結核が死因の第1位でした。</p>",
@@ -166,7 +150,11 @@
                   "year": 1951,
                   "label": "1951年"
                 }
-              ]
+              ],
+              "source": {
+                "name": "2024年 結核登録者情報調査年報集計結果",
+                "url": "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/0000175095_00016.html"
+              }
             }
           }
         ]
@@ -180,6 +168,10 @@
         "content": "<p>このような努力の積み重ねで、日本では結核を減らすことに成功してきましたが、今でも毎年1万人ほどの人が新たに結核を発症しているのが現状です。 </p><p>また日本では近年、外国生まれの結核患者の数が増えており、その対策として「入国前結核スクリーニング」という制度が始まっています。</p>",
         "visible": true,
         "position": { "horizontal": "right", "vertical": "center", "width": "34%" }
+      },
+      "source": {
+        "name": "入国前結核スクリーニング Japan Pre-Entry Tuberculosis Screening｜厚生労働省",
+        "url": "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/kenkou_iryou/kenkou/kekkaku-kansenshou03/index_00006.html"
       },
       "chart": { "visible": false },
       "map": { "visible": false },
@@ -197,6 +189,10 @@
         "content": "<h2>世界の結核対策と現状</h2><p>結核をなくすための世界的な取り組みも、科学の進歩や国際的な協力によって少しずつ前に進んできました。世界保健機関（WHO）は2014年に「結核終息戦略（End TB Strategy）」を発表し、2035年までに世界から結核を終わらせることを目標としています。</p><p>この戦略では、主に「1.早期発見と、すべての患者に適切な治療を届けること」「2.患者や地域社会へのサポート」「3.新しい検査法や薬、ワクチンの開発を進めること」を重視しています。こうした取り組みによって、新規感染者数は緩やかな下降傾向にありました。</p>",
         "visible": true,
         "position": { "horizontal": "left", "vertical": "center", "width": "34%" }
+      },
+      "source": {
+        "name": "WHO: The End TB Strategy",
+        "url": "https://www.who.int/teams/global-programme-on-tuberculosis-and-lung-health/the-end-tb-strategy"
       },
       "chart": { "visible": false },
       "map": { "visible": false },
@@ -407,8 +403,8 @@
       "map": { "visible": false },
       "image": {
         "visible": true,
-        "src": "/images/photo-3.jpg",
-        "alt": "ダミー画像",
+        "src": "/images/tuberculosis/tb-story-01.jpg",
+        "alt": "結核撲滅への取り組み",
         "opacity": 0.80
       }
     }
