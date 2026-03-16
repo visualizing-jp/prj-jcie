@@ -107,8 +107,8 @@
               "xMax": 1956,
               "highlight": "全結核",
               "source": {
-                "name": "厚生労働省「人口動態統計」",
-                "url": "https://www.mhlw.go.jp/toukei/saikin/hw/jinkou/suii09/deth8.html"
+                "name": "厚生労働省「人口動態統計」第７表",
+                "url": "https://www.mhlw.go.jp/toukei/saikin/hw/jinkou/suii09/deth7.html"
               }
             }
           }

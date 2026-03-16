@@ -378,7 +378,7 @@ export class ChartLayer {
     const startYDomain = previousSpanState?.yDomain || targetYDomain;
 
     const title = config.title || '折れ線グラフ';
-    const inner = this.createPanelInner(panel, title, { source: config.source });
+    const inner = this.createPanelInner(panel, title);
     const width = inner.width;
     const height = inner.height;
     const grouped = d3.groups(rows, (d) => (d[seriesField] == null ? '__single__' : String(d[seriesField])));
@@ -697,6 +697,8 @@ export class ChartLayer {
     if (spanId) {
       this.lineSpanState.set(spanId, { xDomain: [...targetXDomain], yDomain: [...targetYDomain] });
     }
+
+    
   }
 
   attachLineTooltip(plotGroup, seriesData, xScale, yScale, plotWidth, plotHeight, xField, yField, colorFn) {
@@ -960,7 +962,7 @@ export class ChartLayer {
     }
 
     const title = config.title || config.groupTitle || '円グラフ';
-    const inner = this.createPanelInner(panel, title, { compact: true, source: config.source });
+    const inner = this.createPanelInner(panel, title, { compact: true });
     const radius = Math.max(24, Math.min(inner.width, inner.height) * 0.33);
 
     const pie = d3.pie().value((d) => d.__pieValue).sort(null);
@@ -1024,6 +1026,8 @@ export class ChartLayer {
         .attr('font-size', 10)
         .text(`${row[labelField]}: ${row[valueField]}`);
     });
+
+    
   }
 
   resolvePieDataset(dataset, config) {
@@ -1090,7 +1094,7 @@ export class ChartLayer {
     }
 
     const title = config.title || 'サンキー・ダイアグラム';
-    const inner = this.createPanelInner(panel, title, { source: config.source });
+    const inner = this.createPanelInner(panel, title);
     const width = inner.width;
     const height = inner.height;
 
@@ -1271,6 +1275,8 @@ export class ChartLayer {
       .delay((d) => d.level * levelDelay + 200)
       .duration(300)
       .attr('opacity', 1);
+
+    
   }
 
   normalizeSankeyData(dataset) {
@@ -1347,7 +1353,7 @@ export class ChartLayer {
     }
 
     const title = config.title || vennData.title || 'ベン図';
-    const inner = this.createPanelInner(panel, title, { compact: true, source: config.source });
+    const inner = this.createPanelInner(panel, title, { compact: true });
 
     const areas = vennData.sets
       .filter((d) => Array.isArray(d?.sets) && d.sets.length >= 1 && Number.isFinite(Number(d.size)))
@@ -1538,6 +1544,8 @@ export class ChartLayer {
         .delay(350)
         .attr('opacity', 1);
     });
+
+    
   }
 
   resolveVennDataset(dataset, config) {
@@ -1582,7 +1590,7 @@ export class ChartLayer {
       return;
     }
 
-    const inner = this.createPanelInner(panel, title, { source: config.source });
+    const inner = this.createPanelInner(panel, title);
     const width = inner.width;
     const height = inner.height;
 
@@ -1744,6 +1752,8 @@ export class ChartLayer {
 
     // ツールチップ
     this.attachBumpTooltip(plotGroup, seriesData, x, y, plotWidth, plotHeight, xField, yField, color);
+
+    
   }
 
   attachBumpTooltip(plotGroup, seriesData, xScale, yScale, plotWidth, plotHeight, xField, yField, color) {
@@ -1901,38 +1911,9 @@ export class ChartLayer {
         .text(title);
     }
 
-    const sourceH = options.source ? 16 : 0;
-
     const innerGroup = group.append('g').attr('transform', `translate(${innerPad}, ${innerPad + titleH})`);
     const width = panel.width - innerPad * 2;
-    const height = panel.height - innerPad * 2 - titleH - sourceH;
-
-    // データソース表示
-    if (options.source) {
-      const src = options.source;
-      const sourceY = panel.height - innerPad + 2;
-      if (src.url) {
-        const link = group.append('a')
-          .attr('href', src.url)
-          .attr('target', '_blank');
-        link.append('text')
-          .attr('x', panel.width - innerPad)
-          .attr('y', sourceY)
-          .attr('text-anchor', 'end')
-          .attr('fill', '#6b7280')
-          .attr('font-size', 9)
-          .attr('text-decoration', 'underline')
-          .text(`出典: ${src.name || src.url}`);
-      } else {
-        group.append('text')
-          .attr('x', panel.width - innerPad)
-          .attr('y', sourceY)
-          .attr('text-anchor', 'end')
-          .attr('fill', '#6b7280')
-          .attr('font-size', 9)
-          .text(`出典: ${src.name || ''}`);
-      }
-    }
+    const height = panel.height - innerPad * 2 - titleH;
 
     return { group: innerGroup, width, height };
   }

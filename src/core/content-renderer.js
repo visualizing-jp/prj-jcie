@@ -39,6 +39,31 @@ export class ContentRenderer {
       card.className = 'text-card';
       card.innerHTML = step.text.content;
 
+      // チャートのデータソース表示
+      const sources = step.chart?.charts
+        ?.map((c) => c.config?.source)
+        .filter(Boolean);
+      if (sources && sources.length > 0) {
+        const sourceDiv = document.createElement('div');
+        sourceDiv.className = 'chart-source';
+        sources.forEach((src) => {
+          const label = document.createElement('span');
+          label.textContent = '出典: ';
+          sourceDiv.appendChild(label);
+          if (src.url) {
+            const a = document.createElement('a');
+            a.href = src.url;
+            a.target = '_blank';
+            a.rel = 'noopener noreferrer';
+            a.textContent = src.name || src.url;
+            sourceDiv.appendChild(a);
+          } else {
+            label.textContent += src.name || '';
+          }
+        });
+        card.appendChild(sourceDiv);
+      }
+
       // Split Text: h2要素を行単位で分割
       this.applySplitText(card);
 
