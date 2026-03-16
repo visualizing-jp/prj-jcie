@@ -378,7 +378,7 @@ export class ChartLayer {
     const startYDomain = previousSpanState?.yDomain || targetYDomain;
 
     const title = config.title || '折れ線グラフ';
-    const inner = this.createPanelInner(panel, title);
+    const inner = this.createPanelInner(panel, title, { source: config.source });
     const width = inner.width;
     const height = inner.height;
     const grouped = d3.groups(rows, (d) => (d[seriesField] == null ? '__single__' : String(d[seriesField])));
@@ -960,7 +960,7 @@ export class ChartLayer {
     }
 
     const title = config.title || config.groupTitle || '円グラフ';
-    const inner = this.createPanelInner(panel, title, { compact: true });
+    const inner = this.createPanelInner(panel, title, { compact: true, source: config.source });
     const radius = Math.max(24, Math.min(inner.width, inner.height) * 0.33);
 
     const pie = d3.pie().value((d) => d.__pieValue).sort(null);
@@ -1090,7 +1090,7 @@ export class ChartLayer {
     }
 
     const title = config.title || 'サンキー・ダイアグラム';
-    const inner = this.createPanelInner(panel, title);
+    const inner = this.createPanelInner(panel, title, { source: config.source });
     const width = inner.width;
     const height = inner.height;
 
@@ -1347,7 +1347,7 @@ export class ChartLayer {
     }
 
     const title = config.title || vennData.title || 'ベン図';
-    const inner = this.createPanelInner(panel, title, { compact: true });
+    const inner = this.createPanelInner(panel, title, { compact: true, source: config.source });
 
     const areas = vennData.sets
       .filter((d) => Array.isArray(d?.sets) && d.sets.length >= 1 && Number.isFinite(Number(d.size)))
