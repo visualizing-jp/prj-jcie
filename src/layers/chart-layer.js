@@ -334,7 +334,7 @@ export class ChartLayer {
     const xField = config.xField || 'year';
     const yField = config.yField || 'value';
     const seriesField = config.seriesField || 'series';
-    const baseRows = dataset.filter((d) => Number.isFinite(Number(d[xField])) && Number.isFinite(Number(d[yField])));
+    const baseRows = dataset.filter((d) => Number.isFinite(Number(d[xField])) && (Number.isFinite(Number(d[yField])) || d[yField] == null || String(d[yField]).trim() === '' || String(d[yField]).trim() === '―'));
     if (baseRows.length === 0) {
       this.renderUnsupported(panel, 'lineデータが空です');
       return;
@@ -438,8 +438,11 @@ export class ChartLayer {
       .call(styleAxisText)
       .call(styleAxisLines);
 
+    const isDefined = (d) => d[yField] != null && d[yField] !== '' && Number.isFinite(Number(d[yField]));
+
     const line = d3
       .line()
+      .defined(isDefined)
       .x((d) => x(Number(d[xField])))
       .y((d) => y(Number(d[yField])))
       .curve(d3.curveMonotoneX);
@@ -447,6 +450,7 @@ export class ChartLayer {
     // Area fill ジェネレータ
     const areaGen = config.areaFill !== false
       ? d3.area()
+          .defined(isDefined)
           .x((d) => x(Number(d[xField])))
           .y0(plotHeight)
           .y1((d) => y(Number(d[yField])))
@@ -494,7 +498,7 @@ export class ChartLayer {
 
       const points = plotGroup
         .selectAll('.point')
-        .data(rows)
+        .data(rows.filter(isDefined))
         .enter()
         .append('circle')
         .attr('cx', (d) => x(Number(d[xField])))
@@ -614,7 +618,7 @@ export class ChartLayer {
 
       const points = seriesGroup
         .selectAll(`.point-${this.toSafeCssToken(series.name)}`)
-        .data(series.values)
+        .data(series.values.filter(isDefined))
         .enter()
         .append('circle')
         .attr('cx', (d) => x(Number(d[xField])))
