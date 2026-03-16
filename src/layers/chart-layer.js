@@ -316,6 +316,8 @@ export class ChartLayer {
         this.renderSankey(panel, dataset, panel.chart.config || {});
       } else if (chartType === 'venn') {
         this.renderVenn(panel, dataset, panel.chart.config || {});
+      } else if (chartType === 'bump') {
+        this.renderBump(panel, dataset, panel.chart.config || {});
       } else {
         this.renderUnsupported(panel, `未対応チャート: ${chartType}`);
       }
@@ -1553,6 +1555,270 @@ export class ChartLayer {
     return null;
   }
 
+  renderBump(panel, dataset, config) {
+    if (!Array.isArray(dataset) || dataset.length === 0) {
+      this.renderUnsupported(panel, 'bumpデータが空です');
+      return;
+    }
+
+    const xField = config.xField || 'year';
+    const yField = config.yField || 'rank';
+    const seriesField = config.seriesField || 'country';
+    const maxRank = config.maxRank || 5;
+    const title = config.title || '順位推移';
+    const highlightSet = new Set(
+      Array.isArray(config.highlight) ? config.highlight : config.highlight ? [config.highlight] : []
+    );
+    const hasHighlight = highlightSet.size > 0;
+
+    const xMin = config.xMin != null ? Number(config.xMin) : -Infinity;
+    const xMax = config.xMax != null ? Number(config.xMax) : Infinity;
+    const rows = dataset.filter(
+      (d) => d[xField] != null && Number.isFinite(Number(d[yField])) &&
+             Number(d[xField]) >= xMin && Number(d[xField]) <= xMax
+    );
+    if (rows.length === 0) {
+      this.renderUnsupported(panel, 'bumpデータが空です');
+      return;
+    }
+
+    const inner = this.createPanelInner(panel, title, { source: config.source });
+    const width = inner.width;
+    const height = inner.height;
+
+    const xValues = [...new Set(rows.map((d) => Number(d[xField])))].sort((a, b) => a - b);
+    const seriesNames = [...new Set(rows.map((d) => String(d[seriesField])))];
+    const palette = this.buildPalette(seriesNames.length);
+    const color = d3.scaleOrdinal().domain(seriesNames).range(palette);
+
+    const labelGutter = this.resolveLineLabelGutter(width);
+    const leftGutter = 32;
+    const topInset = 6;
+    const bottomInset = 24;
+    const plotWidth = Math.max(80, width - leftGutter - labelGutter);
+    const plotHeight = Math.max(80, height - topInset - bottomInset);
+
+    const plotGroup = inner.group
+      .append('g')
+      .attr('transform', `translate(${leftGutter}, ${topInset})`);
+
+    const x = d3
+      .scalePoint()
+      .domain(xValues.map(String))
+      .range([0, plotWidth])
+      .padding(0.1);
+
+    const y = d3
+      .scaleLinear()
+      .domain([0.5, maxRank + 0.5])
+      .range([0, plotHeight]);
+
+    // グリッドライン（水平 - 各順位）
+    if (config.gridLines !== false) {
+      const gridGroup = plotGroup.append('g').attr('class', 'grid-lines');
+      for (let rank = 1; rank <= maxRank; rank += 1) {
+        gridGroup
+          .append('line')
+          .attr('x1', 0)
+          .attr('y1', y(rank))
+          .attr('x2', plotWidth)
+          .attr('y2', y(rank))
+          .attr('stroke', '#d1d5db')
+          .attr('stroke-opacity', 0.15)
+          .attr('stroke-dasharray', '2 4');
+      }
+    }
+
+    // X軸
+    const xAxis = d3.axisBottom(x).tickFormat(d3.format('d'));
+    const styleAxisText = (g) => g.selectAll('text').attr('fill', '#4b5563').attr('font-size', 11);
+    const styleAxisLines = (g) => g.selectAll('line,path').attr('stroke', '#d1d5db').attr('opacity', 0.5);
+
+    plotGroup
+      .append('g')
+      .attr('transform', `translate(0, ${plotHeight})`)
+      .call(xAxis)
+      .call(styleAxisText)
+      .call(styleAxisLines);
+
+    // Y軸（順位ラベル）
+    const yAxis = d3
+      .axisLeft(y)
+      .tickValues(d3.range(1, maxRank + 1))
+      .tickFormat((d) => `${d}位`);
+
+    plotGroup
+      .append('g')
+      .call(yAxis)
+      .call(styleAxisText)
+      .call(styleAxisLines);
+
+    // 系列データ構築
+    const seriesData = seriesNames.map((name) => {
+      const values = rows
+        .filter((d) => String(d[seriesField]) === name)
+        .sort((a, b) => Number(a[xField]) - Number(b[xField]));
+      return { name, values };
+    }).filter((s) => s.values.length > 0);
+
+    // 線描画
+    const line = d3
+      .line()
+      .x((d) => x(String(Number(d[xField]))))
+      .y((d) => y(Number(d[yField])))
+      .curve(d3.curveBumpX);
+
+    const seriesGroup = plotGroup.append('g').attr('class', 'bump-series');
+
+    seriesData.forEach((series) => {
+      const seriesColor = color(series.name);
+      const isHighlighted = !hasHighlight || highlightSet.has(series.name);
+      const strokeW = isHighlighted ? 3.5 : 1.5;
+      const strokeOp = isHighlighted ? 0.95 : 0.25;
+      const circleR = isHighlighted ? 6 : 3.5;
+      const circleOp = isHighlighted ? 1 : 0.3;
+
+      // パス
+      const path = seriesGroup
+        .append('path')
+        .datum(series.values)
+        .attr('fill', 'none')
+        .attr('stroke', seriesColor)
+        .attr('stroke-width', strokeW)
+        .attr('stroke-opacity', strokeOp)
+        .attr('d', line);
+
+      // ドローインアニメーション
+      const len = path.node()?.getTotalLength() || 0;
+      path
+        .attr('stroke-dasharray', `${len} ${len}`)
+        .attr('stroke-dashoffset', len)
+        .transition()
+        .duration(800)
+        .ease(d3.easeCubicOut)
+        .attr('stroke-dashoffset', 0);
+
+      // データポイント円
+      seriesGroup
+        .selectAll(`.bump-point-${this.toSafeCssToken(series.name)}`)
+        .data(series.values)
+        .enter()
+        .append('circle')
+        .attr('cx', (d) => x(String(Number(d[xField]))))
+        .attr('cy', (d) => y(Number(d[yField])))
+        .attr('r', circleR)
+        .attr('fill', seriesColor)
+        .attr('stroke', '#fff')
+        .attr('stroke-width', isHighlighted ? 2 : 1)
+        .attr('opacity', 0)
+        .transition()
+        .delay(600)
+        .duration(300)
+        .attr('opacity', circleOp);
+    });
+
+    // 右端ラベル（最右のx値にデータがある系列のみ表示）
+    const lastXValue = xValues[xValues.length - 1];
+    const labelX = plotWidth + 10;
+    const labelLayer = plotGroup.append('g').attr('class', 'bump-end-labels');
+    seriesData.forEach((series) => {
+      const last = series.values[series.values.length - 1];
+      if (!last) return;
+      if (Number(last[xField]) !== lastXValue) return;
+      const ly = y(Number(last[yField]));
+      labelLayer
+        .append('text')
+        .attr('x', labelX)
+        .attr('y', ly)
+        .attr('dominant-baseline', 'middle')
+        .attr('fill', color(series.name))
+        .attr('font-size', 10)
+        .attr('font-weight', 600)
+        .attr('opacity', 0)
+        .text(series.name)
+        .transition()
+        .delay(800)
+        .duration(300)
+        .attr('opacity', 1);
+    });
+
+    // ツールチップ
+    this.attachBumpTooltip(plotGroup, seriesData, x, y, plotWidth, plotHeight, xField, yField, color);
+  }
+
+  attachBumpTooltip(plotGroup, seriesData, xScale, yScale, plotWidth, plotHeight, xField, yField, color) {
+    const overlay = plotGroup
+      .append('rect')
+      .attr('width', plotWidth)
+      .attr('height', plotHeight)
+      .attr('fill', 'none')
+      .style('pointer-events', 'all')
+      .style('cursor', 'crosshair');
+
+    const guideLine = plotGroup.append('line')
+      .attr('y1', 0).attr('y2', plotHeight)
+      .attr('stroke', '#ffffff').attr('stroke-opacity', 0)
+      .attr('stroke-width', 0.8).attr('stroke-dasharray', '3 3');
+
+    const tooltipGroup = plotGroup.append('g').attr('class', 'bump-tooltip').attr('opacity', 0);
+
+    const xDomain = xScale.domain();
+
+    overlay.on('mousemove', (event) => {
+      const [mx] = d3.pointer(event);
+      // 最も近いx位置を見つける
+      let nearest = xDomain[0];
+      let minDist = Infinity;
+      xDomain.forEach((xVal) => {
+        const dist = Math.abs(xScale(xVal) - mx);
+        if (dist < minDist) {
+          minDist = dist;
+          nearest = xVal;
+        }
+      });
+
+      const px = xScale(nearest);
+      guideLine.attr('x1', px).attr('x2', px).attr('stroke-opacity', 0.3);
+
+      tooltipGroup.selectAll('*').remove();
+      tooltipGroup.attr('opacity', 1);
+
+      let ty = 0;
+      seriesData.forEach((series) => {
+        const point = series.values.find((d) => String(Number(d[xField])) === nearest);
+        if (!point) return;
+        const py = yScale(Number(point[yField]));
+        const c = color(series.name);
+
+        tooltipGroup.append('circle')
+          .attr('cx', px).attr('cy', py).attr('r', 6)
+          .attr('fill', c).attr('stroke', '#fff').attr('stroke-width', 2);
+
+        const labelX = px + 10;
+        const labelY = 12 + ty * 16;
+        tooltipGroup.append('rect')
+          .attr('x', labelX - 2).attr('y', labelY - 10)
+          .attr('width', 90).attr('height', 14)
+          .attr('rx', 3).attr('fill', 'rgba(255,255,255,0.92)');
+        tooltipGroup.append('text')
+          .attr('x', labelX).attr('y', labelY)
+          .attr('fill', c).attr('font-size', 10).attr('font-weight', 500)
+          .text(`${series.name}: ${point[yField]}位`);
+        ty += 1;
+      });
+
+      tooltipGroup.append('text')
+        .attr('x', px).attr('y', plotHeight + 16)
+        .attr('text-anchor', 'middle').attr('fill', '#4b5563').attr('font-size', 10)
+        .text(nearest);
+    });
+
+    overlay.on('mouseleave', () => {
+      guideLine.attr('stroke-opacity', 0);
+      tooltipGroup.attr('opacity', 0);
+    });
+  }
+
   renderUnsupported(panel, message) {
     const g = this.root
       .append('g')
@@ -1635,9 +1901,38 @@ export class ChartLayer {
         .text(title);
     }
 
+    const sourceH = options.source ? 16 : 0;
+
     const innerGroup = group.append('g').attr('transform', `translate(${innerPad}, ${innerPad + titleH})`);
     const width = panel.width - innerPad * 2;
-    const height = panel.height - innerPad * 2 - titleH;
+    const height = panel.height - innerPad * 2 - titleH - sourceH;
+
+    // データソース表示
+    if (options.source) {
+      const src = options.source;
+      const sourceY = panel.height - innerPad + 2;
+      if (src.url) {
+        const link = group.append('a')
+          .attr('href', src.url)
+          .attr('target', '_blank');
+        link.append('text')
+          .attr('x', panel.width - innerPad)
+          .attr('y', sourceY)
+          .attr('text-anchor', 'end')
+          .attr('fill', '#6b7280')
+          .attr('font-size', 9)
+          .attr('text-decoration', 'underline')
+          .text(`出典: ${src.name || src.url}`);
+      } else {
+        group.append('text')
+          .attr('x', panel.width - innerPad)
+          .attr('y', sourceY)
+          .attr('text-anchor', 'end')
+          .attr('fill', '#6b7280')
+          .attr('font-size', 9)
+          .text(`出典: ${src.name || ''}`);
+      }
+    }
 
     return { group: innerGroup, width, height };
   }
