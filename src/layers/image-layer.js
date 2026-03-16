@@ -24,10 +24,22 @@ export class ImageLayer {
     const src = imageConfig.src.startsWith('/') ? `${base}${imageConfig.src.slice(1)}` : imageConfig.src;
     img.src = src;
     img.alt = imageConfig.alt || '';
+    const fit = imageConfig.fit || 'cover';
+    // fit: "cover" (default) — 領域全体を埋める（トリミングあり）
+    // fit: "width" — 横幅に合わせる（上下に余白の可能性あり）
+    // fit: "height" — 縦幅に合わせる（左右に余白の可能性あり）
+    // fit: "contain" — 全体が見える（余白あり）
+    const fitStyles = {
+      cover:   'width: 100%; height: 120%; object-fit: cover;',
+      width:   'width: 100%; height: auto; object-fit: contain;',
+      height:  'width: auto; height: 120%; object-fit: contain;',
+      contain: 'width: 100%; height: 100%; object-fit: contain;',
+    };
+    const objectPosition = imageConfig.objectPosition || 'center center';
+
     img.style.cssText = `
-      width: 100%;
-      height: 120%;
-      object-fit: cover;
+      ${fitStyles[fit] || fitStyles.cover}
+      object-position: ${objectPosition};
       opacity: ${imageConfig.opacity ?? 1};
       transform: translateY(-10%);
       will-change: transform;
