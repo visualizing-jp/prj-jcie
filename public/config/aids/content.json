@@ -3,7 +3,7 @@
     {
       "id": "aids-hero",
       "text": {
-        "content": "<h2 style=\"text-align:center\">エイズとの闘い</h2><p style=\"text-align:center\">～データで見る希望と課題～</p>",
+        "content": "<h2 style=\"text-align:center;color:#ffffff\">エイズとの闘い</h2><p style=\"text-align:center;color:#ffffff\">～データで見る希望と課題～</p>",
         "visible": true,
         "position": { "horizontal": "center", "vertical": "center", "width": "60%" }
       },
@@ -11,7 +11,7 @@
       "map": { "visible": false },
       "image": {
         "visible": true,
-        "src": "/images/photo-1.jpg",
+        "src": "/images/aids/aids-ribbon.jpg",
         "alt": "エイズとの闘い",
         "opacity": 0.78
       }
@@ -27,8 +27,8 @@
       "map": { "visible": false },
       "image": {
         "visible": true,
-        "src": "/images/photo-1.jpg",
-        "alt": "導入画像1",
+        "src": "/images/aids/couple.jpg",
+        "alt": "HIV/エイズは誰にでも感染する可能性がある",
         "opacity": 0.78
       }
     },
@@ -43,8 +43,8 @@
       "map": { "visible": false },
       "image": {
         "visible": true,
-        "src": "/images/photo-2.jpg",
-        "alt": "導入画像2",
+        "src": "/images/aids/treatment-progress.jpg",
+        "alt": "HIV治療の進歩",
         "opacity": 0.8
       }
     },
@@ -434,8 +434,8 @@
       "map": { "visible": false },
       "image": {
         "visible": true,
-        "src": "/images/photo-3.jpg",
-        "alt": "終盤画像1",
+        "src": "/images/aids/gf-aids.jpg",
+        "alt": "グローバルファンドによるエイズ対策の成果",
         "opacity": 0.8
       }
     },
@@ -450,8 +450,8 @@
       "map": { "visible": false },
       "image": {
         "visible": true,
-        "src": "/images/placeholder-2.svg",
-        "alt": "終盤画像2",
+        "src": "/images/aids/zambia-photos.png",
+        "alt": "ザンビアでの活動",
         "opacity": 0.82
       }
     }

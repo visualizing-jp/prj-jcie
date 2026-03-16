@@ -3,7 +3,7 @@
     {
       "id": "tb-hero",
       "text": {
-        "content": "<h2 style=\"text-align:center\">結核との闘い</h2><p style=\"text-align:center\">～データで見る希望と課題～</p>",
+        "content": "<h2 style=\"text-align:center;color:#ffffff\">結核との闘い</h2><p style=\"text-align:center;color:#ffffff\">～データで見る希望と課題～</p>",
         "visible": true,
         "position": { "horizontal": "center", "vertical": "center", "width": "60%" }
       },
@@ -27,8 +27,8 @@
       "map": { "visible": false },
       "image": {
         "visible": true,
-        "src": "/images/photo-1.jpg",
-        "alt": "ダミー画像",
+        "src": "/images/tuberculosis/tuberculosis-old.png",
+        "alt": "結核の歴史",
         "opacity": 0.78
       }
     },
@@ -43,8 +43,8 @@
       "map": { "visible": false },
       "image": {
         "visible": true,
-        "src": "/images/photo-2.jpg",
-        "alt": "ダミー画像",
+        "src": "/images/tuberculosis/tb-1.jpeg",
+        "alt": "結核の現状",
         "opacity": 0.80
       }
     },
@@ -59,8 +59,8 @@
       "map": { "visible": false },
       "image": {
         "visible": true,
-        "src": "/images/photo-3.jpg",
-        "alt": "ダミー画像",
+        "src": "/images/tuberculosis/crowd.jpg",
+        "alt": "人混みでの結核感染リスク",
         "opacity": 0.80
       }
     },
@@ -78,38 +78,6 @@
         "src": "/images/placeholder-1.svg",
         "alt": "ダミー画像",
         "opacity": 0.85
-      }
-    },
-    {
-      "id": "tb-img-05",
-      "text": {
-        "content": "<h2>治療と予防ワクチンの歴史</h2><p>結核は、かつて「国民病」や「白死病」などと呼ばれ、多くの人の命を奪った恐ろしい病気でした。特に産業革命のあと、都市に人が集中し、生活環境が悪化したことや貧困の広がりによって、結核が急速に広がったと考えられています。</p>",
-        "visible": true,
-        "position": { "horizontal": "left", "vertical": "center", "width": "34%" }
-      },
-      "chart": { "visible": false },
-      "map": { "visible": false },
-      "image": {
-        "visible": true,
-        "src": "/images/placeholder-2.svg",
-        "alt": "ダミー画像",
-        "opacity": 0.85
-      }
-    },
-    {
-      "id": "tb-img-06",
-      "text": {
-        "content": "<p>1882年、ドイツの細菌学者ロベルト・コッホが結核菌を発見し、1921年にはフランスでBCGワクチンが開発され、結核予防に大きな進展がありました。また、1943年には最初の薬であるストレプトマイシンが、1950年代にはイソニアジド等より効果的な薬が開発されたことで、治療法が確立されていきました。</p>",
-        "visible": true,
-        "position": { "horizontal": "right", "vertical": "center", "width": "34%" }
-      },
-      "chart": { "visible": false },
-      "map": { "visible": false },
-      "image": {
-        "visible": true,
-        "src": "/images/photo-1.jpg",
-        "alt": "ダミー画像",
-        "opacity": 0.78
       }
     },
     {
@@ -139,9 +107,10 @@
       "map": { "visible": false },
       "image": {
         "visible": true,
-        "src": "/images/photo-3.jpg",
-        "alt": "ダミー画像",
-        "opacity": 0.80
+        "src": "/images/tuberculosis/1280px-Kiyoshi_Shiga.jpg",
+        "alt": "志賀潔博士",
+        "opacity": 0.80,
+        "fit": "height"
       }
     },
     {
@@ -151,14 +120,38 @@
         "visible": true,
         "position": { "horizontal": "left", "vertical": "center", "width": "34%" }
       },
-      "chart": { "visible": false },
-      "map": { "visible": false },
-      "image": {
+      "chart": {
         "visible": true,
-        "src": "/images/placeholder-1.svg",
-        "alt": "ダミー画像",
-        "opacity": 0.85
-      }
+        "layout": "single",
+        "responsive": { "mobileStack": true },
+        "charts": [
+          {
+            "id": "line-tb-death-japan",
+            "type": "line",
+            "dataFile": "/data/charts/tuberculosis/tb-death-japan-timeseries.csv",
+            "dataFormat": "csv",
+            "config": {
+              "xField": "西暦",
+              "yField": "死亡数",
+              "title": "日本の結核死亡者数の推移",
+              "annotations": [
+                {
+                  "type": "verticalLine",
+                  "year": 1948,
+                  "label": "1948年"
+                },
+                {
+                  "type": "verticalLine",
+                  "year": 1951,
+                  "label": "1951年"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "map": { "visible": false },
+      "image": { "visible": false }
     },
     {
       "id": "tb-img-10",
@@ -171,9 +164,10 @@
       "map": { "visible": false },
       "image": {
         "visible": true,
-        "src": "/images/placeholder-2.svg",
-        "alt": "ダミー画像",
-        "opacity": 0.85
+        "src": "/images/tuberculosis/jpets.jpg",
+        "alt": "入国前結核スクリーニング",
+        "opacity": 0.85,
+        "fit": "contain"
       }
     },
     {
@@ -187,9 +181,10 @@
       "map": { "visible": false },
       "image": {
         "visible": true,
-        "src": "/images/photo-1.jpg",
-        "alt": "ダミー画像",
-        "opacity": 0.78
+        "src": "/images/tuberculosis/who-end-tb-strategy.jpg",
+        "alt": "WHO End TB Strategy",
+        "opacity": 0.85,
+        "fit": "contain"
       }
     },
     {

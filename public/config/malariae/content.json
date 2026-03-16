@@ -3,7 +3,7 @@
     {
       "id": "ml-hero",
       "text": {
-        "content": "<h2 style=\"text-align:center\">マラリアとの闘い</h2><p style=\"text-align:center\">～データで見る希望と課題～</p>",
+        "content": "<h2 style=\"text-align:center;color:#ffffff\">マラリアとの闘い</h2><p style=\"text-align:center;color:#ffffff\">～データで見る希望と課題～</p>",
         "visible": true,
         "position": { "horizontal": "center", "vertical": "center", "width": "60%" }
       },
@@ -40,13 +40,15 @@
         "position": { "horizontal": "right", "vertical": "center", "width": "34%" }
       },
       "chart": { "visible": false },
-      "map": { "visible": false },
-      "image": {
+      "map": {
         "visible": true,
-        "src": "/images/photo-2.jpg",
-        "alt": "ダミー画像",
-        "opacity": 0.80
-      }
+        "mode": "world-overview",
+        "center": [20, 5],
+        "zoom": 1.2,
+        "highlightCountries": ["Nigeria", "Democratic Republic of the Congo", "Uganda", "Mozambique", "Niger", "Burkina Faso", "Angola", "Tanzania", "Mali", "Ghana", "Cameroon", "India", "Indonesia", "Myanmar", "Pakistan", "Papua New Guinea", "Bangladesh", "Brazil", "Colombia", "Peru", "Venezuela", "Guatemala", "Honduras"],
+        "lightenNonVisited": true
+      },
+      "image": { "visible": false }
     },
     {
       "id": "ml-img-03",
@@ -408,13 +410,15 @@
         "position": { "horizontal": "right", "vertical": "center", "width": "34%" }
       },
       "chart": { "visible": false },
-      "map": { "visible": false },
-      "image": {
+      "map": {
         "visible": true,
-        "src": "/images/placeholder-1.svg",
-        "alt": "ダミー画像",
-        "opacity": 0.85
-      }
+        "mode": "world-overview",
+        "center": [104, 13],
+        "zoom": 3.5,
+        "highlightCountries": ["Cambodia", "Thailand"],
+        "lightenNonVisited": true
+      },
+      "image": { "visible": false }
     },
     {
       "id": "ml-line-05",
@@ -462,8 +466,8 @@
       "map": { "visible": false },
       "image": {
         "visible": true,
-        "src": "/images/placeholder-2.svg",
-        "alt": "ダミー画像",
+        "src": "/images/malariae/itn-irs.png",
+        "alt": "蚊帳（ITN）と屋内残留噴霧（IRS）",
         "opacity": 0.85
       }
     },
