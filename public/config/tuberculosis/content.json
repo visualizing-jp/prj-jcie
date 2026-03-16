@@ -87,14 +87,35 @@
         "visible": true,
         "position": { "horizontal": "left", "vertical": "center", "width": "34%" }
       },
-      "chart": { "visible": false },
-      "map": { "visible": false },
-      "image": {
+      "chart": {
         "visible": true,
-        "src": "/images/photo-2.jpg",
-        "alt": "ダミー画像",
-        "opacity": 0.80
-      }
+        "layout": "single",
+        "responsive": { "mobileStack": true },
+        "charts": [
+          {
+            "id": "bump-tb-ranking",
+            "type": "bump",
+            "dataFile": "/data/charts/tuberculosis/death-ranking.csv",
+            "dataFormat": "csv",
+            "config": {
+              "xField": "year",
+              "yField": "rank",
+              "seriesField": "deathby",
+              "title": "日本の死因順位の推移",
+              "maxRank": 5,
+              "xMin": 1947,
+              "xMax": 1956,
+              "highlight": "全結核",
+              "source": {
+                "name": "厚生労働省「人口動態統計」",
+                "url": "https://www.mhlw.go.jp/toukei/saikin/hw/jinkou/suii09/deth8.html"
+              }
+            }
+          }
+        ]
+      },
+      "map": { "visible": false },
+      "image": { "visible": false }
     },
     {
       "id": "tb-img-08",
