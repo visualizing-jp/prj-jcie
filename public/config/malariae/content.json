@@ -131,86 +131,6 @@
       "image": { "visible": false }
     },
     {
-      "id": "ml-img-04",
-      "text": {
-        "content": "<h2>感染原因と経過</h2><p>マラリアの原因であるマラリア原虫は、熱帯や亜熱帯に生息するメスのハマダラカの唾液腺に潜んでいます。</p>",
-        "visible": true,
-        "position": { "horizontal": "right", "vertical": "center", "width": "34%" }
-      },
-      "chart": { "visible": false },
-      "map": { "visible": false },
-      "image": {
-        "visible": true,
-        "src": "/images/placeholder-1.svg",
-        "alt": "ダミー画像",
-        "opacity": 0.85
-      }
-    },
-    {
-      "id": "ml-img-05",
-      "text": {
-        "content": "<p>この蚊が産卵のために人を刺して血を吸う時、唾液と一緒に原虫が人の体内に入ります。原虫は血液の流れに乗って肝臓の細胞に入り、そこで形を変えながら分裂して増殖し、肝細胞を壊して再び血液中に出ていきます。</p>",
-        "visible": true,
-        "position": { "horizontal": "left", "vertical": "center", "width": "34%" }
-      },
-      "chart": { "visible": false },
-      "map": { "visible": false },
-      "image": {
-        "visible": true,
-        "src": "/images/placeholder-2.svg",
-        "alt": "ダミー画像",
-        "opacity": 0.85
-      }
-    },
-    {
-      "id": "ml-img-06",
-      "text": {
-        "content": "<p>その後、赤血球に入り込んでまた分裂・増殖を繰り返し、赤血球を壊しては次々に新しい赤血球に感染していきます。</p>",
-        "visible": true,
-        "position": { "horizontal": "right", "vertical": "center", "width": "34%" }
-      },
-      "chart": { "visible": false },
-      "map": { "visible": false },
-      "image": {
-        "visible": true,
-        "src": "/images/photo-1.jpg",
-        "alt": "ダミー画像",
-        "opacity": 0.78
-      }
-    },
-    {
-      "id": "ml-img-07",
-      "text": {
-        "content": "<p>このように感染した赤血球が全身の臓器にダメージを与え、重度の貧血などを引き起こし、命を落とすこともあります。</p>",
-        "visible": true,
-        "position": { "horizontal": "left", "vertical": "center", "width": "34%" }
-      },
-      "chart": { "visible": false },
-      "map": { "visible": false },
-      "image": {
-        "visible": true,
-        "src": "/images/photo-2.jpg",
-        "alt": "ダミー画像",
-        "opacity": 0.80
-      }
-    },
-    {
-      "id": "ml-img-08",
-      "text": {
-        "content": "<p>このようにマラリアは恐ろしい病気ですが、ハマダラカに刺されないようにすることで予防できる病気であり、効果的な治療薬も開発されてきました。</p>",
-        "visible": true,
-        "position": { "horizontal": "right", "vertical": "center", "width": "34%" }
-      },
-      "chart": { "visible": false },
-      "map": { "visible": false },
-      "image": {
-        "visible": true,
-        "src": "/images/photo-3.jpg",
-        "alt": "ダミー画像",
-        "opacity": 0.80
-      }
-    },
-    {
       "id": "ml-img-09",
       "text": {
         "content": "<h2>治療と予防対策</h2><p>1955年、世界保健機関（WHO）は「世界マラリア撲滅キャンペーン」を開始し、殺虫剤DDTによる屋内への噴霧と抗マラリア薬の併用によって、ヨーロッパやオーストラリアでのマラリア根絶に成功しました。</p>",
@@ -292,13 +212,15 @@
         "position": { "horizontal": "right", "vertical": "center", "width": "34%" }
       },
       "chart": { "visible": false },
-      "map": { "visible": false },
-      "image": {
+      "map": {
         "visible": true,
-        "src": "/images/photo-2.jpg",
-        "alt": "ダミー画像",
-        "opacity": 0.80
-      }
+        "mode": "world-overview",
+        "center": [60, 15],
+        "zoom": 1.2,
+        "highlightCountries": ["Sri Lanka", "Turkmenistan", "Kyrgyzstan", "Paraguay", "Uzbekistan", "Argentina", "Iraq", "United Arab Emirates", "Morocco", "Algeria", "Oman"],
+        "lightenNonVisited": true
+      },
+      "image": { "visible": false }
     },
     {
       "id": "ml-line-02",
@@ -307,38 +229,15 @@
         "visible": true,
         "position": { "horizontal": "right", "vertical": "center", "width": "32%" }
       },
-      "chart": {
+      "chart": { "visible": false },
+      "map": {
         "visible": true,
-        "layout": "single",
-        "responsive": { "mobileStack": true },
-        "charts": [
-          {
-            "id": "line-main-2",
-            "type": "line",
-            "dataFile": "/data/charts/malariae/trend_elsalvador_cases_deaths.csv",
-            "dataFormat": "csv",
-            "config": {
-              "xField": "year",
-              "yField": "value",
-              "seriesField": "series",
-              "title": "エルサルバドルのマラリア感染者数・死亡者数の推移",
-              "annotations": [
-                {
-                  "type": "verticalLine",
-                  "year": 2017,
-                  "label": "2017年 新たな感染者がゼロとなった"
-                },
-                {
-                  "type": "verticalLine",
-                  "year": 2021,
-                  "label": "2021年 WHOがエルサルバドルのマラリア撲滅を正式認定"
-                }
-              ]
-            }
-          }
-        ]
+        "mode": "world-overview",
+        "center": [-88, 13],
+        "zoom": 4,
+        "highlightCountries": ["El Salvador"],
+        "lightenNonVisited": true
       },
-      "map": { "visible": false },
       "image": { "visible": false }
     },
     {
