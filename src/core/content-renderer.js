@@ -39,11 +39,15 @@ export class ContentRenderer {
       card.className = 'text-card';
       card.innerHTML = step.text.content;
 
-      // チャートのデータソース表示
-      const sources = step.chart?.charts
+      // データソース表示（チャートconfig内 + ステップレベル）
+      const chartSources = step.chart?.charts
         ?.map((c) => c.config?.source)
-        .filter(Boolean);
-      if (sources && sources.length > 0) {
+        .filter(Boolean) || [];
+      const stepSources = step.source
+        ? (Array.isArray(step.source) ? step.source : [step.source])
+        : [];
+      const sources = [...chartSources, ...stepSources];
+      if (sources.length > 0) {
         const sourceDiv = document.createElement('div');
         sourceDiv.className = 'chart-source';
         sources.forEach((src) => {

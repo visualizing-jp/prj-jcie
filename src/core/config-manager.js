@@ -43,6 +43,7 @@ export class ConfigManager {
         chart: step.chart || null,
         map: step.map || null,
         image: step.image || null,
+        source: step.source || null,
         scrollHeight: step.scrollHeight || null,
         fixedClosing: Boolean(step.fixedClosing),
       })),
