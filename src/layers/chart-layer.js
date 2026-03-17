@@ -969,6 +969,9 @@ export class ChartLayer {
     const arc = d3.arc().innerRadius(0).outerRadius(radius);
 
     const palette = this.buildPalette(rows.length);
+    if (config.primaryColor) {
+      palette[0] = config.primaryColor;
+    }
     if (config.remainderColor && rows.length === 2) {
       palette[1] = config.remainderColor;
     }
@@ -1439,12 +1442,15 @@ export class ChartLayer {
 
     singletonLayout.forEach((entry) => {
       const setName = entry.data.sets[0];
-      // text.x/text.y は非重複部分の中心座標（vennjs が計算）
+      const circleData2 = entry.circles.find((c) => c.set === setName) || entry.circles[0];
+      if (!circleData2) return;
+      // hideValues 時は非重複部分の中心、通常時は円の上部
+      const labelX = config.hideValues ? entry.text.x : circleData2.x;
+      const labelY = config.hideValues ? entry.text.y : Math.max(10, circleData2.y - circleData2.radius - 8);
       g.append('text')
-        .attr('x', entry.text.x)
-        .attr('y', entry.text.y)
+        .attr('x', labelX)
+        .attr('y', labelY)
         .attr('text-anchor', 'middle')
-        .attr('dominant-baseline', 'central')
         .attr('fill', '#1f2937')
         .attr('font-size', 10)
         .attr('opacity', 0)

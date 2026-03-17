@@ -229,12 +229,14 @@
                 {
                   "type": "verticalLine",
                   "year": 2020,
-                  "label": "2020年"
+                  "label": "2020年",
+                  "dx": -30
                 },
                 {
                   "type": "verticalLine",
                   "year": 2023,
-                  "label": "2023年"
+                  "label": "2023年",
+                  "dx": -30
                 }
               ]
             }
@@ -269,7 +271,8 @@
                 {
                   "type": "verticalLine",
                   "year": 2023,
-                  "label": "2023年"
+                  "label": "2023年",
+                  "dx": -30
                 }
               ]
             }
