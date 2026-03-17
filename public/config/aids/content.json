@@ -13,7 +13,8 @@
         "visible": true,
         "src": "/images/aids/aids-ribbon.jpg",
         "alt": "エイズとの闘い",
-        "opacity": 0.78
+        "opacity": 0.78,
+        "colorOverlay": { "opacity": 1.0 }
       }
     },
     {

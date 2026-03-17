@@ -46,6 +46,23 @@ export class ImageLayer {
       transition: transform 0.05s linear;
     `;
 
+    // テーマカラーベタ塗りオーバーレイ（configで有効化）
+    if (imageConfig.colorOverlay) {
+      const themeColor = getComputedStyle(document.documentElement)
+        .getPropertyValue('--theme-primary').trim() || '#66c2a5';
+      const overlayOpacity = imageConfig.colorOverlay.opacity ?? 0.8;
+      const colorOverlay = document.createElement('div');
+      colorOverlay.style.cssText = `
+        position: absolute;
+        inset: 0;
+        background: ${themeColor};
+        opacity: ${overlayOpacity};
+        pointer-events: none;
+        z-index: 1;
+      `;
+      wrapper.appendChild(colorOverlay);
+    }
+
     // テーマカラーオーバーレイグラデーション
     const overlay = document.createElement('div');
     overlay.style.cssText = `
@@ -59,7 +76,7 @@ export class ImageLayer {
         rgba(0, 0, 0, 0.4) 100%
       );
       pointer-events: none;
-      z-index: 1;
+      z-index: 2;
     `;
 
     wrapper.appendChild(img);

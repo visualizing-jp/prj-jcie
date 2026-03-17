@@ -1060,7 +1060,7 @@ export class ChartLayer {
 
         if (selected.length === 1 && Number.isFinite(Number(config.normalizeTo))) {
           const total = Number(config.normalizeTo);
-          const remainder = Math.max(0, total - selected[0].value);
+          const remainder = Math.round(Math.max(0, total - selected[0].value) * 10) / 10;
           selected.push({
             label: config.remainderLabel || '未治療',
             value: remainder,

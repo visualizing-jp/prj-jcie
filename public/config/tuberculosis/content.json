@@ -13,7 +13,8 @@
         "visible": true,
         "src": "/images/photo-1.jpg",
         "alt": "結核との闘い",
-        "opacity": 0.78
+        "opacity": 0.78,
+        "colorOverlay": { "opacity": 1.0 }
       }
     },
     {
