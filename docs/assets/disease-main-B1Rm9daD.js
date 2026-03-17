@@ -4068,6 +4068,7 @@ void main() {
         inset: 0;
         background: ${u};
         opacity: ${h};
+        mix-blend-mode: multiply;
         pointer-events: none;
         z-index: 1;
       `,e.appendChild(f)}const c=document.createElement("div");c.style.cssText=`
