@@ -1,6 +1,6 @@
 {
   "background": {
-    "hillshade": { "fill": "#8ab4d0", "fillOpacity": 0.35 },
+    "hillshade": { "fill": "#8ab4d0", "fillOpacity": 0.2 },
     "flat": { "fill": "#e8f0f8", "fillOpacity": 0.7 }
   },
   "tile": {
@@ -9,19 +9,19 @@
       "shadowColor": "#8a8a8a",
       "highlightColor": "#ffffff",
       "accentColor": "#d0d0d0",
-      "exaggeration": 0.35,
+      "exaggeration": 0.55,
       "illuminationDirection": 315
     }
   },
   "country": {
     "hillshade": {
-      "fill": "#f8f8f8",
+      "fill": "#ffffff",
       "opacity": {
-        "highlight": 0.45,
-        "normal": 0.6,
-        "lightenAll": 0.45,
-        "lightenNonVisited": 0.35,
-        "nonHighlight": 0.55
+        "highlight": 0.35,
+        "normal": 0.45,
+        "lightenAll": 0.35,
+        "lightenNonVisited": 0.25,
+        "nonHighlight": 0.4
       },
       "stroke": "#9a9a9a",
       "strokeOpacity": 0.35
@@ -39,8 +39,6 @@
       "strokeOpacity": 0.35
     },
     "highlight": {
-      "fill": "#000000",
-      "stroke": "#000000",
       "strokeOpacity": 0.5,
       "strokeWidth": 1.0
     },
