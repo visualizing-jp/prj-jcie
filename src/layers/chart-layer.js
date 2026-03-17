@@ -318,6 +318,8 @@ export class ChartLayer {
         this.renderVenn(panel, dataset, panel.chart.config || {});
       } else if (chartType === 'bump') {
         this.renderBump(panel, dataset, panel.chart.config || {});
+      } else if (chartType === 'streamgraph') {
+        this.renderStreamgraph(panel, dataset, panel.chart.config || {});
       } else {
         this.renderUnsupported(panel, `未対応チャート: ${chartType}`);
       }
@@ -1477,7 +1479,8 @@ export class ChartLayer {
         .attr('y', labelY)
         .attr('text-anchor', 'middle')
         .attr('fill', '#1f2937')
-        .attr('font-size', 10)
+        .attr('font-size', 13)
+        .attr('font-weight', 700)
         .attr('opacity', 0)
         .transition()
         .duration(400)
@@ -1497,8 +1500,8 @@ export class ChartLayer {
           .attr('y', interLayout.text.y + yOffset)
           .attr('text-anchor', 'middle')
           .attr('fill', '#1f2937')
-          .attr('font-size', 11)
-          .attr('font-weight', 600)
+          .attr('font-size', 13)
+          .attr('font-weight', 700)
           .attr('opacity', 0)
           .text(config.intersectionLabel)
           .transition()
@@ -1546,8 +1549,8 @@ export class ChartLayer {
     }
 
     // ラベル衝突検出＋自動オフセット
-    const fontSize = 10;
-    const charWidth = 5.5;
+    const fontSize = 13;
+    const charWidth = 7;
     const labelHeight = fontSize + 2;
     const padding = 4;
 
@@ -1592,6 +1595,7 @@ export class ChartLayer {
         .attr('text-anchor', 'middle')
         .attr('fill', '#1f2937')
         .attr('font-size', fontSize)
+        .attr('font-weight', 700)
         .attr('opacity', 0)
         .text(l.text)
         .transition()
@@ -2016,6 +2020,237 @@ export class ChartLayer {
 
   getThemePrimary() {
     return getComputedStyle(document.documentElement).getPropertyValue('--theme-primary').trim() || '#66c2a5';
+  }
+
+  renderStreamgraph(panel, dataset, config) {
+    if (!Array.isArray(dataset)) {
+      this.renderUnsupported(panel, 'streamgraphデータ形式が不正です');
+      return;
+    }
+
+    const xField = config.xField || 'year';
+    const yField = config.yField || 'value';
+    const seriesField = config.seriesField || 'series';
+
+    const baseRows = dataset.filter(
+      (d) => Number.isFinite(Number(d[xField])) && Number.isFinite(Number(d[yField]))
+    );
+    if (baseRows.length === 0) {
+      this.renderUnsupported(panel, 'streamgraphデータが空です');
+      return;
+    }
+
+    // xDomain フィルタ
+    const defaultXDomain = d3.extent(baseRows, (d) => Number(d[xField]));
+    const configuredXDomain =
+      Array.isArray(config.xDomain) && config.xDomain.length === 2
+        ? [Number(config.xDomain[0]), Number(config.xDomain[1])]
+        : null;
+    const targetXDomain =
+      configuredXDomain && configuredXDomain.every(Number.isFinite)
+        ? [Math.min(...configuredXDomain), Math.max(...configuredXDomain)]
+        : [Number(defaultXDomain[0]), Number(defaultXDomain[1])];
+
+    const rows = baseRows.filter((d) => {
+      const xv = Number(d[xField]);
+      return xv >= targetXDomain[0] && xv <= targetXDomain[1];
+    });
+    if (rows.length === 0) {
+      this.renderUnsupported(panel, 'streamgraphデータが空です');
+      return;
+    }
+
+    const title = config.title || 'Streamgraph';
+    const inner = this.createPanelInner(panel, title);
+    const width = inner.width;
+    const height = inner.height;
+
+    const topInset = 6;
+    const bottomInset = 24;
+    const leftGutter = 10;
+    const rightGutter = 10;
+    const plotWidth = Math.max(80, width - leftGutter - rightGutter);
+    const plotHeight = Math.max(80, height - topInset - bottomInset);
+
+    const plotGroup = inner.group
+      .append('g')
+      .attr('transform', `translate(${leftGutter}, ${topInset})`);
+
+    // シリーズとピボットデータの構築
+    const seriesNames = [...new Set(rows.map((d) => String(d[seriesField])))];
+    const xValues = [...new Set(rows.map((d) => Number(d[xField])))].sort((a, b) => a - b);
+
+    // ピボット: [{year, series1: val, series2: val, ...}, ...]
+    const pivoted = xValues.map((xv) => {
+      const entry = { [xField]: xv };
+      seriesNames.forEach((s) => {
+        const match = rows.find((r) => Number(r[xField]) === xv && String(r[seriesField]) === s);
+        entry[s] = match ? Number(match[yField]) : 0;
+      });
+      return entry;
+    });
+
+    // d3.stack with wiggle offset for streamgraph
+    const stack = d3
+      .stack()
+      .keys(seriesNames)
+      .offset(d3.stackOffsetWiggle)
+      .order(d3.stackOrderInsideOut);
+
+    const stackedData = stack(pivoted);
+
+    // スケール
+    const x = d3.scaleLinear().domain(targetXDomain).range([0, plotWidth]);
+    const yExtent = [
+      d3.min(stackedData, (layer) => d3.min(layer, (d) => d[0])),
+      d3.max(stackedData, (layer) => d3.max(layer, (d) => d[1])),
+    ];
+    const y = d3.scaleLinear().domain(yExtent).range([plotHeight, 0]);
+
+    // X軸
+    const xAxis = d3.axisBottom(x).ticks(5).tickFormat(d3.format('d'));
+    plotGroup
+      .append('g')
+      .attr('transform', `translate(0, ${plotHeight})`)
+      .call(xAxis)
+      .selectAll('text')
+      .attr('fill', '#4b5563')
+      .attr('font-size', 11);
+    plotGroup
+      .select('.domain')
+      .attr('stroke', '#d1d5db')
+      .attr('opacity', 0.5);
+    plotGroup
+      .selectAll('.tick line')
+      .attr('stroke', '#d1d5db')
+      .attr('opacity', 0.5);
+
+    // カラーパレット
+    const palette = this.buildPalette(seriesNames.length);
+    const color = d3.scaleOrdinal().domain(seriesNames).range(palette);
+
+    // ストリームエリア描画
+    const area = d3
+      .area()
+      .x((d) => x(d.data[xField]))
+      .y0((d) => y(d[0]))
+      .y1((d) => y(d[1]))
+      .curve(d3.curveBasis);
+
+    const layers = plotGroup
+      .selectAll('.stream-layer')
+      .data(stackedData)
+      .enter()
+      .append('path')
+      .attr('class', 'stream-layer')
+      .attr('d', area)
+      .attr('fill', (d) => color(d.key))
+      .attr('fill-opacity', 0)
+      .attr('stroke', 'none');
+
+    // フェードインアニメーション
+    layers
+      .transition()
+      .duration(800)
+      .delay((_, i) => i * 60)
+      .ease(d3.easeCubicOut)
+      .attr('fill-opacity', 0.75);
+
+    // ツールチップ
+    const tooltipRect = plotGroup
+      .append('rect')
+      .attr('width', plotWidth)
+      .attr('height', plotHeight)
+      .attr('fill', 'transparent')
+      .attr('pointer-events', 'all');
+
+    const tooltipLine = plotGroup
+      .append('line')
+      .attr('y1', 0)
+      .attr('y2', plotHeight)
+      .attr('stroke', '#6b7280')
+      .attr('stroke-width', 1)
+      .attr('stroke-dasharray', '3 3')
+      .attr('opacity', 0);
+
+    const tooltipGroup = plotGroup.append('g').attr('opacity', 0);
+
+    tooltipRect
+      .on('mousemove', (event) => {
+        const [mx] = d3.pointer(event);
+        const xVal = Math.round(x.invert(mx));
+        const clamped = Math.max(targetXDomain[0], Math.min(targetXDomain[1], xVal));
+        const entry = pivoted.find((p) => p[xField] === clamped);
+        if (!entry) return;
+
+        tooltipLine.attr('x1', x(clamped)).attr('x2', x(clamped)).attr('opacity', 0.6);
+        tooltipGroup.selectAll('*').remove();
+
+        const total = seriesNames.reduce((sum, s) => sum + (entry[s] || 0), 0);
+        const lines = [`${clamped}年 (合計: ${d3.format(',')(total)})`];
+        seriesNames.forEach((s) => {
+          if (entry[s]) lines.push(`${s}: ${d3.format(',')(entry[s])}`);
+        });
+
+        const bgWidth = 180;
+        const bgHeight = lines.length * 15 + 10;
+        let tx = x(clamped) + 10;
+        if (tx + bgWidth > plotWidth) tx = x(clamped) - bgWidth - 10;
+
+        tooltipGroup
+          .append('rect')
+          .attr('x', tx)
+          .attr('y', 5)
+          .attr('width', bgWidth)
+          .attr('height', bgHeight)
+          .attr('rx', 4)
+          .attr('fill', 'rgba(0,0,0,0.8)');
+
+        lines.forEach((line, i) => {
+          tooltipGroup
+            .append('text')
+            .attr('x', tx + 8)
+            .attr('y', 20 + i * 15)
+            .attr('fill', '#ffffff')
+            .attr('font-size', 10)
+            .text(line);
+        });
+
+        tooltipGroup.attr('opacity', 1);
+      })
+      .on('mouseleave', () => {
+        tooltipLine.attr('opacity', 0);
+        tooltipGroup.attr('opacity', 0);
+      });
+
+    // 凡例（右端にシリーズラベル）
+    const lastX = xValues[xValues.length - 1];
+    const labelData = stackedData.map((layer) => {
+      const lastPoint = layer.find((d) => d.data[xField] === lastX);
+      if (!lastPoint) return null;
+      const midY = (y(lastPoint[0]) + y(lastPoint[1])) / 2;
+      return { key: layer.key, y: midY };
+    }).filter(Boolean);
+
+    labelData.forEach((ld) => {
+      plotGroup
+        .append('text')
+        .attr('x', plotWidth + 4)
+        .attr('y', ld.y)
+        .attr('dominant-baseline', 'central')
+        .attr('fill', color(ld.key))
+        .attr('font-size', 8)
+        .attr('font-weight', 500)
+        .attr('opacity', 0)
+        .text(ld.key)
+        .transition()
+        .duration(400)
+        .delay(800)
+        .attr('opacity', 1);
+    });
+
+    // アノテーション
+    this.renderLineAnnotations(plotGroup, x, y, plotWidth, plotHeight, config.annotations);
   }
 
   buildPalette(count) {
