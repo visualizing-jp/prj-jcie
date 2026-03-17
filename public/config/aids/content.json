@@ -87,9 +87,13 @@
     {
       "id": "aids-line-01",
       "text": {
-        "content": "<p>1997年に世界の年間新規感染者はピークに達し、330万人を数えました。</p>",
+        "content": "<p>1996年に世界の年間新規感染者はピークに達し、330万人を数えました。</p>",
         "visible": true,
         "position": { "horizontal": "right", "vertical": "center", "width": "32%" }
+      },
+      "source": {
+        "name": "Estimates of global, regional, and national incidence, prevalence, and mortality of HIV, 1980–2015: the Global Burden of Disease Study 2015",
+        "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5056319/"
       },
       "map": { "visible": false },
       "image": { "visible": false },
@@ -113,7 +117,7 @@
               "annotations": [
                 {
                   "type": "verticalLine",
-                  "year": 1997,
+                  "year": 1996,
                   "label": "世界の年間新規感染者のピークに達した年"
                 },
                 {
@@ -130,9 +134,13 @@
     {
       "id": "aids-line-02",
       "text": {
-        "content": "<p>当初不明だった原因がHIVだと特定されたのは1983年のことです。</p><p>&nbsp;</p><p>その4年後の1987年、最初の抗HIV薬が生まれ、投薬治療が本格的に始まりました。</p><p>&nbsp;</p><p>1990年代後半には、複数の抗HIV薬を用いる「多剤併用療法」（HAART）が導入され、感染者の体内にあるウイルスを劇的に減らすことが可能となりました。その結果、他者への感染リスクも減少し、新規感染者数は1995年をピークに下降しています。</p>",
+        "content": "<p>当初不明だった原因がHIVだと特定されたのは1983年のことです。</p><p>その4年後の1987年、最初の抗HIV薬が生まれ、投薬治療が本格的に始まりました。</p><p>1990年代後半には、複数の抗HIV薬を用いる「多剤併用療法」（HAART）が導入され、感染者の体内にあるウイルスを劇的に減らすことが可能となりました。その結果、他者への感染リスクも減少し、新規感染者数は1995年をピークに下降しています。</p>",
         "visible": true,
         "position": { "horizontal": "right", "vertical": "center", "width": "32%" }
+      },
+      "source": {
+        "name": "Estimates of global, regional, and national incidence, prevalence, and mortality of HIV, 1980–2015: the Global Burden of Disease Study 2015",
+        "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5056319/"
       },
       "map": { "visible": false },
       "image": { "visible": false },
@@ -173,7 +181,7 @@
     {
       "id": "aids-line-03",
       "text": {
-        "content": "<h2>エイズの死亡者数</h2><p><p>2002年には低・中所得国での三大感染症（HIV・結核・マラリア）対策に資金を提供する機関「グローバルファンド」が創設され、感染予防教育の強化や抗HIV薬の普及、検査体制の整備などが加速しました。</p><p>&nbsp;</p><p>その結果、治療を受ける感染者の数は大幅に増え、死亡者数が大きく減るとともに、新規感染も減少傾向に向かいました。</p><p>&nbsp;</p><p>グローバルファンドの支援による予防教育の強化も、こうした減少に貢献しています。</p>",
+        "content": "<h2>エイズの死亡者数</h2><p><p>2002年には低・中所得国での三大感染症（HIV・結核・マラリア）対策に資金を提供する機関「グローバルファンド」が創設され、感染予防教育の強化や抗HIV薬の普及、検査体制の整備などが加速しました。</p><p>その結果、治療を受ける感染者の数は大幅に増え、死亡者数が大きく減るとともに、新規感染も減少傾向に向かいました。</p><p>グローバルファンドの支援による予防教育の強化も、こうした減少に貢献しています。</p>",
         "visible": true,
         "position": { "horizontal": "right", "vertical": "bottom", "width": "32%" }
       },
@@ -210,7 +218,7 @@
     {
       "id": "aids-pie-grid",
       "text": {
-        "content": "<h2>治療機会の地域格差</h2><p>一方、HIV/エイズの治療機会において地域格差の問題が浮き彫りになってきました。</p><p>&nbsp;</p><p>2023年時点で抗HIV薬の治療を受けている感染者は、世界平均では77%に達しているものの、サハラ以南アフリカ地域の一部ではいまだに50%に満たない国もあり、この地域のエイズ関連死亡者数は、世界全体の3分の2を占めています。</p>",
+        "content": "<h2>治療機会の地域格差</h2><p>一方、HIV/エイズの治療機会において地域格差の問題が浮き彫りになってきました。</p><p>2023年時点で抗HIV薬の治療を受けている感染者は、世界平均では77%に達しているものの、サハラ以南アフリカ地域の一部ではいまだに50%に満たない国もあり、この地域のエイズ関連死亡者数は、世界全体の3分の2を占めています。</p>",
         "visible": true,
         "position": { "horizontal": "left", "vertical": "top", "width": "30%" }
       },
@@ -244,9 +252,13 @@
     {
       "id": "aids-line-04",
       "text": {
-        "content": "<h2>母子感染防止の成果</h2><p>HIV/エイズの母子間感染予防は目覚ましい成果が見られました。妊婦の早期検査と診断、抗HIV薬治療、選択的帝王切開の実施、授乳方法の選択といった対策を取ったことで、母子間感染は大きく減少しました。</p><p>&nbsp;</p><p>地域的にばらつきが見られるものの、最も感染率の高いサハラ以南アフリカ地域でも、1995年の35.2%から2023年には8.7%まで減少しました。</p>",
+        "content": "<h2>母子感染防止の成果</h2><p>HIV/エイズの母子間感染予防は目覚ましい成果が見られました。妊婦の早期検査と診断、抗HIV薬治療、選択的帝王切開の実施、授乳方法の選択といった対策を取ったことで、母子間感染は大きく減少しました。</p><p>地域的にばらつきが見られるものの、最も感染率の高いサハラ以南アフリカ地域でも、1995年の35.2%から2023年には8.7%まで減少しました。</p>",
         "visible": true,
         "position": { "horizontal": "right", "vertical": "center", "width": "32%" }
+      },
+      "source": {
+        "name": "AIDSinfo",
+        "url": "https://aidsinfo.unaids.org/"
       },
       "map": { "visible": false },
       "image": { "visible": false },
@@ -271,12 +283,12 @@
                   "type": "horizontalLine",
                   "value": 8.7,
                   "label": "2023年には8.7%まで減少した",
-                  "anchor": "right"
+                  "anchor": "center"
                 },
                 {
                   "type": "horizontalLine",
                   "value": 35.2,
-                  "label": "最も感染率の高いサハラ以南アフリカ地域での母子間感染率 35.2%"
+                  "label": "1995年には最も感染率の高いサハラ以南アフリカ地域での母子間感染率が35.2%"
                 },
                 {
                   "type": "verticalLine",
@@ -308,13 +320,13 @@
         "responsive": { "mobileStack": true },
         "grid": { "columns": 4, "rows": 2, "rowPattern": [4, 3], "allowEmptyCells": true, "title": "地域別エイズと結核の重複感染" },
         "charts": [
-          { "id": "venn-world", "type": "venn", "dataFile": "/data/charts/venn-unified.json", "dataFormat": "json", "config": { "groupId": "world" } },
-          { "id": "venn-africa", "type": "venn", "dataFile": "/data/charts/venn-unified.json", "dataFormat": "json", "config": { "groupId": "africa" } },
-          { "id": "venn-america", "type": "venn", "dataFile": "/data/charts/venn-unified.json", "dataFormat": "json", "config": { "groupId": "america" } },
-          { "id": "venn-europe", "type": "venn", "dataFile": "/data/charts/venn-unified.json", "dataFormat": "json", "config": { "groupId": "europe" } },
-          { "id": "venn-easternmediterranean", "type": "venn", "dataFile": "/data/charts/venn-unified.json", "dataFormat": "json", "config": { "groupId": "easternmediterranean" } },
-          { "id": "venn-southeastasia", "type": "venn", "dataFile": "/data/charts/venn-unified.json", "dataFormat": "json", "config": { "groupId": "southeastasia" } },
-          { "id": "venn-westernpacific", "type": "venn", "dataFile": "/data/charts/venn-unified.json", "dataFormat": "json", "config": { "groupId": "westernpacific" } }
+          { "id": "venn-world", "type": "venn", "dataFile": "/data/charts/venn-unified.json", "dataFormat": "json", "config": { "groupId": "world", "colors": { "エイズ": "#da3244", "結核": "#354cf0" }, "intersectionColor": "#7a3eca" } },
+          { "id": "venn-africa", "type": "venn", "dataFile": "/data/charts/venn-unified.json", "dataFormat": "json", "config": { "groupId": "africa", "colors": { "エイズ": "#da3244", "結核": "#354cf0" }, "intersectionColor": "#7a3eca" } },
+          { "id": "venn-america", "type": "venn", "dataFile": "/data/charts/venn-unified.json", "dataFormat": "json", "config": { "groupId": "america", "colors": { "エイズ": "#da3244", "結核": "#354cf0" }, "intersectionColor": "#7a3eca" } },
+          { "id": "venn-europe", "type": "venn", "dataFile": "/data/charts/venn-unified.json", "dataFormat": "json", "config": { "groupId": "europe", "colors": { "エイズ": "#da3244", "結核": "#354cf0" }, "intersectionColor": "#7a3eca" } },
+          { "id": "venn-easternmediterranean", "type": "venn", "dataFile": "/data/charts/venn-unified.json", "dataFormat": "json", "config": { "groupId": "easternmediterranean", "colors": { "エイズ": "#da3244", "結核": "#354cf0" }, "intersectionColor": "#7a3eca" } },
+          { "id": "venn-southeastasia", "type": "venn", "dataFile": "/data/charts/venn-unified.json", "dataFormat": "json", "config": { "groupId": "southeastasia", "colors": { "エイズ": "#da3244", "結核": "#354cf0" }, "intersectionColor": "#7a3eca" } },
+          { "id": "venn-westernpacific", "type": "venn", "dataFile": "/data/charts/venn-unified.json", "dataFormat": "json", "config": { "groupId": "westernpacific", "colors": { "エイズ": "#da3244", "結核": "#354cf0" }, "intersectionColor": "#7a3eca" } }
         ]
       }
     },
@@ -333,7 +345,7 @@
     {
       "id": "aids-line-dual",
       "text": {
-        "content": "<h2>それでもなお存在する課題</h2><p>HIV/エイズ対策において目覚ましい進展が見られる一方で、依然として多くの課題が残されています。</p><p>&nbsp;</p><p><b>HIV感染者に対する差別や偏見</b>は、医療現場や職場、教育現場、地域社会に深く根付いており、医療サービスへのアクセスや治療継続の妨げとなっています。このような社会・心理的障壁は、対策を推進する上で深刻な問題でもあります。</p><p>&nbsp;</p><p><b></b>ジェンダー不平等や有害なジェンダー規範</b>も、HIV感染のリスクを高め、効果的な対策を阻害する要因として認識されています。女性や少女が自身の性的健康に関する情報を得たり、サービスを利用したり、意思決定を行う力を制限します。ジェンダーに基づく暴力もHIV感染のリスクを高めることが指摘されています。</p><p>&nbsp;</p><p>UNAIDSは、差別や犯罪などを背景に、①東部・南部アフリカの若年女性（15歳〜24歳）②男性間性交渉者③セックスワーカー④注射薬物使用者といった特定のグループの感染率が高くなっている、と指摘します。</p>",
+        "content": "<h2>それでもなお存在する課題</h2><p>HIV/エイズ対策において目覚ましい進展が見られる一方で、依然として多くの課題が残されています。</p><p><b>HIV感染者に対する差別や偏見</b>は、医療現場や職場、教育現場、地域社会に深く根付いており、医療サービスへのアクセスや治療継続の妨げとなっています。このような社会・心理的障壁は、対策を推進する上で深刻な問題でもあります。</p><p><b></b>ジェンダー不平等や有害なジェンダー規範</b>も、HIV感染のリスクを高め、効果的な対策を阻害する要因として認識されています。女性や少女が自身の性的健康に関する情報を得たり、サービスを利用したり、意思決定を行う力を制限します。ジェンダーに基づく暴力もHIV感染のリスクを高めることが指摘されています。</p><p>UNAIDSは、差別や犯罪などを背景に、①東部・南部アフリカの若年女性（15歳〜24歳）②男性間性交渉者③セックスワーカー④注射薬物使用者といった特定のグループの感染率が高くなっている、と指摘します。</p>",
         "visible": true,
         "position": { "horizontal": "right", "vertical": "center", "width": "34%" }
       },
@@ -365,7 +377,7 @@
     {
       "id": "aids-line-05",
       "text": {
-        "content": "<h2>解決に向けて</h2><p><b>有効性の高い予防治療法の普及</b>を推進し、より多くの人々に治療を提供することが望まれます。これは、検査体制の拡充や早期診断の推進、治療へのアクセス改善を含みます。月1回の注射で済む新しい治療法（例：カボテグラビル）が登場し、治療継続のハードルが下がっています。</p><p>&nbsp;</p><p>またHIV予防の切り札として注目されているのが、PrEP（プレップ＝曝露前予防投与）です。抗HIV薬を事前に服用することで感染リスクを大幅に下げるこの方法は、欧米などで普及が進んでいます。日本でも導入が始まっていますが、アクセスには課題があります。</p>",
+        "content": "<h2>解決に向けて</h2><p><b>有効性の高い予防治療法の普及</b>を推進し、より多くの人々に治療を提供することが望まれます。これは、検査体制の拡充や早期診断の推進、治療へのアクセス改善を含みます。月1回の注射で済む新しい治療法（例：カボテグラビル）が登場し、治療継続のハードルが下がっています。</p><p>またHIV予防の切り札として注目されているのが、PrEP（プレップ＝曝露前予防投与）です。抗HIV薬を事前に服用することで感染リスクを大幅に下げるこの方法は、欧米などで普及が進んでいます。日本でも導入が始まっていますが、アクセスには課題があります。</p>",
         "visible": true,
         "position": { "horizontal": "center", "vertical": "center", "width": "50%" }
       },
@@ -394,7 +406,7 @@
     {
       "id": "aids-line-06",
       "text": {
-        "content": "<p>そしていま最も大きな課題が、エイズ対策の資金不足です。2023年末、低・中所得国のエイズ対策として198億ドルが拠出されました。エイズの終結に向けた軌道に乗せるために必要とされる資金（293億ドル）に大きく届きません。とりわけ2020年から23年にかけては、新型コロナウイルス感染症（COVID-19)対策の資金需要があったことを反映し、8%近く減少しました。</p><p>&nbsp;</p><p>資金不足により、低・中所得国では、治療薬や予防薬の供給が途絶えることがあります。これらの国では、コミュニティ主導の組織がHIV対策において重要な役割を果たしていますが、資金不足により、活動を縮小・停止せざるを得ない状況に陥っています。</p>",
+        "content": "<p>そしていま最も大きな課題が、エイズ対策の資金不足です。2023年末、低・中所得国のエイズ対策として198億ドルが拠出されました。エイズの終結に向けた軌道に乗せるために必要とされる資金（293億ドル）に大きく届きません。とりわけ2020年から23年にかけては、新型コロナウイルス感染症（COVID-19)対策の資金需要があったことを反映し、8%近く減少しました。</p><p>資金不足により、低・中所得国では、治療薬や予防薬の供給が途絶えることがあります。これらの国では、コミュニティ主導の組織がHIV対策において重要な役割を果たしていますが、資金不足により、活動を縮小・停止せざるを得ない状況に陥っています。</p>",
         "visible": true,
         "position": { "horizontal": "center", "vertical": "bottom", "width": "50%" }
       },
@@ -431,7 +443,7 @@
     {
       "id": "aids-img-03",
       "text": {
-        "content": "<h2>連帯の力</h2><p><p>2002年のグローバルファンド設立以来、パートナーシップによる支援を通じて6500万人の命が救われ、エイズ関連の死亡数もピーク時から73%減少しました。しかし、依然として多くの人々がエイズで命を落としており、<b>予防、治療へのアクセス、そして治療の継続</b>において課題が存在します。HIV/エイズとの闘いはこれからも続きます。</p><p>&nbsp;</p><p>HIV/エイズとの闘いは、単なる医療の問題ではなく、社会の在り方そのものを問う課題です。いま私たちに求められているのは、すべての人が尊厳を持って生きられる社会の実現に向けた連帯の力です。</p>",
+        "content": "<h2>連帯の力</h2><p><p>2002年のグローバルファンド設立以来、パートナーシップによる支援を通じて6500万人の命が救われ、エイズ関連の死亡数もピーク時から73%減少しました。しかし、依然として多くの人々がエイズで命を落としており、<b>予防、治療へのアクセス、そして治療の継続</b>において課題が存在します。HIV/エイズとの闘いはこれからも続きます。</p><p>HIV/エイズとの闘いは、単なる医療の問題ではなく、社会の在り方そのものを問う課題です。いま私たちに求められているのは、すべての人が尊厳を持って生きられる社会の実現に向けた連帯の力です。</p>",
         "visible": true,
         "position": { "horizontal": "left", "vertical": "center", "width": "34%" }
       },

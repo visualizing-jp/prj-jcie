@@ -1374,6 +1374,12 @@ export class ChartLayer {
     }
 
     const palette = this.buildPalette(setNames.length);
+    // config.colors でセットごとの色を上書き可能 (例: { "HIV": "#da3244", "TB": "#354cf0" })
+    if (config.colors) {
+      setNames.forEach((name, idx) => {
+        if (config.colors[name]) palette[idx] = config.colors[name];
+      });
+    }
     const colorBySet = new Map(setNames.map((name, idx) => [name, palette[idx]]));
     const areaKey = (sets) => sets.slice().sort().join('&');
     const areaMap = new Map(areas.map((d) => [areaKey(d.sets), d]));
@@ -1440,6 +1446,24 @@ export class ChartLayer {
         .attr('fill-opacity', 0.55)
         .attr('transform', 'translate(0,0) scale(1)');
     });
+
+    // 和集合の色オーバーレイ（config.intersectionColor 指定時）
+    if (config.intersectionColor && setNames.length === 2) {
+      const c0 = singletonLayout[0]?.circles.find((c) => c.set === setNames[0]) || singletonLayout[0]?.circles[0];
+      const c1 = singletonLayout[1]?.circles.find((c) => c.set === setNames[1]) || singletonLayout[1]?.circles[0];
+      if (c0 && c1) {
+        const clipId = `venn-clip-${Math.random().toString(36).slice(2, 8)}`;
+        defs.append('clipPath').attr('id', clipId)
+          .append('circle').attr('cx', c1.x).attr('cy', c1.y).attr('r', c1.radius);
+        g.append('circle')
+          .attr('cx', c0.x).attr('cy', c0.y).attr('r', c0.radius)
+          .attr('clip-path', `url(#${clipId})`)
+          .attr('fill', config.intersectionColor)
+          .attr('fill-opacity', 0)
+          .transition().duration(600).delay(300)
+          .attr('fill-opacity', 0.55);
+      }
+    }
 
     singletonLayout.forEach((entry) => {
       const setName = entry.data.sets[0];
