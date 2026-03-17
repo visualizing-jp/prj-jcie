@@ -11,7 +11,7 @@
       "map": { "visible": false },
       "image": {
         "visible": true,
-        "src": "/images/photo-1.jpg",
+        "src": "/images/tuberculosis/crowd.jpg",
         "alt": "結核との闘い",
         "opacity": 0.78,
         "colorOverlay": { "opacity": 1.0 }
