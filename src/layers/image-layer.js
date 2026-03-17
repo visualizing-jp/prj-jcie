@@ -57,6 +57,7 @@ export class ImageLayer {
         inset: 0;
         background: ${themeColor};
         opacity: ${overlayOpacity};
+        mix-blend-mode: multiply;
         pointer-events: none;
         z-index: 1;
       `;
