@@ -251,10 +251,11 @@ export class MapLayer {
     const csMode = hasHillshade ? (cs.hillshade || {}) : (cs.flat || {});
     const csOp = csMode.opacity || {};
     const csHl = cs.highlight || {};
+    const themePrimary = this.getThemePrimary();
 
     const fillFn = (d) => {
       const name = d.properties?.name;
-      if (highlightCountries.has(name)) return csHl.fill || '#000000';
+      if (highlightCountries.has(name)) return csHl.fill || themePrimary;
       return csMode.fill || (hasHillshade ? '#f8f8f8' : '#3f4f63');
     };
     const fillOpacityFn = (d) => {
@@ -265,7 +266,7 @@ export class MapLayer {
       }
       return lightenNonVisited ? (csOp.lightenNonVisited ?? 0.35) : (csOp.nonHighlight ?? 0.55);
     };
-    const strokeFn = (d) => (highlightCountries.has(d.properties?.name) ? (csHl.stroke || '#000000') : (csMode.stroke || '#9a9a9a'));
+    const strokeFn = (d) => (highlightCountries.has(d.properties?.name) ? (csHl.stroke || themePrimary) : (csMode.stroke || '#9a9a9a'));
     const strokeOpacityFn = (d) => (highlightCountries.has(d.properties?.name) ? (csHl.strokeOpacity ?? 0.5) : (csMode.strokeOpacity ?? 0.35));
     const strokeWidthFn = (d) => (highlightCountries.has(d.properties?.name) ? (csHl.strokeWidth ?? 1.0) : (cs.defaultStrokeWidth ?? 0.4));
 
