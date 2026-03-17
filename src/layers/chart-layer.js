@@ -898,13 +898,14 @@ export class ChartLayer {
         if (value < Math.min(...yDomain) || value > Math.max(...yDomain)) continue;
 
         const y = yScale(value);
+        const anchorRight = ann.anchor === 'right';
         descriptors.push({
           type: annotationXYThreshold,
-          note: { label, wrap },
+          note: { label, wrap, align: anchorRight ? 'right' : undefined },
           color,
-          x: 0,
+          x: anchorRight ? width : 0,
           y,
-          dx: ann.dx ?? ANNOTATION_DEFAULTS.horizontalLine.dx,
+          dx: ann.dx ?? (anchorRight ? -ANNOTATION_DEFAULTS.horizontalLine.dx : ANNOTATION_DEFAULTS.horizontalLine.dx),
           dy: ann.dy ?? ANNOTATION_DEFAULTS.horizontalLine.dy,
           subject: { x1: 0, x2: width },
         });

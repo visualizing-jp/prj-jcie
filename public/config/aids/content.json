@@ -270,7 +270,8 @@
                 {
                   "type": "horizontalLine",
                   "value": 8.7,
-                  "label": "2023年には8.7%まで減少した"
+                  "label": "2023年には8.7%まで減少した",
+                  "anchor": "right"
                 },
                 {
                   "type": "horizontalLine",

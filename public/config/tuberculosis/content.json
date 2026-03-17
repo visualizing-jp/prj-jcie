@@ -374,8 +374,8 @@
       "map": { "visible": false },
       "image": {
         "visible": true,
-        "src": "/images/photo-1.jpg",
-        "alt": "ダミー画像",
+        "src": "/images/tuberculosis/Covid-19_SP_-_UTI_V._Nova_Cachoeirinha.jpg",
+        "alt": "COVID-19",
         "opacity": 0.78
       }
     },
@@ -390,8 +390,8 @@
       "map": { "visible": false },
       "image": {
         "visible": true,
-        "src": "/images/photo-2.jpg",
-        "alt": "ダミー画像",
+        "src": "/images/tuberculosis/19753_lores.jpg",
+        "alt": "結核の診断・治療",
         "opacity": 0.80
       }
     },
