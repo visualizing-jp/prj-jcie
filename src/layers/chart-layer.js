@@ -1404,6 +1404,28 @@ export class ChartLayer {
       return;
     }
 
+    // setNames[0] が常に左側に来るよう、必要に応じてレイアウトを左右反転
+    if (setNames.length >= 2) {
+      const first = layout.find((d) => d.data.sets.length === 1 && d.data.sets[0] === setNames[0]);
+      const second = layout.find((d) => d.data.sets.length === 1 && d.data.sets[0] === setNames[1]);
+      const firstX = first?.circles.find((c) => c.set === setNames[0])?.x ?? 0;
+      const secondX = second?.circles.find((c) => c.set === setNames[1])?.x ?? 0;
+      if (firstX > secondX) {
+        const mirrorX = (x) => inner.width - x;
+        // circleオブジェクトはエントリ間で共有参照のため、一度だけ反転する
+        const mirrored = new Set();
+        for (const entry of layout) {
+          entry.text.x = mirrorX(entry.text.x);
+          for (const c of entry.circles) {
+            if (!mirrored.has(c)) {
+              c.x = mirrorX(c.x);
+              mirrored.add(c);
+            }
+          }
+        }
+      }
+    }
+
     // Gooey SVGフィルター定義（円の重なりを有機的に融合）
     const filterId = `gooey-${Math.random().toString(36).slice(2, 8)}`;
     let defs = inner.group.select('defs');
@@ -1419,13 +1441,21 @@ export class ChartLayer {
       .attr('values', '1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7')
       .attr('result', 'gooey');
 
-    const gooeyGroup = inner.group.append('g')
-      .style('filter', `url(#${filterId})`);
-    const g = inner.group.append('g');
+    // グローバルスケール: 全グループの最大値を基準に面積を統一
+    const localMax = Math.max(...areas.filter(d => d.sets.length === 1).map(d => d.size), 0);
+    const globalMax = this.computeVennGlobalMax(dataset);
+    const vennScale = globalMax > 0 && localMax > 0 ? Math.sqrt(localMax / globalMax) : 1;
 
-    // ベン図のスケール＋フェードアニメーション
     const cx = inner.width / 2;
     const cy = inner.height / 2;
+
+    const wrapperGroup = inner.group.append('g')
+      .attr('transform', `translate(${cx * (1 - vennScale)},${cy * (1 - vennScale)}) scale(${vennScale})`);
+    const inverseScale = 1 / vennScale;
+
+    const gooeyGroup = wrapperGroup.append('g')
+      .style('filter', `url(#${filterId})`);
+    const g = wrapperGroup.append('g');
 
     // layoutから実際の円データ（x, y, radius）を抽出して<circle>で描画
     const singletonLayout = layout.filter((d) => d.data.sets.length === 1);
@@ -1467,16 +1497,16 @@ export class ChartLayer {
       }
     }
 
-    singletonLayout.forEach((entry) => {
-      const setName = entry.data.sets[0];
-      const circleData2 = entry.circles.find((c) => c.set === setName) || entry.circles[0];
-      if (!circleData2) return;
-      // hideValues 時は非重複部分の中心、通常時は円の上部
-      const labelX = config.hideValues ? entry.text.x : circleData2.x;
-      const labelY = config.hideValues ? entry.text.y : Math.max(10, circleData2.y - circleData2.radius - 8);
-      g.append('text')
-        .attr('x', labelX)
-        .attr('y', labelY)
+    // セット名ラベル（エイズ・結核）はwrapperGroupの外に配置し、パネル座標系で固定位置にする
+    const setLabelGroup = inner.group.append('g');
+    const fixedLabelY = 60;
+    const labelPositions = setNames.length === 2
+      ? [inner.width * 0.25, inner.width * 0.75]
+      : setNames.map((_, i) => inner.width * (i + 1) / (setNames.length + 1));
+    setNames.forEach((setName, idx) => {
+      setLabelGroup.append('text')
+        .attr('x', labelPositions[idx])
+        .attr('y', fixedLabelY)
         .attr('text-anchor', 'middle')
         .attr('fill', '#1f2937')
         .attr('font-size', 13)
@@ -1500,7 +1530,7 @@ export class ChartLayer {
           .attr('y', interLayout.text.y + yOffset)
           .attr('text-anchor', 'middle')
           .attr('fill', '#1f2937')
-          .attr('font-size', 13)
+          .attr('font-size', 13 * inverseScale)
           .attr('font-weight', 700)
           .attr('opacity', 0)
           .text(config.intersectionLabel)
@@ -1511,11 +1541,19 @@ export class ChartLayer {
       }
     }
 
-    // 数値ラベルの配置データを収集
+    // 数値ラベル: パネル固定位置 + d3-annotation 引き出し線
     if (config.hideValues) {
       return;
     }
-    const labelEntries = [];
+
+    // wrapperGroup座標 → パネル座標への変換
+    const toPanel = (x, y) => ({
+      x: cx * (1 - vennScale) + x * vennScale,
+      y: cy * (1 - vennScale) + y * vennScale,
+    });
+
+    const valueLabelGroup = inner.group.append('g');
+    const annotationDescriptors = [];
 
     if (setNames.length === 2) {
       const leftName = setNames[0];
@@ -1523,88 +1561,108 @@ export class ChartLayer {
       const inter = areaMap.get(areaKey([leftName, rightName]))?.size ?? 0;
       const leftTotal = areaMap.get(areaKey([leftName]))?.size ?? 0;
       const rightTotal = areaMap.get(areaKey([rightName]))?.size ?? 0;
-      const valueByArea = new Map([
-        [areaKey([leftName]), Math.max(0, leftTotal - inter)],
-        [areaKey([rightName]), Math.max(0, rightTotal - inter)],
-        [areaKey([leftName, rightName]), Math.max(0, inter)],
-      ]);
 
-      layout
-        .filter((d) => valueByArea.has(areaKey(d.data.sets)))
-        .forEach((d) => {
-          const value = valueByArea.get(areaKey(d.data.sets));
-          if (!Number.isFinite(value)) return;
-          labelEntries.push({ x: d.text.x, y: d.text.y + 3, text: d3.format(',')(value), sets: d.data.sets });
+      // layout から各エリアの重心を取得
+      const areaTextMap = new Map();
+      layout.forEach((d) => {
+        areaTextMap.set(areaKey(d.data.sets), { x: d.text.x, y: d.text.y });
+      });
+
+      const entries = [
+        { key: areaKey([leftName]), value: Math.max(0, leftTotal - inter) },
+        { key: areaKey([leftName, rightName]), value: Math.max(0, inter) },
+        { key: areaKey([rightName]), value: Math.max(0, rightTotal - inter) },
+      ];
+
+      // 固定ラベル位置（パネル座標系）: 左、中央、右を下部に配置
+      const fixedPositions = [
+        { x: inner.width * 0.13, y: inner.height - 16 },
+        { x: inner.width * 0.50, y: inner.height - 16 },
+        { x: inner.width * 0.87, y: inner.height - 16 },
+      ];
+
+      entries.forEach((entry, idx) => {
+        if (!Number.isFinite(entry.value)) return;
+        const target = areaTextMap.get(entry.key);
+        if (!target) return;
+        const panelTarget = toPanel(target.x, target.y);
+        const labelPos = fixedPositions[idx];
+
+        annotationDescriptors.push({
+          note: {
+            label: d3.format(',')(entry.value),
+            wrap: 200,
+            align: 'middle',
+            padding: 2,
+          },
+          x: panelTarget.x,
+          y: panelTarget.y,
+          dx: labelPos.x - panelTarget.x,
+          dy: labelPos.y - panelTarget.y,
+          type: annotationCalloutElbow,
+          connector: { end: 'dot' },
         });
+      });
     }
 
     if (setNames.length === 3) {
+      const areaTextMap = new Map();
+      layout.forEach((d) => {
+        areaTextMap.set(areaKey(d.data.sets), { x: d.text.x, y: d.text.y });
+      });
       layout
         .filter((d) => d.data.sets.length >= 2)
         .forEach((d) => {
           const area = areaMap.get(areaKey(d.data.sets));
           if (!area) return;
-          labelEntries.push({ x: d.text.x, y: d.text.y + 3, text: d3.format(',')(area.size), sets: d.data.sets });
+          const panelTarget = toPanel(d.text.x, d.text.y);
+          annotationDescriptors.push({
+            note: {
+              label: d3.format(',')(area.size),
+              wrap: 200,
+              align: 'middle',
+              padding: 2,
+            },
+            x: panelTarget.x,
+            y: panelTarget.y,
+            dx: 0,
+            dy: 30,
+            type: annotationCalloutElbow,
+            connector: { end: 'dot' },
+          });
         });
     }
 
-    // ラベル衝突検出＋自動オフセット
-    const fontSize = 13;
-    const charWidth = 7;
-    const labelHeight = fontSize + 2;
-    const padding = 4;
+    if (annotationDescriptors.length > 0) {
+      const makeAnnotations = annotation()
+        .annotations(annotationDescriptors);
 
-    const resolvedLabels = labelEntries.map((l) => ({
-      ...l,
-      width: l.text.length * charWidth,
-      height: labelHeight,
-      finalX: l.x,
-      finalY: l.y,
-    }));
+      valueLabelGroup
+        .append('g')
+        .attr('class', 'venn-value-annotations')
+        .call(makeAnnotations);
 
-    // 重なり検出：全ペアでバウンディングボックスの衝突をチェックし、Y方向にオフセット
-    for (let i = 0; i < resolvedLabels.length; i++) {
-      for (let j = i + 1; j < resolvedLabels.length; j++) {
-        const a = resolvedLabels[i];
-        const b = resolvedLabels[j];
-        const overlapX = Math.abs(a.finalX - b.finalX) < (a.width + b.width) / 2 + padding;
-        const overlapY = Math.abs(a.finalY - b.finalY) < (a.height + b.height) / 2 + padding;
-        if (overlapX && overlapY) {
-          // 交差領域（sets.length > 1）のラベルを上に移動、それ以外は下に
-          if (a.sets.length > 1) {
-            a.finalY -= labelHeight + padding;
-          } else if (b.sets.length > 1) {
-            b.finalY -= labelHeight + padding;
-          } else {
-            // 両方とも単一セット：右側を下にオフセット
-            if (a.finalX < b.finalX) {
-              b.finalY += labelHeight + padding;
-            } else {
-              a.finalY += labelHeight + padding;
-            }
-          }
-        }
-      }
-    }
-
-    // ラベル描画
-    resolvedLabels.forEach((l) => {
-      g.append('text')
-        .attr('x', l.finalX)
-        .attr('y', l.finalY)
-        .attr('text-anchor', 'middle')
+      valueLabelGroup.selectAll('.venn-value-annotations .annotation path')
+        .attr('stroke', '#6b7280')
+        .attr('stroke-width', 1);
+      valueLabelGroup.selectAll('.venn-value-annotations .annotation .connector .connector-end')
+        .attr('fill', '#6b7280')
+        .attr('stroke', '#6b7280');
+      valueLabelGroup.selectAll('.venn-value-annotations .annotation .note .note-line')
+        .attr('stroke', '#6b7280');
+      valueLabelGroup.selectAll('.venn-value-annotations .annotation text')
         .attr('fill', '#1f2937')
-        .attr('font-size', fontSize)
-        .attr('font-weight', 700)
+        .attr('font-size', 12)
+        .attr('font-weight', 700);
+
+      valueLabelGroup.selectAll('.venn-value-annotations .annotation')
         .attr('opacity', 0)
-        .text(l.text)
         .transition()
         .duration(400)
         .delay(350)
         .attr('opacity', 1);
-    });
+    }
 
-    
   }
 
   resolveVennDataset(dataset, config) {
@@ -1620,6 +1678,20 @@ export class ChartLayer {
     }
 
     return null;
+  }
+
+  computeVennGlobalMax(dataset) {
+    if (!Array.isArray(dataset?.groups)) return 0;
+    let max = 0;
+    for (const group of dataset.groups) {
+      if (!Array.isArray(group.sets)) continue;
+      for (const s of group.sets) {
+        if (Array.isArray(s.sets) && s.sets.length === 1) {
+          max = Math.max(max, Number(s.size) || 0);
+        }
+      }
+    }
+    return max;
   }
 
   renderBump(panel, dataset, config) {

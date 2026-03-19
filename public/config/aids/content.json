@@ -363,14 +363,14 @@
             "type": "line",
             "dataFile": "/data/charts/aids/trend_africa_young_man_normalized.csv",
             "dataFormat": "csv",
-            "config": { "xField": "year", "yField": "value", "title": "若年男性（15-24歳）" }
+            "config": { "xField": "year", "yField": "value", "title": "若年男性（15-24歳）", "yDomain": [0, 400000] }
           },
           {
             "id": "line-dual-b",
             "type": "line",
             "dataFile": "/data/charts/aids/trend_africa_young_woman_normalized.csv",
             "dataFormat": "csv",
-            "config": { "xField": "year", "yField": "value", "title": "若年女性（15-24歳）" }
+            "config": { "xField": "year", "yField": "value", "title": "若年女性（15-24歳）", "yDomain": [0, 400000] }
           }
         ]
       },
