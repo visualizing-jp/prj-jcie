@@ -37,6 +37,7 @@ export class ChartLayer {
   async render(chartConfig, renderOptions = {}) {
     if (!chartConfig?.visible) return;
 
+    this.textPosition = renderOptions.textPosition || null;
     const normalized = this.normalizeChartConfig(chartConfig, renderOptions);
     this.ensureSvg();
     if (!this.root) return;
@@ -131,9 +132,28 @@ export class ChartLayer {
     const rawHeaderHeight = header?.offsetHeight ?? MIN_HEADER_SAFE;
     const headerSafe = Math.min(Math.max(rawHeaderHeight, MIN_HEADER_SAFE), MAX_HEADER_SAFE);
 
+    const vbWidth = this.viewBoxWidth || VIEWBOX_WIDTH;
+    let left = PANEL_PADDING;
+    let right = vbWidth - PANEL_PADDING;
+
+    // テキストパネルの位置・幅に応じてチャート描画領域を縮小
+    const tp = this.textPosition;
+    if (tp && tp.horizontal && tp.horizontal !== 'center') {
+      const widthPct = parseFloat(tp.width) || 0;
+      if (widthPct > 0) {
+        // テキスト幅 + 余白分を確保
+        const reserved = vbWidth * (widthPct / 100) + PANEL_PADDING;
+        if (tp.horizontal === 'right') {
+          right = vbWidth - reserved;
+        } else if (tp.horizontal === 'left') {
+          left = reserved;
+        }
+      }
+    }
+
     return {
-      left: PANEL_PADDING,
-      right: VIEWBOX_WIDTH - PANEL_PADDING,
+      left,
+      right,
       top: PANEL_PADDING + headerSafe,
       bottom: VIEWBOX_HEIGHT - PANEL_PADDING,
     };
@@ -200,7 +220,7 @@ export class ChartLayer {
     const totalRows = rowPattern.length;
     const areaWidth = bounds.right - bounds.left;
     const areaHeight = bounds.bottom - bounds.top - gridTitleH;
-    const rowTitleH = rowTitles.length > 0 ? 22 : 0;
+    const rowTitleH = rowTitles.length > 0 ? 38 : 0;
     const rowHeight = (areaHeight - rowTitleH * totalRows - rowGap * (totalRows - 1)) / totalRows;
     const colWidth = (areaWidth - colGap * (maxColumns - 1)) / maxColumns;
 
@@ -214,11 +234,11 @@ export class ChartLayer {
         this.root
           .append('text')
           .attr('x', bounds.left + areaWidth / 2)
-          .attr('y', rowY + 15)
+          .attr('y', rowY + 24)
           .attr('text-anchor', 'middle')
           .attr('fill', '#4b5563')
-          .attr('font-size', 14)
-          .attr('font-weight', 600)
+          .attr('font-size', 17)
+          .attr('font-weight', 700)
           .text(rowTitles[rowIndex]);
       }
 
@@ -574,12 +594,24 @@ export class ChartLayer {
     const palette = this.buildPalette(seriesData.length);
     const color = d3.scaleOrdinal().domain(seriesData.map((s) => s.name)).range(palette);
 
+    // highlight: 指定シリーズを強調し、それ以外を薄く表示
+    const highlightSet = new Set(
+      Array.isArray(config.highlight) ? config.highlight : config.highlight ? [config.highlight] : []
+    );
+    const hasHighlight = highlightSet.size > 0;
+
     const seriesGroup = plotGroup.append('g').attr('class', 'line-series');
     const pathNodes = [];
     const pointNodes = [];
     const areaNodes = [];
 
     seriesData.forEach((series, si) => {
+      const isHighlighted = !hasHighlight || highlightSet.has(series.name);
+      const strokeWidth = isHighlighted ? 4.4 : 1.2;
+      const strokeOpacity = isHighlighted ? 1 : 0.3;
+      const pointRadius = isHighlighted ? 2.8 : 1.5;
+      const areaOpacity = isHighlighted ? 0.18 : 0.04;
+
       // Area fill (multi-series)
       let seriesArea = null;
       if (areaGen) {
@@ -592,7 +624,7 @@ export class ChartLayer {
           .attr('x2', '0%').attr('y2', '100%')
           .selectAll('stop')
           .data([
-            { offset: '0%', color: seriesColor, opacity: 0.18 },
+            { offset: '0%', color: seriesColor, opacity: areaOpacity },
             { offset: '100%', color: seriesColor, opacity: 0 },
           ])
           .enter()
@@ -615,7 +647,8 @@ export class ChartLayer {
         .datum(series.values)
         .attr('fill', 'none')
         .attr('stroke', color(series.name))
-        .attr('stroke-width', 2.2)
+        .attr('stroke-width', strokeWidth)
+        .attr('stroke-opacity', strokeOpacity)
         .attr('d', line);
 
       pathNodes.push(path);
@@ -627,8 +660,9 @@ export class ChartLayer {
         .append('circle')
         .attr('cx', (d) => x(Number(d[xField])))
         .attr('cy', (d) => y(Number(d[yField])))
-        .attr('r', 2.2)
-        .attr('fill', color(series.name));
+        .attr('r', pointRadius)
+        .attr('fill', color(series.name))
+        .attr('fill-opacity', strokeOpacity);
 
       pointNodes.push(points);
     });
@@ -2054,7 +2088,7 @@ export class ChartLayer {
       .append('rect')
       .attr('x', 0)
       .attr('y', 0)
-      .attr('width', VIEWBOX_WIDTH)
+      .attr('width', this.viewBoxWidth || VIEWBOX_WIDTH)
       .attr('height', VIEWBOX_HEIGHT)
       .attr('fill', '#ffffff')
       .attr('fill-opacity', 0.64);
@@ -2065,10 +2099,16 @@ export class ChartLayer {
     if (this.svg && this.svg.node()?.isConnected) return;
 
     this.clear();
+
+    // 画面のアスペクト比に合わせてviewBox幅を算出し、左右レターボックスを除去
+    const rect = this.container.getBoundingClientRect();
+    const aspectRatio = rect.width && rect.height ? rect.width / rect.height : VIEWBOX_WIDTH / VIEWBOX_HEIGHT;
+    this.viewBoxWidth = Math.round(VIEWBOX_HEIGHT * aspectRatio);
+
     this.svg = d3
       .select(this.container)
       .append('svg')
-      .attr('viewBox', `0 0 ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT}`)
+      .attr('viewBox', `0 0 ${this.viewBoxWidth} ${VIEWBOX_HEIGHT}`)
       .attr('preserveAspectRatio', 'xMidYMid meet')
       .attr('aria-label', 'chart layer');
 

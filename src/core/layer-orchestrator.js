@@ -116,6 +116,7 @@ export class LayerOrchestrator {
         this.chartLayer?.render(stepConfig.chart, {
           transitionFromPrevious: Boolean(shouldReuse),
           spanId,
+          textPosition: stepConfig.text?.visible ? stepConfig.text.position : null,
         }).catch((error) => {
           console.error('Chart render failed:', error);
         });
