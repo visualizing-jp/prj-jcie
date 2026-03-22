@@ -5,16 +5,26 @@
       "text": {
         "content": "<h2 style=\"text-align:center;color:#ffffff\">マラリアとの闘い</h2><p style=\"text-align:center;color:#ffffff\">～データで見る希望と課題～</p>",
         "visible": true,
-        "position": { "horizontal": "center", "vertical": "center", "width": "60%" }
+        "position": {
+          "horizontal": "center",
+          "vertical": "center",
+          "width": "60%"
+        }
       },
-      "chart": { "visible": false },
-      "map": { "visible": false },
+      "chart": {
+        "visible": false
+      },
+      "map": {
+        "visible": false
+      },
       "image": {
         "visible": true,
         "src": "/images/malariae/malaria-story-01.jpg",
         "alt": "マラリアとの闘い",
         "opacity": 0.78,
-        "colorOverlay": { "opacity": 1.0 }
+        "colorOverlay": {
+          "opacity": 1
+        }
       }
     },
     {
@@ -22,10 +32,18 @@
       "text": {
         "content": "<h2>マラリアとは</h2><p>マラリアはHIV／エイズ、結核と並んで世界の3大感染症とされ、特に発展途上国において深刻な健康問題となっています。マラリアに感染すると高熱、寒気、頭痛、嘔吐などの症状に苦しみ、重症化すると脳症や腎不全などの合併症を引き起こし、高い確率で死に至ります。</p>",
         "visible": true,
-        "position": { "horizontal": "left", "vertical": "center", "width": "34%" }
+        "position": {
+          "horizontal": "left",
+          "vertical": "center",
+          "width": "34%"
+        }
       },
-      "chart": { "visible": false },
-      "map": { "visible": false },
+      "chart": {
+        "visible": false
+      },
+      "map": {
+        "visible": false
+      },
       "image": {
         "visible": true,
         "src": "/images/malariae/about-malaria.jpg",
@@ -38,30 +56,71 @@
       "text": {
         "content": "<h2>貧困の病</h2><p>また経済的に脆弱な地域、特にアフリカ、アジア、中南米に感染者の9割が集中していることから「貧困の病」という別名で知られています。この偏りは、医療インフラ不足や予防対策の実施困難さ、気候条件が複雑に絡み合って生じています。</p><p>特に重症化しやすく死亡率も高い熱帯熱マラリアは、アフリカやアジア・太平洋の熱帯地域が流行の中心です。</p>",
         "visible": true,
-        "position": { "horizontal": "right", "vertical": "center", "width": "34%" }
+        "position": {
+          "horizontal": "right",
+          "vertical": "center",
+          "width": "34%"
+        }
       },
-      "chart": { "visible": false },
+      "chart": {
+        "visible": false
+      },
       "map": {
         "visible": true,
         "mode": "world-overview",
-        "center": [20, 5],
+        "center": [
+          20,
+          5
+        ],
         "zoom": 1.2,
-        "highlightCountries": ["Nigeria", "Democratic Republic of the Congo", "Uganda", "Mozambique", "Niger", "Burkina Faso", "Angola", "Tanzania", "Mali", "Ghana", "Cameroon", "India", "Indonesia", "Myanmar", "Pakistan", "Papua New Guinea", "Bangladesh", "Brazil", "Colombia", "Peru", "Venezuela", "Guatemala", "Honduras"],
+        "highlightCountries": [
+          "Nigeria",
+          "Democratic Republic of the Congo",
+          "Uganda",
+          "Mozambique",
+          "Niger",
+          "Burkina Faso",
+          "Angola",
+          "Tanzania",
+          "Mali",
+          "Ghana",
+          "Cameroon",
+          "India",
+          "Indonesia",
+          "Myanmar",
+          "Pakistan",
+          "Papua New Guinea",
+          "Bangladesh",
+          "Brazil",
+          "Colombia",
+          "Peru",
+          "Venezuela",
+          "Guatemala",
+          "Honduras"
+        ],
         "lightenNonVisited": true
       },
-      "image": { "visible": false }
+      "image": {
+        "visible": false
+      }
     },
     {
       "id": "ml-line-01",
       "text": {
         "content": "<h2>世界中の感染者</h2><p>2023年の全世界の感染者数は2億6300万人と想定され、そのうち死亡者数は59万7千人。</p>",
         "visible": true,
-        "position": { "horizontal": "right", "vertical": "center", "width": "32%" }
+        "position": {
+          "horizontal": "right",
+          "vertical": "center",
+          "width": "20%"
+        }
       },
       "chart": {
         "visible": true,
         "layout": "single",
-        "responsive": { "mobileStack": true },
+        "responsive": {
+          "mobileStack": true
+        },
         "charts": [
           {
             "id": "line-main-1",
@@ -77,55 +136,287 @@
           }
         ]
       },
-      "map": { "visible": false },
-      "image": { "visible": false }
+      "map": {
+        "visible": false
+      },
+      "image": {
+        "visible": false
+      }
     },
     {
       "id": "ml-pie-grid",
       "text": {
         "content": "<h2>主な死亡者はアフリカ地域の5歳未満の小児たち</h2><p>そして、死亡者数の95％はアフリカ地域の人々であり、その76％に相当する43万2千人は5歳未満の小児でした。 </p>",
         "visible": true,
-        "position": { "horizontal": "left", "vertical": "top", "width": "32%" }
+        "position": {
+          "horizontal": "left",
+          "vertical": "top",
+          "width": "20%"
+        }
       },
       "chart": {
         "visible": true,
         "layout": "grid",
-        "responsive": { "mobileStack": true },
+        "responsive": {
+          "mobileStack": true
+        },
         "grid": {
           "columns": 6,
           "rows": 2,
-          "rowPattern": [6, 6],
+          "rowPattern": [
+            6,
+            6
+          ],
           "allowEmptyCells": false,
           "title": "地域別マラリア感染者・死亡者分布",
-          "rowTitles": ["感染者数", "死亡者数"]
+          "rowTitles": [
+            "感染者数",
+            "死亡者数"
+          ]
         },
         "charts": [
-          { "id": "pie-cases-africa", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "アフリカ", "rowField": "地域", "rowValue": "アフリカ", "categoryColumns": ["感染者の割合"], "primaryLabel": "感染者", "normalizeTo": 100, "remainderLabel": "非感染者", "remainderColor": "#999999" } },
-          { "id": "pie-cases-americas", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "アメリカ", "rowField": "地域", "rowValue": "アメリカ", "categoryColumns": ["感染者の割合"], "primaryLabel": "感染者", "normalizeTo": 100, "remainderLabel": "非感染者", "remainderColor": "#999999" } },
-          { "id": "pie-cases-emr", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "東地中海", "rowField": "地域", "rowValue": "東地中海", "categoryColumns": ["感染者の割合"], "primaryLabel": "感染者", "normalizeTo": 100, "remainderLabel": "非感染者", "remainderColor": "#999999" } },
-          { "id": "pie-cases-europe", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "欧州", "rowField": "地域", "rowValue": "欧州", "categoryColumns": ["感染者の割合"], "primaryLabel": "感染者", "normalizeTo": 100, "remainderLabel": "非感染者", "remainderColor": "#999999" } },
-          { "id": "pie-cases-sear", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "東南アジア", "rowField": "地域", "rowValue": "東南アジア", "categoryColumns": ["感染者の割合"], "primaryLabel": "感染者", "normalizeTo": 100, "remainderLabel": "非感染者", "remainderColor": "#999999" } },
-          { "id": "pie-cases-wpr", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "西太平洋", "rowField": "地域", "rowValue": "西太平洋", "categoryColumns": ["感染者の割合"], "primaryLabel": "感染者", "normalizeTo": 100, "remainderLabel": "非感染者", "remainderColor": "#999999" } },
-          { "id": "pie-deaths-africa", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "アフリカ", "rowField": "地域", "rowValue": "アフリカ", "categoryColumns": ["死亡者の割合"], "primaryLabel": "死亡者", "normalizeTo": 100, "remainderLabel": "非死亡者", "remainderColor": "#999999" } },
-          { "id": "pie-deaths-americas", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "アメリカ", "rowField": "地域", "rowValue": "アメリカ", "categoryColumns": ["死亡者の割合"], "primaryLabel": "死亡者", "normalizeTo": 100, "remainderLabel": "非死亡者", "remainderColor": "#999999" } },
-          { "id": "pie-deaths-emr", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "東地中海", "rowField": "地域", "rowValue": "東地中海", "categoryColumns": ["死亡者の割合"], "primaryLabel": "死亡者", "normalizeTo": 100, "remainderLabel": "非死亡者", "remainderColor": "#999999" } },
-          { "id": "pie-deaths-europe", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "欧州", "rowField": "地域", "rowValue": "欧州", "categoryColumns": ["死亡者の割合"], "primaryLabel": "死亡者", "normalizeTo": 100, "remainderLabel": "非死亡者", "remainderColor": "#999999" } },
-          { "id": "pie-deaths-sear", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "東南アジア", "rowField": "地域", "rowValue": "東南アジア", "categoryColumns": ["死亡者の割合"], "primaryLabel": "死亡者", "normalizeTo": 100, "remainderLabel": "非死亡者", "remainderColor": "#999999" } },
-          { "id": "pie-deaths-wpr", "type": "pie", "dataFile": "/data/charts/malariae/regional_distribution.csv", "dataFormat": "csv", "config": { "title": "西太平洋", "rowField": "地域", "rowValue": "西太平洋", "categoryColumns": ["死亡者の割合"], "primaryLabel": "死亡者", "normalizeTo": 100, "remainderLabel": "非死亡者", "remainderColor": "#999999" } }
+          {
+            "id": "pie-cases-africa",
+            "type": "pie",
+            "dataFile": "/data/charts/malariae/regional_distribution.csv",
+            "dataFormat": "csv",
+            "config": {
+              "title": "アフリカ",
+              "rowField": "地域",
+              "rowValue": "アフリカ",
+              "categoryColumns": [
+                "感染者の割合"
+              ],
+              "primaryLabel": "感染者",
+              "normalizeTo": 100,
+              "remainderLabel": "非感染者",
+              "remainderColor": "#999999"
+            }
+          },
+          {
+            "id": "pie-cases-americas",
+            "type": "pie",
+            "dataFile": "/data/charts/malariae/regional_distribution.csv",
+            "dataFormat": "csv",
+            "config": {
+              "title": "アメリカ",
+              "rowField": "地域",
+              "rowValue": "アメリカ",
+              "categoryColumns": [
+                "感染者の割合"
+              ],
+              "primaryLabel": "感染者",
+              "normalizeTo": 100,
+              "remainderLabel": "非感染者",
+              "remainderColor": "#999999"
+            }
+          },
+          {
+            "id": "pie-cases-emr",
+            "type": "pie",
+            "dataFile": "/data/charts/malariae/regional_distribution.csv",
+            "dataFormat": "csv",
+            "config": {
+              "title": "東地中海",
+              "rowField": "地域",
+              "rowValue": "東地中海",
+              "categoryColumns": [
+                "感染者の割合"
+              ],
+              "primaryLabel": "感染者",
+              "normalizeTo": 100,
+              "remainderLabel": "非感染者",
+              "remainderColor": "#999999"
+            }
+          },
+          {
+            "id": "pie-cases-europe",
+            "type": "pie",
+            "dataFile": "/data/charts/malariae/regional_distribution.csv",
+            "dataFormat": "csv",
+            "config": {
+              "title": "欧州",
+              "rowField": "地域",
+              "rowValue": "欧州",
+              "categoryColumns": [
+                "感染者の割合"
+              ],
+              "primaryLabel": "感染者",
+              "normalizeTo": 100,
+              "remainderLabel": "非感染者",
+              "remainderColor": "#999999"
+            }
+          },
+          {
+            "id": "pie-cases-sear",
+            "type": "pie",
+            "dataFile": "/data/charts/malariae/regional_distribution.csv",
+            "dataFormat": "csv",
+            "config": {
+              "title": "東南アジア",
+              "rowField": "地域",
+              "rowValue": "東南アジア",
+              "categoryColumns": [
+                "感染者の割合"
+              ],
+              "primaryLabel": "感染者",
+              "normalizeTo": 100,
+              "remainderLabel": "非感染者",
+              "remainderColor": "#999999"
+            }
+          },
+          {
+            "id": "pie-cases-wpr",
+            "type": "pie",
+            "dataFile": "/data/charts/malariae/regional_distribution.csv",
+            "dataFormat": "csv",
+            "config": {
+              "title": "西太平洋",
+              "rowField": "地域",
+              "rowValue": "西太平洋",
+              "categoryColumns": [
+                "感染者の割合"
+              ],
+              "primaryLabel": "感染者",
+              "normalizeTo": 100,
+              "remainderLabel": "非感染者",
+              "remainderColor": "#999999"
+            }
+          },
+          {
+            "id": "pie-deaths-africa",
+            "type": "pie",
+            "dataFile": "/data/charts/malariae/regional_distribution.csv",
+            "dataFormat": "csv",
+            "config": {
+              "title": "アフリカ",
+              "rowField": "地域",
+              "rowValue": "アフリカ",
+              "categoryColumns": [
+                "死亡者の割合"
+              ],
+              "primaryLabel": "死亡者",
+              "normalizeTo": 100,
+              "remainderLabel": "非死亡者",
+              "remainderColor": "#999999"
+            }
+          },
+          {
+            "id": "pie-deaths-americas",
+            "type": "pie",
+            "dataFile": "/data/charts/malariae/regional_distribution.csv",
+            "dataFormat": "csv",
+            "config": {
+              "title": "アメリカ",
+              "rowField": "地域",
+              "rowValue": "アメリカ",
+              "categoryColumns": [
+                "死亡者の割合"
+              ],
+              "primaryLabel": "死亡者",
+              "normalizeTo": 100,
+              "remainderLabel": "非死亡者",
+              "remainderColor": "#999999"
+            }
+          },
+          {
+            "id": "pie-deaths-emr",
+            "type": "pie",
+            "dataFile": "/data/charts/malariae/regional_distribution.csv",
+            "dataFormat": "csv",
+            "config": {
+              "title": "東地中海",
+              "rowField": "地域",
+              "rowValue": "東地中海",
+              "categoryColumns": [
+                "死亡者の割合"
+              ],
+              "primaryLabel": "死亡者",
+              "normalizeTo": 100,
+              "remainderLabel": "非死亡者",
+              "remainderColor": "#999999"
+            }
+          },
+          {
+            "id": "pie-deaths-europe",
+            "type": "pie",
+            "dataFile": "/data/charts/malariae/regional_distribution.csv",
+            "dataFormat": "csv",
+            "config": {
+              "title": "欧州",
+              "rowField": "地域",
+              "rowValue": "欧州",
+              "categoryColumns": [
+                "死亡者の割合"
+              ],
+              "primaryLabel": "死亡者",
+              "normalizeTo": 100,
+              "remainderLabel": "非死亡者",
+              "remainderColor": "#999999"
+            }
+          },
+          {
+            "id": "pie-deaths-sear",
+            "type": "pie",
+            "dataFile": "/data/charts/malariae/regional_distribution.csv",
+            "dataFormat": "csv",
+            "config": {
+              "title": "東南アジア",
+              "rowField": "地域",
+              "rowValue": "東南アジア",
+              "categoryColumns": [
+                "死亡者の割合"
+              ],
+              "primaryLabel": "死亡者",
+              "normalizeTo": 100,
+              "remainderLabel": "非死亡者",
+              "remainderColor": "#999999"
+            }
+          },
+          {
+            "id": "pie-deaths-wpr",
+            "type": "pie",
+            "dataFile": "/data/charts/malariae/regional_distribution.csv",
+            "dataFormat": "csv",
+            "config": {
+              "title": "西太平洋",
+              "rowField": "地域",
+              "rowValue": "西太平洋",
+              "categoryColumns": [
+                "死亡者の割合"
+              ],
+              "primaryLabel": "死亡者",
+              "normalizeTo": 100,
+              "remainderLabel": "非死亡者",
+              "remainderColor": "#999999"
+            }
+          }
         ]
       },
-      "map": { "visible": false },
-      "image": { "visible": false }
+      "map": {
+        "visible": false
+      },
+      "image": {
+        "visible": false
+      }
     },
     {
       "id": "ml-img-09",
       "text": {
         "content": "<h2>治療と予防対策</h2><p>1955年、世界保健機関（WHO）は「世界マラリア撲滅キャンペーン」を開始し、殺虫剤DDTによる屋内への噴霧と抗マラリア薬の併用によって、ヨーロッパやオーストラリアでのマラリア根絶に成功しました。</p>",
         "visible": true,
-        "position": { "horizontal": "left", "vertical": "center", "width": "34%" }
+        "position": {
+          "horizontal": "left",
+          "vertical": "center",
+          "width": "34%"
+        }
       },
-      "chart": { "visible": false },
-      "map": { "visible": false },
+      "chart": {
+        "visible": false
+      },
+      "map": {
+        "visible": false
+      },
       "image": {
         "visible": true,
         "src": "/images/malariae/malaria-story-03.jpg",
@@ -138,14 +429,22 @@
       "text": {
         "content": "<h2>アルテミシニン</h2><p>1970年代には、中国で発見された青蒿（セイコウ）という植物由来のアルテミシニンが登場し、それまでの薬剤に耐性を持つマラリア原虫にも効果を発揮する新たな治療薬として期待されました。</p>",
         "visible": true,
-        "position": { "horizontal": "right", "vertical": "center", "width": "34%" }
+        "position": {
+          "horizontal": "right",
+          "vertical": "center",
+          "width": "34%"
+        }
       },
       "source": {
         "name": "マラリアについて：野口英世アフリカ賞 - 内閣府",
         "url": "https://www.cao.go.jp/noguchisho/award/maraliafact.html"
       },
-      "chart": { "visible": false },
-      "map": { "visible": false },
+      "chart": {
+        "visible": false
+      },
+      "map": {
+        "visible": false
+      },
       "image": {
         "visible": true,
         "src": "/images/malariae/arutemisin.png",
@@ -158,12 +457,18 @@
       "text": {
         "content": "<h2>さまざまな対策の組み合わせ</h2><p>1990年代からは、さまざまな対策を組み合わせる方法が取られるようになりました。たとえば、蚊帳に殺虫剤をしみこませた「防虫蚊帳」（ITN）の配布や、家の中に殺虫剤をまく対策の継続、マラリアをすばやく診断できる検査キットの導入などです。こうした取り組みによって、感染した人がすぐに診断され、治療を受けられるようになってきました。</p>",
         "visible": true,
-        "position": { "horizontal": "right", "vertical": "center", "width": "34%" }
+        "position": {
+          "horizontal": "right",
+          "vertical": "center",
+          "width": "20%"
+        }
       },
       "chart": {
         "visible": true,
         "layout": "single",
-        "responsive": { "mobileStack": true },
+        "responsive": {
+          "mobileStack": true
+        },
         "charts": [
           {
             "id": "sankey-main",
@@ -176,20 +481,30 @@
           }
         ]
       },
-      "map": { "visible": false },
-      "image": { "visible": false }
+      "map": {
+        "visible": false
+      },
+      "image": {
+        "visible": false
+      }
     },
     {
       "id": "ml-img-11",
       "text": {
         "content": "<h2>アルテミシニン併用療法（ACT）</h2><p>2000年代以降は、WHOが「アルテミシニン併用療法（ACT）」を基本の治療法としてすすめています。これは、アルテミシニンと他の薬を一緒に使うことで、薬が効かなくなるのを防ぐ方法です。さらに最近では、遺伝子の仕組みを利用して蚊の数を減らす方法や、新しいワクチンの開発といった先進的な技術も使われるようになっています。</p>",
         "visible": true,
-        "position": { "horizontal": "left", "vertical": "center", "width": "34%" }
+        "position": {
+          "horizontal": "left",
+          "vertical": "center",
+          "width": "20%"
+        }
       },
       "chart": {
         "visible": true,
         "layout": "single",
-        "responsive": { "mobileStack": true },
+        "responsive": {
+          "mobileStack": true
+        },
         "charts": [
           {
             "id": "venn-act",
@@ -204,56 +519,102 @@
           }
         ]
       },
-      "map": { "visible": false },
-      "image": { "visible": false }
+      "map": {
+        "visible": false
+      },
+      "image": {
+        "visible": false
+      }
     },
     {
       "id": "ml-img-12",
       "text": {
         "content": "<h2>いくつかの国で撲滅に成功</h2><p>こうした取り組みの結果、アジアや中東、ラテンアメリカのいくつかの国ではマラリアの撲滅に成功しました。</p>",
         "visible": true,
-        "position": { "horizontal": "right", "vertical": "center", "width": "34%" }
+        "position": {
+          "horizontal": "right",
+          "vertical": "center",
+          "width": "34%"
+        }
       },
-      "chart": { "visible": false },
+      "chart": {
+        "visible": false
+      },
       "map": {
         "visible": true,
         "mode": "world-overview",
-        "center": [60, 15],
+        "center": [
+          60,
+          15
+        ],
         "zoom": 1.2,
-        "highlightCountries": ["Sri Lanka", "Turkmenistan", "Kyrgyzstan", "Paraguay", "Uzbekistan", "Argentina", "Iraq", "United Arab Emirates", "Morocco", "Algeria", "Oman"],
+        "highlightCountries": [
+          "Sri Lanka",
+          "Turkmenistan",
+          "Kyrgyzstan",
+          "Paraguay",
+          "Uzbekistan",
+          "Argentina",
+          "Iraq",
+          "United Arab Emirates",
+          "Morocco",
+          "Algeria",
+          "Oman"
+        ],
         "lightenNonVisited": true
       },
-      "image": { "visible": false }
+      "image": {
+        "visible": false
+      }
     },
     {
       "id": "ml-line-02",
       "text": {
         "content": "<h2>エルサルバドルでは</h2><p>たとえば中米のエルサルバドルでは、1950年代から国をあげて対策を始めましたが、当初は大きな効果が出ませんでした。しかし1980年前後に感染者が最も多くなったことをきっかけに、アメリカ政府の支援などを受けて、本格的な対策が始まりました。</p>",
         "visible": true,
-        "position": { "horizontal": "right", "vertical": "center", "width": "32%" }
+        "position": {
+          "horizontal": "right",
+          "vertical": "center",
+          "width": "32%"
+        }
       },
-      "chart": { "visible": false },
+      "chart": {
+        "visible": false
+      },
       "map": {
         "visible": true,
         "mode": "world-overview",
-        "center": [-88, 13],
+        "center": [
+          -88,
+          13
+        ],
         "zoom": 4,
-        "highlightCountries": ["El Salvador"],
+        "highlightCountries": [
+          "El Salvador"
+        ],
         "lightenNonVisited": true
       },
-      "image": { "visible": false }
+      "image": {
+        "visible": false
+      }
     },
     {
       "id": "ml-line-03",
       "text": {
         "content": "<h2>エルサルバドルでマラリアを撲滅</h2><p>感染が多い地域を特定したり、検査体制を整えたりすることで、10年の間に感染者数を約9割も減らすことができました。そして2017年には新たな感染者がゼロとなり、WHOは2021年にエルサルバドルがマラリアを撲滅したと正式に認定しました。</p>",
         "visible": true,
-        "position": { "horizontal": "left", "vertical": "center", "width": "32%" }
+        "position": {
+          "horizontal": "left",
+          "vertical": "center",
+          "width": "20%"
+        }
       },
       "chart": {
         "visible": true,
         "layout": "single",
-        "responsive": { "mobileStack": true },
+        "responsive": {
+          "mobileStack": true
+        },
         "charts": [
           {
             "id": "line-main-3",
@@ -281,56 +642,93 @@
           }
         ]
       },
-      "map": { "visible": false },
-      "image": { "visible": false }
+      "map": {
+        "visible": false
+      },
+      "image": {
+        "visible": false
+      }
     },
     {
       "id": "ml-map-01",
       "text": {
         "content": "<h2>人口の多い国での撲滅成功</h2><p>また、中国（2021年）やエジプト（2024年）といった人口の多い国での成功も、マラリアとの長い闘いの中で大きな節目となっています。</p>",
         "visible": true,
-        "position": { "horizontal": "right", "vertical": "center", "width": "34%" }
+        "position": {
+          "horizontal": "right",
+          "vertical": "center",
+          "width": "34%"
+        }
       },
-      "chart": { "visible": false },
+      "chart": {
+        "visible": false
+      },
       "map": {
         "visible": true,
         "mode": "world-overview",
-        "center": [65, 25],
+        "center": [
+          65,
+          25
+        ],
         "zoom": 1.5,
-        "highlightCountries": ["China", "Egypt"],
+        "highlightCountries": [
+          "China",
+          "Egypt"
+        ],
         "lightenNonVisited": true
       },
-      "image": { "visible": false }
+      "image": {
+        "visible": false
+      }
     },
     {
       "id": "ml-map-02",
       "text": {
         "content": "<h2>撲滅がうまく進まなかった国</h2><p>一方で、マラリアの撲滅がうまく進まなかった国もあります。</p>",
         "visible": true,
-        "position": { "horizontal": "left", "vertical": "center", "width": "34%" }
+        "position": {
+          "horizontal": "left",
+          "vertical": "center",
+          "width": "34%"
+        }
       },
-      "chart": { "visible": false },
+      "chart": {
+        "visible": false
+      },
       "map": {
         "visible": true,
         "mode": "world-overview",
-        "center": [10, 15],
+        "center": [
+          10,
+          15
+        ],
         "zoom": 2.5,
-        "highlightCountries": ["Niger"],
+        "highlightCountries": [
+          "Niger"
+        ],
         "lightenNonVisited": true
       },
-      "image": { "visible": false }
+      "image": {
+        "visible": false
+      }
     },
     {
       "id": "ml-line-04",
       "text": {
         "content": "<h2>ニジェール</h2><p>たとえば西アフリカのニジェールでは、2000年にアフリカの首脳たちが「アブジャ宣言」という感染症対策の方針に合意し、2010年までにマラリアによる死亡を半分に減らすという目標を立てました。治療薬の普及や、殺虫剤をしみこませた蚊帳（ITN）の大量配布、5歳未満の子どもへの医療費無料化など、さまざまな対策がとられましたが、結果として感染件数は逆に4倍に増えてしまいました。</p>",
         "visible": true,
-        "position": { "horizontal": "right", "vertical": "center", "width": "32%" }
+        "position": {
+          "horizontal": "right",
+          "vertical": "center",
+          "width": "20%"
+        }
       },
       "chart": {
         "visible": true,
         "layout": "single",
-        "responsive": { "mobileStack": true },
+        "responsive": {
+          "mobileStack": true
+        },
         "charts": [
           {
             "id": "line-main-4",
@@ -353,35 +751,59 @@
           }
         ]
       },
-      "map": { "visible": false },
-      "image": { "visible": false }
+      "map": {
+        "visible": false
+      },
+      "image": {
+        "visible": false
+      }
     },
     {
       "id": "ml-map-03",
       "text": {
         "content": "<h2>サハラ砂漠より南のアフリカ地域</h2><p>このように、サハラ砂漠より南のアフリカ地域では、今もマラリアの完全な撲滅には至っておらず、対策の強化が求められています。</p>",
         "visible": true,
-        "position": { "horizontal": "left", "vertical": "center", "width": "34%" }
+        "position": {
+          "horizontal": "left",
+          "vertical": "center",
+          "width": "34%"
+        }
       },
-      "chart": { "visible": false },
+      "chart": {
+        "visible": false
+      },
       "map": {
         "visible": true,
         "mode": "world-overview",
-        "center": [-70, 8],
+        "center": [
+          -70,
+          8
+        ],
         "zoom": 1.8,
-        "highlightCountries": ["Brazil", "Colombia"],
+        "highlightCountries": [
+          "Brazil",
+          "Colombia"
+        ],
         "lightenNonVisited": true
       },
-      "image": { "visible": false }
+      "image": {
+        "visible": false
+      }
     },
     {
       "id": "city-episodes-anchor",
       "text": {
         "visible": false
       },
-      "chart": { "visible": false },
-      "map": { "visible": false },
-      "image": { "visible": false },
+      "chart": {
+        "visible": false
+      },
+      "map": {
+        "visible": false
+      },
+      "image": {
+        "visible": false
+      },
       "cityEpisodes": {
         "enabled": true,
         "mapFile": "content-map.json"
@@ -392,66 +814,129 @@
       "text": {
         "content": "<h2>課題</h2><p>現在のマラリア治療には、いくつかの大きな課題があります。2000年代後半から、東南アジアの一部の地域で、主な治療薬であるアルテミシニンが効きにくい「耐性」のあるマラリア原虫が見つかるようになりました。</p>",
         "visible": true,
-        "position": { "horizontal": "left", "vertical": "center", "width": "34%" }
+        "position": {
+          "horizontal": "left",
+          "vertical": "center",
+          "width": "34%"
+        }
       },
-      "chart": { "visible": false },
+      "chart": {
+        "visible": false
+      },
       "map": {
         "visible": true,
         "mode": "world-overview",
-        "center": [105, 15],
+        "center": [
+          105,
+          15
+        ],
         "zoom": 3,
-        "highlightCountries": ["Cambodia", "Thailand", "Vietnam", "Myanmar", "Laos"],
+        "highlightCountries": [
+          "Cambodia",
+          "Thailand",
+          "Vietnam",
+          "Myanmar",
+          "Laos"
+        ],
         "lightenNonVisited": true
       },
-      "image": { "visible": false }
+      "image": {
+        "visible": false
+      }
     },
     {
       "id": "ml-img-13b",
       "text": {
         "content": "<h2>耐性を持つ原虫</h2><p>そして2018年には、アフリカでも同じような耐性を持つ原虫が発見され、世界的に懸念が高まっています。</p>",
         "visible": true,
-        "position": { "horizontal": "right", "vertical": "center", "width": "34%" }
+        "position": {
+          "horizontal": "right",
+          "vertical": "center",
+          "width": "34%"
+        }
       },
-      "chart": { "visible": false },
+      "chart": {
+        "visible": false
+      },
       "map": {
         "visible": true,
         "mode": "world-overview",
-        "center": [20, 5],
+        "center": [
+          20,
+          5
+        ],
         "zoom": 2,
-        "highlightCountries": ["Nigeria", "Democratic Republic of the Congo", "Uganda", "Mozambique", "Niger", "Burkina Faso", "Angola", "Tanzania", "Mali", "Ghana", "Cameroon", "Rwanda", "Ethiopia", "Kenya"],
+        "highlightCountries": [
+          "Nigeria",
+          "Democratic Republic of the Congo",
+          "Uganda",
+          "Mozambique",
+          "Niger",
+          "Burkina Faso",
+          "Angola",
+          "Tanzania",
+          "Mali",
+          "Ghana",
+          "Cameroon",
+          "Rwanda",
+          "Ethiopia",
+          "Kenya"
+        ],
         "lightenNonVisited": true
       },
-      "image": { "visible": false }
+      "image": {
+        "visible": false
+      }
     },
     {
       "id": "ml-img-14",
       "text": {
         "content": "<h2>多剤耐性のマラリア原虫</h2><p>さらに深刻なのは、カンボジアやタイの一部地域で、アルテミシニンだけでなく、併用して使う薬にも耐性を示す「多剤耐性」のマラリア原虫が現れていることです。これは、現在広く使われている治療法が効かなくなる可能性があるという、非常に重大な問題です。</p>",
         "visible": true,
-        "position": { "horizontal": "right", "vertical": "center", "width": "34%" }
+        "position": {
+          "horizontal": "right",
+          "vertical": "center",
+          "width": "34%"
+        }
       },
-      "chart": { "visible": false },
+      "chart": {
+        "visible": false
+      },
       "map": {
         "visible": true,
         "mode": "world-overview",
-        "center": [104, 13],
+        "center": [
+          104,
+          13
+        ],
         "zoom": 3.5,
-        "highlightCountries": ["Cambodia", "Thailand"],
+        "highlightCountries": [
+          "Cambodia",
+          "Thailand"
+        ],
         "lightenNonVisited": true
       },
-      "image": { "visible": false }
+      "image": {
+        "visible": false
+      }
     },
     {
       "id": "ml-line-05",
       "text": {
         "content": "<h2>マラリア対策関連の予算不足</h2><p>また、マラリア対策に使われる資金の不足も課題となっています。2010年ごろまでは世界的に資金が増えていましたが、その後は伸び悩んでいます。</p>",
         "visible": true,
-        "position": { "horizontal": "right", "vertical": "center", "width": "32%" }
+        "position": {
+          "horizontal": "right",
+          "vertical": "center",
+          "width": "20%"
+        }
       },
       "chart": {
         "visible": true,
         "layout": "single",
-        "responsive": { "mobileStack": true },
+        "responsive": {
+          "mobileStack": true
+        },
         "charts": [
           {
             "id": "line-main-5",
@@ -473,18 +958,30 @@
           }
         ]
       },
-      "map": { "visible": false },
-      "image": { "visible": false }
+      "map": {
+        "visible": false
+      },
+      "image": {
+        "visible": false
+      }
     },
     {
       "id": "ml-img-15",
       "text": {
         "content": "<h2>蚊帳（ITN）や殺虫剤（IRS）</h2><p>その影響で、感染の広がりが深刻なサハラ以南のアフリカでは、殺虫剤をしみこませた蚊帳（ITN）や、家の中に何度も噴霧して使う殺虫剤（IRS）など、予防に効果的な道具が足りなくなっているという報告もあります。</p>",
         "visible": true,
-        "position": { "horizontal": "left", "vertical": "center", "width": "34%" }
+        "position": {
+          "horizontal": "left",
+          "vertical": "center",
+          "width": "34%"
+        }
       },
-      "chart": { "visible": false },
-      "map": { "visible": false },
+      "chart": {
+        "visible": false
+      },
+      "map": {
+        "visible": false
+      },
       "image": {
         "visible": true,
         "src": "/images/malariae/itn-irs.png",
@@ -497,7 +994,11 @@
       "text": {
         "content": "<h2>気候変動の影響</h2><p>さらに、マラリア感染の増加には気候変動の影響も関係していると考えられています。気温や湿度、雨の量が変わることで、マラリアを媒介するハマダラカという蚊が暮らしやすい地域が広がっているのです。日本のように、平均気温が年々上がっている国でも、マラリアは決して「他人事」ではなくなっています。</p>",
         "visible": true,
-        "position": { "horizontal": "right", "vertical": "center", "width": "32%" }
+        "position": {
+          "horizontal": "right",
+          "vertical": "center",
+          "width": "20%"
+        }
       },
       "source": {
         "name": "気象庁 | 日本の年平均気温偏差（℃）",
@@ -506,7 +1007,9 @@
       "chart": {
         "visible": true,
         "layout": "single",
-        "responsive": { "mobileStack": true },
+        "responsive": {
+          "mobileStack": true
+        },
         "charts": [
           {
             "id": "line-temp",
@@ -516,7 +1019,10 @@
             "config": {
               "xField": "年",
               "yField": "偏差",
-              "yDomain": [-2.0, 2.0],
+              "yDomain": [
+                -2,
+                2
+              ],
               "title": "日本の年平均気温偏差（℃）",
               "annotations": [
                 {
@@ -529,23 +1035,35 @@
           }
         ]
       },
-      "map": { "visible": false },
-      "image": { "visible": false }
+      "map": {
+        "visible": false
+      },
+      "image": {
+        "visible": false
+      }
     },
     {
       "id": "ml-img-17",
       "text": {
         "content": "<h2>世界全体で取り組むべき課題へ</h2><p>いまやマラリアの撲滅は、一部の地域だけの問題ではなく、世界全体で取り組むべき「私たち自身の課題」なのです。</p>",
         "visible": true,
-        "position": { "horizontal": "left", "vertical": "center", "width": "34%" }
+        "position": {
+          "horizontal": "left",
+          "vertical": "center",
+          "width": "34%"
+        }
       },
-      "chart": { "visible": false },
-      "map": { "visible": false },
+      "chart": {
+        "visible": false
+      },
+      "map": {
+        "visible": false
+      },
       "image": {
         "visible": true,
         "src": "/images/malariae/malaria-story-01.jpg",
         "alt": "マラリアとの闘い",
-        "opacity": 0.80
+        "opacity": 0.8
       }
     }
   ]

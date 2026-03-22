@@ -5,16 +5,26 @@
       "text": {
         "content": "<h2 style=\"text-align:center;color:#ffffff\">結核との闘い</h2><p style=\"text-align:center;color:#ffffff\">～データで見る希望と課題～</p>",
         "visible": true,
-        "position": { "horizontal": "center", "vertical": "center", "width": "60%" }
+        "position": {
+          "horizontal": "center",
+          "vertical": "center",
+          "width": "60%"
+        }
       },
-      "chart": { "visible": false },
-      "map": { "visible": false },
+      "chart": {
+        "visible": false
+      },
+      "map": {
+        "visible": false
+      },
       "image": {
         "visible": true,
         "src": "/images/tuberculosis/crowd.jpg",
         "alt": "結核との闘い",
         "opacity": 0.78,
-        "colorOverlay": { "opacity": 1.0 }
+        "colorOverlay": {
+          "opacity": 1
+        }
       }
     },
     {
@@ -22,10 +32,18 @@
       "text": {
         "content": "<h2>昔から人類とともにあった古い病気</h2><p>結核は、昔から人類とともにあった古い病気で、主に肺に感染して重い症状を引き起こす感染症です。結核菌という細菌が原因です。</p>",
         "visible": true,
-        "position": { "horizontal": "left", "vertical": "center", "width": "34%" }
+        "position": {
+          "horizontal": "left",
+          "vertical": "center",
+          "width": "34%"
+        }
       },
-      "chart": { "visible": false },
-      "map": { "visible": false },
+      "chart": {
+        "visible": false
+      },
+      "map": {
+        "visible": false
+      },
       "image": {
         "visible": true,
         "src": "/images/tuberculosis/tuberculosis-old.png",
@@ -38,15 +56,23 @@
       "text": {
         "content": "<h2>世界三大感染症のひとつ</h2><p>今もなお、結核はマラリアやHIV/エイズと並んで「世界三大感染症」と呼ばれており、特に医療体制が整っていない途上国では深刻な問題となっています。 </p>",
         "visible": true,
-        "position": { "horizontal": "right", "vertical": "center", "width": "34%" }
+        "position": {
+          "horizontal": "right",
+          "vertical": "center",
+          "width": "34%"
+        }
       },
-      "chart": { "visible": false },
-      "map": { "visible": false },
+      "chart": {
+        "visible": false
+      },
+      "map": {
+        "visible": false
+      },
       "image": {
         "visible": true,
         "src": "/images/tuberculosis/tb-1.jpeg",
         "alt": "結核の現状",
-        "opacity": 0.80
+        "opacity": 0.8
       }
     },
     {
@@ -54,15 +80,23 @@
       "text": {
         "content": "<h2>感染はどのように起こる？</h2><p>結核を発病していて菌を出している人が咳やくしゃみをすると、空気中に結核菌を含んだ小さなしぶき（飛沫）が飛び散ります。このしぶきが乾いて、空気中にふわふわと浮かぶ結核菌を周りの人が吸い込むことで感染します。</p>",
         "visible": true,
-        "position": { "horizontal": "left", "vertical": "center", "width": "34%" }
+        "position": {
+          "horizontal": "left",
+          "vertical": "center",
+          "width": "34%"
+        }
       },
-      "chart": { "visible": false },
-      "map": { "visible": false },
+      "chart": {
+        "visible": false
+      },
+      "map": {
+        "visible": false
+      },
       "image": {
         "visible": true,
         "src": "/images/tuberculosis/crowd.jpg",
         "alt": "人混みでの結核感染リスク",
-        "opacity": 0.80
+        "opacity": 0.8
       }
     },
     {
@@ -70,12 +104,18 @@
       "text": {
         "content": "<h2>日本における結核との闘い</h2><p>日本では1935年から1950年までの15年間、結核が死因の第1位でした。</p>",
         "visible": true,
-        "position": { "horizontal": "left", "vertical": "center", "width": "34%" }
+        "position": {
+          "horizontal": "left",
+          "vertical": "center",
+          "width": "20%"
+        }
       },
       "chart": {
         "visible": true,
         "layout": "single",
-        "responsive": { "mobileStack": true },
+        "responsive": {
+          "mobileStack": true
+        },
         "charts": [
           {
             "id": "bump-tb-ranking",
@@ -99,23 +139,35 @@
           }
         ]
       },
-      "map": { "visible": false },
-      "image": { "visible": false }
+      "map": {
+        "visible": false
+      },
+      "image": {
+        "visible": false
+      }
     },
     {
       "id": "tb-img-08",
       "text": {
         "content": "<h2>志賀潔の業績</h2><p>1924年には志賀潔（しがきよし）博士がBCGワクチンをフランスから日本に持ち帰り、その後、1949年には予防接種が法律で定められました。</p>",
         "visible": true,
-        "position": { "horizontal": "right", "vertical": "center", "width": "34%" }
+        "position": {
+          "horizontal": "right",
+          "vertical": "center",
+          "width": "34%"
+        }
       },
-      "chart": { "visible": false },
-      "map": { "visible": false },
+      "chart": {
+        "visible": false
+      },
+      "map": {
+        "visible": false
+      },
       "image": {
         "visible": true,
         "src": "/images/tuberculosis/1280px-Kiyoshi_Shiga.jpg",
         "alt": "志賀潔博士",
-        "opacity": 0.80,
+        "opacity": 0.8,
         "fit": "height"
       }
     },
@@ -124,12 +176,18 @@
       "text": {
         "content": "<h2>日本の結核死亡者数の推移</h2><p>さらに、戦後の生活環境の改善や、新しい薬の広まりにより、1948年ごろから結核による死亡者は減、1951年には「新結核予防法」（現在は感染症法に統合）が制定され、結核の治療費を国が負担する仕組みが整えられました。</p>",
         "visible": true,
-        "position": { "horizontal": "left", "vertical": "center", "width": "34%" }
+        "position": {
+          "horizontal": "left",
+          "vertical": "center",
+          "width": "20%"
+        }
       },
       "chart": {
         "visible": true,
         "layout": "single",
-        "responsive": { "mobileStack": true },
+        "responsive": {
+          "mobileStack": true
+        },
         "charts": [
           {
             "id": "line-tb-death-japan",
@@ -160,22 +218,34 @@
           }
         ]
       },
-      "map": { "visible": false },
-      "image": { "visible": false }
+      "map": {
+        "visible": false
+      },
+      "image": {
+        "visible": false
+      }
     },
     {
       "id": "tb-img-10",
       "text": {
         "content": "<h2>入国前結核スクリーニング</h2><p>このような努力の積み重ねで、日本では結核を減らすことに成功してきましたが、今でも毎年1万人ほどの人が新たに結核を発症しているのが現状です。 </p><p>また日本では近年、外国生まれの結核患者の数が増えており、その対策として「入国前結核スクリーニング」という制度が始まっています。</p>",
         "visible": true,
-        "position": { "horizontal": "right", "vertical": "center", "width": "34%" }
+        "position": {
+          "horizontal": "right",
+          "vertical": "center",
+          "width": "34%"
+        }
       },
       "source": {
         "name": "入国前結核スクリーニング Japan Pre-Entry Tuberculosis Screening｜厚生労働省",
         "url": "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/kenkou_iryou/kenkou/kekkaku-kansenshou03/index_00006.html"
       },
-      "chart": { "visible": false },
-      "map": { "visible": false },
+      "chart": {
+        "visible": false
+      },
+      "map": {
+        "visible": false
+      },
       "image": {
         "visible": true,
         "src": "/images/tuberculosis/jpets.jpg",
@@ -189,14 +259,22 @@
       "text": {
         "content": "<h2>結核終息戦略</h2><p>結核をなくすための世界的な取り組みも、科学の進歩や国際的な協力によって少しずつ前に進んできました。世界保健機関（WHO）は2014年に「結核終息戦略（End TB Strategy）」を発表し、2035年までに世界から結核を終わらせることを目標としています。</p><p>この戦略では、主に「1.早期発見と、すべての患者に適切な治療を届けること」「2.患者や地域社会へのサポート」「3.新しい検査法や薬、ワクチンの開発を進めること」を重視しています。こうした取り組みによって、新規感染者数は緩やかな下降傾向にありました。</p>",
         "visible": true,
-        "position": { "horizontal": "left", "vertical": "center", "width": "34%" }
+        "position": {
+          "horizontal": "left",
+          "vertical": "center",
+          "width": "34%"
+        }
       },
       "source": {
         "name": "WHO: The End TB Strategy",
         "url": "https://www.who.int/teams/global-programme-on-tuberculosis-and-lung-health/the-end-tb-strategy"
       },
-      "chart": { "visible": false },
-      "map": { "visible": false },
+      "chart": {
+        "visible": false
+      },
+      "map": {
+        "visible": false
+      },
       "image": {
         "visible": true,
         "src": "/images/tuberculosis/who-end-tb-strategy.jpg",
@@ -210,12 +288,18 @@
       "text": {
         "content": "<h2>新型コロナウイルス感染症が与えた影響</h2><p>しかし、新型コロナウイルス感染症（COVID-19）の世界的な流行は、結核対策にも大きな影響を与えました。その結果、2020年には結核による死亡率が上がり、2021年には感染者数（罹患率）も増えてしまいました。</p><p>世界保健機関（WHO）の発表によると、増加傾向は続き、2023年には世界で約1080万人が新たに結核にかかり、そのうち約125万人が亡くなっています。</p>",
         "visible": true,
-        "position": { "horizontal": "right", "vertical": "center", "width": "34%" }
+        "position": {
+          "horizontal": "right",
+          "vertical": "center",
+          "width": "20%"
+        }
       },
       "chart": {
         "visible": true,
         "layout": "single",
-        "responsive": { "mobileStack": true },
+        "responsive": {
+          "mobileStack": true
+        },
         "charts": [
           {
             "id": "line-tb-infections",
@@ -244,20 +328,30 @@
           }
         ]
       },
-      "map": { "visible": false },
-      "image": { "visible": false }
+      "map": {
+        "visible": false
+      },
+      "image": {
+        "visible": false
+      }
     },
     {
       "id": "tb-line-02",
       "text": {
         "content": "<h2>エイズによる死亡の大きな原因の一つ</h2><p>特に、HIVに感染している人は免疫力が落ちているため、結核にかかりやすく、重症化しやすい傾向があります。そのため、結核はエイズによる死亡の大きな原因の一つとなっており、2023年の結核による死亡者の中で、HIV感染者は約16万人を占めています。</p>",
         "visible": true,
-        "position": { "horizontal": "left", "vertical": "center", "width": "34%" }
+        "position": {
+          "horizontal": "left",
+          "vertical": "center",
+          "width": "20%"
+        }
       },
       "chart": {
         "visible": true,
         "layout": "single",
-        "responsive": { "mobileStack": true },
+        "responsive": {
+          "mobileStack": true
+        },
         "charts": [
           {
             "id": "line-tb-deaths",
@@ -280,17 +374,27 @@
           }
         ]
       },
-      "map": { "visible": false },
-      "image": { "visible": false }
+      "map": {
+        "visible": false
+      },
+      "image": {
+        "visible": false
+      }
     },
     {
       "id": "city-episodes-anchor",
       "text": {
         "visible": false
       },
-      "chart": { "visible": false },
-      "map": { "visible": false },
-      "image": { "visible": false },
+      "chart": {
+        "visible": false
+      },
+      "map": {
+        "visible": false
+      },
+      "image": {
+        "visible": false
+      },
       "cityEpisodes": {
         "enabled": true,
         "mapFile": "content-map.json"
@@ -301,12 +405,18 @@
       "text": {
         "content": "<h2>今後の課題</h2><p>結核対策は進んでいる一方で、今も多くの課題が残されています。その一つが「多剤耐性結核（MDR-TB）」です。これは、ふつうの抗結核薬が効かないタイプの結核で、インドネシアやベトナムなどの結核が多い国では特に大きな問題になっています。2022年には、世界で約41万人がこのタイプの結核を発症しましたが、適切な治療を受けられた人は全体の約4割にとどまっています。</p>",
         "visible": true,
-        "position": { "horizontal": "left", "vertical": "center", "width": "34%" }
+        "position": {
+          "horizontal": "left",
+          "vertical": "center",
+          "width": "20%"
+        }
       },
       "chart": {
         "visible": true,
         "layout": "dual",
-        "responsive": { "mobileStack": true },
+        "responsive": {
+          "mobileStack": true
+        },
         "charts": [
           {
             "id": "line-a",
@@ -332,20 +442,30 @@
           }
         ]
       },
-      "map": { "visible": false },
-      "image": { "visible": false }
+      "map": {
+        "visible": false
+      },
+      "image": {
+        "visible": false
+      }
     },
     {
       "id": "tb-line-single",
       "text": {
         "content": "<h2>結核対策に必要な資金の不足</h2><p>また、結核対策に必要な資金も不足しています。たとえば2023年、低・中所得国で必要とされた結核予防や治療のための資金は、必要額のわずか26％、約57億ドルにとどまりました。このような資金不足が、対策の遅れにつながっています。</p>",
         "visible": true,
-        "position": { "horizontal": "right", "vertical": "center", "width": "32%" }
+        "position": {
+          "horizontal": "right",
+          "vertical": "center",
+          "width": "20%"
+        }
       },
       "chart": {
         "visible": true,
         "layout": "single",
-        "responsive": { "mobileStack": true },
+        "responsive": {
+          "mobileStack": true
+        },
         "charts": [
           {
             "id": "line-main",
@@ -361,18 +481,30 @@
           }
         ]
       },
-      "map": { "visible": false },
-      "image": { "visible": false }
+      "map": {
+        "visible": false
+      },
+      "image": {
+        "visible": false
+      }
     },
     {
       "id": "tb-img-13",
       "text": {
         "content": "<h2>新型コロナウイルスの世界的な流行</h2><p>さらに、新型コロナウイルス（COVID-19）の世界的な流行も、結核対策に大きな影響を与えました。医療の人手や資源がコロナ対応に取られたり、外出制限によって病院に行けなくなったりして、結核の診断や治療が遅れるケースが増えました。</p>",
         "visible": true,
-        "position": { "horizontal": "left", "vertical": "center", "width": "34%" }
+        "position": {
+          "horizontal": "left",
+          "vertical": "center",
+          "width": "34%"
+        }
       },
-      "chart": { "visible": false },
-      "map": { "visible": false },
+      "chart": {
+        "visible": false
+      },
+      "map": {
+        "visible": false
+      },
       "image": {
         "visible": true,
         "src": "/images/tuberculosis/Covid-19_SP_-_UTI_V._Nova_Cachoeirinha.jpg",
@@ -385,15 +517,23 @@
       "text": {
         "content": "<h2>開発のスピードが遅い結核</h2><p>そしてもう一つの大きな課題は、結核の新しい診断法・治療薬・ワクチンの開発がなかなか進んでいないことです。コロナのワクチンが短期間で開発・普及したのとは対照的に、結核は開発のスピードが遅いと指摘されています。</p>",
         "visible": true,
-        "position": { "horizontal": "right", "vertical": "center", "width": "34%" }
+        "position": {
+          "horizontal": "right",
+          "vertical": "center",
+          "width": "34%"
+        }
       },
-      "chart": { "visible": false },
-      "map": { "visible": false },
+      "chart": {
+        "visible": false
+      },
+      "map": {
+        "visible": false
+      },
       "image": {
         "visible": true,
         "src": "/images/tuberculosis/19753_lores.jpg",
         "alt": "結核の診断・治療",
-        "opacity": 0.80
+        "opacity": 0.8
       }
     },
     {
@@ -401,15 +541,23 @@
       "text": {
         "content": "<h2>世界中が力を合わせて</h2><p>結核を本当に撲滅するためには、医療の力だけでなく、貧困を減らすことや教育を広げることなど、さまざまな分野の取り組みが必要です。世界中が力を合わせて、こうした課題に取り組んでいくことが求められています。 </p>",
         "visible": true,
-        "position": { "horizontal": "left", "vertical": "center", "width": "34%" }
+        "position": {
+          "horizontal": "left",
+          "vertical": "center",
+          "width": "34%"
+        }
       },
-      "chart": { "visible": false },
-      "map": { "visible": false },
+      "chart": {
+        "visible": false
+      },
+      "map": {
+        "visible": false
+      },
       "image": {
         "visible": true,
         "src": "/images/tuberculosis/tb-story-01.jpg",
         "alt": "結核撲滅への取り組み",
-        "opacity": 0.80
+        "opacity": 0.8
       }
     }
   ]
