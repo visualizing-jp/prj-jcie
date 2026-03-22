@@ -9,9 +9,17 @@ const MIN_MOBILE_WIDTH = 768;
 const MIN_HEADER_SAFE = 56;
 const MAX_HEADER_SAFE = 130;
 
+// チャート内テキストサイズ一括定義
+const CHART_FONT = {
+  axis: 14,        // 軸ラベル（目盛り数値）
+  series: 14,      // 系列名（末端ラベル・凡例）
+  annotation: 14,  // アノテーション
+  tooltip: 14,     // ツールチップ
+};
+
 const ANNOTATION_DEFAULTS = {
-  color: '#374151',
-  fontSize: 11,
+  color: '#CCCCCC',
+  fontSize: CHART_FONT.annotation,
   fontWeight: 500,
   lineOpacity: 0.8,
   lineDash: '4 4',
@@ -427,7 +435,7 @@ export class ChartLayer {
 
     const xAxis = d3.axisBottom(x).ticks(5).tickFormat(d3.format('d'));
     const yAxis = d3.axisLeft(y).ticks(5);
-    const styleAxisText = (g) => g.selectAll('text').attr('fill', '#4b5563').attr('font-size', 11);
+    const styleAxisText = (g) => g.selectAll('text').attr('fill', '#4b5563').attr('font-size', CHART_FONT.axis);
     const styleAxisLines = (g) => g.selectAll('line,path').attr('stroke', '#d1d5db').attr('opacity', 0.5);
 
     // グリッドライン（水平）
@@ -796,7 +804,7 @@ export class ChartLayer {
           .attr('rx', 3).attr('fill', 'rgba(255,255,255,0.92)');
         tooltipGroup.append('text')
           .attr('x', labelX).attr('y', labelY)
-          .attr('fill', c).attr('font-size', 10).attr('font-weight', 500)
+          .attr('fill', c).attr('font-size', CHART_FONT.tooltip).attr('font-weight', 500)
           .text(d3.format(',')(Number(point[yField])));
         ty += 1;
       });
@@ -804,7 +812,7 @@ export class ChartLayer {
       // 年ラベル
       tooltipGroup.append('text')
         .attr('x', px).attr('y', plotHeight + 16)
-        .attr('text-anchor', 'middle').attr('fill', '#4b5563').attr('font-size', 10)
+        .attr('text-anchor', 'middle').attr('fill', '#4b5563').attr('font-size', CHART_FONT.tooltip)
         .text(d3.format('d')(nearest));
     });
 
@@ -892,7 +900,7 @@ export class ChartLayer {
       .attr('y', (d) => d.y)
       .attr('dominant-baseline', 'middle')
       .attr('fill', (d) => color(d.name))
-      .attr('font-size', 10)
+      .attr('font-size', CHART_FONT.series)
       .attr('font-weight', 600)
       .text((d) => d.name);
   }
@@ -919,7 +927,7 @@ export class ChartLayer {
         const x = xScale(value);
         descriptors.push({
           type: annotationXYThreshold,
-          note: { label, wrap },
+          note: { label, wrap, labelStyle: { fontSize: CHART_FONT.annotation } },
           color,
           x,
           y: 0,
@@ -937,7 +945,7 @@ export class ChartLayer {
         const anchorRight = ann.anchor === 'right';
         descriptors.push({
           type: annotationXYThreshold,
-          note: { label, wrap, align: anchorRight ? 'right' : undefined },
+          note: { label, wrap, align: anchorRight ? 'right' : undefined, labelStyle: { fontSize: CHART_FONT.annotation } },
           color,
           x: anchorRight ? width : 0,
           y,
@@ -953,7 +961,7 @@ export class ChartLayer {
         const connectorType = ann.connector === 'curve' ? annotationCalloutCurve : annotationCalloutElbow;
         descriptors.push({
           type: connectorType,
-          note: { label, wrap },
+          note: { label, wrap, labelStyle: { fontSize: CHART_FONT.annotation } },
           color,
           x: xScale(xVal),
           y: yScale(yVal),
@@ -976,6 +984,11 @@ export class ChartLayer {
     layer.selectAll('.annotation .subject path, .annotation .subject line')
       .attr('stroke-dasharray', ANNOTATION_DEFAULTS.lineDash)
       .attr('stroke-opacity', ANNOTATION_DEFAULTS.lineOpacity);
+
+    // アノテーションテキストにフォントサイズを適用
+    layer.selectAll('.annotation text, .annotation tspan')
+      .attr('font-size', CHART_FONT.annotation)
+      .style('font-size', `${CHART_FONT.annotation}px`);
   }
 
   renderPie(panel, dataset, config) {
@@ -1063,7 +1076,7 @@ export class ChartLayer {
         .attr('x', 14)
         .attr('y', y)
         .attr('fill', '#4b5563')
-        .attr('font-size', 10)
+        .attr('font-size', CHART_FONT.series)
         .text(`${row[labelField]}: ${row[valueField]}`);
     });
 
@@ -1308,7 +1321,7 @@ export class ChartLayer {
       .attr('y', (d) => d.y + d.h / 2 + 3)
       .attr('text-anchor', (d) => (d.level === 0 ? 'start' : 'end'))
       .attr('fill', '#1f2937')
-      .attr('font-size', 11)
+      .attr('font-size', CHART_FONT.series)
       .attr('opacity', 0)
       .text((d) => d.label)
       .transition()
@@ -1543,7 +1556,7 @@ export class ChartLayer {
         .attr('y', fixedLabelY)
         .attr('text-anchor', 'middle')
         .attr('fill', '#1f2937')
-        .attr('font-size', 13)
+        .attr('font-size', CHART_FONT.series)
         .attr('font-weight', 700)
         .attr('opacity', 0)
         .transition()
@@ -1564,7 +1577,7 @@ export class ChartLayer {
           .attr('y', interLayout.text.y + yOffset)
           .attr('text-anchor', 'middle')
           .attr('fill', '#1f2937')
-          .attr('font-size', 13 * inverseScale)
+          .attr('font-size', CHART_FONT.series * inverseScale)
           .attr('font-weight', 700)
           .attr('opacity', 0)
           .text(config.intersectionLabel)
@@ -1677,16 +1690,16 @@ export class ChartLayer {
         .call(makeAnnotations);
 
       valueLabelGroup.selectAll('.venn-value-annotations .annotation path')
-        .attr('stroke', '#6b7280')
+        .attr('stroke', ANNOTATION_DEFAULTS.color)
         .attr('stroke-width', 1);
       valueLabelGroup.selectAll('.venn-value-annotations .annotation .connector .connector-end')
-        .attr('fill', '#6b7280')
-        .attr('stroke', '#6b7280');
+        .attr('fill', ANNOTATION_DEFAULTS.color)
+        .attr('stroke', ANNOTATION_DEFAULTS.color);
       valueLabelGroup.selectAll('.venn-value-annotations .annotation .note .note-line')
-        .attr('stroke', '#6b7280');
+        .attr('stroke', ANNOTATION_DEFAULTS.color);
       valueLabelGroup.selectAll('.venn-value-annotations .annotation text')
         .attr('fill', '#1f2937')
-        .attr('font-size', 12)
+        .attr('font-size', CHART_FONT.annotation)
         .attr('font-weight', 700);
 
       valueLabelGroup.selectAll('.venn-value-annotations .annotation')
@@ -1804,7 +1817,7 @@ export class ChartLayer {
 
     // X軸
     const xAxis = d3.axisBottom(x).tickFormat(d3.format('d'));
-    const styleAxisText = (g) => g.selectAll('text').attr('fill', '#4b5563').attr('font-size', 11);
+    const styleAxisText = (g) => g.selectAll('text').attr('fill', '#4b5563').attr('font-size', CHART_FONT.axis);
     const styleAxisLines = (g) => g.selectAll('line,path').attr('stroke', '#d1d5db').attr('opacity', 0.5);
 
     plotGroup
@@ -1905,7 +1918,7 @@ export class ChartLayer {
         .attr('y', ly)
         .attr('dominant-baseline', 'middle')
         .attr('fill', color(series.name))
-        .attr('font-size', 10)
+        .attr('font-size', CHART_FONT.series)
         .attr('font-weight', 600)
         .attr('opacity', 0)
         .text(series.name)
@@ -1977,14 +1990,14 @@ export class ChartLayer {
           .attr('rx', 3).attr('fill', 'rgba(255,255,255,0.92)');
         tooltipGroup.append('text')
           .attr('x', labelX).attr('y', labelY)
-          .attr('fill', c).attr('font-size', 10).attr('font-weight', 500)
+          .attr('fill', c).attr('font-size', CHART_FONT.tooltip).attr('font-weight', 500)
           .text(`${series.name}: ${point[yField]}位`);
         ty += 1;
       });
 
       tooltipGroup.append('text')
         .attr('x', px).attr('y', plotHeight + 16)
-        .attr('text-anchor', 'middle').attr('fill', '#4b5563').attr('font-size', 10)
+        .attr('text-anchor', 'middle').attr('fill', '#4b5563').attr('font-size', CHART_FONT.tooltip)
         .text(nearest);
     });
 
@@ -2227,7 +2240,7 @@ export class ChartLayer {
       .call(xAxis)
       .selectAll('text')
       .attr('fill', '#4b5563')
-      .attr('font-size', 11);
+      .attr('font-size', CHART_FONT.axis);
     plotGroup
       .select('.domain')
       .attr('stroke', '#d1d5db')
@@ -2324,7 +2337,7 @@ export class ChartLayer {
             .attr('x', tx + 8)
             .attr('y', 20 + i * 15)
             .attr('fill', '#ffffff')
-            .attr('font-size', 10)
+            .attr('font-size', CHART_FONT.tooltip)
             .text(line);
         });
 
@@ -2351,7 +2364,7 @@ export class ChartLayer {
         .attr('y', ld.y)
         .attr('dominant-baseline', 'central')
         .attr('fill', color(ld.key))
-        .attr('font-size', 8)
+        .attr('font-size', CHART_FONT.series)
         .attr('font-weight', 500)
         .attr('opacity', 0)
         .text(ld.key)
