@@ -703,12 +703,14 @@
               "annotations": [
                 {
                   "type": "horizontalLine",
+                  "id": "mother-child-current",
                   "value": 8.7,
                   "label": "2023年には8.7%まで減少した",
                   "anchor": "center"
                 },
                 {
                   "type": "horizontalLine",
+                  "id": "mother-child-peak",
                   "value": 35.2,
                   "label": "1995年には最も感染率の高いサハラ以南アフリカ地域での母子間感染率が35.2%"
                 },
@@ -716,6 +718,12 @@
                   "type": "verticalLine",
                   "year": 1995,
                   "label": "1995年"
+                },
+                {
+                  "type": "arrow",
+                  "from": "mother-child-peak",
+                  "to": "mother-child-current",
+                  "label": "26.5pt減少"
                 }
               ]
             }

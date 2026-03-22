@@ -940,9 +940,11 @@ export class ChartLayer {
     const xDomain = xScale.domain();
     const yDomain = yScale.domain();
     const descriptors = [];
+    const idToY = new Map(); // id → Y座標（arrow用）
 
     for (const ann of annotations) {
       const type = ann?.type;
+      if (type === 'arrow') continue; // arrow は後で処理
       const label = String(ann?.label || '');
       const color = ann?.color || ANNOTATION_DEFAULTS.color;
       const wrap = ann?.wrap || ANNOTATION_DEFAULTS.wrapWidth;
@@ -971,6 +973,8 @@ export class ChartLayer {
         if (value < Math.min(...yDomain) || value > Math.max(...yDomain)) continue;
 
         const y = yScale(value);
+        if (ann.id) idToY.set(ann.id, y);
+
         const anchorRight = ann.anchor === 'right';
         descriptors.push({
           type: annotationXYThreshold,
@@ -1000,25 +1004,83 @@ export class ChartLayer {
       }
     }
 
-    if (descriptors.length === 0) return;
+    if (descriptors.length > 0) {
+      const makeAnnotations = annotation()
+        .annotations(descriptors);
 
-    const makeAnnotations = annotation()
-      .annotations(descriptors);
+      const layer = group.append('g')
+        .attr('class', 'chart-annotations')
+        .call(makeAnnotations);
 
-    const layer = group.append('g')
-      .attr('class', 'chart-annotations')
-      .call(makeAnnotations);
+      // subject線（閾値線）を破線スタイルに
+      layer.selectAll('.annotation .subject path, .annotation .subject line')
+        .attr('stroke-dasharray', ANNOTATION_DEFAULTS.lineDash)
+        .attr('stroke-opacity', ANNOTATION_DEFAULTS.lineOpacity);
 
-    // subject線（閾値線）を破線スタイルに
-    layer.selectAll('.annotation .subject path, .annotation .subject line')
-      .attr('stroke-dasharray', ANNOTATION_DEFAULTS.lineDash)
-      .attr('stroke-opacity', ANNOTATION_DEFAULTS.lineOpacity);
+      // アノテーションテキストにフォントサイズ・色を適用
+      layer.selectAll('.annotation text, .annotation tspan')
+        .attr('font-size', CHART_FONT.annotation)
+        .style('font-size', `${CHART_FONT.annotation}px`)
+        .attr('fill', CHART_COLOR.annotationText);
+    }
 
-    // アノテーションテキストにフォントサイズ・色を適用
-    layer.selectAll('.annotation text, .annotation tspan')
-      .attr('font-size', CHART_FONT.annotation)
-      .style('font-size', `${CHART_FONT.annotation}px`)
+    // arrow: 2本のhorizontalLine間を繋ぐ矢印
+    this.renderAnnotationArrows(group, annotations, idToY, width);
+  }
+
+  renderAnnotationArrows(group, annotations, idToY, plotWidth) {
+    const arrows = annotations.filter((a) => a?.type === 'arrow');
+    if (arrows.length === 0) return;
+
+    // SVGマーカー定義
+    const markerId = `ann-arrow-${Math.random().toString(36).slice(2, 8)}`;
+    let defs = group.select('defs');
+    if (defs.empty()) defs = group.append('defs');
+    defs.append('marker')
+      .attr('id', markerId)
+      .attr('viewBox', '0 0 10 10')
+      .attr('refX', 8)
+      .attr('refY', 5)
+      .attr('markerWidth', 6)
+      .attr('markerHeight', 6)
+      .attr('orient', 'auto-start-reverse')
+      .append('path')
+      .attr('d', 'M 0 0 L 10 5 L 0 10 z')
       .attr('fill', CHART_COLOR.annotationText);
+
+    for (const arr of arrows) {
+      const fromY = idToY.get(arr.from);
+      const toY = idToY.get(arr.to);
+      if (fromY == null || toY == null) continue;
+
+      const color = arr.color || CHART_COLOR.annotationText;
+      const xPos = arr.x != null ? Number(arr.x) : plotWidth * 0.92;
+      const label = String(arr.label || '');
+
+      // 矢印線
+      group.append('line')
+        .attr('x1', xPos)
+        .attr('y1', fromY)
+        .attr('x2', xPos)
+        .attr('y2', toY)
+        .attr('stroke', color)
+        .attr('stroke-width', 1.5)
+        .attr('marker-end', `url(#${markerId})`);
+
+      // ラベル
+      if (label) {
+        const midY = (fromY + toY) / 2;
+        group.append('text')
+          .attr('x', xPos - 8)
+          .attr('y', midY)
+          .attr('text-anchor', 'end')
+          .attr('dominant-baseline', 'middle')
+          .attr('fill', color)
+          .attr('font-size', CHART_FONT.annotation)
+          .attr('font-weight', 600)
+          .text(label);
+      }
+    }
   }
 
   renderDualAnnotations(annotations) {
@@ -1029,7 +1091,10 @@ export class ChartLayer {
     const placedLabelYs = []; // ラベル着地Y座標を追跡（衝突回避用）
     const labelMinGap = 50;  // ラベル間の最小間隔
 
+    const idToAbsY = new Map(); // id → 絶対Y座標（arrow用、最初のパネル基準）
+
     for (const ann of annotations) {
+      if (ann.type === 'arrow') continue; // arrow は後で処理
       if (ann.type !== 'horizontalLine') continue;
 
       const value = Number(ann.value);
@@ -1050,6 +1115,9 @@ export class ChartLayer {
           x2: p.plotAbsX + p.plotWidth,
           y: p.plotAbsY + py,
         });
+      }
+      if (segments.length > 0 && ann.id) {
+        idToAbsY.set(ann.id, segments[0].y);
       }
 
       if (segments.length === 0) continue;
@@ -1122,6 +1190,59 @@ export class ChartLayer {
           .attr('font-size', CHART_FONT.annotation)
           .style('font-size', `${CHART_FONT.annotation}px`)
           .attr('fill', CHART_COLOR.annotationText);
+      }
+    }
+
+    // arrow: 2本のhorizontalLine間を繋ぐ矢印（dual版）
+    const dualArrows = annotations.filter((a) => a?.type === 'arrow');
+    if (dualArrows.length > 0 && idToAbsY.size >= 2) {
+      const markerId = `dual-ann-arrow-${Math.random().toString(36).slice(2, 8)}`;
+      let defs = this.root.select('defs');
+      if (defs.empty()) defs = this.root.append('defs');
+      defs.append('marker')
+        .attr('id', markerId)
+        .attr('viewBox', '0 0 10 10')
+        .attr('refX', 8)
+        .attr('refY', 5)
+        .attr('markerWidth', 6)
+        .attr('markerHeight', 6)
+        .attr('orient', 'auto-start-reverse')
+        .append('path')
+        .attr('d', 'M 0 0 L 10 5 L 0 10 z')
+        .attr('fill', CHART_COLOR.annotationText);
+
+      for (const arr of dualArrows) {
+        const fromY = idToAbsY.get(arr.from);
+        const toY = idToAbsY.get(arr.to);
+        if (fromY == null || toY == null) continue;
+
+        const color = arr.color || CHART_COLOR.annotationText;
+        const label = String(arr.label || '');
+        // 最初のパネルの右端付近に配置
+        const p0 = panels[0];
+        const xPos = arr.x != null ? Number(arr.x) : p0.plotAbsX + p0.plotWidth * 0.92;
+
+        layer.append('line')
+          .attr('x1', xPos)
+          .attr('y1', fromY)
+          .attr('x2', xPos)
+          .attr('y2', toY)
+          .attr('stroke', color)
+          .attr('stroke-width', 1.5)
+          .attr('marker-end', `url(#${markerId})`);
+
+        if (label) {
+          const midY = (fromY + toY) / 2;
+          layer.append('text')
+            .attr('x', xPos - 8)
+            .attr('y', midY)
+            .attr('text-anchor', 'end')
+            .attr('dominant-baseline', 'middle')
+            .attr('fill', color)
+            .attr('font-size', CHART_FONT.annotation)
+            .attr('font-weight', 600)
+            .text(label);
+        }
       }
     }
   }
