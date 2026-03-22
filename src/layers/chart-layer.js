@@ -17,8 +17,18 @@ const CHART_FONT = {
   tooltip: 14,     // ツールチップ
 };
 
+// チャート内色一括定義
+const CHART_COLOR = {
+  title: '#1f2937',          // タイトル・見出し
+  axisText: '#4b5563',       // 軸テキスト（目盛り数値）
+  axisLine: '#d1d5db',       // 軸・グリッド罫線
+  annotationLine: '#CCCCCC', // アノテーション罫線
+  annotationText: '#4b5563', // アノテーションテキスト
+  label: '#1f2937',          // ラベル（ベン図セット名等）
+};
+
 const ANNOTATION_DEFAULTS = {
-  color: '#CCCCCC',
+  color: CHART_COLOR.annotationLine,
   fontSize: CHART_FONT.annotation,
   fontWeight: 500,
   lineOpacity: 0.8,
@@ -46,6 +56,7 @@ export class ChartLayer {
     if (!chartConfig?.visible) return;
 
     this.textPosition = renderOptions.textPosition || null;
+    this.panelPlotInfo = [];
     const normalized = this.normalizeChartConfig(chartConfig, renderOptions);
     this.ensureSvg();
     if (!this.root) return;
@@ -65,6 +76,11 @@ export class ChartLayer {
       });
 
     await Promise.all(chartJobs);
+
+    // dualAnnotations: 複数パネルを横断するアノテーション
+    if (Array.isArray(chartConfig.dualAnnotations) && chartConfig.dualAnnotations.length > 0) {
+      this.renderDualAnnotations(chartConfig.dualAnnotations);
+    }
   }
 
   normalizeChartConfig(chartConfig, renderOptions = {}) {
@@ -117,7 +133,7 @@ export class ChartLayer {
           .attr('x', bounds.left + (bounds.right - bounds.left) / 2)
           .attr('y', bounds.top + 20)
           .attr('text-anchor', 'middle')
-          .attr('fill', '#1f2937')
+          .attr('fill', CHART_COLOR.title)
           .attr('font-size', 16)
           .attr('font-weight', 700)
           .text(dualTitle);
@@ -216,7 +232,7 @@ export class ChartLayer {
         .attr('x', bounds.left + (bounds.right - bounds.left) / 2)
         .attr('y', bounds.top + 20)
         .attr('text-anchor', 'middle')
-        .attr('fill', '#1f2937')
+        .attr('fill', CHART_COLOR.title)
         .attr('font-size', 16)
         .attr('font-weight', 700)
         .text(grid.title);
@@ -244,7 +260,7 @@ export class ChartLayer {
           .attr('x', bounds.left + areaWidth / 2)
           .attr('y', rowY + 24)
           .attr('text-anchor', 'middle')
-          .attr('fill', '#4b5563')
+          .attr('fill', CHART_COLOR.axisText)
           .attr('font-size', 17)
           .attr('font-weight', 700)
           .text(rowTitles[rowIndex]);
@@ -433,10 +449,23 @@ export class ChartLayer {
       .domain(startYDomain)
       .range([plotHeight, 0]);
 
+    // dualAnnotations 用にプロット情報を記録
+    const innerPad = 14;
+    const titleH = title ? 28 : 0;
+    this.panelPlotInfo.push({
+      chartId: chartMeta?.id || null,
+      plotAbsX: panel.x + innerPad + leftGutter,
+      plotAbsY: panel.y + innerPad + titleH + topInset,
+      plotWidth,
+      plotHeight,
+      yDomain: [...targetYDomain],
+      xDomain: [...targetXDomain],
+    });
+
     const xAxis = d3.axisBottom(x).ticks(5).tickFormat(d3.format('d'));
     const yAxis = d3.axisLeft(y).ticks(5);
-    const styleAxisText = (g) => g.selectAll('text').attr('fill', '#4b5563').attr('font-size', CHART_FONT.axis);
-    const styleAxisLines = (g) => g.selectAll('line,path').attr('stroke', '#d1d5db').attr('opacity', 0.5);
+    const styleAxisText = (g) => g.selectAll('text').attr('fill', CHART_COLOR.axisText).attr('font-size', CHART_FONT.axis);
+    const styleAxisLines = (g) => g.selectAll('line,path').attr('stroke', CHART_COLOR.axisLine).attr('opacity', 0.5);
 
     // グリッドライン（水平）
     let gridGroup = null;
@@ -452,7 +481,7 @@ export class ChartLayer {
         .attr('y1', (d) => y(d))
         .attr('x2', plotWidth)
         .attr('y2', (d) => y(d))
-        .attr('stroke', '#d1d5db')
+        .attr('stroke', CHART_COLOR.axisLine)
         .attr('stroke-opacity', 0.12)
         .attr('stroke-dasharray', '2 4');
     }
@@ -549,7 +578,7 @@ export class ChartLayer {
           const newTicks = y.ticks(5);
           gridGroup.selectAll('line').data(newTicks).enter().append('line')
             .attr('x1', 0).attr('y1', (d) => y(d)).attr('x2', plotWidth).attr('y2', (d) => y(d))
-            .attr('stroke', '#d1d5db').attr('stroke-opacity', 0.12).attr('stroke-dasharray', '2 4');
+            .attr('stroke', CHART_COLOR.axisLine).attr('stroke-opacity', 0.12).attr('stroke-dasharray', '2 4');
         }
 
         xAxisGroup
@@ -686,7 +715,7 @@ export class ChartLayer {
         const newTicks = y.ticks(5);
         gridGroup.selectAll('line').data(newTicks).enter().append('line')
           .attr('x1', 0).attr('y1', (d) => y(d)).attr('x2', plotWidth).attr('y2', (d) => y(d))
-          .attr('stroke', '#d1d5db').attr('stroke-opacity', 0.12).attr('stroke-dasharray', '2 4');
+          .attr('stroke', CHART_COLOR.axisLine).attr('stroke-opacity', 0.12).attr('stroke-dasharray', '2 4');
       }
 
       xAxisGroup
@@ -812,7 +841,7 @@ export class ChartLayer {
       // 年ラベル
       tooltipGroup.append('text')
         .attr('x', px).attr('y', plotHeight + 16)
-        .attr('text-anchor', 'middle').attr('fill', '#4b5563').attr('font-size', CHART_FONT.tooltip)
+        .attr('text-anchor', 'middle').attr('fill', CHART_COLOR.axisText).attr('font-size', CHART_FONT.tooltip)
         .text(d3.format('d')(nearest));
     });
 
@@ -985,10 +1014,116 @@ export class ChartLayer {
       .attr('stroke-dasharray', ANNOTATION_DEFAULTS.lineDash)
       .attr('stroke-opacity', ANNOTATION_DEFAULTS.lineOpacity);
 
-    // アノテーションテキストにフォントサイズを適用
+    // アノテーションテキストにフォントサイズ・色を適用
     layer.selectAll('.annotation text, .annotation tspan')
       .attr('font-size', CHART_FONT.annotation)
-      .style('font-size', `${CHART_FONT.annotation}px`);
+      .style('font-size', `${CHART_FONT.annotation}px`)
+      .attr('fill', CHART_COLOR.annotationText);
+  }
+
+  renderDualAnnotations(annotations) {
+    if (!this.root || !Array.isArray(this.panelPlotInfo) || this.panelPlotInfo.length < 2) return;
+
+    const panels = this.panelPlotInfo;
+    const layer = this.root.append('g').attr('class', 'dual-annotations');
+    const placedLabelYs = []; // ラベル着地Y座標を追跡（衝突回避用）
+    const labelMinGap = 50;  // ラベル間の最小間隔
+
+    for (const ann of annotations) {
+      if (ann.type !== 'horizontalLine') continue;
+
+      const value = Number(ann.value);
+      if (!Number.isFinite(value)) continue;
+
+      const label = String(ann.label || '');
+      const color = ann.color || ANNOTATION_DEFAULTS.color;
+
+      // 各パネルでのY座標を算出し、パネル間を横断する線を描画
+      const segments = [];
+      for (const p of panels) {
+        const [yMin, yMax] = p.yDomain;
+        if (value < yMin || value > yMax) continue;
+        const yScale = d3.scaleLinear().domain(p.yDomain).range([p.plotHeight, 0]);
+        const py = yScale(value);
+        segments.push({
+          x1: p.plotAbsX,
+          x2: p.plotAbsX + p.plotWidth,
+          y: p.plotAbsY + py,
+        });
+      }
+
+      if (segments.length === 0) continue;
+
+      // 全セグメントの左端から右端まで一本の線を引く
+      const globalX1 = Math.min(...segments.map((s) => s.x1));
+      const globalX2 = Math.max(...segments.map((s) => s.x2));
+
+      // 各セグメントの線を描画（Y座標がパネルごとに異なる場合も対応）
+      segments.forEach((seg) => {
+        layer.append('line')
+          .attr('x1', seg.x1)
+          .attr('y1', seg.y)
+          .attr('x2', seg.x2)
+          .attr('y2', seg.y)
+          .attr('stroke', color)
+          .attr('stroke-dasharray', ANNOTATION_DEFAULTS.lineDash)
+          .attr('stroke-opacity', ANNOTATION_DEFAULTS.lineOpacity);
+      });
+
+      // パネル間のギャップを繋ぐ線
+      for (let i = 0; i < segments.length - 1; i++) {
+        layer.append('line')
+          .attr('x1', segments[i].x2)
+          .attr('y1', segments[i].y)
+          .attr('x2', segments[i + 1].x1)
+          .attr('y2', segments[i + 1].y)
+          .attr('stroke', color)
+          .attr('stroke-dasharray', ANNOTATION_DEFAULTS.lineDash)
+          .attr('stroke-opacity', ANNOTATION_DEFAULTS.lineOpacity);
+      }
+
+      // ラベル
+      if (label) {
+        const labelX = ann.anchor === 'right' ? globalX2 : globalX1;
+        const labelY = segments[0].y;
+        const dx = ann.dx ?? (ann.anchor === 'right' ? -ANNOTATION_DEFAULTS.horizontalLine.dx : ANNOTATION_DEFAULTS.horizontalLine.dx);
+        let dy = ann.dy ?? ANNOTATION_DEFAULTS.horizontalLine.dy;
+
+        // 既に配置済みのラベルとの衝突を回避
+        let targetY = labelY + dy;
+        for (const placedY of placedLabelYs) {
+          if (Math.abs(targetY - placedY) < labelMinGap) {
+            dy -= labelMinGap;
+            targetY = labelY + dy;
+          }
+        }
+        placedLabelYs.push(targetY);
+
+        const descriptors = [{
+          type: annotationCalloutElbow,
+          note: {
+            label,
+            wrap: ann.wrap || ANNOTATION_DEFAULTS.wrapWidth,
+            labelStyle: { fontSize: CHART_FONT.annotation },
+          },
+          color,
+          x: labelX,
+          y: labelY,
+          dx,
+          dy,
+        }];
+
+        const makeAnn = annotation().annotations(descriptors);
+        const annLayer = layer.append('g')
+          .attr('class', 'dual-annotation-label')
+          .call(makeAnn);
+
+        annLayer.selectAll('.annotation text, .annotation tspan')
+          .attr('font-size', CHART_FONT.annotation)
+          .style('font-size', `${CHART_FONT.annotation}px`)
+          .attr('fill', CHART_COLOR.annotationText);
+      }
+    }
   }
 
   renderPie(panel, dataset, config) {
@@ -1075,7 +1210,7 @@ export class ChartLayer {
         .append('text')
         .attr('x', 14)
         .attr('y', y)
-        .attr('fill', '#4b5563')
+        .attr('fill', CHART_COLOR.axisText)
         .attr('font-size', CHART_FONT.series)
         .text(`${row[labelField]}: ${row[valueField]}`);
     });
@@ -1320,7 +1455,7 @@ export class ChartLayer {
       .attr('x', (d) => (d.level === 0 ? d.x + d.w + 6 : d.x - 6))
       .attr('y', (d) => d.y + d.h / 2 + 3)
       .attr('text-anchor', (d) => (d.level === 0 ? 'start' : 'end'))
-      .attr('fill', '#1f2937')
+      .attr('fill', CHART_COLOR.title)
       .attr('font-size', CHART_FONT.series)
       .attr('opacity', 0)
       .text((d) => d.label)
@@ -1555,7 +1690,7 @@ export class ChartLayer {
         .attr('x', labelPositions[idx])
         .attr('y', fixedLabelY)
         .attr('text-anchor', 'middle')
-        .attr('fill', '#1f2937')
+        .attr('fill', CHART_COLOR.title)
         .attr('font-size', CHART_FONT.series)
         .attr('font-weight', 700)
         .attr('opacity', 0)
@@ -1576,7 +1711,7 @@ export class ChartLayer {
           .attr('x', interLayout.text.x)
           .attr('y', interLayout.text.y + yOffset)
           .attr('text-anchor', 'middle')
-          .attr('fill', '#1f2937')
+          .attr('fill', CHART_COLOR.title)
           .attr('font-size', CHART_FONT.series * inverseScale)
           .attr('font-weight', 700)
           .attr('opacity', 0)
@@ -1698,7 +1833,7 @@ export class ChartLayer {
       valueLabelGroup.selectAll('.venn-value-annotations .annotation .note .note-line')
         .attr('stroke', ANNOTATION_DEFAULTS.color);
       valueLabelGroup.selectAll('.venn-value-annotations .annotation text')
-        .attr('fill', '#1f2937')
+        .attr('fill', CHART_COLOR.annotationText)
         .attr('font-size', CHART_FONT.annotation)
         .attr('font-weight', 700);
 
@@ -1809,7 +1944,7 @@ export class ChartLayer {
           .attr('y1', y(rank))
           .attr('x2', plotWidth)
           .attr('y2', y(rank))
-          .attr('stroke', '#d1d5db')
+          .attr('stroke', CHART_COLOR.axisLine)
           .attr('stroke-opacity', 0.15)
           .attr('stroke-dasharray', '2 4');
       }
@@ -1817,8 +1952,8 @@ export class ChartLayer {
 
     // X軸
     const xAxis = d3.axisBottom(x).tickFormat(d3.format('d'));
-    const styleAxisText = (g) => g.selectAll('text').attr('fill', '#4b5563').attr('font-size', CHART_FONT.axis);
-    const styleAxisLines = (g) => g.selectAll('line,path').attr('stroke', '#d1d5db').attr('opacity', 0.5);
+    const styleAxisText = (g) => g.selectAll('text').attr('fill', CHART_COLOR.axisText).attr('font-size', CHART_FONT.axis);
+    const styleAxisLines = (g) => g.selectAll('line,path').attr('stroke', CHART_COLOR.axisLine).attr('opacity', 0.5);
 
     plotGroup
       .append('g')
@@ -1997,7 +2132,7 @@ export class ChartLayer {
 
       tooltipGroup.append('text')
         .attr('x', px).attr('y', plotHeight + 16)
-        .attr('text-anchor', 'middle').attr('fill', '#4b5563').attr('font-size', CHART_FONT.tooltip)
+        .attr('text-anchor', 'middle').attr('fill', CHART_COLOR.axisText).attr('font-size', CHART_FONT.tooltip)
         .text(nearest);
     });
 
@@ -2018,14 +2153,14 @@ export class ChartLayer {
       .attr('rx', 10)
       .attr('fill', '#f3f4f6')
       .attr('fill-opacity', 0.7)
-      .attr('stroke', '#d1d5db')
+      .attr('stroke', CHART_COLOR.axisLine)
       .attr('stroke-opacity', 0.5);
 
     g.append('text')
       .attr('x', panel.width / 2)
       .attr('y', panel.height / 2)
       .attr('text-anchor', 'middle')
-      .attr('fill', '#374151')
+      .attr('fill', CHART_COLOR.axisText)
       .attr('font-size', 12)
       .text(message);
   }
@@ -2041,7 +2176,7 @@ export class ChartLayer {
       .attr('rx', 8)
       .attr('fill', '#f3f4f6')
       .attr('fill-opacity', 0.2)
-      .attr('stroke', '#d1d5db')
+      .attr('stroke', CHART_COLOR.axisLine)
       .attr('stroke-dasharray', '4 4')
       .attr('stroke-opacity', 0.35);
   }
@@ -2074,7 +2209,7 @@ export class ChartLayer {
       .attr('rx', 10)
       .attr('fill', '#f3f4f6')
       .attr('fill-opacity', 0.63)
-      .attr('stroke', '#d1d5db')
+      .attr('stroke', CHART_COLOR.axisLine)
       .attr('stroke-opacity', 0.35);
 
     if (title) {
@@ -2083,7 +2218,7 @@ export class ChartLayer {
         .attr('x', innerPad)
         .attr('y', innerPad + 3)
         .attr('dominant-baseline', 'hanging')
-        .attr('fill', '#111827')
+        .attr('fill', CHART_COLOR.title)
         .attr('font-size', compact ? 12 : 14)
         .attr('font-weight', 600)
         .text(title);
@@ -2239,15 +2374,15 @@ export class ChartLayer {
       .attr('transform', `translate(0, ${plotHeight})`)
       .call(xAxis)
       .selectAll('text')
-      .attr('fill', '#4b5563')
+      .attr('fill', CHART_COLOR.axisText)
       .attr('font-size', CHART_FONT.axis);
     plotGroup
       .select('.domain')
-      .attr('stroke', '#d1d5db')
+      .attr('stroke', CHART_COLOR.axisLine)
       .attr('opacity', 0.5);
     plotGroup
       .selectAll('.tick line')
-      .attr('stroke', '#d1d5db')
+      .attr('stroke', CHART_COLOR.axisLine)
       .attr('opacity', 0.5);
 
     // カラーパレット

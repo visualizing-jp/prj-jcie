@@ -941,6 +941,18 @@
               ]
             }
           }
+        ],
+        "dualAnnotations": [
+          {
+            "type": "horizontalLine",
+            "value": 120000,
+            "label": ""
+          },
+          {
+            "type": "horizontalLine",
+            "value": 36000,
+            "label": ""
+          }
         ]
       },
       "source": {
