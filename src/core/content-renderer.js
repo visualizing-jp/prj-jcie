@@ -91,7 +91,7 @@ export class ContentRenderer {
       const style = h2.getAttribute('style') || '';
 
       // テキストを句読点・改行で自然に分割、短い場合はそのまま1行
-      const segments = text.length > 12
+      const segments = text.length > 20
         ? this.splitIntoLines(text)
         : [text];
 

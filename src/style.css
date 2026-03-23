@@ -232,7 +232,7 @@ button:focus:not(:focus-visible) {
 .step .text-card h2 {
   margin: 0 0 0.75rem;
   font-family: var(--font-mincho);
-  font-size: clamp(1.5rem, 1.25rem + 1.1vw, 2rem);
+  font-size: clamp(1.22rem, 1.18rem + 0.25vw, 1.35rem);
   line-height: 1.45;
   font-weight: 700;
   letter-spacing: 0.01em;

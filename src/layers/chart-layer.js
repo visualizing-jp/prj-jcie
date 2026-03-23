@@ -644,10 +644,10 @@ export class ChartLayer {
 
     seriesData.forEach((series, si) => {
       const isHighlighted = !hasHighlight || highlightSet.has(series.name);
-      const strokeWidth = isHighlighted ? 4.4 : 1.2;
+      const strokeWidth = hasHighlight ? (isHighlighted ? 4.4 : 1.2) : 2;
       const strokeOpacity = isHighlighted ? 1 : 0.3;
       const pointRadius = isHighlighted ? 2.8 : 1.5;
-      const areaOpacity = isHighlighted ? 0.18 : 0.04;
+      const areaOpacity = hasHighlight ? (isHighlighted ? 0.18 : 0.04) : 0.12;
 
       // Area fill (multi-series)
       let seriesArea = null;
@@ -855,7 +855,7 @@ export class ChartLayer {
     if (!Array.isArray(seriesData) || seriesData.length === 0) return;
 
     const labelX = plotWidth + 10;
-    const minGap = 12;
+    const minGap = Math.ceil(CHART_FONT.series * 1.6);
     const minY = 8;
     const maxY = Math.max(minY, plotHeight - 8);
 
@@ -2660,9 +2660,9 @@ export class ChartLayer {
   }
 
   resolveLineLabelGutter(width) {
-    if (width < 280) return 70;
-    if (width < 420) return 96;
-    return 130;
+    if (width < 280) return 90;
+    if (width < 420) return 130;
+    return 210;
   }
 
   resolveYAxisLabelGutter(rows, yField) {
