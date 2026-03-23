@@ -121,7 +121,8 @@ button:focus:not(:focus-visible) {
 
 /* Step */
 .step {
-  min-height: 150vh;
+  min-height: 100vh;
+  margin-bottom: 50vh;
   display: flex;
   align-items: center;
   justify-content: center;
