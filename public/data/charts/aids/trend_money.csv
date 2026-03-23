@@ -1,97 +1,103 @@
-year,series,value
-2000,Other International,517889110
-2001,Other International,604212300
-2002,Other International,781999598.9
-2003,Other International,1080404665
-2004,Other International,1305049092
-2005,Other International,1801040550
-2006,Other International,1932533907
-2007,Other International,1937326721
-2008,Other International,3571360920
-2009,Other International,3416074113
-2010,Other International,2953688813
-2011,Other International,2944762651
-2012,Other International,2997922872
-2013,Other International,2787047449
-2014,Other International,2560665120
-2015,Other International,2168990291
-2016,Other International,1968600000
-2017,Other International,1822420000
-2018,Other International,1688966213
-2019,Other International,1460624933
-2020,Other International,1348000000
-2021,Other International,1270250000
-2022,Other International,1117560000
-2023,Other International,1154000000
-2000,Global Fund,0
-2001,Global Fund,0
-2002,Global Fund,442572.89
-2003,Global Fund,123515554.8
-2004,Global Fund,367604314.3
-2005,Global Fund,593121870.2
-2006,Global Fund,709942702.2
-2007,Global Fund,1092973887
-2008,Global Fund,1493790000
-2009,Global Fund,1442280000
-2010,Global Fund,1607848319
-2011,Global Fund,1493878602
-2012,Global Fund,1787902516
-2013,Global Fund,2130434747
-2014,Global Fund,1524696000
-2015,Global Fund,1769883600
-2016,Global Fund,1863540000
-2017,Global Fund,2055000000
-2018,Global Fund,1649486000
-2019,Global Fund,1780000000
-2020,Global Fund,2077000000
-2021,Global Fund,2485000000
-2022,Global Fund,2360000000
-2023,Global Fund,2230000000
-2000,United States Bilateral,500000000
-2001,United States Bilateral,618120000
-2002,United States Bilateral,675057118.1
-2003,United States Bilateral,1038642012
-2004,United States Bilateral,1093001010
-2005,United States Bilateral,1803289640
-2006,United States Bilateral,2382208093
-2007,United States Bilateral,2902611600
-2008,United States Bilateral,3741094035
-2009,United States Bilateral,4242033936
-2010,United States Bilateral,3546847432
-2011,United States Bilateral,4299548457
-2012,United States Bilateral,4625573275
-2013,United States Bilateral,5025680291
-2014,United States Bilateral,4927137540
-2015,United States Bilateral,4451494200
-2016,United States Bilateral,4464030000
-2017,United States Bilateral,5343400000
-2018,United States Bilateral,5290000000
-2019,United States Bilateral,5094000000
-2020,United States Bilateral,5027220000
-2021,United States Bilateral,4817120000
-2022,United States Bilateral,4836000000
-2023,United States Bilateral,4660000000
-2000,Domestic Public Private,4068383855
-2001,Domestic Public Private,3810350925
-2002,Domestic Public Private,3893839523
-2003,Domestic Public Private,4338087188
-2004,Domestic Public Private,4820425237
-2005,Domestic Public Private,5100933979
-2006,Domestic Public Private,5632826170
-2007,Domestic Public Private,6745037734
-2008,Domestic Public Private,7681515529
-2009,Domestic Public Private,7464968701
-2010,Domestic Public Private,8584197761
-2011,Domestic Public Private,10282064134
-2012,Domestic Public Private,10969512611
-2013,Domestic Public Private,11319196374
-2014,Domestic Public Private,12067395711
-2015,Domestic Public Private,12708670925
-2016,Domestic Public Private,12736638947
-2017,Domestic Public Private,13705575779
-2018,Domestic Public Private,13343007006
-2019,Domestic Public Private,13298350195
-2020,Domestic Public Private,13068000000
-2021,Domestic Public Private,12810000000
-2022,Domestic Public Private,12514000000
-2023,Domestic Public Private,11785000000
+year,series,value,projected
+2000,Other International,517889110,false
+2001,Other International,604212300,false
+2002,Other International,781999598.9,false
+2003,Other International,1080404665,false
+2004,Other International,1305049092,false
+2005,Other International,1801040550,false
+2006,Other International,1932533907,false
+2007,Other International,1937326721,false
+2008,Other International,3571360920,false
+2009,Other International,3416074113,false
+2010,Other International,2953688813,false
+2011,Other International,2944762651,false
+2012,Other International,2997922872,false
+2013,Other International,2787047449,false
+2014,Other International,2560665120,false
+2015,Other International,2168990291,false
+2016,Other International,1968600000,false
+2017,Other International,1822420000,false
+2018,Other International,1688966213,false
+2019,Other International,1460624933,false
+2020,Other International,1348000000,false
+2021,Other International,1270250000,false
+2022,Other International,1117560000,false
+2023,Other International,1154000000,false
+2000,Global Fund,0,false
+2001,Global Fund,0,false
+2002,Global Fund,442572.89,false
+2003,Global Fund,123515554.8,false
+2004,Global Fund,367604314.3,false
+2005,Global Fund,593121870.2,false
+2006,Global Fund,709942702.2,false
+2007,Global Fund,1092973887,false
+2008,Global Fund,1493790000,false
+2009,Global Fund,1442280000,false
+2010,Global Fund,1607848319,false
+2011,Global Fund,1493878602,false
+2012,Global Fund,1787902516,false
+2013,Global Fund,2130434747,false
+2014,Global Fund,1524696000,false
+2015,Global Fund,1769883600,false
+2016,Global Fund,1863540000,false
+2017,Global Fund,2055000000,false
+2018,Global Fund,1649486000,false
+2019,Global Fund,1780000000,false
+2020,Global Fund,2077000000,false
+2021,Global Fund,2485000000,false
+2022,Global Fund,2360000000,false
+2023,Global Fund,2230000000,false
+2024,Global Fund,1950000000,true
+2025,Global Fund,1700000000,true
+2026,Global Fund,1500000000,true
+2000,United States Bilateral,500000000,false
+2001,United States Bilateral,618120000,false
+2002,United States Bilateral,675057118.1,false
+2003,United States Bilateral,1038642012,false
+2004,United States Bilateral,1093001010,false
+2005,United States Bilateral,1803289640,false
+2006,United States Bilateral,2382208093,false
+2007,United States Bilateral,2902611600,false
+2008,United States Bilateral,3741094035,false
+2009,United States Bilateral,4242033936,false
+2010,United States Bilateral,3546847432,false
+2011,United States Bilateral,4299548457,false
+2012,United States Bilateral,4625573275,false
+2013,United States Bilateral,5025680291,false
+2014,United States Bilateral,4927137540,false
+2015,United States Bilateral,4451494200,false
+2016,United States Bilateral,4464030000,false
+2017,United States Bilateral,5343400000,false
+2018,United States Bilateral,5290000000,false
+2019,United States Bilateral,5094000000,false
+2020,United States Bilateral,5027220000,false
+2021,United States Bilateral,4817120000,false
+2022,United States Bilateral,4836000000,false
+2023,United States Bilateral,4660000000,false
+2024,United States Bilateral,3700000000,true
+2025,United States Bilateral,2800000000,true
+2026,United States Bilateral,2000000000,true
+2000,Domestic Public Private,4068383855,false
+2001,Domestic Public Private,3810350925,false
+2002,Domestic Public Private,3893839523,false
+2003,Domestic Public Private,4338087188,false
+2004,Domestic Public Private,4820425237,false
+2005,Domestic Public Private,5100933979,false
+2006,Domestic Public Private,5632826170,false
+2007,Domestic Public Private,6745037734,false
+2008,Domestic Public Private,7681515529,false
+2009,Domestic Public Private,7464968701,false
+2010,Domestic Public Private,8584197761,false
+2011,Domestic Public Private,10282064134,false
+2012,Domestic Public Private,10969512611,false
+2013,Domestic Public Private,11319196374,false
+2014,Domestic Public Private,12067395711,false
+2015,Domestic Public Private,12708670925,false
+2016,Domestic Public Private,12736638947,false
+2017,Domestic Public Private,13705575779,false
+2018,Domestic Public Private,13343007006,false
+2019,Domestic Public Private,13298350195,false
+2020,Domestic Public Private,13068000000,false
+2021,Domestic Public Private,12810000000,false
+2022,Domestic Public Private,12514000000,false
+2023,Domestic Public Private,11785000000,false

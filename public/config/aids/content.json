@@ -1045,6 +1045,7 @@
               "xField": "year",
               "yField": "value",
               "seriesField": "series",
+              "projectionField": "projected",
               "title": "エイズ対策資金の推移（資金源別）",
               "yDomain": [
                 0,

@@ -639,8 +639,10 @@ export class ChartLayer {
 
     const seriesGroup = plotGroup.append('g').attr('class', 'line-series');
     const pathNodes = [];
+    const projPathNodes = [];
     const pointNodes = [];
     const areaNodes = [];
+    const projectionField = config.projectionField || null;
 
     seriesData.forEach((series, si) => {
       const isHighlighted = !hasHighlight || highlightSet.has(series.name);
@@ -648,6 +650,10 @@ export class ChartLayer {
       const strokeOpacity = isHighlighted ? 1 : 0.3;
       const pointRadius = isHighlighted ? 2.8 : 1.5;
       const areaOpacity = hasHighlight ? (isHighlighted ? 0.18 : 0.04) : 0.12;
+
+      const split = this.splitProjection(series.values, projectionField);
+      const actualValues = split.actual.length > 0 ? split.actual : series.values;
+      const hasProjected = split.projected.length > 0;
 
       // Area fill (multi-series)
       let seriesArea = null;
@@ -672,16 +678,17 @@ export class ChartLayer {
 
         seriesArea = seriesGroup
           .append('path')
-          .datum(series.values)
+          .datum(hasProjected ? actualValues : series.values)
           .attr('fill', `url(#${gradId})`)
           .attr('opacity', 0)
           .attr('d', areaGen);
       }
       areaNodes.push(seriesArea);
 
+      // 実績線（actual）
       const path = seriesGroup
         .append('path')
-        .datum(series.values)
+        .datum(hasProjected ? actualValues : series.values)
         .attr('fill', 'none')
         .attr('stroke', color(series.name))
         .attr('stroke-width', strokeWidth)
@@ -689,6 +696,21 @@ export class ChartLayer {
         .attr('d', line);
 
       pathNodes.push(path);
+
+      // 予測線（projected） — 破線で描画
+      let projPath = null;
+      if (hasProjected) {
+        projPath = seriesGroup
+          .append('path')
+          .datum(split.projected)
+          .attr('fill', 'none')
+          .attr('stroke', color(series.name))
+          .attr('stroke-width', strokeWidth)
+          .attr('stroke-opacity', strokeOpacity)
+          .attr('stroke-dasharray', '6 4')
+          .attr('d', line);
+      }
+      projPathNodes.push(projPath);
 
       const points = seriesGroup
         .selectAll(`.point-${this.toSafeCssToken(series.name)}`)
@@ -737,6 +759,9 @@ export class ChartLayer {
           }
         });
       });
+      projPathNodes.forEach((pp) => {
+        if (pp) pp.transition(transition).attr('d', line);
+      });
       areaNodes.forEach((ap) => {
         if (ap) ap.transition(transition).attr('d', areaGen).attr('opacity', 1);
       });
@@ -757,6 +782,9 @@ export class ChartLayer {
           .duration(700)
           .ease(d3.easeCubicOut)
           .attr('stroke-dashoffset', 0);
+      });
+      projPathNodes.forEach((pp) => {
+        if (pp) pp.attr('opacity', 0).transition().delay(500).duration(400).ease(d3.easeCubicOut).attr('opacity', 1);
       });
       areaNodes.forEach((ap) => {
         if (ap) ap.transition().duration(700).ease(d3.easeCubicOut).attr('opacity', 1);
@@ -2657,6 +2685,19 @@ export class ChartLayer {
 
   toSafeCssToken(value) {
     return String(value).replaceAll(/[^a-zA-Z0-9_-]/g, '-');
+  }
+
+  splitProjection(values, projectionField) {
+    if (!projectionField) return { actual: values, projected: [], boundary: null };
+    const firstProjIdx = values.findIndex((d) => !!d[projectionField]);
+    if (firstProjIdx < 0) return { actual: values, projected: [], boundary: null };
+    if (firstProjIdx === 0) return { actual: [], projected: values, boundary: null };
+    const boundary = values[firstProjIdx - 1];
+    return {
+      actual: values.slice(0, firstProjIdx),
+      projected: [boundary, ...values.slice(firstProjIdx)],
+      boundary,
+    };
   }
 
   resolveLineLabelGutter(width) {
