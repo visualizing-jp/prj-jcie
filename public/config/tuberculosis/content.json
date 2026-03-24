@@ -105,7 +105,7 @@
         "content": "<h2>日本における結核との闘い</h2><p>日本では1935年から1950年までの15年間、結核が死因の第1位でした。</p>",
         "visible": true,
         "position": {
-          "horizontal": "left",
+          "horizontal": "right",
           "vertical": "center",
           "width": "20%"
         }
@@ -177,7 +177,7 @@
         "content": "<h2>日本の結核死亡者数の推移</h2><p>さらに、戦後の生活環境の改善や、新しい薬の広まりにより、1948年ごろから結核による死亡者は減、1951年には「新結核予防法」（現在は感染症法に統合）が制定され、結核の治療費を国が負担する仕組みが整えられました。</p>",
         "visible": true,
         "position": {
-          "horizontal": "left",
+          "horizontal": "right",
           "vertical": "center",
           "width": "20%"
         }
@@ -202,12 +202,14 @@
                 {
                   "type": "verticalLine",
                   "year": 1948,
-                  "label": "1948年"
+                  "label": "1948年",
+                  "dy": -20
                 },
                 {
                   "type": "verticalLine",
                   "year": 1951,
-                  "label": "1951年"
+                  "label": "1951年",
+                  "dy": 0
                 }
               ],
               "source": {
@@ -315,13 +317,15 @@
                   "type": "verticalLine",
                   "year": 2020,
                   "label": "2020年",
-                  "dx": -30
+                  "dx": -30,
+                  "dy": 0
                 },
                 {
                   "type": "verticalLine",
                   "year": 2023,
                   "label": "2023年",
-                  "dx": -30
+                  "dx": -30,
+                  "dy": 0
                 }
               ]
             }
@@ -341,7 +345,7 @@
         "content": "<h2>エイズによる死亡の大きな原因の一つ</h2><p>特に、HIVに感染している人は免疫力が落ちているため、結核にかかりやすく、重症化しやすい傾向があります。そのため、結核はエイズによる死亡の大きな原因の一つとなっており、2023年の結核による死亡者の中で、HIV感染者は約16万人を占めています。</p>",
         "visible": true,
         "position": {
-          "horizontal": "left",
+          "horizontal": "right",
           "vertical": "center",
           "width": "20%"
         }
@@ -367,7 +371,8 @@
                   "type": "verticalLine",
                   "year": 2023,
                   "label": "2023年",
-                  "dx": -30
+                  "dx": -30,
+                  "dy": 0
                 }
               ]
             }
@@ -406,7 +411,7 @@
         "content": "<h2>今後の課題</h2><p>結核対策は進んでいる一方で、今も多くの課題が残されています。その一つが「多剤耐性結核（MDR-TB）」です。これは、ふつうの抗結核薬が効かないタイプの結核で、インドネシアやベトナムなどの結核が多い国では特に大きな問題になっています。2022年には、世界で約41万人がこのタイプの結核を発症しましたが、適切な治療を受けられた人は全体の約4割にとどまっています。</p>",
         "visible": true,
         "position": {
-          "horizontal": "left",
+          "horizontal": "right",
           "vertical": "center",
           "width": "20%"
         }
@@ -426,6 +431,7 @@
             "config": {
               "xField": "year",
               "yField": "value",
+              "yDomain": [0, 1100000],
               "title": "インドネシアの結核患者数の推移"
             }
           },
@@ -437,6 +443,7 @@
             "config": {
               "xField": "year",
               "yField": "value",
+              "yDomain": [0, 1100000],
               "title": "ベトナムの結核患者数の推移"
             }
           }
