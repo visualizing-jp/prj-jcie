@@ -755,7 +755,7 @@ export class ChartLayer {
         path.transition(transition).attr('d', line).on('end', () => {
           if (index === 0) {
             this.renderLineAnnotations(plotGroup, x, y, plotWidth, plotHeight, config.annotations);
-            this.drawLineEndLabels(plotGroup, seriesData, color, x, y, plotWidth, plotHeight, xField, yField);
+            this.drawLineEndLabels(plotGroup, seriesData, color, x, y, plotWidth, plotHeight, xField, yField, config);
           }
         });
       });
@@ -789,7 +789,7 @@ export class ChartLayer {
       areaNodes.forEach((ap) => {
         if (ap) ap.transition().duration(700).ease(d3.easeCubicOut).attr('opacity', 1);
       });
-      this.drawLineEndLabels(plotGroup, seriesData, color, x, y, plotWidth, plotHeight, xField, yField);
+      this.drawLineEndLabels(plotGroup, seriesData, color, x, y, plotWidth, plotHeight, xField, yField, config);
     }
 
     // ツールチップ（複数系列）
@@ -879,7 +879,7 @@ export class ChartLayer {
     });
   }
 
-  drawLineEndLabels(group, seriesData, color, xScale, yScale, plotWidth, plotHeight, xField, yField) {
+  drawLineEndLabels(group, seriesData, color, xScale, yScale, plotWidth, plotHeight, xField, yField, config = {}) {
     if (!Array.isArray(seriesData) || seriesData.length === 0) return;
 
     const labelX = plotWidth + 10;
@@ -934,10 +934,11 @@ export class ChartLayer {
     }
 
     const layer = group.append('g').attr('class', 'line-end-labels');
+    const textOnlySet = new Set(config.textOnlyLabels || []);
 
     layer
       .selectAll('line')
-      .data(labelNodes)
+      .data(labelNodes.filter((d) => !textOnlySet.has(d.name)))
       .enter()
       .append('line')
       .attr('x1', (d) => d.xEnd + 2)

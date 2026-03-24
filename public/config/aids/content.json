@@ -1047,6 +1047,7 @@
               "seriesField": "series",
               "projectionField": "projected",
               "title": "エイズ対策資金の推移（資金源別）",
+              "textOnlyLabels": ["Domestic Public Private", "Other International"],
               "yDomain": [
                 0,
                 35000000000
@@ -1054,8 +1055,21 @@
               "annotations": [
                 {
                   "type": "horizontalLine",
+                  "id": "required-funding",
                   "value": 29300000000,
                   "label": "エイズの終結に向けた軌道に乗せるために必要とされる資金"
+                },
+                {
+                  "type": "horizontalLine",
+                  "id": "global-fund-latest",
+                  "value": 2230000000,
+                  "label": "Global Fund（2023年）"
+                },
+                {
+                  "type": "arrow",
+                  "from": "global-fund-latest",
+                  "to": "required-funding",
+                  "label": "約271億ドルの差"
                 }
               ]
             }
