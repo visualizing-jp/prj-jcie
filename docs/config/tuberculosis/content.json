@@ -202,12 +202,14 @@
                 {
                   "type": "verticalLine",
                   "year": 1948,
-                  "label": "1948年"
+                  "label": "1948年",
+                  "dy": -20
                 },
                 {
                   "type": "verticalLine",
                   "year": 1951,
-                  "label": "1951年"
+                  "label": "1951年",
+                  "dy": 0
                 }
               ],
               "source": {
@@ -315,13 +317,15 @@
                   "type": "verticalLine",
                   "year": 2020,
                   "label": "2020年",
-                  "dx": -30
+                  "dx": -30,
+                  "dy": 0
                 },
                 {
                   "type": "verticalLine",
                   "year": 2023,
                   "label": "2023年",
-                  "dx": -30
+                  "dx": -30,
+                  "dy": 0
                 }
               ]
             }
@@ -367,7 +371,8 @@
                   "type": "verticalLine",
                   "year": 2023,
                   "label": "2023年",
-                  "dx": -30
+                  "dx": -30,
+                  "dy": 0
                 }
               ]
             }
