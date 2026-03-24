@@ -11,6 +11,8 @@ const MAX_HEADER_SAFE = 130;
 
 // チャート内テキストサイズ一括定義
 const CHART_FONT = {
+  title: 20,       // チャートタイトル（h2相当）
+  titleCompact: 16, // チャートタイトル（compact時）
   axis: 14,        // 軸ラベル（目盛り数値）
   series: 14,      // 系列名（末端ラベル・凡例）
   annotation: 14,  // アノテーション
@@ -126,7 +128,7 @@ export class ChartLayer {
 
     if (config.layout === 'dual') {
       const dualTitle = config.dualTitle || null;
-      const dualTitleH = dualTitle ? 32 : 0;
+      const dualTitleH = dualTitle ? CHART_FONT.title + 12 : 0;
       if (dualTitle && this.root) {
         this.root
           .append('text')
@@ -134,7 +136,7 @@ export class ChartLayer {
           .attr('y', bounds.top + 20)
           .attr('text-anchor', 'middle')
           .attr('fill', CHART_COLOR.title)
-          .attr('font-size', 16)
+          .attr('font-size', CHART_FONT.title)
           .attr('font-weight', 700)
           .text(dualTitle);
       }
@@ -225,7 +227,7 @@ export class ChartLayer {
       : this.makeDefaultRowPattern(grid, charts.length);
     const rowTitles = Array.isArray(grid.rowTitles) ? grid.rowTitles : [];
 
-    const gridTitleH = grid.title ? 32 : 0;
+    const gridTitleH = grid.title ? CHART_FONT.title + 12 : 0;
     if (grid.title && this.root) {
       this.root
         .append('text')
@@ -233,7 +235,7 @@ export class ChartLayer {
         .attr('y', bounds.top + 20)
         .attr('text-anchor', 'middle')
         .attr('fill', CHART_COLOR.title)
-        .attr('font-size', 16)
+        .attr('font-size', CHART_FONT.title)
         .attr('font-weight', 700)
         .text(grid.title);
     }
@@ -451,7 +453,7 @@ export class ChartLayer {
 
     // dualAnnotations 用にプロット情報を記録
     const innerPad = 14;
-    const titleH = title ? 28 : 0;
+    const titleH = title ? CHART_FONT.title + 8 : 0;
     this.panelPlotInfo.push({
       chartId: chartMeta?.id || null,
       plotAbsX: panel.x + innerPad + leftGutter,
@@ -2333,7 +2335,7 @@ export class ChartLayer {
 
   createPanelInner(panel, title = '', options = {}) {
     const compact = options.compact === true;
-    const titleH = title ? (compact ? 20 : 28) : 0;
+    const titleH = title ? (compact ? CHART_FONT.titleCompact + 4 : CHART_FONT.title + 8) : 0;
     const innerPad = compact ? 10 : 14;
 
     const group = this.root
@@ -2369,7 +2371,7 @@ export class ChartLayer {
         .attr('y', innerPad + 3)
         .attr('dominant-baseline', 'hanging')
         .attr('fill', CHART_COLOR.title)
-        .attr('font-size', compact ? 12 : 14)
+        .attr('font-size', compact ? CHART_FONT.titleCompact : CHART_FONT.title)
         .attr('font-weight', 600)
         .text(title);
     }
