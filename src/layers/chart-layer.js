@@ -453,7 +453,7 @@ export class ChartLayer {
 
     // dualAnnotations 用にプロット情報を記録
     const innerPad = 14;
-    const titleH = title ? CHART_FONT.title + 8 : 0;
+    const titleH = title ? CHART_FONT.title + 36 : 0;
     this.panelPlotInfo.push({
       chartId: chartMeta?.id || null,
       plotAbsX: panel.x + innerPad + leftGutter,
@@ -2335,7 +2335,7 @@ export class ChartLayer {
 
   createPanelInner(panel, title = '', options = {}) {
     const compact = options.compact === true;
-    const titleH = title ? (compact ? CHART_FONT.titleCompact + 4 : CHART_FONT.title + 8) : 0;
+    const titleH = title ? (compact ? CHART_FONT.titleCompact + 4 : CHART_FONT.title + 36) : 0;
     const innerPad = compact ? 10 : 14;
 
     const group = this.root
