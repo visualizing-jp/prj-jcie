@@ -1,54 +1,28 @@
-# チャート設定スキーマ案（実装前）
+# チャート設定スキーマ参照
 
-## 1. 目的
-
-- レイアウトとチャート種別を分離し、`content.json` で組み合わせ指定できるようにする。
-- 本段階は設計のみ。実装はまだ行わない。
+本書は、`content.json` 内の `chart` 設定で現在使えるキーを、現行実装に合わせて整理した参照資料である。
 
 ---
 
-## 2. 対応範囲（合意済み）
-
-### レイアウト
-
-- `single`（1つ）
-- `dual`（2つ横並び）
-- `grid`（段組）
-
-### チャート種別
-
-- `line`（折れ線）
-- `sankey`（サンキー）
-- `pie`（円）
-- `venn`（ベン）
-
-### データ形式
-
-- `CSV` / `JSON` の両対応
-- `venn` は 1 ファイル統合を許可
-- `grid` は空白セルを許可
-- `dual` / `grid` はモバイルで強制縦積み
-
----
-
-## 3. `content.json` の基本構造
+## 1. `chart` オブジェクト
 
 ```json
 {
-  "id": "step-id",
-  "text": { "...": "..." },
   "chart": {
     "visible": true,
-    "layout": "single | dual | grid",
-    "position": {
-      "horizontal": "left | center | right",
-      "width": "70%",
-      "height": "100%"
-    },
+    "layout": "single | dual | dual-vertical | grid",
     "responsive": {
       "mobileStack": true
     },
+    "span": {
+      "id": "span-id",
+      "continueFromPrevious": true
+    },
+    "dualTitle": "2面全体タイトル",
+    "dualAnnotations": [],
     "grid": {
+      "title": "grid title",
+      "rowTitles": ["row1", "row2"],
       "columns": 8,
       "rows": 2,
       "rowPattern": [8, 8],
@@ -56,45 +30,82 @@
     },
     "charts": [
       {
-        "id": "chart-1",
-        "type": "line | sankey | pie | venn",
-        "dataFile": "/data/sample.csv",
+        "id": "chart-id",
+        "type": "line | sankey | pie | venn | bump | streamgraph",
+        "dataFile": "/data/charts/example.csv",
         "dataFormat": "auto | csv | json",
         "config": {}
       }
     ]
-  },
-  "map": { "visible": false },
-  "image": { "visible": false }
+  }
 }
 ```
 
+### `chart` 直下のキー
+
+| キー | 型 | 説明 |
+|------|----|------|
+| `visible` | boolean | チャート層を表示するか |
+| `layout` | string | `single` / `dual` / `dual-vertical` / `grid` |
+| `responsive.mobileStack` | boolean | モバイルで `dual` / `grid` を縦積みにするか |
+| `span.id` | string | line 継続アニメーション用の識別子 |
+| `span.continueFromPrevious` | boolean | 直前 step から line を継続アニメーションするか |
+| `dualTitle` | string | `dual` 全体タイトル |
+| `dualAnnotations` | array | `dual` で複数パネルを横断する注釈 |
+| `grid` | object | `grid` レイアウト設定 |
+| `charts` | array | 描画対象チャート配列 |
+
+### `grid` のキー
+
+| キー | 型 | 説明 |
+|------|----|------|
+| `title` | string | grid 全体タイトル |
+| `rowTitles` | string[] | 各行タイトル |
+| `columns` | number | 行パターン生成の参考値 |
+| `rows` | number | 行パターン生成の参考値 |
+| `rowPattern` | number[] | 各行の列数 |
+| `allowEmptyCells` | boolean | 空きセルを許容するか |
+
+### `charts[]` の共通キー
+
+| キー | 型 | 説明 |
+|------|----|------|
+| `id` | string | チャート識別子 |
+| `type` | string | `line` / `sankey` / `pie` / `venn` / `bump` / `streamgraph` |
+| `dataFile` | string | `public` 基準のデータパス |
+| `dataFormat` | string | `auto` / `csv` / `json` |
+| `config` | object | 種別ごとの追加設定 |
+
 ---
 
-## 4. レイアウト仕様
+## 2. レイアウト別の考え方
 
-### 4.1 `single`
+### `single`
 
-- `charts.length = 1` を基本とする。
-- 表示領域は1面。
+- 1面表示
+- `charts[]` が複数でも、実装上は縦積みにできる
 
-### 4.2 `dual`
+### `dual`
 
-- `charts.length = 2` を基本とする。
-- デスクトップ: 2列横並び。
-- モバイル: `mobileStack: true` により強制縦積み（1列）。
+- 2列表示
+- `dualTitle` と `dualAnnotations` が使える
+- モバイルでは既定で縦積み
 
-### 4.3 `grid`
+### `dual-vertical`
 
-- `grid.columns` / `grid.rows` で基本グリッドを定義。
-- 不均等段は `rowPattern` で定義（例: `[4, 3]`）。
-- `allowEmptyCells: true` の場合、セル不足分は空白として描画。
+- 2面の縦積み表示
+- `dualTitle` が使える
+- `dualAnnotations` は横並び `dual` 用として扱う
+
+### `grid`
+
+- `rowPattern` で不均等段を表現できる
+- `allowEmptyCells: true` なら空セルを置ける
+- モバイルでは既定で縦積み
 
 ---
 
-## 5. チャート種別ごとの `config` 最小仕様
-
-### 5.1 `line`
+## 3. `line` の `config`
 
 ```json
 {
@@ -105,50 +116,241 @@
 }
 ```
 
-### 5.2 `sankey`
+### 主なキー
+
+| キー | 型 | 説明 |
+|------|----|------|
+| `title` | string | パネルタイトル |
+| `xField` | string | X軸の列名 |
+| `yField` | string | Y軸の列名 |
+| `seriesField` | string | 系列名の列 |
+| `xDomain` | [number, number] | X軸範囲 |
+| `yDomain` | [number, number] | Y軸範囲 |
+| `highlight` | string or string[] | 強調したい系列 |
+| `projectionField` | string | 予測区間の開始判定列 |
+| `textOnlyLabels` | string[] | 末端ラベルのガイド線を省略する系列 |
+| `gridLines` | boolean | 水平グリッドの表示 |
+| `areaFill` | boolean | 面塗りの有効化 |
+| `annotations` | array | 注釈設定 |
+| `source` | object | 出典 |
+
+### `annotations`
 
 ```json
-{
-  "title": "サンキータイトル",
-  "nodeIdField": "id",
-  "linkSourceField": "source",
-  "linkTargetField": "target",
-  "linkValueField": "value"
+[
+  {
+    "type": "verticalLine",
+    "year": 1995,
+    "label": "ピーク年"
+  },
+  {
+    "type": "horizontalLine",
+    "id": "peak",
+    "value": 35.2,
+    "label": "ピーク値"
+  },
+  {
+    "type": "arrow",
+    "from": "peak",
+    "to": "current",
+    "label": "減少幅"
+  }
+]
+```
+
+対応 `type`:
+
+- `verticalLine`
+- `horizontalLine`
+- `callout`
+- `arrow`
+
+### `span`
+
+```json
+"span": {
+  "id": "aids-new-infections",
+  "continueFromPrevious": true
 }
 ```
 
-- JSON推奨（`nodes` / `links` 構造）。
-- CSVの場合は `source,target,value` 形式を許可。
+`line` のみがこの継続アニメーションの恩恵を受ける。
 
-### 5.3 `pie`
+---
+
+## 4. `pie` の `config`
+
+### 4.1 配列データをそのまま使う場合
 
 ```json
 {
   "labelField": "label",
   "valueField": "value",
-  "showPercentages": true
+  "title": "円グラフ"
 }
 ```
 
-### 5.4 `venn`
+### 4.2 CSV 1行抽出で 2分割円を作る場合
 
 ```json
 {
-  "setField": "set",
-  "valueField": "value",
-  "intersectionField": "intersection",
-  "titleField": "title"
+  "title": "全世界",
+  "rowField": "地域",
+  "rowValue": "全世界",
+  "categoryColumns": ["成人（15歳以上）"],
+  "primaryLabel": "治療中",
+  "primaryColor": "#da3244",
+  "normalizeTo": 100,
+  "remainderLabel": "未治療",
+  "remainderColor": "#999999"
 }
 ```
 
-- 1つのJSONファイル内に複数ベン図データを保持可能。
-- `grid` 配置時はセルごとに対象データキーを指定可能にする（実装時詳細化）。
+### 4.3 `groups` JSON から選ぶ場合
+
+```json
+{
+  "groupId": "group-1"
+}
+```
+
+または
+
+```json
+{
+  "groupIndex": 0
+}
+```
 
 ---
 
-## 6. サンプル
+## 5. `sankey` の `config`
 
-### 6.1 `single` + `line`
+```json
+{
+  "title": "サンキータイトル"
+}
+```
+
+現行実装では、主な調整キーは `title` のみ。
+
+入力データは次のどちらか。
+
+```csv
+source,target,value
+予防,診断,120
+診断,治療,100
+```
+
+```json
+{
+  "nodes": [{ "id": "予防" }, { "id": "診断" }],
+  "links": [{ "source": "予防", "target": "診断", "value": 120 }]
+}
+```
+
+---
+
+## 6. `venn` の `config`
+
+```json
+{
+  "groupId": "world",
+  "colors": {
+    "エイズ": "#da3244",
+    "結核": "#354cf0"
+  },
+  "intersectionColor": "#7a3eca"
+}
+```
+
+### 主なキー
+
+| キー | 型 | 説明 |
+|------|----|------|
+| `title` | string | パネルタイトル |
+| `groupId` | string | `groups` JSON から対象を選ぶ |
+| `groupIndex` | number | `groups` の index 指定 |
+| `colors` | object | 単集合ごとの色上書き |
+| `intersectionColor` | string | 2集合交差部の色 |
+| `intersectionLabel` | string | 交差ラベル |
+| `hideValues` | boolean | 数値注釈を隠す |
+
+### 入力例
+
+```json
+{
+  "groups": [
+    {
+      "id": "world",
+      "sets": [
+        { "sets": ["エイズ"], "size": 100 },
+        { "sets": ["結核"], "size": 80 },
+        { "sets": ["エイズ", "結核"], "size": 20 }
+      ]
+    }
+  ]
+}
+```
+
+`venn` は 2〜3集合のみ対応。
+
+---
+
+## 7. `bump` の `config`
+
+```json
+{
+  "xField": "year",
+  "yField": "rank",
+  "seriesField": "deathby",
+  "title": "順位推移",
+  "maxRank": 5
+}
+```
+
+### 主なキー
+
+- `title`
+- `xField`
+- `yField`
+- `seriesField`
+- `maxRank`
+- `xMin`
+- `xMax`
+- `highlight`
+- `gridLines`
+- `source`
+
+---
+
+## 8. `streamgraph` の `config`
+
+```json
+{
+  "xField": "year",
+  "yField": "value",
+  "seriesField": "series",
+  "title": "Streamgraph"
+}
+```
+
+### 主なキー
+
+- `title`
+- `xField`
+- `yField`
+- `seriesField`
+- `xDomain`
+- `annotations`
+
+現行実装では利用可能だが、現行コンテンツでは未採用。
+
+---
+
+## 9. サンプル
+
+### 9.1 `single + line`
 
 ```json
 {
@@ -158,14 +360,15 @@
     "responsive": { "mobileStack": true },
     "charts": [
       {
-        "id": "trend-main",
+        "id": "line-main",
         "type": "line",
-        "dataFile": "/data/line-trend.csv",
-        "dataFormat": "auto",
+        "dataFile": "/data/charts/aids/trend_new_infections_normalized.csv",
+        "dataFormat": "csv",
         "config": {
           "xField": "year",
           "yField": "value",
-          "title": "感染者数の推移"
+          "seriesField": "series",
+          "title": "新規感染者数の推移"
         }
       }
     ]
@@ -173,98 +376,76 @@
 }
 ```
 
-### 6.2 `dual` + `line`（モバイルは縦積み）
+### 9.2 `dual + line`
 
 ```json
 {
   "chart": {
     "visible": true,
     "layout": "dual",
+    "dualTitle": "アフリカにおける新規感染者数の推移",
     "responsive": { "mobileStack": true },
     "charts": [
       {
-        "id": "trend-female",
+        "id": "line-dual-a",
         "type": "line",
-        "dataFile": "/data/line-female.csv",
-        "config": { "xField": "year", "yField": "value", "title": "女性" }
+        "dataFile": "/data/charts/aids/trend_africa_young_man_normalized.csv",
+        "dataFormat": "csv",
+        "config": {
+          "xField": "year",
+          "yField": "value",
+          "title": "若年男性（15-24歳）"
+        }
       },
       {
-        "id": "trend-male",
+        "id": "line-dual-b",
         "type": "line",
-        "dataFile": "/data/line-male.csv",
-        "config": { "xField": "year", "yField": "value", "title": "男性" }
+        "dataFile": "/data/charts/aids/trend_africa_young_woman_normalized.csv",
+        "dataFormat": "csv",
+        "config": {
+          "xField": "year",
+          "yField": "value",
+          "title": "若年女性（15-24歳）"
+        }
       }
+    ],
+    "dualAnnotations": [
+      { "type": "horizontalLine", "value": 120000, "label": "" }
     ]
   }
 }
 ```
 
-### 6.3 `grid` + `pie`（8x2）
+### 9.3 `dual-vertical + line`
 
 ```json
 {
   "chart": {
     "visible": true,
-    "layout": "grid",
+    "layout": "dual-vertical",
+    "dualTitle": "上下2面の比較",
     "responsive": { "mobileStack": true },
-    "grid": {
-      "columns": 8,
-      "rows": 2,
-      "rowPattern": [8, 8],
-      "allowEmptyCells": true
-    },
-    "charts": [
-      { "id": "p1", "type": "pie", "dataFile": "/data/pie-grid.csv", "config": { "labelField": "label", "valueField": "value" } }
-    ]
-  }
-}
-```
-
-### 6.4 `grid` + `pie`（6x2）
-
-```json
-{
-  "chart": {
-    "visible": true,
-    "layout": "grid",
-    "responsive": { "mobileStack": true },
-    "grid": {
-      "columns": 6,
-      "rows": 2,
-      "rowPattern": [6, 6],
-      "allowEmptyCells": true
-    },
-    "charts": [
-      { "id": "p1", "type": "pie", "dataFile": "/data/pie-grid-6x2.csv", "config": { "labelField": "label", "valueField": "value" } }
-    ]
-  }
-}
-```
-
-### 6.5 `grid` + `venn`（4+3、1ファイル統合）
-
-```json
-{
-  "chart": {
-    "visible": true,
-    "layout": "grid",
-    "responsive": { "mobileStack": true },
-    "grid": {
-      "columns": 4,
-      "rows": 2,
-      "rowPattern": [4, 3],
-      "allowEmptyCells": true
-    },
     "charts": [
       {
-        "id": "venn-group",
-        "type": "venn",
-        "dataFile": "/data/venn-unified.json",
-        "dataFormat": "json",
+        "id": "line-top",
+        "type": "line",
+        "dataFile": "/data/charts/tuberculosis/tb_infections_trend.csv",
+        "dataFormat": "csv",
         "config": {
-          "setField": "set",
-          "valueField": "value",
-          "intersectionField": "intersection"
+          "xField": "year",
+          "yField": "value",
+          "title": "感染者数"
+        }
+      },
+      {
+        "id": "line-bottom",
+        "type": "line",
+        "dataFile": "/data/charts/tuberculosis/tb_deaths_trend.csv",
+        "dataFormat": "csv",
+        "config": {
+          "xField": "year",
+          "yField": "value",
+          "title": "死亡者数"
         }
       }
     ]
@@ -272,20 +453,66 @@
 }
 ```
 
----
+### 9.4 `grid + pie`
 
-## 7. バリデーション方針（実装時）
+```json
+{
+  "chart": {
+    "visible": true,
+    "layout": "grid",
+    "responsive": { "mobileStack": true },
+    "grid": {
+      "title": "地域別HIV治療カバレッジ",
+      "rowTitles": ["成人（15歳以上）", "こども（0歳から14歳）"],
+      "columns": 8,
+      "rows": 2,
+      "rowPattern": [8, 8],
+      "allowEmptyCells": true
+    },
+    "charts": [
+      {
+        "id": "pie-adult-world",
+        "type": "pie",
+        "dataFile": "/data/charts/aids/regional_hiv_coverage.csv",
+        "dataFormat": "csv",
+        "config": {
+          "title": "全世界",
+          "rowField": "地域",
+          "rowValue": "全世界",
+          "categoryColumns": ["成人（15歳以上）"],
+          "primaryLabel": "治療中",
+          "normalizeTo": 100,
+          "remainderLabel": "未治療"
+        }
+      }
+    ]
+  }
+}
+```
 
-- `layout=single` で `charts.length > 1` は警告。
-- `layout=dual` で `charts.length !== 2` は警告。
-- `layout=grid` で `grid` 未指定はエラー。
-- `dataFile` 未指定はエラー。
-- `responsive.mobileStack` は `dual` / `grid` で `true` を推奨（既定値 `true`）。
+### 9.5 `single + bump`
 
----
-
-## 8. 次フェーズ（実装前提）
-
-1. `_temp` の JSON サンプルを読み、`sankey` / `venn` の実データ構造を確定する。  
-2. `ChartLayer` を「レイアウト管理」と「レンダラー分離」に再編する。  
-3. `single` → `dual` → `grid` の順で段階導入し、逆スクロール時の状態復元を検証する。  
+```json
+{
+  "chart": {
+    "visible": true,
+    "layout": "single",
+    "charts": [
+      {
+        "id": "bump-tb-ranking",
+        "type": "bump",
+        "dataFile": "/data/charts/tuberculosis/death-ranking.csv",
+        "dataFormat": "csv",
+        "config": {
+          "xField": "year",
+          "yField": "rank",
+          "seriesField": "deathby",
+          "title": "日本の死因順位の推移",
+          "maxRank": 5,
+          "highlight": "全結核"
+        }
+      }
+    ]
+  }
+}
+```
