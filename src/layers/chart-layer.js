@@ -79,8 +79,12 @@ export class ChartLayer {
 
     await Promise.all(chartJobs);
 
-    // dualAnnotations: 複数パネルを横断するアノテーション
-    if (Array.isArray(chartConfig.dualAnnotations) && chartConfig.dualAnnotations.length > 0) {
+    // dualAnnotations は横並び dual レイアウト専用
+    if (
+      normalized.layout === 'dual' &&
+      Array.isArray(chartConfig.dualAnnotations) &&
+      chartConfig.dualAnnotations.length > 0
+    ) {
       this.renderDualAnnotations(chartConfig.dualAnnotations);
     }
   }
@@ -126,23 +130,11 @@ export class ChartLayer {
       return this.buildStackedPanels(charts, bounds);
     }
 
-    if (config.layout === 'dual') {
-      const dualTitle = config.dualTitle || null;
-      const dualTitleH = dualTitle ? CHART_FONT.title + 12 : 0;
-      if (dualTitle && this.root) {
-        this.root
-          .append('text')
-          .attr('x', bounds.left + (bounds.right - bounds.left) / 2)
-          .attr('y', bounds.top + 20)
-          .attr('text-anchor', 'middle')
-          .attr('fill', CHART_COLOR.title)
-          .attr('font-size', CHART_FONT.title)
-          .attr('font-weight', 700)
-          .text(dualTitle);
+    if (config.layout === 'dual' || config.layout === 'dual-vertical') {
+      const adjustedBounds = this.applyDualTitle(bounds, config.dualTitle || null);
+      if (config.layout === 'dual-vertical') {
+        return this.buildStackedPanels(charts, adjustedBounds);
       }
-      const adjustedBounds = dualTitleH
-        ? { ...bounds, top: bounds.top + dualTitleH }
-        : bounds;
       return this.buildDualPanels(charts, adjustedBounds);
     }
 
@@ -151,6 +143,25 @@ export class ChartLayer {
     }
 
     return this.buildStackedPanels(charts, bounds);
+  }
+
+  applyDualTitle(bounds, dualTitle) {
+    const dualTitleH = dualTitle ? CHART_FONT.title + 12 : 0;
+    if (dualTitle && this.root) {
+      this.root
+        .append('text')
+        .attr('x', bounds.left + (bounds.right - bounds.left) / 2)
+        .attr('y', bounds.top + 20)
+        .attr('text-anchor', 'middle')
+        .attr('fill', CHART_COLOR.title)
+        .attr('font-size', CHART_FONT.title)
+        .attr('font-weight', 700)
+        .text(dualTitle);
+    }
+
+    return dualTitleH
+      ? { ...bounds, top: bounds.top + dualTitleH }
+      : bounds;
   }
 
   getPlotBounds() {
