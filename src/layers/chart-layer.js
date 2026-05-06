@@ -395,7 +395,8 @@ export class ChartLayer {
     const xField = config.xField || 'year';
     const yField = config.yField || 'value';
     const seriesField = config.seriesField || 'series';
-    const baseRows = dataset.filter((d) => Number.isFinite(Number(d[xField])) && (Number.isFinite(Number(d[yField])) || d[yField] == null || String(d[yField]).trim() === '' || String(d[yField]).trim() === '―'));
+    const filteredDataset = this.filterLineSeries(dataset, config.seriesFilter, seriesField);
+    const baseRows = filteredDataset.filter((d) => Number.isFinite(Number(d[xField])) && (Number.isFinite(Number(d[yField])) || d[yField] == null || String(d[yField]).trim() === '' || String(d[yField]).trim() === '―'));
     if (baseRows.length === 0) {
       this.renderUnsupported(panel, 'lineデータが空です');
       return;
@@ -426,7 +427,8 @@ export class ChartLayer {
     const configYDomain = Array.isArray(config.yDomain) && config.yDomain.length === 2
       ? config.yDomain.map(Number)
       : null;
-    const targetYScale = d3.scaleLinear().domain(configYDomain || [0, yMax * 1.1]).nice();
+    const defaultYDomain = yMax > 0 ? [0, yMax * 1.1] : [0, 1];
+    const targetYScale = d3.scaleLinear().domain(configYDomain || defaultYDomain).nice();
     const targetYDomain = configYDomain || targetYScale.domain();
 
     const spanIdRaw = chartMeta?.span?.id;
@@ -813,6 +815,20 @@ export class ChartLayer {
     }
 
     
+  }
+
+  filterLineSeries(dataset, seriesFilter, seriesField) {
+    if (!seriesFilter) return dataset;
+
+    const allowed = new Set(
+      (Array.isArray(seriesFilter) ? seriesFilter : [seriesFilter])
+        .map((value) => String(value).trim())
+        .filter(Boolean)
+    );
+
+    if (allowed.size === 0) return dataset;
+
+    return dataset.filter((row) => allowed.has(String(row?.[seriesField] ?? '').trim()));
   }
 
   attachLineTooltip(plotGroup, seriesData, xScale, yScale, plotWidth, plotHeight, xField, yField, colorFn) {
