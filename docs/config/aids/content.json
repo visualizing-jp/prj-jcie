@@ -252,12 +252,13 @@
                 {
                   "type": "verticalLine",
                   "year": 1987,
+                  "dy": 60,
                   "label": "1987年：最初の抗HIV薬が誕生"
                 },
                 {
                   "type": "verticalLine",
                   "year": 1995,
-                  "dy": 0,
+                  "dy": 20,
                   "label": "1990年代後半：「多剤併用療法」が導入"
                 }
               ]

@@ -117,13 +117,14 @@
       },
       "chart": {
         "visible": true,
-        "layout": "single",
+        "layout": "dual-vertical",
+        "dualTitle": "世界のマラリア感染者数・死亡者数の推移",
         "responsive": {
           "mobileStack": true
         },
         "charts": [
           {
-            "id": "line-main-1",
+            "id": "line-main-1-cases",
             "type": "line",
             "dataFile": "/data/charts/malariae/trend_world_cases_deaths.csv",
             "dataFormat": "csv",
@@ -131,7 +132,21 @@
               "xField": "year",
               "yField": "value",
               "seriesField": "series",
-              "title": "世界のマラリア感染者数・死亡者数の推移"
+              "seriesFilter": "感染者数",
+              "title": "感染者数"
+            }
+          },
+          {
+            "id": "line-main-1-deaths",
+            "type": "line",
+            "dataFile": "/data/charts/malariae/trend_world_cases_deaths.csv",
+            "dataFormat": "csv",
+            "config": {
+              "xField": "year",
+              "yField": "value",
+              "seriesField": "series",
+              "seriesFilter": "死亡者数",
+              "title": "死亡者数"
             }
           }
         ]
@@ -611,13 +626,14 @@
       },
       "chart": {
         "visible": true,
-        "layout": "single",
+        "layout": "dual-vertical",
+        "dualTitle": "エルサルバドルのマラリア感染者数・死亡者数の推移",
         "responsive": {
           "mobileStack": true
         },
         "charts": [
           {
-            "id": "line-main-3",
+            "id": "line-main-3-cases",
             "type": "line",
             "dataFile": "/data/charts/malariae/trend_elsalvador_cases_deaths.csv",
             "dataFormat": "csv",
@@ -625,7 +641,8 @@
               "xField": "year",
               "yField": "value",
               "seriesField": "series",
-              "title": "エルサルバドルのマラリア感染者数・死亡者数の推移",
+              "seriesFilter": "感染者数",
+              "title": "感染者数",
               "annotations": [
                 {
                   "type": "verticalLine",
@@ -637,6 +654,23 @@
                   "year": 2021,
                   "label": "2021年 WHOがエルサルバドルのマラリア撲滅を正式認定"
                 }
+              ]
+            }
+          },
+          {
+            "id": "line-main-3-deaths",
+            "type": "line",
+            "dataFile": "/data/charts/malariae/trend_elsalvador_cases_deaths.csv",
+            "dataFormat": "csv",
+            "config": {
+              "xField": "year",
+              "yField": "value",
+              "seriesField": "series",
+              "seriesFilter": "死亡者数",
+              "title": "死亡者数",
+              "yDomain": [
+                0,
+                1
               ]
             }
           }
@@ -725,13 +759,14 @@
       },
       "chart": {
         "visible": true,
-        "layout": "single",
+        "layout": "dual-vertical",
+        "dualTitle": "ニジェールのマラリア感染者数・死亡者数の推移",
         "responsive": {
           "mobileStack": true
         },
         "charts": [
           {
-            "id": "line-main-4",
+            "id": "line-main-4-cases",
             "type": "line",
             "dataFile": "/data/charts/malariae/trend_niger_cases_deaths.csv",
             "dataFormat": "csv",
@@ -739,7 +774,28 @@
               "xField": "year",
               "yField": "value",
               "seriesField": "series",
-              "title": "ニジェールのマラリア感染者数・死亡者数の推移",
+              "seriesFilter": "感染者数",
+              "title": "感染者数",
+              "annotations": [
+                {
+                  "type": "verticalLine",
+                  "year": 2010,
+                  "label": "2010年までにマラリアによる死亡を半分に減らすという目標"
+                }
+              ]
+            }
+          },
+          {
+            "id": "line-main-4-deaths",
+            "type": "line",
+            "dataFile": "/data/charts/malariae/trend_niger_cases_deaths.csv",
+            "dataFormat": "csv",
+            "config": {
+              "xField": "year",
+              "yField": "value",
+              "seriesField": "series",
+              "seriesFilter": "死亡者数",
+              "title": "死亡者数",
               "annotations": [
                 {
                   "type": "verticalLine",
