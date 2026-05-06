@@ -197,6 +197,7 @@ npm run build
 - `seriesField` で複数系列に対応
 - `xDomain` / `yDomain` で表示範囲を固定
 - `highlight` で特定系列を強調
+- `seriesFilter` で表示する系列を絞り込む
 - `projectionField` を使うと、その行以降を破線の予測線として描画
 - `textOnlyLabels` で末端ラベルのガイド線を省略
 - `annotations` で注釈線や矢印を追加

@@ -127,6 +127,7 @@
 | `xDomain` | [number, number] | X軸範囲 |
 | `yDomain` | [number, number] | Y軸範囲 |
 | `highlight` | string or string[] | 強調したい系列 |
+| `seriesFilter` | string or string[] | 表示対象の系列に絞り込む |
 | `projectionField` | string | 予測区間の開始判定列 |
 | `textOnlyLabels` | string[] | 末端ラベルのガイド線を省略する系列 |
 | `gridLines` | boolean | 水平グリッドの表示 |

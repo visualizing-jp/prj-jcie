@@ -129,6 +129,7 @@
 - `xDomain`
 - `yDomain`
 - `highlight`
+- `seriesFilter`
 - `projectionField`
 - `annotations`
 - `textOnlyLabels`
@@ -141,6 +142,7 @@
 - 単一系列ではテーマカラーの線と点を描く
 - 複数系列では系列ごとに色を分け、右端に末端ラベルを出す
 - `highlight` 指定時は対象系列を太く、それ以外を薄くする
+- `seriesFilter` を指定すると、その系列だけを対象に描画する
 - `projectionField` が truthy になった最初の行以降を予測区間として破線表示する
 - step 遷移時に `span.id` が一致し、かつ `span.continueFromPrevious` が true の場合は軸と線を滑らかに継続アニメーションする
 
