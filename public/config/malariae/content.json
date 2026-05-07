@@ -203,6 +203,7 @@
                 "感染者の割合"
               ],
               "primaryLabel": "感染者",
+              "primaryColor": "#f2df4a",
               "normalizeTo": 100,
               "remainderLabel": "非感染者",
               "remainderColor": "#999999"
@@ -221,6 +222,7 @@
                 "感染者の割合"
               ],
               "primaryLabel": "感染者",
+              "primaryColor": "#f2df4a",
               "normalizeTo": 100,
               "remainderLabel": "非感染者",
               "remainderColor": "#999999"
@@ -239,6 +241,7 @@
                 "感染者の割合"
               ],
               "primaryLabel": "感染者",
+              "primaryColor": "#f2df4a",
               "normalizeTo": 100,
               "remainderLabel": "非感染者",
               "remainderColor": "#999999"
@@ -257,6 +260,7 @@
                 "感染者の割合"
               ],
               "primaryLabel": "感染者",
+              "primaryColor": "#f2df4a",
               "normalizeTo": 100,
               "remainderLabel": "非感染者",
               "remainderColor": "#999999"
@@ -275,6 +279,7 @@
                 "感染者の割合"
               ],
               "primaryLabel": "感染者",
+              "primaryColor": "#f2df4a",
               "normalizeTo": 100,
               "remainderLabel": "非感染者",
               "remainderColor": "#999999"
@@ -293,6 +298,7 @@
                 "感染者の割合"
               ],
               "primaryLabel": "感染者",
+              "primaryColor": "#f2df4a",
               "normalizeTo": 100,
               "remainderLabel": "非感染者",
               "remainderColor": "#999999"
@@ -311,6 +317,7 @@
                 "死亡者の割合"
               ],
               "primaryLabel": "死亡者",
+              "primaryColor": "#f2df4a",
               "normalizeTo": 100,
               "remainderLabel": "非死亡者",
               "remainderColor": "#999999"
@@ -329,6 +336,7 @@
                 "死亡者の割合"
               ],
               "primaryLabel": "死亡者",
+              "primaryColor": "#f2df4a",
               "normalizeTo": 100,
               "remainderLabel": "非死亡者",
               "remainderColor": "#999999"
@@ -347,6 +355,7 @@
                 "死亡者の割合"
               ],
               "primaryLabel": "死亡者",
+              "primaryColor": "#f2df4a",
               "normalizeTo": 100,
               "remainderLabel": "非死亡者",
               "remainderColor": "#999999"
@@ -365,6 +374,7 @@
                 "死亡者の割合"
               ],
               "primaryLabel": "死亡者",
+              "primaryColor": "#f2df4a",
               "normalizeTo": 100,
               "remainderLabel": "非死亡者",
               "remainderColor": "#999999"
@@ -383,6 +393,7 @@
                 "死亡者の割合"
               ],
               "primaryLabel": "死亡者",
+              "primaryColor": "#f2df4a",
               "normalizeTo": 100,
               "remainderLabel": "非死亡者",
               "remainderColor": "#999999"
@@ -401,6 +412,7 @@
                 "死亡者の割合"
               ],
               "primaryLabel": "死亡者",
+              "primaryColor": "#f2df4a",
               "normalizeTo": 100,
               "remainderLabel": "非死亡者",
               "remainderColor": "#999999"
