@@ -195,6 +195,7 @@ npm run build
 `line` は最も機能が多い種別です。
 
 - `seriesField` で複数系列に対応
+- `xUnit / yUnit` で軸端に小さな単位ラベルを出せる
 - `xDomain` / `yDomain` で表示範囲を固定
 - `highlight` で特定系列を強調
 - `seriesFilter` で表示する系列を絞り込む
@@ -220,6 +221,8 @@ npm run build
       "config": {
         "xField": "year",
         "yField": "value",
+        "xUnit": "年",
+        "yUnit": "人",
         "seriesField": "series",
         "xDomain": [1990, 1998],
         "title": "新規HIV感染者数の推移",
@@ -353,11 +356,11 @@ npm run build
 
 ### `bump`
 
-`bump` は順位推移専用です。主なキーは `xField` / `yField` / `seriesField` / `maxRank` / `xMin` / `xMax` / `highlight` です。
+`bump` は順位推移専用です。主なキーは `xField` / `yField` / `xUnit` / `yUnit` / `seriesField` / `maxRank` / `xMin` / `xMax` / `highlight` です。Y軸の tick は既定で `1位` のように表示され、`yUnit` は必要な場合だけ軸端に独立ラベルとして追加されます。
 
 ### `streamgraph`
 
-`streamgraph` は積層の流れを見せる用途です。主なキーは `xField` / `yField` / `seriesField` / `xDomain` / `annotations` です。
+`streamgraph` は積層の流れを見せる用途です。主なキーは `xField` / `yField` / `xUnit` / `seriesField` / `xDomain` / `annotations` です。現行実装では X軸のみを描くため、単位表示も `xUnit` のみ対応です。
 
 ---
 

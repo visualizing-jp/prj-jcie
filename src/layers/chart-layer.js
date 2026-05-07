@@ -70,14 +70,19 @@ export class ChartLayer {
     const panelSpecs = this.buildPanelSpecs(normalized, isMobile);
     if (panelSpecs.length === 0) return;
 
-    const chartJobs = panelSpecs
+    const chartPanels = panelSpecs
       .filter((panel) => panel.chart)
-      .map(async (panel) => {
-        const dataset = await this.loadDataset(panel.chart);
-        this.renderChart(panel, dataset);
-      });
+      .map(async (panel) => ({
+        panel,
+        dataset: await this.loadDataset(panel.chart),
+      }));
 
-    await Promise.all(chartJobs);
+    const loadedPanels = await Promise.all(chartPanels);
+    this.applySharedLineLeftGutters(normalized, loadedPanels);
+
+    loadedPanels.forEach(({ panel, dataset }) => {
+      this.renderChart(panel, dataset);
+    });
 
     // dualAnnotations は横並び dual レイアウト専用
     if (
@@ -386,20 +391,104 @@ export class ChartLayer {
     }
   }
 
-  renderLine(panel, dataset, config, chartMeta = {}) {
-    if (!Array.isArray(dataset)) {
-      this.renderUnsupported(panel, 'lineデータ形式が不正です');
+  applySharedLineLeftGutters(config, loadedPanels) {
+    if (config.layout !== 'dual-vertical' || !Array.isArray(loadedPanels) || loadedPanels.length < 2) {
       return;
+    }
+
+    const linePanels = loadedPanels
+      .filter(({ panel }) => panel?.chart?.type === 'line');
+
+    if (linePanels.length < 2) return;
+
+    let sharedLeftGutter = 0;
+
+    linePanels.forEach(({ dataset, panel }) => {
+      const lineData = this.prepareLineRenderData(dataset, panel.chart.config || {});
+      if (!lineData) return;
+      sharedLeftGutter = Math.max(
+        sharedLeftGutter,
+        this.resolveYAxisLabelGutter(lineData.rows, lineData.yField, lineData.targetYDomain)
+      );
+    });
+
+    if (sharedLeftGutter <= 0) return;
+
+    linePanels.forEach(({ panel }) => {
+      panel._sharedLeftGutter = sharedLeftGutter;
+    });
+  }
+
+  resolveAxisUnits(config = {}, options = {}) {
+    const allowX = options.allowX !== false;
+    const allowY = options.allowY !== false;
+    const xUnit = allowX ? this.normalizeAxisUnit(config.xUnit) : '';
+    const yUnit = allowY ? this.normalizeAxisUnit(config.yUnit) : '';
+
+    return {
+      xUnit,
+      yUnit,
+      topInsetExtra: yUnit ? 30 : 0,
+      bottomInsetExtra: xUnit ? 18 : 0,
+    };
+  }
+
+  normalizeAxisUnit(value) {
+    if (value == null) return '';
+    return String(value).trim();
+  }
+
+  drawAxisUnitLabels(plotGroup, plotWidth, plotHeight, units = {}) {
+    const xUnit = this.normalizeAxisUnit(units.xUnit);
+    const yUnit = this.normalizeAxisUnit(units.yUnit);
+
+    if (yUnit) {
+      plotGroup
+        .append('text')
+        .attr('class', 'axis-unit axis-unit-y')
+        .attr('x', -9)
+        .attr('y', -(CHART_FONT.axis + 8))
+        .attr('text-anchor', 'end')
+        .attr('fill', CHART_COLOR.axisText)
+        .attr('font-size', CHART_FONT.axis)
+        .attr('font-weight', 500)
+        .text(yUnit);
+    }
+
+    if (xUnit) {
+      plotGroup
+        .append('text')
+        .attr('class', 'axis-unit axis-unit-x')
+        .attr('x', plotWidth)
+        .attr('y', plotHeight + CHART_FONT.axis + 24)
+        .attr('text-anchor', 'end')
+        .attr('fill', CHART_COLOR.axisText)
+        .attr('font-size', CHART_FONT.axis)
+        .attr('font-weight', 500)
+        .text(xUnit);
+    }
+  }
+
+  prepareLineRenderData(dataset, config = {}) {
+    if (!Array.isArray(dataset)) {
+      return null;
     }
 
     const xField = config.xField || 'year';
     const yField = config.yField || 'value';
     const seriesField = config.seriesField || 'series';
     const filteredDataset = this.filterLineSeries(dataset, config.seriesFilter, seriesField);
-    const baseRows = filteredDataset.filter((d) => Number.isFinite(Number(d[xField])) && (Number.isFinite(Number(d[yField])) || d[yField] == null || String(d[yField]).trim() === '' || String(d[yField]).trim() === '―'));
+    const baseRows = filteredDataset.filter((d) =>
+      Number.isFinite(Number(d[xField])) &&
+      (
+        Number.isFinite(Number(d[yField])) ||
+        d[yField] == null ||
+        String(d[yField]).trim() === '' ||
+        String(d[yField]).trim() === '―'
+      )
+    );
     if (baseRows.length === 0) {
-      this.renderUnsupported(panel, 'lineデータが空です');
-      return;
+      return null;
     }
 
     const defaultXDomain = d3.extent(baseRows, (d) => Number(d[xField]));
@@ -409,9 +498,9 @@ export class ChartLayer {
     const targetXDomain = configuredXDomain && configuredXDomain.every(Number.isFinite)
       ? [Math.min(configuredXDomain[0], configuredXDomain[1]), Math.max(configuredXDomain[0], configuredXDomain[1])]
       : [Number(defaultXDomain[0]), Number(defaultXDomain[1])];
+
     if (!targetXDomain.every(Number.isFinite) || targetXDomain[0] === targetXDomain[1]) {
-      this.renderUnsupported(panel, 'lineのx軸設定が不正です');
-      return;
+      return null;
     }
 
     const rows = baseRows.filter((d) => {
@@ -419,8 +508,7 @@ export class ChartLayer {
       return xValue >= targetXDomain[0] && xValue <= targetXDomain[1];
     });
     if (rows.length === 0) {
-      this.renderUnsupported(panel, 'lineデータが空です');
-      return;
+      return null;
     }
 
     const yMax = d3.max(rows, (d) => Number(d[yField])) || 0;
@@ -430,6 +518,37 @@ export class ChartLayer {
     const defaultYDomain = yMax > 0 ? [0, yMax * 1.1] : [0, 1];
     const targetYScale = d3.scaleLinear().domain(configYDomain || defaultYDomain).nice();
     const targetYDomain = configYDomain || targetYScale.domain();
+
+    return {
+      xField,
+      yField,
+      seriesField,
+      rows,
+      targetXDomain,
+      targetYDomain,
+    };
+  }
+
+  renderLine(panel, dataset, config, chartMeta = {}) {
+    if (!Array.isArray(dataset)) {
+      this.renderUnsupported(panel, 'lineデータ形式が不正です');
+      return;
+    }
+
+    const lineData = this.prepareLineRenderData(dataset, config);
+    if (!lineData) {
+      this.renderUnsupported(panel, 'lineデータが空です');
+      return;
+    }
+
+    const {
+      xField,
+      yField,
+      seriesField,
+      rows,
+      targetXDomain,
+      targetYDomain,
+    } = lineData;
 
     const spanIdRaw = chartMeta?.span?.id;
     const spanId = spanIdRaw == null ? null : String(spanIdRaw).trim();
@@ -442,12 +561,13 @@ export class ChartLayer {
     const inner = this.createPanelInner(panel, title);
     const width = inner.width;
     const height = inner.height;
+    const axisUnits = this.resolveAxisUnits(config);
     const grouped = d3.groups(rows, (d) => (d[seriesField] == null ? '__single__' : String(d[seriesField])));
     const hasMultiSeries = grouped.length > 1 && grouped.some(([key]) => key !== '__single__');
     const labelGutter = hasMultiSeries ? this.resolveLineLabelGutter(width) : 0;
-    const leftGutter = this.resolveYAxisLabelGutter(rows, yField);
-    const topInset = 6;
-    const bottomInset = 24;
+    const leftGutter = panel._sharedLeftGutter || this.resolveYAxisLabelGutter(rows, yField, targetYDomain);
+    const topInset = 6 + axisUnits.topInsetExtra;
+    const bottomInset = 24 + axisUnits.bottomInsetExtra;
     const plotWidth = Math.max(80, width - leftGutter - labelGutter);
     const plotHeight = Math.max(80, height - topInset - bottomInset);
 
@@ -513,6 +633,8 @@ export class ChartLayer {
       .call(yAxis)
       .call(styleAxisText)
       .call(styleAxisLines);
+
+    this.drawAxisUnitLabels(plotGroup, plotWidth, plotHeight, axisUnits);
 
     const isDefined = (d) => d[yField] != null && d[yField] !== '' && Number.isFinite(Number(d[yField]));
 
@@ -2085,6 +2207,7 @@ export class ChartLayer {
     const inner = this.createPanelInner(panel, title);
     const width = inner.width;
     const height = inner.height;
+    const axisUnits = this.resolveAxisUnits(config);
 
     const xValues = [...new Set(rows.map((d) => Number(d[xField])))].sort((a, b) => a - b);
     const seriesNames = [...new Set(rows.map((d) => String(d[seriesField])))];
@@ -2093,8 +2216,8 @@ export class ChartLayer {
 
     const labelGutter = this.resolveLineLabelGutter(width);
     const leftGutter = 32;
-    const topInset = 6;
-    const bottomInset = 24;
+    const topInset = 6 + axisUnits.topInsetExtra;
+    const bottomInset = 24 + axisUnits.bottomInsetExtra;
     const plotWidth = Math.max(80, width - leftGutter - labelGutter);
     const plotHeight = Math.max(80, height - topInset - bottomInset);
 
@@ -2152,6 +2275,8 @@ export class ChartLayer {
       .call(yAxis)
       .call(styleAxisText)
       .call(styleAxisLines);
+
+    this.drawAxisUnitLabels(plotGroup, plotWidth, plotHeight, axisUnits);
 
     // 系列データ構築
     const seriesData = seriesNames.map((name) => {
@@ -2503,9 +2628,10 @@ export class ChartLayer {
     const inner = this.createPanelInner(panel, title);
     const width = inner.width;
     const height = inner.height;
+    const axisUnits = this.resolveAxisUnits(config, { allowY: false });
 
-    const topInset = 6;
-    const bottomInset = 24;
+    const topInset = 6 + axisUnits.topInsetExtra;
+    const bottomInset = 24 + axisUnits.bottomInsetExtra;
     const leftGutter = 10;
     const rightGutter = 10;
     const plotWidth = Math.max(80, width - leftGutter - rightGutter);
@@ -2563,6 +2689,8 @@ export class ChartLayer {
       .selectAll('.tick line')
       .attr('stroke', CHART_COLOR.axisLine)
       .attr('opacity', 0.5);
+
+    this.drawAxisUnitLabels(plotGroup, plotWidth, plotHeight, axisUnits);
 
     // カラーパレット
     const palette = this.buildPalette(seriesNames.length);

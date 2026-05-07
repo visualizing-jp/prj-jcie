@@ -125,6 +125,8 @@
 - `title`
 - `xField`
 - `yField`
+- `xUnit`
+- `yUnit`
 - `seriesField`
 - `xDomain`
 - `yDomain`
@@ -141,6 +143,7 @@
 
 - 単一系列ではテーマカラーの線と点を描く
 - 複数系列では系列ごとに色を分け、右端に末端ラベルを出す
+- `xUnit` は X軸右下、`yUnit` は Y軸左上に小さく表示する
 - `highlight` 指定時は対象系列を太く、それ以外を薄くする
 - `seriesFilter` を指定すると、その系列だけを対象に描画する
 - `projectionField` が truthy になった最初の行以降を予測区間として破線表示する
@@ -323,6 +326,8 @@ source,target,value
 - `title`
 - `xField`
 - `yField`
+- `xUnit`
+- `yUnit`
 - `seriesField`
 - `maxRank`
 - `xMin`
@@ -333,6 +338,7 @@ source,target,value
 
 ### 表示仕様
 
+- `xUnit` / `yUnit` を指定すると、軸端に単位ラベルを追加する
 - Y軸は `1位`, `2位` のような順位表示
 - 線は `curveBumpX`
 - 強調系列以外は薄く表示
@@ -349,6 +355,7 @@ source,target,value
 - `title`
 - `xField`
 - `yField`
+- `xUnit`
 - `seriesField`
 - `xDomain`
 - `annotations`
@@ -357,6 +364,7 @@ source,target,value
 
 - `d3.stackOffsetWiggle` と `d3.stackOrderInsideOut` を使う
 - X軸のみを表示
+- `xUnit` を指定すると X軸右下に単位ラベルを出す
 - 右端に系列ラベルを表示
 - `line` と同じ注釈関数を再利用する
 

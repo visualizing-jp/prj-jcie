@@ -111,6 +111,8 @@
 {
   "xField": "year",
   "yField": "value",
+  "xUnit": "年",
+  "yUnit": "人",
   "seriesField": "series",
   "title": "折れ線タイトル"
 }
@@ -123,6 +125,8 @@
 | `title` | string | パネルタイトル |
 | `xField` | string | X軸の列名 |
 | `yField` | string | Y軸の列名 |
+| `xUnit` | string | X軸右下に表示する単位ラベル |
+| `yUnit` | string | Y軸左上に表示する単位ラベル |
 | `seriesField` | string | 系列名の列 |
 | `xDomain` | [number, number] | X軸範囲 |
 | `yDomain` | [number, number] | Y軸範囲 |
@@ -304,6 +308,8 @@ source,target,value
 {
   "xField": "year",
   "yField": "rank",
+  "xUnit": "年",
+  "yUnit": "順位",
   "seriesField": "deathby",
   "title": "順位推移",
   "maxRank": 5
@@ -315,6 +321,8 @@ source,target,value
 - `title`
 - `xField`
 - `yField`
+- `xUnit`
+- `yUnit`
 - `seriesField`
 - `maxRank`
 - `xMin`
@@ -331,6 +339,7 @@ source,target,value
 {
   "xField": "year",
   "yField": "value",
+  "xUnit": "年",
   "seriesField": "series",
   "title": "Streamgraph"
 }
@@ -341,11 +350,12 @@ source,target,value
 - `title`
 - `xField`
 - `yField`
+- `xUnit`
 - `seriesField`
 - `xDomain`
 - `annotations`
 
-現行実装では利用可能だが、現行コンテンツでは未採用。
+現行実装では利用可能だが、現行コンテンツでは未採用。X軸のみを描くため、単位表示も `xUnit` のみ対応。
 
 ---
 
@@ -368,6 +378,8 @@ source,target,value
         "config": {
           "xField": "year",
           "yField": "value",
+          "xUnit": "年",
+          "yUnit": "人",
           "seriesField": "series",
           "title": "新規感染者数の推移"
         }

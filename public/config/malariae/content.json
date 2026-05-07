@@ -131,6 +131,8 @@
             "config": {
               "xField": "year",
               "yField": "value",
+              "xUnit": "年",
+              "yUnit": "人",
               "seriesField": "series",
               "seriesFilter": "感染者数",
               "title": "感染者数"
@@ -144,6 +146,8 @@
             "config": {
               "xField": "year",
               "yField": "value",
+              "xUnit": "年",
+              "yUnit": "人",
               "seriesField": "series",
               "seriesFilter": "死亡者数",
               "title": "死亡者数"
@@ -652,6 +656,8 @@
             "config": {
               "xField": "year",
               "yField": "value",
+              "xUnit": "年",
+              "yUnit": "人",
               "seriesField": "series",
               "seriesFilter": "感染者数",
               "title": "感染者数",
@@ -677,6 +683,8 @@
             "config": {
               "xField": "year",
               "yField": "value",
+              "xUnit": "年",
+              "yUnit": "人",
               "seriesField": "series",
               "seriesFilter": "死亡者数",
               "title": "死亡者数",
@@ -785,6 +793,8 @@
             "config": {
               "xField": "year",
               "yField": "value",
+              "xUnit": "年",
+              "yUnit": "人",
               "seriesField": "series",
               "seriesFilter": "感染者数",
               "title": "感染者数",
@@ -805,6 +815,8 @@
             "config": {
               "xField": "year",
               "yField": "value",
+              "xUnit": "年",
+              "yUnit": "人",
               "seriesField": "series",
               "seriesFilter": "死亡者数",
               "title": "死亡者数",
@@ -1014,6 +1026,8 @@
             "config": {
               "xField": "year",
               "yField": "value",
+              "xUnit": "年",
+              "yUnit": "ドル",
               "title": "マラリア対策関連ODA予算の推移",
               "annotations": [
                 {
@@ -1087,6 +1101,8 @@
             "config": {
               "xField": "年",
               "yField": "偏差",
+              "xUnit": "年",
+              "yUnit": "℃",
               "yDomain": [
                 -2,
                 2
