@@ -4,6 +4,8 @@ import { feature } from 'topojson-client';
 const VIEWBOX_WIDTH = 1440;
 const VIEWBOX_HEIGHT = 900;
 const BASE_SCALE = 230;
+const MAP_MOVE_DURATION = 650;
+const MAP_MOVE_EASE = d3.easeCubicOut;
 
 const REGION_COUNTRIES = {
   europe: [
@@ -67,6 +69,7 @@ export class MapLayer {
     this.tileContainer = null;
     this.currentCenter = [0, 15];
     this.currentZoom = 1.2;
+    this._cameraTimer = null;
     this.style = null;
   }
 
@@ -231,21 +234,9 @@ export class MapLayer {
     this.markerLabels = this.svg.append('g').attr('class', 'map-marker-labels');
   }
 
-  applyConfig(mapConfig) {
-    if (!this.countryPaths) return;
-
-    const center = this.resolveCenter(mapConfig.center);
-    const zoom = Number.isFinite(mapConfig.zoom) ? mapConfig.zoom : 1.2;
+  createRenderState(mapConfig) {
     const highlightCountries = resolveHighlightCountries(mapConfig);
     const lightenNonVisited = Boolean(mapConfig.lightenNonVisited || mapConfig.lightenAllCountries);
-    const projection = d3
-      .geoMercator()
-      .center(center)
-      .scale(BASE_SCALE * zoom)
-      .translate([VIEWBOX_WIDTH / 2, VIEWBOX_HEIGHT / 2]);
-    const path = d3.geoPath(projection);
-
-    // hillshadeがある場合はfill-opacityを下げて地形を透過させる
     const hasHillshade = Boolean(this.glMap);
     const cs = this.style?.country || {};
     const csMode = hasHillshade ? (cs.hillshade || {}) : (cs.flat || {});
@@ -253,86 +244,112 @@ export class MapLayer {
     const csHl = cs.highlight || {};
     const themePrimary = this.getThemePrimary();
 
-    const fillFn = (d) => {
-      const name = d.properties?.name;
-      if (highlightCountries.has(name)) return csHl.fill || themePrimary;
-      return csMode.fill || (hasHillshade ? '#f8f8f8' : '#3f4f63');
+    return {
+      markers: mapConfig.markers || [],
+      fillFn: (d) => {
+        const name = d.properties?.name;
+        if (highlightCountries.has(name)) return csHl.fill || themePrimary;
+        return csMode.fill || (hasHillshade ? '#f8f8f8' : '#3f4f63');
+      },
+      fillOpacityFn: (d) => {
+        const name = d.properties?.name;
+        if (highlightCountries.has(name)) return csOp.highlight ?? 0.45;
+        if (highlightCountries.size === 0) {
+          return mapConfig.lightenAllCountries ? (csOp.lightenAll ?? 0.45) : (csOp.normal ?? 0.6);
+        }
+        return lightenNonVisited ? (csOp.lightenNonVisited ?? 0.35) : (csOp.nonHighlight ?? 0.55);
+      },
+      strokeFn: (d) => (highlightCountries.has(d.properties?.name) ? (csHl.stroke || themePrimary) : (csMode.stroke || '#9a9a9a')),
+      strokeOpacityFn: (d) => (highlightCountries.has(d.properties?.name) ? (csHl.strokeOpacity ?? 0.5) : (csMode.strokeOpacity ?? 0.35)),
+      strokeWidthFn: (d) => (highlightCountries.has(d.properties?.name) ? (csHl.strokeWidth ?? 1.0) : (cs.defaultStrokeWidth ?? 0.4)),
     };
-    const fillOpacityFn = (d) => {
-      const name = d.properties?.name;
-      if (highlightCountries.has(name)) return csOp.highlight ?? 0.45;
-      if (highlightCountries.size === 0) {
-        return mapConfig.lightenAllCountries ? (csOp.lightenAll ?? 0.45) : (csOp.normal ?? 0.6);
-      }
-      return lightenNonVisited ? (csOp.lightenNonVisited ?? 0.35) : (csOp.nonHighlight ?? 0.55);
-    };
-    const strokeFn = (d) => (highlightCountries.has(d.properties?.name) ? (csHl.stroke || themePrimary) : (csMode.stroke || '#9a9a9a'));
-    const strokeOpacityFn = (d) => (highlightCountries.has(d.properties?.name) ? (csHl.strokeOpacity ?? 0.5) : (csMode.strokeOpacity ?? 0.35));
-    const strokeWidthFn = (d) => (highlightCountries.has(d.properties?.name) ? (csHl.strokeWidth ?? 1.0) : (cs.defaultStrokeWidth ?? 0.4));
+  }
+
+  buildProjection(center, zoom) {
+    return d3
+      .geoMercator()
+      .center(center)
+      .scale(BASE_SCALE * zoom)
+      .translate([VIEWBOX_WIDTH / 2, VIEWBOX_HEIGHT / 2]);
+  }
+
+  renderFrame(renderState, center, zoom) {
+    if (!this.countryPaths) return;
+
+    const projection = this.buildProjection(center, zoom);
+    const path = d3.geoPath(projection);
+
+    this.countryPaths
+      .interrupt()
+      .attr('d', path)
+      .attr('fill', renderState.fillFn)
+      .attr('fill-opacity', renderState.fillOpacityFn)
+      .attr('stroke', renderState.strokeFn)
+      .attr('stroke-opacity', renderState.strokeOpacityFn)
+      .attr('stroke-width', renderState.strokeWidthFn);
+
+    this.updateMarkers(renderState.markers, projection);
+  }
+
+  stopCameraAnimation() {
+    if (this._cameraTimer) {
+      this._cameraTimer.stop();
+      this._cameraTimer = null;
+    }
+  }
+
+  applyConfig(mapConfig) {
+    if (!this.countryPaths) return;
+
+    const center = this.resolveCenter(mapConfig.center);
+    const zoom = Number.isFinite(mapConfig.zoom) ? mapConfig.zoom : 1.2;
+    const renderState = this.createRenderState(mapConfig);
 
     // 初回表示（pathにd属性がない）かどうかで分岐
     const isFirstRender = !this.countryPaths.node()?.getAttribute('d');
+    const isSameView = !isFirstRender
+      && this.currentCenter[0] === center[0]
+      && this.currentCenter[1] === center[1]
+      && this.currentZoom === zoom;
 
-    if (isFirstRender) {
+    this.stopCameraAnimation();
+
+    if (isFirstRender || isSameView) {
       // 初回: トランジションなしで即座に配置（SVGとhillshadeのズレを防止）
-      this.countryPaths
-        .attr('d', path)
-        .attr('fill', fillFn)
-        .attr('fill-opacity', fillOpacityFn)
-        .attr('stroke', strokeFn)
-        .attr('stroke-opacity', strokeOpacityFn)
-        .attr('stroke-width', strokeWidthFn);
-
-      // MapLibreカメラも即座にジャンプ
       if (this.glMap) {
-        if (this._cameraTimer) this._cameraTimer.stop();
-        this._cameraTimer = null;
         try { this.jumpTileCamera(center, zoom); } catch (_e) { /* ignore */ }
       }
-    } else {
-      // 2回目以降: トランジション付きでスムーズに移動
-      this.countryPaths
-        .transition()
-        .duration(650)
-        .ease(d3.easeCubicOut)
-        .attr('d', path)
-        .attr('fill', fillFn)
-        .attr('fill-opacity', fillOpacityFn)
-        .attr('stroke', strokeFn)
-        .attr('stroke-opacity', strokeOpacityFn)
-        .attr('stroke-width', strokeWidthFn);
-
-      // MapLibre カメラをD3トランジションとは独立して同期（d3.timerで分離）
-      if (this.glMap) {
-        const prevCenter = [...this.currentCenter];
-        const prevZoom = this.currentZoom;
-        const interpLng = d3.interpolate(prevCenter[0], center[0]);
-        const interpLat = d3.interpolate(prevCenter[1], center[1]);
-        const interpZoom = d3.interpolate(prevZoom, zoom);
-        const ease = d3.easeCubicOut;
-        const duration = 650;
-        const startTime = performance.now();
-
-        if (this._cameraTimer) this._cameraTimer.stop();
-
-        this._cameraTimer = d3.timer(() => {
-          const t = Math.min(1, (performance.now() - startTime) / duration);
-          const et = ease(t);
-          try {
-            this.jumpTileCamera([interpLng(et), interpLat(et)], interpZoom(et));
-          } catch (_e) { /* ignore */ }
-          if (t >= 1) {
-            this._cameraTimer.stop();
-            this._cameraTimer = null;
-          }
-        });
-      }
+      this.renderFrame(renderState, center, zoom);
+      this.currentCenter = [...center];
+      this.currentZoom = zoom;
+      return;
     }
 
-    this.updateMarkers(mapConfig.markers || [], projection);
+    const startCenter = [...this.currentCenter];
+    const startZoom = this.currentZoom;
+    const interpLng = d3.interpolate(startCenter[0], center[0]);
+    const interpLat = d3.interpolate(startCenter[1], center[1]);
+    const interpZoom = d3.interpolate(startZoom, zoom);
+    const startTime = performance.now();
 
-    this.currentCenter = center;
-    this.currentZoom = zoom;
+    // SVGとタイル背景を同じカメラ補間で更新する
+    this._cameraTimer = d3.timer(() => {
+      const t = Math.min(1, (performance.now() - startTime) / MAP_MOVE_DURATION);
+      const easedT = MAP_MOVE_EASE(t);
+      const nextCenter = [interpLng(easedT), interpLat(easedT)];
+      const nextZoom = interpZoom(easedT);
+
+      if (this.glMap) {
+        try { this.jumpTileCamera(nextCenter, nextZoom); } catch (_e) { /* ignore */ }
+      }
+      this.renderFrame(renderState, nextCenter, nextZoom);
+      this.currentCenter = nextCenter;
+      this.currentZoom = nextZoom;
+
+      if (t >= 1) {
+        this.stopCameraAnimation();
+      }
+    });
   }
 
   jumpTileCamera(center, d3Zoom) {
@@ -402,22 +419,14 @@ export class MapLayer {
 
     circles
       .exit()
-      .transition()
-      .duration(200)
-      .attr('r', 0)
+      .interrupt()
       .remove();
 
     circles
       .enter()
       .append('circle')
-      .attr('cx', (d) => d.x)
-      .attr('cy', (d) => d.y)
-      .attr('r', 0)
-      .attr('fill-opacity', 0.1)
       .merge(circles)
-      .transition()
-      .duration(650)
-      .ease(d3.easeCubicOut)
+      .interrupt()
       .attr('cx', (d) => d.x)
       .attr('cy', (d) => d.y)
       .attr('r', (d) => (d.isCurrent ? d.size + sizeBonus : d.size))
@@ -434,9 +443,7 @@ export class MapLayer {
 
     labels
       .exit()
-      .transition()
-      .duration(150)
-      .attr('opacity', 0)
+      .interrupt()
       .remove();
 
     labels
@@ -451,12 +458,9 @@ export class MapLayer {
       .attr('stroke', ls.stroke || 'rgba(10,14,22,0.9)')
       .attr('stroke-width', ls.strokeWidth ?? 3)
       .attr('stroke-linejoin', 'round')
-      .attr('opacity', 0)
       .text((d) => d.name)
       .merge(labels)
-      .transition()
-      .duration(650)
-      .ease(d3.easeCubicOut)
+      .interrupt()
       .attr('x', (d) => d.x + labelOffsetX)
       .attr('y', (d) => d.y + labelOffsetY)
       .attr('opacity', 1)
@@ -464,10 +468,7 @@ export class MapLayer {
   }
 
   clear() {
-    if (this._cameraTimer) {
-      this._cameraTimer.stop();
-      this._cameraTimer = null;
-    }
+    this.stopCameraAnimation();
     // MapLibreインスタンスは破棄せず保持（再利用のため）、非表示にする
     if (this.tileContainer) {
       this.tileContainer.style.display = 'none';
