@@ -1980,27 +1980,57 @@ export class ChartLayer {
       }
     }
 
-    // セット名ラベル（エイズ・結核）はwrapperGroupの外に配置し、パネル座標系で固定位置にする
-    const setLabelGroup = inner.group.append('g');
-    const fixedLabelY = 60;
-    const labelPositions = setNames.length === 2
-      ? [inner.width * 0.25, inner.width * 0.75]
-      : setNames.map((_, i) => inner.width * (i + 1) / (setNames.length + 1));
-    setNames.forEach((setName, idx) => {
-      setLabelGroup.append('text')
-        .attr('x', labelPositions[idx])
-        .attr('y', fixedLabelY)
-        .attr('text-anchor', 'middle')
-        .attr('fill', CHART_COLOR.title)
-        .attr('font-size', CHART_FONT.series)
-        .attr('font-weight', 700)
-        .attr('opacity', 0)
-        .transition()
-        .duration(400)
-        .delay(200)
-        .attr('opacity', 1)
-        .text(setName);
-    });
+    const setLabelPlacement = config.setLabelPlacement === 'circle-center'
+      ? 'circle-center'
+      : 'fixed-top';
+
+    if (setLabelPlacement === 'circle-center') {
+      const setLabelGroup = wrapperGroup.append('g');
+      singletonLayout.forEach((entry) => {
+        const setName = entry.data.sets[0];
+        const circleData = entry.circles.find((c) => c.set === setName) || entry.circles[0];
+        if (!circleData) return;
+        const labelX = Number.isFinite(entry.text?.x) ? entry.text.x : circleData.x;
+        const labelY = Number.isFinite(entry.text?.y) ? entry.text.y : circleData.y;
+
+        setLabelGroup.append('text')
+          .attr('x', labelX)
+          .attr('y', labelY)
+          .attr('text-anchor', 'middle')
+          .attr('dominant-baseline', 'middle')
+          .attr('fill', CHART_COLOR.title)
+          .attr('font-size', CHART_FONT.series * inverseScale)
+          .attr('font-weight', 700)
+          .attr('opacity', 0)
+          .text(setName)
+          .transition()
+          .duration(400)
+          .delay(200)
+          .attr('opacity', 1);
+      });
+    } else {
+      // 既定はパネル座標系の上部固定ラベルを維持する
+      const setLabelGroup = inner.group.append('g');
+      const fixedLabelY = 60;
+      const labelPositions = setNames.length === 2
+        ? [inner.width * 0.25, inner.width * 0.75]
+        : setNames.map((_, i) => inner.width * (i + 1) / (setNames.length + 1));
+      setNames.forEach((setName, idx) => {
+        setLabelGroup.append('text')
+          .attr('x', labelPositions[idx])
+          .attr('y', fixedLabelY)
+          .attr('text-anchor', 'middle')
+          .attr('fill', CHART_COLOR.title)
+          .attr('font-size', CHART_FONT.series)
+          .attr('font-weight', 700)
+          .attr('opacity', 0)
+          .text(setName)
+          .transition()
+          .duration(400)
+          .delay(200)
+          .attr('opacity', 1);
+      });
+    }
 
     // 和集合ラベル（intersectionLabel）— hideValues に関係なく表示
     if (config.intersectionLabel && setNames.length >= 2) {
