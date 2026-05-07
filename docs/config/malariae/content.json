@@ -545,7 +545,8 @@
             "config": {
               "title": "アルテミシニン併用療法（ACT）",
               "hideValues": true,
-              "intersectionLabel": "併用療法（ACT）"
+              "intersectionLabel": "併用療法（ACT）",
+              "setLabelPlacement": "circle-center"
             }
           }
         ]
