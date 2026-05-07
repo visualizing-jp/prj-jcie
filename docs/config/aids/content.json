@@ -179,6 +179,8 @@
             "config": {
               "xField": "year",
               "yField": "value",
+              "xUnit": "年",
+              "yUnit": "人",
               "seriesField": "series",
               "xDomain": [
                 1990,
@@ -242,6 +244,8 @@
             "config": {
               "xField": "year",
               "yField": "value",
+              "xUnit": "年",
+              "yUnit": "人",
               "seriesField": "series",
               "xDomain": [
                 1980,
@@ -299,6 +303,8 @@
             "config": {
               "xField": "year",
               "yField": "value",
+              "xUnit": "年",
+              "yUnit": "人",
               "seriesField": "series",
               "xDomain": [
                 2010,
@@ -696,6 +702,8 @@
             "config": {
               "xField": "year",
               "yField": "value",
+              "xUnit": "年",
+              "yUnit": "%",
               "seriesField": "series",
               "title": "HIV母子感染率の推移（%）",
               "yDomain": [
@@ -929,6 +937,8 @@
             "config": {
               "xField": "year",
               "yField": "value",
+              "xUnit": "年",
+              "yUnit": "人",
               "title": "若年男性（15-24歳）",
               "yDomain": [
                 0,
@@ -944,6 +954,8 @@
             "config": {
               "xField": "year",
               "yField": "value",
+              "xUnit": "年",
+              "yUnit": "人",
               "title": "若年女性（15-24歳）",
               "yDomain": [
                 0,
@@ -1002,6 +1014,8 @@
             "config": {
               "xField": "year",
               "yField": "value",
+              "xUnit": "年",
+              "yUnit": "人",
               "seriesField": "series",
               "title": "PrEP（曝露前予防投与）利用者数の推移"
             }
@@ -1045,6 +1059,8 @@
             "config": {
               "xField": "year",
               "yField": "value",
+              "xUnit": "年",
+              "yUnit": "ドル",
               "seriesField": "series",
               "projectionField": "projected",
               "title": "エイズ対策資金の推移（資金源別）",

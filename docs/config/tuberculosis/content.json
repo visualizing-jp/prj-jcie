@@ -125,6 +125,8 @@
             "config": {
               "xField": "year",
               "yField": "rank",
+              "xUnit": "年",
+              "yUnit": "順位",
               "seriesField": "deathby",
               "title": "日本の死因順位の推移",
               "maxRank": 5,
@@ -197,6 +199,8 @@
             "config": {
               "xField": "西暦",
               "yField": "死亡数",
+              "xUnit": "年",
+              "yUnit": "人",
               "title": "日本の結核死亡者数の推移",
               "annotations": [
                 {
@@ -311,6 +315,8 @@
             "config": {
               "xField": "year",
               "yField": "value",
+              "xUnit": "年",
+              "yUnit": "人",
               "title": "結核感染者数の推移",
               "annotations": [
                 {
@@ -365,6 +371,8 @@
             "config": {
               "xField": "year",
               "yField": "value",
+              "xUnit": "年",
+              "yUnit": "人",
               "title": "結核による推定死亡者数の推移",
               "annotations": [
                 {
@@ -431,6 +439,8 @@
             "config": {
               "xField": "year",
               "yField": "value",
+              "xUnit": "年",
+              "yUnit": "人",
               "yDomain": [0, 1100000],
               "title": "インドネシアの結核患者数の推移"
             }
@@ -443,6 +453,8 @@
             "config": {
               "xField": "year",
               "yField": "value",
+              "xUnit": "年",
+              "yUnit": "人",
               "yDomain": [0, 1100000],
               "title": "ベトナムの結核患者数の推移"
             }
@@ -482,6 +494,8 @@
             "config": {
               "xField": "year",
               "yField": "value",
+              "xUnit": "年",
+              "yUnit": "ドル",
               "seriesField": "series",
               "title": "結核対策予算の推移（単位不明）"
             }

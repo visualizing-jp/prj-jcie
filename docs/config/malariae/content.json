@@ -131,6 +131,8 @@
             "config": {
               "xField": "year",
               "yField": "value",
+              "xUnit": "年",
+              "yUnit": "人",
               "seriesField": "series",
               "seriesFilter": "感染者数",
               "title": "感染者数"
@@ -144,6 +146,8 @@
             "config": {
               "xField": "year",
               "yField": "value",
+              "xUnit": "年",
+              "yUnit": "人",
               "seriesField": "series",
               "seriesFilter": "死亡者数",
               "title": "死亡者数"
@@ -203,6 +207,7 @@
                 "感染者の割合"
               ],
               "primaryLabel": "感染者",
+              "primaryColor": "#f2df4a",
               "normalizeTo": 100,
               "remainderLabel": "非感染者",
               "remainderColor": "#999999"
@@ -221,6 +226,7 @@
                 "感染者の割合"
               ],
               "primaryLabel": "感染者",
+              "primaryColor": "#f2df4a",
               "normalizeTo": 100,
               "remainderLabel": "非感染者",
               "remainderColor": "#999999"
@@ -239,6 +245,7 @@
                 "感染者の割合"
               ],
               "primaryLabel": "感染者",
+              "primaryColor": "#f2df4a",
               "normalizeTo": 100,
               "remainderLabel": "非感染者",
               "remainderColor": "#999999"
@@ -257,6 +264,7 @@
                 "感染者の割合"
               ],
               "primaryLabel": "感染者",
+              "primaryColor": "#f2df4a",
               "normalizeTo": 100,
               "remainderLabel": "非感染者",
               "remainderColor": "#999999"
@@ -275,6 +283,7 @@
                 "感染者の割合"
               ],
               "primaryLabel": "感染者",
+              "primaryColor": "#f2df4a",
               "normalizeTo": 100,
               "remainderLabel": "非感染者",
               "remainderColor": "#999999"
@@ -293,6 +302,7 @@
                 "感染者の割合"
               ],
               "primaryLabel": "感染者",
+              "primaryColor": "#f2df4a",
               "normalizeTo": 100,
               "remainderLabel": "非感染者",
               "remainderColor": "#999999"
@@ -311,6 +321,7 @@
                 "死亡者の割合"
               ],
               "primaryLabel": "死亡者",
+              "primaryColor": "#f2df4a",
               "normalizeTo": 100,
               "remainderLabel": "非死亡者",
               "remainderColor": "#999999"
@@ -329,6 +340,7 @@
                 "死亡者の割合"
               ],
               "primaryLabel": "死亡者",
+              "primaryColor": "#f2df4a",
               "normalizeTo": 100,
               "remainderLabel": "非死亡者",
               "remainderColor": "#999999"
@@ -347,6 +359,7 @@
                 "死亡者の割合"
               ],
               "primaryLabel": "死亡者",
+              "primaryColor": "#f2df4a",
               "normalizeTo": 100,
               "remainderLabel": "非死亡者",
               "remainderColor": "#999999"
@@ -365,6 +378,7 @@
                 "死亡者の割合"
               ],
               "primaryLabel": "死亡者",
+              "primaryColor": "#f2df4a",
               "normalizeTo": 100,
               "remainderLabel": "非死亡者",
               "remainderColor": "#999999"
@@ -383,6 +397,7 @@
                 "死亡者の割合"
               ],
               "primaryLabel": "死亡者",
+              "primaryColor": "#f2df4a",
               "normalizeTo": 100,
               "remainderLabel": "非死亡者",
               "remainderColor": "#999999"
@@ -401,6 +416,7 @@
                 "死亡者の割合"
               ],
               "primaryLabel": "死亡者",
+              "primaryColor": "#f2df4a",
               "normalizeTo": 100,
               "remainderLabel": "非死亡者",
               "remainderColor": "#999999"
@@ -603,7 +619,7 @@
           -88,
           13
         ],
-        "zoom": 4,
+        "zoom": 7,
         "highlightCountries": [
           "El Salvador"
         ],
@@ -640,6 +656,8 @@
             "config": {
               "xField": "year",
               "yField": "value",
+              "xUnit": "年",
+              "yUnit": "人",
               "seriesField": "series",
               "seriesFilter": "感染者数",
               "title": "感染者数",
@@ -665,6 +683,8 @@
             "config": {
               "xField": "year",
               "yField": "value",
+              "xUnit": "年",
+              "yUnit": "人",
               "seriesField": "series",
               "seriesFilter": "死亡者数",
               "title": "死亡者数",
@@ -773,6 +793,8 @@
             "config": {
               "xField": "year",
               "yField": "value",
+              "xUnit": "年",
+              "yUnit": "人",
               "seriesField": "series",
               "seriesFilter": "感染者数",
               "title": "感染者数",
@@ -793,6 +815,8 @@
             "config": {
               "xField": "year",
               "yField": "value",
+              "xUnit": "年",
+              "yUnit": "人",
               "seriesField": "series",
               "seriesFilter": "死亡者数",
               "title": "死亡者数",
@@ -1002,6 +1026,8 @@
             "config": {
               "xField": "year",
               "yField": "value",
+              "xUnit": "年",
+              "yUnit": "ドル",
               "title": "マラリア対策関連ODA予算の推移",
               "annotations": [
                 {
@@ -1075,6 +1101,8 @@
             "config": {
               "xField": "年",
               "yField": "偏差",
+              "xUnit": "年",
+              "yUnit": "℃",
               "yDomain": [
                 -2,
                 2
