@@ -373,6 +373,7 @@
               ],
               "primaryLabel": "治療中",
               "primaryColor": "#da3244",
+              "valueSuffix": "%",
               "normalizeTo": 100,
               "remainderLabel": "未治療",
               "remainderColor": "#999999"
@@ -392,6 +393,7 @@
               ],
               "primaryLabel": "治療中",
               "primaryColor": "#da3244",
+              "valueSuffix": "%",
               "normalizeTo": 100,
               "remainderLabel": "未治療",
               "remainderColor": "#999999"
@@ -411,6 +413,7 @@
               ],
               "primaryLabel": "治療中",
               "primaryColor": "#da3244",
+              "valueSuffix": "%",
               "normalizeTo": 100,
               "remainderLabel": "未治療",
               "remainderColor": "#999999"
@@ -430,6 +433,7 @@
               ],
               "primaryLabel": "治療中",
               "primaryColor": "#da3244",
+              "valueSuffix": "%",
               "normalizeTo": 100,
               "remainderLabel": "未治療",
               "remainderColor": "#999999"
@@ -449,6 +453,7 @@
               ],
               "primaryLabel": "治療中",
               "primaryColor": "#da3244",
+              "valueSuffix": "%",
               "normalizeTo": 100,
               "remainderLabel": "未治療",
               "remainderColor": "#999999"
@@ -468,6 +473,7 @@
               ],
               "primaryLabel": "治療中",
               "primaryColor": "#da3244",
+              "valueSuffix": "%",
               "normalizeTo": 100,
               "remainderLabel": "未治療",
               "remainderColor": "#999999"
@@ -487,6 +493,7 @@
               ],
               "primaryLabel": "治療中",
               "primaryColor": "#da3244",
+              "valueSuffix": "%",
               "normalizeTo": 100,
               "remainderLabel": "未治療",
               "remainderColor": "#999999"
@@ -506,6 +513,7 @@
               ],
               "primaryLabel": "治療中",
               "primaryColor": "#da3244",
+              "valueSuffix": "%",
               "normalizeTo": 100,
               "remainderLabel": "未治療",
               "remainderColor": "#999999"
@@ -525,6 +533,7 @@
               ],
               "primaryLabel": "治療中",
               "primaryColor": "#da3244",
+              "valueSuffix": "%",
               "normalizeTo": 100,
               "remainderLabel": "未治療",
               "remainderColor": "#999999"
@@ -544,6 +553,7 @@
               ],
               "primaryLabel": "治療中",
               "primaryColor": "#da3244",
+              "valueSuffix": "%",
               "normalizeTo": 100,
               "remainderLabel": "未治療",
               "remainderColor": "#999999"
@@ -563,6 +573,7 @@
               ],
               "primaryLabel": "治療中",
               "primaryColor": "#da3244",
+              "valueSuffix": "%",
               "normalizeTo": 100,
               "remainderLabel": "未治療",
               "remainderColor": "#999999"
@@ -582,6 +593,7 @@
               ],
               "primaryLabel": "治療中",
               "primaryColor": "#da3244",
+              "valueSuffix": "%",
               "normalizeTo": 100,
               "remainderLabel": "未治療",
               "remainderColor": "#999999"
@@ -601,6 +613,7 @@
               ],
               "primaryLabel": "治療中",
               "primaryColor": "#da3244",
+              "valueSuffix": "%",
               "normalizeTo": 100,
               "remainderLabel": "未治療",
               "remainderColor": "#999999"
@@ -620,6 +633,7 @@
               ],
               "primaryLabel": "治療中",
               "primaryColor": "#da3244",
+              "valueSuffix": "%",
               "normalizeTo": 100,
               "remainderLabel": "未治療",
               "remainderColor": "#999999"
@@ -639,6 +653,7 @@
               ],
               "primaryLabel": "治療中",
               "primaryColor": "#da3244",
+              "valueSuffix": "%",
               "normalizeTo": 100,
               "remainderLabel": "未治療",
               "remainderColor": "#999999"
@@ -658,6 +673,7 @@
               ],
               "primaryLabel": "治療中",
               "primaryColor": "#da3244",
+              "valueSuffix": "%",
               "normalizeTo": 100,
               "remainderLabel": "未治療",
               "remainderColor": "#999999"
@@ -938,6 +954,7 @@
               "xField": "year",
               "yField": "value",
               "xUnit": "年",
+              "xTickValues": [1990, 2000, 2010, 2020],
               "yUnit": "人",
               "title": "若年男性（15-24歳）",
               "yDomain": [
@@ -955,6 +972,7 @@
               "xField": "year",
               "yField": "value",
               "xUnit": "年",
+              "xTickValues": [1990, 2000, 2010, 2020],
               "yUnit": "人",
               "title": "若年女性（15-24歳）",
               "yDomain": [
