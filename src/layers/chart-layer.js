@@ -602,7 +602,19 @@ export class ChartLayer {
       xDomain: [...targetXDomain],
     });
 
-    const xAxis = d3.axisBottom(x).ticks(5).tickFormat(d3.format('d'));
+    const xTickCount = 5;
+    const xAxis = d3.axisBottom(x);
+    const applyLineXAxisTicks = () => {
+      const tickValues = this.resolveLineXAxisTickValues(config.xTickValues, x.domain());
+      if (tickValues && tickValues.length > 0) {
+        xAxis.tickValues(tickValues);
+      } else {
+        xAxis.tickValues(null);
+        xAxis.ticks(xTickCount);
+      }
+      xAxis.tickFormat(d3.format('d'));
+    };
+    applyLineXAxisTicks();
     const yTickCount = 5;
     const yAxis = d3.axisLeft(y).ticks(yTickCount);
     const applyLineYAxisFormat = () => yAxis.tickFormat(this.createLineYAxisTickFormatter(y, yTickCount));
@@ -727,6 +739,7 @@ export class ChartLayer {
         }
 
         applyLineYAxisFormat();
+        applyLineXAxisTicks();
         xAxisGroup
           .transition(transition)
           .call(xAxis)
@@ -887,6 +900,7 @@ export class ChartLayer {
       }
 
       applyLineYAxisFormat();
+      applyLineXAxisTicks();
       xAxisGroup
         .transition(transition)
         .call(xAxis)
@@ -2914,6 +2928,25 @@ export class ChartLayer {
     if (width < 280) return 90;
     if (width < 420) return 130;
     return 210;
+  }
+
+  resolveLineXAxisTickValues(values, domain) {
+    if (!Array.isArray(values) || values.length === 0) {
+      return null;
+    }
+
+    const numericDomain = Array.isArray(domain)
+      ? domain.map(Number).filter(Number.isFinite)
+      : [];
+    const [minDomain, maxDomain] = d3.extent(numericDomain);
+    const hasDomainBounds = Number.isFinite(minDomain) && Number.isFinite(maxDomain);
+
+    const tickValues = values
+      .map((value) => Number(value))
+      .filter(Number.isFinite)
+      .filter((value) => !hasDomainBounds || (value >= minDomain && value <= maxDomain));
+
+    return tickValues.length > 0 ? tickValues : null;
   }
 
   createLineYAxisTickFormatter(scale, tickCount = 5) {

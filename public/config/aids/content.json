@@ -954,6 +954,7 @@
               "xField": "year",
               "yField": "value",
               "xUnit": "年",
+              "xTickValues": [1990, 2000, 2010, 2020],
               "yUnit": "人",
               "title": "若年男性（15-24歳）",
               "yDomain": [
@@ -971,6 +972,7 @@
               "xField": "year",
               "yField": "value",
               "xUnit": "年",
+              "xTickValues": [1990, 2000, 2010, 2020],
               "yUnit": "人",
               "title": "若年女性（15-24歳）",
               "yDomain": [
