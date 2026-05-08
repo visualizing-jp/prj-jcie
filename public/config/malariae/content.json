@@ -52,59 +52,6 @@
       }
     },
     {
-      "id": "ml-img-02",
-      "text": {
-        "content": "<h2>貧困の病</h2><p>また経済的に脆弱な地域、特にアフリカ、アジア、中南米に感染者の9割が集中していることから「貧困の病」という別名で知られています。この偏りは、医療インフラ不足や予防対策の実施困難さ、気候条件が複雑に絡み合って生じています。</p><p>特に重症化しやすく死亡率も高い熱帯熱マラリアは、アフリカやアジア・太平洋の熱帯地域が流行の中心です。</p>",
-        "visible": true,
-        "position": {
-          "horizontal": "right",
-          "vertical": "center",
-          "width": "34%"
-        }
-      },
-      "chart": {
-        "visible": false
-      },
-      "map": {
-        "visible": true,
-        "mode": "world-overview",
-        "center": [
-          20,
-          5
-        ],
-        "zoom": 1.2,
-        "highlightCountries": [
-          "Nigeria",
-          "Democratic Republic of the Congo",
-          "Uganda",
-          "Mozambique",
-          "Niger",
-          "Burkina Faso",
-          "Angola",
-          "Tanzania",
-          "Mali",
-          "Ghana",
-          "Cameroon",
-          "India",
-          "Indonesia",
-          "Myanmar",
-          "Pakistan",
-          "Papua New Guinea",
-          "Bangladesh",
-          "Brazil",
-          "Colombia",
-          "Peru",
-          "Venezuela",
-          "Guatemala",
-          "Honduras"
-        ],
-        "lightenNonVisited": true
-      },
-      "image": {
-        "visible": false
-      }
-    },
-    {
       "id": "ml-line-01",
       "text": {
         "content": "<h2>世界中の感染者</h2><p>2023年の全世界の感染者数は2億6300万人と想定され、そのうち死亡者数は59万7千人。</p>",
@@ -165,7 +112,7 @@
     {
       "id": "ml-pie-grid",
       "text": {
-        "content": "<h2>主な死亡者はアフリカ地域の5歳未満の小児たち</h2><p>そして、死亡者数の95％はアフリカ地域の人々であり、その76％に相当する43万2千人は5歳未満の小児でした。 </p>",
+        "content": "<h2>貧困の病</h2><p>また経済的に脆弱な地域、特にアフリカ、アジア、中南米に感染者の9割が集中していることから「貧困の病」という別名で知られています。この偏りは、医療インフラ不足や予防対策の実施困難さ、気候条件が複雑に絡み合って生じています。</p><p>特に重症化しやすく死亡率も高い熱帯熱マラリアは、アフリカやアジア・太平洋の熱帯地域が流行の中心です。</p><p>主な死亡者はアフリカ地域の5歳未満の小児たち、そして、死亡者数の95%はアフリカ地域の人々であり、その76%に相当する43万2千人は5歳未満の小児でした。</p>",
         "visible": true,
         "position": {
           "horizontal": "right",
@@ -1103,7 +1050,6 @@
               "xField": "年",
               "yField": "偏差",
               "xUnit": "年",
-              "yUnit": "℃",
               "yDomain": [
                 -2,
                 2
@@ -1113,7 +1059,7 @@
                 {
                   "type": "horizontalLine",
                   "y": 0,
-                  "label": "基準値（0℃）"
+                  "label": "基準値（0）"
                 }
               ]
             }
