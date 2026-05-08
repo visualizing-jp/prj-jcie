@@ -48,6 +48,11 @@ export class ChartLayer {
     this.root = null;
     this.dataCache = new Map();
     this.lineSpanState = new Map();
+    this.lineYAxisCompactFormatter = new Intl.NumberFormat('ja-JP', {
+      notation: 'compact',
+      maximumFractionDigits: 1,
+    });
+    this.textMeasureCanvas = null;
     this.onResize = () => {
       // レスポンシブ再計算は次回step enter時に行う。
     };
@@ -598,7 +603,10 @@ export class ChartLayer {
     });
 
     const xAxis = d3.axisBottom(x).ticks(5).tickFormat(d3.format('d'));
-    const yAxis = d3.axisLeft(y).ticks(5);
+    const yTickCount = 5;
+    const yAxis = d3.axisLeft(y).ticks(yTickCount);
+    const applyLineYAxisFormat = () => yAxis.tickFormat(this.createLineYAxisTickFormatter(y, yTickCount));
+    applyLineYAxisFormat();
     const styleAxisText = (g) => g.selectAll('text').attr('fill', CHART_COLOR.axisText).attr('font-size', CHART_FONT.axis);
     const styleAxisLines = (g) => g.selectAll('line,path').attr('stroke', CHART_COLOR.axisLine).attr('opacity', 0.5);
 
@@ -606,7 +614,7 @@ export class ChartLayer {
     let gridGroup = null;
     if (config.gridLines !== false) {
       gridGroup = plotGroup.append('g').attr('class', 'grid-lines');
-      const gridTicks = y.ticks(5);
+      const gridTicks = y.ticks(yTickCount);
       gridGroup
         .selectAll('line')
         .data(gridTicks)
@@ -712,12 +720,13 @@ export class ChartLayer {
         // グリッドライン更新
         if (gridGroup) {
           gridGroup.selectAll('line').remove();
-          const newTicks = y.ticks(5);
+          const newTicks = y.ticks(yTickCount);
           gridGroup.selectAll('line').data(newTicks).enter().append('line')
             .attr('x1', 0).attr('y1', (d) => y(d)).attr('x2', plotWidth).attr('y2', (d) => y(d))
             .attr('stroke', CHART_COLOR.axisLine).attr('stroke-opacity', 0.12).attr('stroke-dasharray', '2 4');
         }
 
+        applyLineYAxisFormat();
         xAxisGroup
           .transition(transition)
           .call(xAxis)
@@ -871,12 +880,13 @@ export class ChartLayer {
       // グリッドライン更新
       if (gridGroup) {
         gridGroup.selectAll('line').remove();
-        const newTicks = y.ticks(5);
+        const newTicks = y.ticks(yTickCount);
         gridGroup.selectAll('line').data(newTicks).enter().append('line')
           .attr('x1', 0).attr('y1', (d) => y(d)).attr('x2', plotWidth).attr('y2', (d) => y(d))
           .attr('stroke', CHART_COLOR.axisLine).attr('stroke-opacity', 0.12).attr('stroke-dasharray', '2 4');
       }
 
+      applyLineYAxisFormat();
       xAxisGroup
         .transition(transition)
         .call(xAxis)
@@ -2894,22 +2904,60 @@ export class ChartLayer {
     return 210;
   }
 
-  resolveYAxisLabelGutter(rows, yField) {
-    const values = rows
-      .map((d) => Number(d[yField]))
-      .filter((v) => Number.isFinite(v));
+  createLineYAxisTickFormatter(scale, tickCount = 5) {
+    const defaultFormatter = scale.tickFormat(tickCount);
+    return (value) => {
+      const numericValue = Number(value);
+      if (!Number.isFinite(numericValue)) {
+        return defaultFormatter(value);
+      }
+      if (Math.abs(numericValue) < 10000) {
+        return defaultFormatter(numericValue);
+      }
+      return this.lineYAxisCompactFormatter.format(numericValue);
+    };
+  }
+
+  measureAxisTextWidth(text) {
+    const label = String(text ?? '');
+    if (typeof document === 'undefined') {
+      return label.length * 7;
+    }
+
+    if (!this.textMeasureCanvas) {
+      this.textMeasureCanvas = document.createElement('canvas');
+    }
+
+    const context = this.textMeasureCanvas.getContext('2d');
+    if (!context) {
+      return label.length * 7;
+    }
+
+    context.font = `${CHART_FONT.axis}px "Noto Sans JP", sans-serif`;
+    return context.measureText(label).width;
+  }
+
+  resolveYAxisLabelGutter(rows, yField, yDomain = null) {
+    const hasDomain = Array.isArray(yDomain) && yDomain.length === 2 && yDomain.every(Number.isFinite);
+    const tickCount = 5;
+    const values = hasDomain
+      ? d3.scaleLinear().domain(yDomain).ticks(tickCount)
+      : rows
+          .map((d) => Number(d[yField]))
+          .filter((v) => Number.isFinite(v));
 
     if (values.length === 0) {
       return 56;
     }
 
-    const maxAbs = d3.max(values.map((v) => Math.abs(v))) || 0;
-    const probe = [0, maxAbs * 0.25, maxAbs * 0.5, maxAbs * 0.75, maxAbs];
-    const maxLabelLength = d3.max(
-      probe.map((v) => d3.format(',')(Math.round(v)).length)
-    ) || 4;
+    const domain = hasDomain
+      ? yDomain
+      : d3.extent(values);
+    const scale = d3.scaleLinear().domain(domain);
+    const formatTick = this.createLineYAxisTickFormatter(scale, tickCount);
+    const maxLabelWidth = d3.max(values.map((value) => this.measureAxisTextWidth(formatTick(value)))) || 0;
 
-    const estimated = 14 + maxLabelLength * 7;
+    const estimated = Math.ceil(maxLabelWidth + 18);
     return Math.max(56, Math.min(110, estimated));
   }
 
@@ -2920,6 +2968,7 @@ export class ChartLayer {
     this.svg = null;
     this.root = null;
     this.defs = null;
+    this.textMeasureCanvas = null;
   }
 
   destroy() {

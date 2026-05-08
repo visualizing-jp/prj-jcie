@@ -196,6 +196,7 @@ npm run build
 
 - `seriesField` で複数系列に対応
 - `xUnit / yUnit` で軸端に小さな単位ラベルを出せる
+- Y軸ラベルは `1万` 以上で `300万` / `1.3億` のような日本語 compact 表記になる
 - `xDomain` / `yDomain` で表示範囲を固定
 - `highlight` で特定系列を強調
 - `seriesFilter` で表示する系列を絞り込む

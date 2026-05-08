@@ -127,6 +127,7 @@
 | `yField` | string | Y軸の列名 |
 | `xUnit` | string | X軸右下に表示する単位ラベル |
 | `yUnit` | string | Y軸左上に表示する単位ラベル |
+| Y軸目盛り表記 | - | `1万` 以上は `300万` / `1.3億` のような日本語 compact 表記 |
 | `seriesField` | string | 系列名の列 |
 | `xDomain` | [number, number] | X軸範囲 |
 | `yDomain` | [number, number] | Y軸範囲 |
