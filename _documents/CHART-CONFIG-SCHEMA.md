@@ -126,6 +126,7 @@
 | `xField` | string | X軸の列名 |
 | `yField` | string | Y軸の列名 |
 | `xUnit` | string | X軸右下に表示する単位ラベル |
+| `xTickValues` | number[] | X軸に明示表示する目盛り値 |
 | `yUnit` | string | Y軸左上に表示する単位ラベル |
 | Y軸目盛り表記 | - | `1万` 以上は `300万` / `1.3億` のような日本語 compact 表記 |
 | `seriesField` | string | 系列名の列 |
