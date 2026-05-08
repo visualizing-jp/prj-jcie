@@ -1523,7 +1523,7 @@ export class ChartLayer {
         .attr('y', y)
         .attr('fill', CHART_COLOR.axisText)
         .attr('font-size', CHART_FONT.series)
-        .text(`${row[labelField]}: ${row[valueField]}`);
+        .text(`${row[labelField]}: ${this.formatPieLegendValue(row[valueField], config)}`);
     });
 
     
@@ -1583,6 +1583,18 @@ export class ChartLayer {
       if (Number.isFinite(numeric)) return numeric;
     }
     return NaN;
+  }
+
+  formatPieLegendValue(value, config = {}) {
+    const display = value == null ? '' : String(value).trim();
+    if (!display) return display;
+
+    const suffix = config.valueSuffix == null ? '' : String(config.valueSuffix);
+    if (!suffix || display.endsWith(suffix)) {
+      return display;
+    }
+
+    return `${display}${suffix}`;
   }
 
   renderSankey(panel, dataset, config) {

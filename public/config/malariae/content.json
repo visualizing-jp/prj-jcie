@@ -155,25 +155,7 @@
               ],
               "primaryLabel": "感染者",
               "primaryColor": "#f2df4a",
-              "normalizeTo": 100,
-              "remainderLabel": "非感染者",
-              "remainderColor": "#999999"
-            }
-          },
-          {
-            "id": "pie-cases-americas",
-            "type": "pie",
-            "dataFile": "/data/charts/malariae/regional_distribution.csv",
-            "dataFormat": "csv",
-            "config": {
-              "title": "アメリカ",
-              "rowField": "地域",
-              "rowValue": "アメリカ",
-              "categoryColumns": [
-                "感染者の割合"
-              ],
-              "primaryLabel": "感染者",
-              "primaryColor": "#f2df4a",
+              "valueSuffix": "%",
               "normalizeTo": 100,
               "remainderLabel": "非感染者",
               "remainderColor": "#999999"
@@ -193,25 +175,7 @@
               ],
               "primaryLabel": "感染者",
               "primaryColor": "#f2df4a",
-              "normalizeTo": 100,
-              "remainderLabel": "非感染者",
-              "remainderColor": "#999999"
-            }
-          },
-          {
-            "id": "pie-cases-europe",
-            "type": "pie",
-            "dataFile": "/data/charts/malariae/regional_distribution.csv",
-            "dataFormat": "csv",
-            "config": {
-              "title": "欧州",
-              "rowField": "地域",
-              "rowValue": "欧州",
-              "categoryColumns": [
-                "感染者の割合"
-              ],
-              "primaryLabel": "感染者",
-              "primaryColor": "#f2df4a",
+              "valueSuffix": "%",
               "normalizeTo": 100,
               "remainderLabel": "非感染者",
               "remainderColor": "#999999"
@@ -231,6 +195,7 @@
               ],
               "primaryLabel": "感染者",
               "primaryColor": "#f2df4a",
+              "valueSuffix": "%",
               "normalizeTo": 100,
               "remainderLabel": "非感染者",
               "remainderColor": "#999999"
@@ -250,6 +215,47 @@
               ],
               "primaryLabel": "感染者",
               "primaryColor": "#f2df4a",
+              "valueSuffix": "%",
+              "normalizeTo": 100,
+              "remainderLabel": "非感染者",
+              "remainderColor": "#999999"
+            }
+          },
+          {
+            "id": "pie-cases-americas",
+            "type": "pie",
+            "dataFile": "/data/charts/malariae/regional_distribution.csv",
+            "dataFormat": "csv",
+            "config": {
+              "title": "アメリカ",
+              "rowField": "地域",
+              "rowValue": "アメリカ",
+              "categoryColumns": [
+                "感染者の割合"
+              ],
+              "primaryLabel": "感染者",
+              "primaryColor": "#f2df4a",
+              "valueSuffix": "%",
+              "normalizeTo": 100,
+              "remainderLabel": "非感染者",
+              "remainderColor": "#999999"
+            }
+          },
+          {
+            "id": "pie-cases-europe",
+            "type": "pie",
+            "dataFile": "/data/charts/malariae/regional_distribution.csv",
+            "dataFormat": "csv",
+            "config": {
+              "title": "欧州",
+              "rowField": "地域",
+              "rowValue": "欧州",
+              "categoryColumns": [
+                "感染者の割合"
+              ],
+              "primaryLabel": "感染者",
+              "primaryColor": "#f2df4a",
+              "valueSuffix": "%",
               "normalizeTo": 100,
               "remainderLabel": "非感染者",
               "remainderColor": "#999999"
@@ -269,25 +275,7 @@
               ],
               "primaryLabel": "死亡者",
               "primaryColor": "#f2df4a",
-              "normalizeTo": 100,
-              "remainderLabel": "非死亡者",
-              "remainderColor": "#999999"
-            }
-          },
-          {
-            "id": "pie-deaths-americas",
-            "type": "pie",
-            "dataFile": "/data/charts/malariae/regional_distribution.csv",
-            "dataFormat": "csv",
-            "config": {
-              "title": "アメリカ",
-              "rowField": "地域",
-              "rowValue": "アメリカ",
-              "categoryColumns": [
-                "死亡者の割合"
-              ],
-              "primaryLabel": "死亡者",
-              "primaryColor": "#f2df4a",
+              "valueSuffix": "%",
               "normalizeTo": 100,
               "remainderLabel": "非死亡者",
               "remainderColor": "#999999"
@@ -307,25 +295,7 @@
               ],
               "primaryLabel": "死亡者",
               "primaryColor": "#f2df4a",
-              "normalizeTo": 100,
-              "remainderLabel": "非死亡者",
-              "remainderColor": "#999999"
-            }
-          },
-          {
-            "id": "pie-deaths-europe",
-            "type": "pie",
-            "dataFile": "/data/charts/malariae/regional_distribution.csv",
-            "dataFormat": "csv",
-            "config": {
-              "title": "欧州",
-              "rowField": "地域",
-              "rowValue": "欧州",
-              "categoryColumns": [
-                "死亡者の割合"
-              ],
-              "primaryLabel": "死亡者",
-              "primaryColor": "#f2df4a",
+              "valueSuffix": "%",
               "normalizeTo": 100,
               "remainderLabel": "非死亡者",
               "remainderColor": "#999999"
@@ -345,6 +315,7 @@
               ],
               "primaryLabel": "死亡者",
               "primaryColor": "#f2df4a",
+              "valueSuffix": "%",
               "normalizeTo": 100,
               "remainderLabel": "非死亡者",
               "remainderColor": "#999999"
@@ -364,6 +335,47 @@
               ],
               "primaryLabel": "死亡者",
               "primaryColor": "#f2df4a",
+              "valueSuffix": "%",
+              "normalizeTo": 100,
+              "remainderLabel": "非死亡者",
+              "remainderColor": "#999999"
+            }
+          },
+          {
+            "id": "pie-deaths-americas",
+            "type": "pie",
+            "dataFile": "/data/charts/malariae/regional_distribution.csv",
+            "dataFormat": "csv",
+            "config": {
+              "title": "アメリカ",
+              "rowField": "地域",
+              "rowValue": "アメリカ",
+              "categoryColumns": [
+                "死亡者の割合"
+              ],
+              "primaryLabel": "死亡者",
+              "primaryColor": "#f2df4a",
+              "valueSuffix": "%",
+              "normalizeTo": 100,
+              "remainderLabel": "非死亡者",
+              "remainderColor": "#999999"
+            }
+          },
+          {
+            "id": "pie-deaths-europe",
+            "type": "pie",
+            "dataFile": "/data/charts/malariae/regional_distribution.csv",
+            "dataFormat": "csv",
+            "config": {
+              "title": "欧州",
+              "rowField": "地域",
+              "rowValue": "欧州",
+              "categoryColumns": [
+                "死亡者の割合"
+              ],
+              "primaryLabel": "死亡者",
+              "primaryColor": "#f2df4a",
+              "valueSuffix": "%",
               "normalizeTo": 100,
               "remainderLabel": "非死亡者",
               "remainderColor": "#999999"
