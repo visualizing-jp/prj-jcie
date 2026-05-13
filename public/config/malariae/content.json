@@ -466,7 +466,9 @@
             "dataFile": "/data/charts/malariae/sankey-data.json",
             "dataFormat": "json",
             "config": {
-              "title": "蚊帳の配布・使用状況"
+              "title": "蚊帳の配布・使用状況",
+              "showNodeValues": true,
+              "showNodePercentages": true
             }
           }
         ]
@@ -625,12 +627,16 @@
                 {
                   "type": "verticalLine",
                   "year": 2017,
-                  "label": "2017年 新たな感染者がゼロとなった"
+                  "title": "2017年",
+                  "body": "新たな感染者がゼロとなった",
+                  "wrap": 180
                 },
                 {
                   "type": "verticalLine",
                   "year": 2021,
-                  "label": "2021年 WHOがエルサルバドルのマラリア撲滅を正式認定"
+                  "title": "2021年",
+                  "body": "WHOがエルサルバドルのマラリア撲滅を正式に認定",
+                  "wrap": 220
                 }
               ]
             }
