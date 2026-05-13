@@ -1,6 +1,7 @@
 import * as d3 from 'd3';
 import * as vennjs from '@upsetjs/venn.js';
-import { annotation, annotationXYThreshold, annotationCalloutElbow, annotationCalloutCurve } from 'd3-svg-annotation';
+import { prepareWithSegments, layoutWithLines } from '@chenglou/pretext';
+import { annotation, annotationLabel } from 'd3-svg-annotation';
 
 const VIEWBOX_WIDTH = 1440;
 const VIEWBOX_HEIGHT = 900;
@@ -47,9 +48,16 @@ export class ChartLayer {
     this.svg = null;
     this.root = null;
     this.dataCache = new Map();
+    this.pretextCache = new Map();
     this.lineSpanState = new Map();
     this.lineYAxisCompactFormatter = new Intl.NumberFormat('ja-JP', {
       notation: 'compact',
+      maximumFractionDigits: 1,
+    });
+    this.chartValueFormatter = new Intl.NumberFormat('ja-JP', {
+      maximumFractionDigits: 2,
+    });
+    this.chartPercentFormatter = new Intl.NumberFormat('ja-JP', {
       maximumFractionDigits: 1,
     });
     this.textMeasureCanvas = null;
@@ -751,7 +759,7 @@ export class ChartLayer {
           .call(styleAxisText)
           .call(styleAxisLines);
         path.transition(transition).attr('d', line).on('end', () => {
-          this.renderLineAnnotations(plotGroup, x, y, plotWidth, plotHeight, config.annotations);
+          this.renderLineAnnotations(plotGroup, x, y, plotWidth, plotHeight, config.annotations, topInset);
         });
         if (areaPath) areaPath.transition(transition).attr('d', areaGen).attr('opacity', 1);
         points
@@ -759,7 +767,7 @@ export class ChartLayer {
           .attr('cx', (d) => x(Number(d[xField])))
           .attr('cy', (d) => y(Number(d[yField])));
       } else {
-        this.renderLineAnnotations(plotGroup, x, y, plotWidth, plotHeight, config.annotations);
+        this.renderLineAnnotations(plotGroup, x, y, plotWidth, plotHeight, config.annotations, topInset);
         const len = path.node()?.getTotalLength() || 0;
         path
           .attr('stroke-dasharray', `${len} ${len}`)
@@ -915,7 +923,7 @@ export class ChartLayer {
       pathNodes.forEach((path, index) => {
         path.transition(transition).attr('d', line).on('end', () => {
           if (index === 0) {
-            this.renderLineAnnotations(plotGroup, x, y, plotWidth, plotHeight, config.annotations);
+            this.renderLineAnnotations(plotGroup, x, y, plotWidth, plotHeight, config.annotations, topInset);
             this.drawLineEndLabels(plotGroup, seriesData, color, x, y, plotWidth, plotHeight, xField, yField, config);
           }
         });
@@ -933,7 +941,7 @@ export class ChartLayer {
           .attr('cy', (d) => y(Number(d[yField])));
       });
     } else {
-      this.renderLineAnnotations(plotGroup, x, y, plotWidth, plotHeight, config.annotations);
+      this.renderLineAnnotations(plotGroup, x, y, plotWidth, plotHeight, config.annotations, topInset);
       pathNodes.forEach((path) => {
         const len = path.node()?.getTotalLength() || 0;
         path
@@ -1138,38 +1146,33 @@ export class ChartLayer {
       .text((d) => d.name);
   }
 
-  renderLineAnnotations(group, xScale, yScale, width, height, annotations) {
+  renderLineAnnotations(group, xScale, yScale, width, height, annotations, topInset = 0) {
     if (!Array.isArray(annotations) || annotations.length === 0) return;
 
     const xDomain = xScale.domain();
     const yDomain = yScale.domain();
-    const descriptors = [];
     const idToY = new Map(); // id → Y座標（arrow用）
+    const verticalLayouts = this.computeVerticalLineAnnotationLayouts(annotations, xScale, xDomain, width, height, topInset);
+    const layer = group.append('g').attr('class', 'chart-annotations');
+    const subjectLayer = layer.append('g').attr('class', 'chart-annotation-subjects');
+    const connectorLayer = layer.append('g').attr('class', 'chart-annotation-connectors');
+    const cardLayer = layer.append('g').attr('class', 'chart-annotation-cards');
 
-    for (const ann of annotations) {
+    for (const [annIndex, ann] of annotations.entries()) {
       const type = ann?.type;
       if (type === 'arrow') continue; // arrow は後で処理
-      const label = String(ann?.label || '');
-      const color = ann?.color || ANNOTATION_DEFAULTS.color;
-      const wrap = ann?.wrap || ANNOTATION_DEFAULTS.wrapWidth;
 
       if (type === 'verticalLine') {
-        const raw = ann.year ?? ann.x ?? ann.value;
-        const value = Number(raw);
-        if (!Number.isFinite(value)) continue;
-        if (value < Math.min(...xDomain) || value > Math.max(...xDomain)) continue;
-
-        const x = xScale(value);
-        descriptors.push({
-          type: annotationXYThreshold,
-          note: { label, wrap, labelStyle: { fontSize: CHART_FONT.annotation } },
-          color,
-          x,
-          y: 0,
-          dx: ann.dx ?? ANNOTATION_DEFAULTS.verticalLine.dx,
-          dy: ann.dy ?? ANNOTATION_DEFAULTS.verticalLine.dy,
-          subject: { y1: 0, y2: height },
+        const layout = verticalLayouts.get(annIndex);
+        if (!layout) continue;
+        this.drawAnnotationSubjectLine(subjectLayer, {
+          x1: layout.lineX,
+          y1: layout.lineY1,
+          x2: layout.lineX,
+          y2: layout.lineY2,
+          color: ann?.color || ANNOTATION_DEFAULTS.color,
         });
+        this.renderPretextAnnotationCardAtPosition(cardLayer, ann, layout.cardX, layout.cardY);
       } else if (type === 'horizontalLine') {
         const raw = ann.y ?? ann.value;
         const value = Number(raw);
@@ -1180,56 +1183,312 @@ export class ChartLayer {
         if (ann.id) idToY.set(ann.id, y);
 
         const anchorRight = ann.anchor === 'right';
-        descriptors.push({
-          type: annotationXYThreshold,
-          note: { label, wrap, align: anchorRight ? 'right' : undefined, labelStyle: { fontSize: CHART_FONT.annotation } },
-          color,
-          x: anchorRight ? width : 0,
-          y,
-          dx: ann.dx ?? (anchorRight ? -ANNOTATION_DEFAULTS.horizontalLine.dx : ANNOTATION_DEFAULTS.horizontalLine.dx),
-          dy: ann.dy ?? ANNOTATION_DEFAULTS.horizontalLine.dy,
-          subject: { x1: 0, x2: width },
+
+        this.drawAnnotationSubjectLine(subjectLayer, {
+          x1: 0,
+          y1: y,
+          x2: width,
+          y2: y,
+          color: ann?.color || ANNOTATION_DEFAULTS.color,
         });
+
+        const anchor = { x: anchorRight ? width : 0, y };
+        const dx = ann.dx ?? (anchorRight ? -ANNOTATION_DEFAULTS.horizontalLine.dx : ANNOTATION_DEFAULTS.horizontalLine.dx);
+        const dy = ann.dy ?? ANNOTATION_DEFAULTS.horizontalLine.dy;
+        const card = this.renderPretextAnnotationCard(cardLayer, ann, anchor, dx, dy);
+        if (card) {
+          this.drawAnnotationConnector(connectorLayer, anchor, card, ann);
+        }
       } else if (type === 'callout') {
         const xVal = Number(ann.x);
         const yVal = Number(ann.y);
         if (!Number.isFinite(xVal) || !Number.isFinite(yVal)) continue;
 
-        const connectorType = ann.connector === 'curve' ? annotationCalloutCurve : annotationCalloutElbow;
-        descriptors.push({
-          type: connectorType,
-          note: { label, wrap, labelStyle: { fontSize: CHART_FONT.annotation } },
-          color,
-          x: xScale(xVal),
-          y: yScale(yVal),
-          dx: ann.dx ?? ANNOTATION_DEFAULTS.callout.dx,
-          dy: ann.dy ?? ANNOTATION_DEFAULTS.callout.dy,
-        });
+        const anchor = { x: xScale(xVal), y: yScale(yVal) };
+        const dx = ann.dx ?? ANNOTATION_DEFAULTS.callout.dx;
+        const dy = ann.dy ?? ANNOTATION_DEFAULTS.callout.dy;
+        const card = this.renderPretextAnnotationCard(cardLayer, ann, anchor, dx, dy);
+        if (card) {
+          this.drawAnnotationConnector(connectorLayer, anchor, card, ann);
+        }
       }
-    }
-
-    if (descriptors.length > 0) {
-      const makeAnnotations = annotation()
-        .annotations(descriptors);
-
-      const layer = group.append('g')
-        .attr('class', 'chart-annotations')
-        .call(makeAnnotations);
-
-      // subject線（閾値線）を破線スタイルに
-      layer.selectAll('.annotation .subject path, .annotation .subject line')
-        .attr('stroke-dasharray', ANNOTATION_DEFAULTS.lineDash)
-        .attr('stroke-opacity', ANNOTATION_DEFAULTS.lineOpacity);
-
-      // アノテーションテキストにフォントサイズ・色を適用
-      layer.selectAll('.annotation text, .annotation tspan')
-        .attr('font-size', CHART_FONT.annotation)
-        .style('font-size', `${CHART_FONT.annotation}px`)
-        .attr('fill', CHART_COLOR.annotationText);
     }
 
     // arrow: 2本のhorizontalLine間を繋ぐ矢印
     this.renderAnnotationArrows(group, annotations, idToY, width);
+  }
+
+  computeVerticalLineAnnotationLayouts(annotations, xScale, xDomain, width, height, topInset = 0) {
+    const vertical = annotations
+      .map((ann, index) => ({ ann, index }))
+      .filter(({ ann }) => ann?.type === 'verticalLine')
+      .map(({ ann, index }) => {
+        const raw = ann.year ?? ann.x ?? ann.value;
+        const value = Number(raw);
+        if (!Number.isFinite(value)) return null;
+        if (value < Math.min(...xDomain) || value > Math.max(...xDomain)) return null;
+        const card = this.measurePretextAnnotationCard(ann);
+        if (!card) return null;
+        return {
+          ann,
+          index,
+          value,
+          lineX: xScale(value),
+          card,
+        };
+      })
+      .filter(Boolean)
+      .sort((a, b) => a.value - b.value);
+
+    const layouts = new Map();
+    const topStart = -Math.max(0, Number(topInset) || 0);
+    const verticalGap = 14;
+    let nextCardY = topStart;
+
+    vertical.forEach((entry, order) => {
+      const align = entry.ann?.anchor === 'right'
+        ? 'right'
+        : entry.ann?.anchor === 'left'
+          ? 'left'
+          : entry.lineX >= width / 2
+            ? 'right'
+            : 'left';
+      const cardY = Number.isFinite(Number(entry.ann?.y))
+        ? Number(entry.ann.y)
+        : nextCardY;
+      const autoCardX = align === 'right'
+        ? entry.lineX - entry.card.width
+        : entry.lineX;
+      const unclampedCardX = Number.isFinite(Number(entry.ann?.x))
+        ? Number(entry.ann.x)
+        : autoCardX;
+      const cardX = Math.max(0, Math.min(unclampedCardX, width - entry.card.width));
+      const lineY1 = Number.isFinite(Number(entry.ann?.y1))
+        ? Number(entry.ann.y1)
+        : cardY + entry.card.height;
+      const lineY2 = Number.isFinite(Number(entry.ann?.y2))
+        ? Number(entry.ann.y2)
+        : height;
+
+      layouts.set(entry.index, {
+        align,
+        cardX,
+        cardY,
+        lineX: entry.lineX,
+        lineY1,
+        lineY2,
+      });
+
+      nextCardY = Math.max(nextCardY, cardY + entry.card.height + verticalGap);
+    });
+
+    return layouts;
+  }
+
+  drawAnnotationSubjectLine(layer, line) {
+    layer
+      .append('line')
+      .attr('x1', line.x1)
+      .attr('y1', line.y1)
+      .attr('x2', line.x2)
+      .attr('y2', line.y2)
+      .attr('stroke', line.color || ANNOTATION_DEFAULTS.color)
+      .attr('stroke-width', 1.25)
+      .attr('stroke-dasharray', ANNOTATION_DEFAULTS.lineDash)
+      .attr('stroke-opacity', ANNOTATION_DEFAULTS.lineOpacity);
+  }
+
+  renderPretextAnnotationCard(layer, ann, anchor, dx, dy) {
+    const card = this.measurePretextAnnotationCard(ann);
+    if (!card) return null;
+    const x = anchor.x + dx;
+    const y = anchor.y + dy;
+    this.drawMeasuredAnnotationCard(layer, card, x, y);
+    return { x, y, width: card.width, height: card.height };
+  }
+
+  renderPretextTextLines(layer, lines, options) {
+    const {
+      x,
+      y,
+      lineHeight,
+      fontSize,
+      fontWeight,
+      fontFamily,
+      fill,
+    } = options;
+
+    lines.forEach((line, index) => {
+      layer
+        .append('text')
+        .attr('x', x)
+        .attr('y', y + index * lineHeight)
+        .attr('dominant-baseline', 'hanging')
+        .attr('fill', fill)
+        .attr('font-size', fontSize)
+        .attr('font-weight', fontWeight)
+        .style('font-family', fontFamily)
+        .text(line.text);
+    });
+  }
+
+  renderPretextAnnotationCardAtPosition(layer, ann, x, y) {
+    const card = this.measurePretextAnnotationCard(ann);
+    if (!card) return null;
+    this.drawMeasuredAnnotationCard(layer, card, x, y);
+    return { x, y, width: card.width, height: card.height };
+  }
+
+  drawMeasuredAnnotationCard(layer, card, x, y) {
+    const cardGroup = layer.append('g').attr('class', 'chart-annotation-card');
+    cardGroup
+      .append('rect')
+      .attr('x', x)
+      .attr('y', y)
+      .attr('width', card.width)
+      .attr('height', card.height)
+      .attr('rx', 12)
+      .attr('fill', '#ffffff')
+      .attr('fill-opacity', 0.96)
+      .attr('stroke', '#e5e7eb')
+      .attr('stroke-width', 1);
+
+    let cursorY = y + card.paddingY;
+    if (card.titleLayout) {
+      this.renderPretextTextLines(cardGroup, card.titleLayout.lines, {
+        x: x + card.paddingX,
+        y: cursorY,
+        lineHeight: card.titleLineHeight,
+        fontSize: card.titleFontSize,
+        fontWeight: 700,
+        fontFamily: card.fontFamily,
+        fill: CHART_COLOR.title,
+      });
+      cursorY += card.titleLayout.height + card.sectionGap;
+    }
+    if (card.bodyLayout) {
+      this.renderPretextTextLines(cardGroup, card.bodyLayout.lines, {
+        x: x + card.paddingX,
+        y: cursorY,
+        lineHeight: card.bodyLineHeight,
+        fontSize: card.bodyFontSize,
+        fontWeight: 500,
+        fontFamily: card.fontFamily,
+        fill: CHART_COLOR.annotationText,
+      });
+    }
+  }
+
+  measurePretextAnnotationCard(ann) {
+    const content = this.resolveAnnotationTextContent(ann);
+    if (!content.title && !content.body) return null;
+
+    const fontFamily = this.getAnnotationFontFamily();
+    const maxTextWidth = Number.isFinite(Number(ann?.wrap)) ? Number(ann.wrap) : ANNOTATION_DEFAULTS.wrapWidth;
+    const titleFontSize = Number.isFinite(Number(ann?.titleSize)) ? Number(ann.titleSize) : CHART_FONT.annotation + 2;
+    const bodyFontSize = Number.isFinite(Number(ann?.fontSize)) ? Number(ann.fontSize) : CHART_FONT.annotation;
+    const titleLineHeight = Math.round(titleFontSize * 1.35);
+    const bodyLineHeight = Math.round(bodyFontSize * 1.5);
+    const paddingX = 14;
+    const paddingY = 12;
+    const sectionGap = content.title && content.body ? 8 : 0;
+
+    const titleLayout = content.title
+      ? this.layoutPretextParagraph(content.title, `700 ${titleFontSize}px ${fontFamily}`, maxTextWidth, titleLineHeight)
+      : null;
+    const bodyLayout = content.body
+      ? this.layoutPretextParagraph(content.body, `500 ${bodyFontSize}px ${fontFamily}`, maxTextWidth, bodyLineHeight)
+      : null;
+
+    const measuredWidth = Math.max(
+      titleLayout?.maxLineWidth || 0,
+      bodyLayout?.maxLineWidth || 0
+    );
+    const contentWidth = Math.max(1, measuredWidth);
+    const contentHeight = (titleLayout?.height || 0) + (bodyLayout?.height || 0) + sectionGap;
+
+    return {
+      width: contentWidth + paddingX * 2,
+      height: contentHeight + paddingY * 2,
+      paddingX,
+      paddingY,
+      sectionGap,
+      titleFontSize,
+      bodyFontSize,
+      titleLineHeight,
+      bodyLineHeight,
+      fontFamily,
+      titleLayout,
+      bodyLayout,
+    };
+  }
+
+  layoutPretextParagraph(text, font, maxWidth, lineHeight) {
+    const prepared = this.getPreparedPretext(text, font);
+    const laidOut = layoutWithLines(prepared, maxWidth, lineHeight);
+    const maxLineWidth = laidOut.lines.reduce((max, line) => Math.max(max, line.width), 0);
+    return {
+      ...laidOut,
+      maxLineWidth,
+    };
+  }
+
+  getPreparedPretext(text, font) {
+    const key = `${font}__${text}`;
+    if (this.pretextCache.has(key)) {
+      return this.pretextCache.get(key);
+    }
+    const prepared = prepareWithSegments(text, font);
+    this.pretextCache.set(key, prepared);
+    return prepared;
+  }
+
+  resolveAnnotationTextContent(ann) {
+    const title = String(ann?.title || '').trim();
+    const bodySource = ann?.body ?? ann?.text ?? ann?.label ?? '';
+    const body = String(bodySource || '').trim();
+    return { title, body };
+  }
+
+  getAnnotationFontFamily() {
+    return window.getComputedStyle(document.documentElement).getPropertyValue('--font-sans').trim() || '"Noto Sans JP", sans-serif';
+  }
+
+  drawAnnotationConnector(layer, anchor, card, ann) {
+    const color = ann?.color || ANNOTATION_DEFAULTS.color;
+    const connectorType = ann?.connector === 'curve' ? 'curve' : 'elbow';
+    const attach = this.getAnnotationCardAttachment(anchor, card);
+
+    if (connectorType === 'curve') {
+      const controlX = anchor.x + (attach.x - anchor.x) * 0.45;
+      const controlY = anchor.y + (attach.y - anchor.y) * 0.1;
+      layer
+        .append('path')
+        .attr('d', `M ${anchor.x} ${anchor.y} Q ${controlX} ${controlY} ${attach.x} ${attach.y}`)
+        .attr('fill', 'none')
+        .attr('stroke', color)
+        .attr('stroke-width', 1.25)
+        .attr('stroke-opacity', 0.7);
+      return;
+    }
+
+    const horizontalFirst = Math.abs(attach.x - anchor.x) >= Math.abs(attach.y - anchor.y);
+    const elbowX = horizontalFirst ? attach.x : anchor.x;
+    const elbowY = horizontalFirst ? anchor.y : attach.y;
+    const d = `M ${anchor.x} ${anchor.y} L ${elbowX} ${elbowY} L ${attach.x} ${attach.y}`;
+    layer
+      .append('path')
+      .attr('d', d)
+      .attr('fill', 'none')
+      .attr('stroke', color)
+      .attr('stroke-width', 1.25)
+      .attr('stroke-opacity', 0.7);
+  }
+
+  getAnnotationCardAttachment(anchor, card) {
+    const x = Math.max(card.x, Math.min(anchor.x, card.x + card.width));
+    const y = Math.max(card.y, Math.min(anchor.y, card.y + card.height));
+    return { x, y };
   }
 
   renderAnnotationArrows(group, annotations, idToY, plotWidth) {
@@ -1372,7 +1631,7 @@ export class ChartLayer {
         placedLabelYs.push(targetY);
 
         const descriptors = [{
-          type: annotationCalloutElbow,
+          type: annotationLabel,
           note: {
             label,
             wrap: ann.wrap || ANNOTATION_DEFAULTS.wrapWidth,
@@ -1383,6 +1642,7 @@ export class ChartLayer {
           y: labelY,
           dx,
           dy,
+          connector: { type: 'elbow' },
         }];
 
         const makeAnn = annotation().annotations(descriptors);
@@ -1795,7 +2055,7 @@ export class ChartLayer {
       .attr('fill', CHART_COLOR.title)
       .attr('font-size', CHART_FONT.series)
       .attr('opacity', 0)
-      .text((d) => d.label)
+      .text((d) => this.formatSankeyNodeLabel(d, config))
       .transition()
       .delay((d) => d.level * levelDelay + 200)
       .duration(300)
@@ -1808,7 +2068,8 @@ export class ChartLayer {
     if (dataset?.nodes && dataset?.links) {
       const nodes = dataset.nodes.map((n, i) => ({
         id: n.id ?? n.name ?? String(i),
-        label: n.name ?? n.id ?? String(i),
+        baseLabel: n.name ?? n.label ?? n.id ?? String(i),
+        label: n.label ?? n.name ?? n.id ?? String(i),
       }));
       const nodeIds = nodes.map((n) => n.id);
       const links = dataset.links.map((l) => ({
@@ -1868,6 +2129,39 @@ export class ChartLayer {
     const inSum = d3.sum(node.in, (l) => l.value);
     const outSum = d3.sum(node.out, (l) => l.value);
     return Math.max(inSum, outSum, 1);
+  }
+
+  formatSankeyNodeLabel(node, config = {}) {
+    const baseLabel = node.baseLabel ?? node.label ?? node.id ?? '';
+    if (!config.showNodeValues) return baseLabel;
+
+    const value = this.nodeValue(node);
+    if (!Number.isFinite(value)) return baseLabel;
+
+    const formattedValue = this.chartValueFormatter.format(value);
+    if (!config.showNodePercentages) {
+      return `${baseLabel}：${formattedValue}`;
+    }
+
+    const percent = this.getSankeyNodePercent(node);
+    if (!Number.isFinite(percent)) {
+      return `${baseLabel}：${formattedValue}`;
+    }
+
+    return `${baseLabel}：${formattedValue}（${this.chartPercentFormatter.format(percent)}%）`;
+  }
+
+  getSankeyNodePercent(node) {
+    if (!Array.isArray(node?.in) || node.in.length === 0) return 100;
+
+    const parentIds = [...new Set(node.in.map((link) => link.source?.id).filter(Boolean))];
+    if (parentIds.length === 1 && node.in[0]?.source) {
+      const parentValue = this.nodeValue(node.in[0].source);
+      return parentValue > 0 ? (this.nodeValue(node) / parentValue) * 100 : NaN;
+    }
+
+    const inSum = d3.sum(node.in, (link) => link.value);
+    return inSum > 0 ? (this.nodeValue(node) / inSum) * 100 : NaN;
   }
 
   renderVenn(panel, dataset, config) {
@@ -2148,8 +2442,8 @@ export class ChartLayer {
           y: panelTarget.y,
           dx: labelPos.x - panelTarget.x,
           dy: labelPos.y - panelTarget.y,
-          type: annotationCalloutElbow,
-          connector: { end: 'dot' },
+          type: annotationLabel,
+          connector: { type: 'elbow', end: 'dot' },
         });
       });
     }
@@ -2176,8 +2470,8 @@ export class ChartLayer {
             y: panelTarget.y,
             dx: 0,
             dy: 30,
-            type: annotationCalloutElbow,
-            connector: { end: 'dot' },
+            type: annotationLabel,
+            connector: { type: 'elbow', end: 'dot' },
           });
         });
     }
@@ -2883,7 +3177,7 @@ export class ChartLayer {
     });
 
     // アノテーション
-    this.renderLineAnnotations(plotGroup, x, y, plotWidth, plotHeight, config.annotations);
+    this.renderLineAnnotations(plotGroup, x, y, plotWidth, plotHeight, config.annotations, topInset);
   }
 
   buildPalette(count) {
